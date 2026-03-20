@@ -16,32 +16,47 @@
  *   ✓ Mode param whitelisted — rejects anything else
  *   ✓ Edge cached 30s — reduces Finnhub API calls by ~95%
  *   ✓ Per-symbol failure handled — partial results returned gracefully
+ *
+ * SYMBOL NOTES (Finnhub free tier compatible):
+ *   ✗ BSE:SENSEX, NSE:NIFTY50, NSE:BANKNIFTY  → Premium exchange feed, not on free plan
+ *   ✗ OANDA:SPX500USD, OANDA:NAS100USD         → OANDA indices need paid plan
+ *   ✓ Individual NSE stocks (RELIANCE, TCS…)   → Free tier supported
+ *   ✓ OANDA forex pairs (USDINR, XAUUSD…)      → Free tier supported
+ *   ✓ BINANCE crypto pairs                      → Free tier supported
+ *   ✓ FX pairs (EURUSD, GBPUSD…)               → Free tier supported
+ *   ✓ US stocks (AAPL, MSFT, AMZN…)            → Free tier supported
  */
 
 const SYMBOLS = {
   india: [
-    { symbol:'BSE:SENSEX',    label:'SENSEX'    },
-    { symbol:'NSE:NIFTY50',   label:'NIFTY 50'  },
-    { symbol:'NSE:BANKNIFTY', label:'NIFTY BANK' },
-    { symbol:'NSE:NIFTYIT',   label:'NIFTY IT'  },
-    { symbol:'BSE:GOLDBEES',  label:'GOLD ETF'  },
-    { symbol:'OANDA:USDINR',  label:'USD/INR'   },
-    { symbol:'NSE:RELIANCE',  label:'RELIANCE'  },
-    { symbol:'NSE:HDFCBANK',  label:'HDFC BANK' },
-    { symbol:'NSE:TCS',       label:'TCS'       },
-    { symbol:'NSE:INFY',      label:'INFOSYS'   },
+    // Forex — works on free tier
+    { symbol: 'OANDA:USDINR',    label: 'USD/INR'   },
+    // Commodities via OANDA — works on free tier
+    { symbol: 'OANDA:XAUUSD',    label: 'GOLD'      },
+    { symbol: 'OANDA:UKOIL',     label: 'BRENT OIL' },
+    // Individual NSE large-caps — works on free tier
+    { symbol: 'NSE:RELIANCE',    label: 'RELIANCE'  },
+    { symbol: 'NSE:HDFCBANK',    label: 'HDFC BANK' },
+    { symbol: 'NSE:TCS',         label: 'TCS'       },
+    { symbol: 'NSE:INFY',        label: 'INFOSYS'   },
+    { symbol: 'NSE:WIPRO',       label: 'WIPRO'     },
+    { symbol: 'NSE:ITC',         label: 'ITC'       },
+    { symbol: 'NSE:TATAMOTORS',  label: 'TATA MOTORS'},
   ],
   world: [
-    { symbol:'OANDA:SPX500USD', label:'S&P 500'     },
-    { symbol:'OANDA:NAS100USD', label:'NASDAQ 100'  },
-    { symbol:'FOREXCOM:DJI',    label:'DOW JONES'   },
-    { symbol:'OANDA:UK100GBP',  label:'FTSE 100'    },
-    { symbol:'OANDA:DE30EUR',   label:'DAX'         },
-    { symbol:'OANDA:XAUUSD',    label:'GOLD'        },
-    { symbol:'BINANCE:BTCUSDT', label:'BITCOIN'     },
-    { symbol:'BINANCE:ETHUSD',  label:'ETHEREUM'    },
-    { symbol:'OANDA:UKOIL',     label:'BRENT CRUDE' },
-    { symbol:'FX:EURUSD',       label:'EUR/USD'     },
+    // US mega-cap stocks — works on free tier (replaces index symbols)
+    { symbol: 'AAPL',            label: 'APPLE'      },
+    { symbol: 'MSFT',            label: 'MICROSOFT'  },
+    { symbol: 'AMZN',            label: 'AMAZON'     },
+    { symbol: 'NVDA',            label: 'NVIDIA'     },
+    { symbol: 'TSLA',            label: 'TESLA'      },
+    // Commodities & Forex — works on free tier
+    { symbol: 'OANDA:XAUUSD',    label: 'GOLD'       },
+    { symbol: 'OANDA:UKOIL',     label: 'BRENT CRUDE'},
+    { symbol: 'FX:EURUSD',       label: 'EUR/USD'    },
+    // Crypto — works on free tier
+    { symbol: 'BINANCE:BTCUSDT', label: 'BITCOIN'    },
+    { symbol: 'BINANCE:ETHUSD',  label: 'ETHEREUM'   },
   ],
 };
 
