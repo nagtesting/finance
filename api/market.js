@@ -1,5 +1,5 @@
 /**
- * /api/market?mode=india|world
+ * /api/market?mode=india|world  — v3 — FREE TIER CONFIRMED SYMBOLS ONLY
  * Vercel Serverless Function — Secure Market Data Proxy
  *
  * API key lives ONLY in Vercel environment variables — never in browser JS.
@@ -29,34 +29,34 @@
 
 const SYMBOLS = {
   india: [
-    // Forex — works on free tier
-    { symbol: 'OANDA:USDINR',    label: 'USD/INR'   },
-    // Commodities via OANDA — works on free tier
-    { symbol: 'OANDA:XAUUSD',    label: 'GOLD'      },
-    { symbol: 'OANDA:UKOIL',     label: 'BRENT OIL' },
-    // Individual NSE large-caps — works on free tier
-    { symbol: 'NSE:RELIANCE',    label: 'RELIANCE'  },
-    { symbol: 'NSE:HDFCBANK',    label: 'HDFC BANK' },
-    { symbol: 'NSE:TCS',         label: 'TCS'       },
-    { symbol: 'NSE:INFY',        label: 'INFOSYS'   },
-    { symbol: 'NSE:WIPRO',       label: 'WIPRO'     },
-    { symbol: 'NSE:ITC',         label: 'ITC'       },
-    { symbol: 'NSE:TATAMOTORS',  label: 'TATA MOTORS'},
-  ],
-  world: [
-    // US mega-cap stocks — works on free tier (replaces index symbols)
-    { symbol: 'AAPL',            label: 'APPLE'      },
-    { symbol: 'MSFT',            label: 'MICROSOFT'  },
-    { symbol: 'AMZN',            label: 'AMAZON'     },
-    { symbol: 'NVDA',            label: 'NVIDIA'     },
-    { symbol: 'TSLA',            label: 'TESLA'      },
-    // Commodities & Forex — works on free tier
-    { symbol: 'OANDA:XAUUSD',    label: 'GOLD'       },
-    { symbol: 'OANDA:UKOIL',     label: 'BRENT CRUDE'},
-    { symbol: 'FX:EURUSD',       label: 'EUR/USD'    },
-    // Crypto — works on free tier
+    // Forex — FX: prefix confirmed free tier
+    { symbol: 'FX:USDINR',       label: 'USD/INR'    },
+    { symbol: 'FX:EURINR',       label: 'EUR/INR'    },
+    { symbol: 'FX:XAUUSD',       label: 'GOLD'       },
+    // Indian ADRs on US exchanges — plain ticker confirmed free tier
+    { symbol: 'INFY',            label: 'INFOSYS'    },
+    { symbol: 'WIT',             label: 'WIPRO'      },
+    { symbol: 'HDB',             label: 'HDFC BANK'  },
+    { symbol: 'IBN',             label: 'ICICI BANK' },
+    { symbol: 'TTM',             label: 'TATA MOTORS'},
+    // Crypto
     { symbol: 'BINANCE:BTCUSDT', label: 'BITCOIN'    },
     { symbol: 'BINANCE:ETHUSD',  label: 'ETHEREUM'   },
+  ],
+  world: [
+    // US mega-caps — confirmed free tier
+    { symbol: 'AAPL',            label: 'APPLE'      },
+    { symbol: 'MSFT',            label: 'MICROSOFT'  },
+    { symbol: 'NVDA',            label: 'NVIDIA'     },
+    { symbol: 'AMZN',            label: 'AMAZON'     },
+    { symbol: 'TSLA',            label: 'TESLA'      },
+    // Crypto — confirmed free tier
+    { symbol: 'BINANCE:BTCUSDT', label: 'BITCOIN'    },
+    { symbol: 'BINANCE:ETHUSD',  label: 'ETHEREUM'   },
+    // Forex — confirmed free tier
+    { symbol: 'FX:EURUSD',       label: 'EUR/USD'    },
+    { symbol: 'FX:GBPUSD',       label: 'GBP/USD'   },
+    { symbol: 'FX:XAUUSD',       label: 'GOLD'       },
   ],
 };
 
