@@ -333,7 +333,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 <div id="main">
   <div class="mode-banner india" id="mode-banner">🇮🇳 &nbsp;India Mode — INR · NSE/BSE · Indian Tax Laws</div>
 
-  <!-- Custom Live Ticker — powered by /api/market (Yahoo Finance, no API key) -->
+  <!-- Custom Live Ticker — powered by /api/market -->
   <div id="live-ticker" style="background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.1);overflow:hidden;height:44px;position:relative;flex-shrink:0;">
     <div id="ticker-track" style="display:flex;align-items:center;height:100%;position:absolute;white-space:nowrap;will-change:transform;"></div>
   </div>
@@ -1202,99 +1202,78 @@ window.onload=()=>{
   setMode('india');
   calcSIP();
 };
+</script>
+
 <script>
 // ================================================================
 // CUSTOM LIVE TICKER — replaces TradingView widget
-// Powered by /api/market (Yahoo Finance, no API key needed)
 // ================================================================
-let tickerAnimation = null;
+let tickerAnimation=null;
 
-async function loadTickerData(mode) {
-  try {
-    const res  = await fetch(`/api/market?mode=${mode}`);
-    const data = await res.json();
-    if (data.tickers) renderTicker(mode, data.tickers);
-  } catch(e) { /* silent fail */ }
+async function loadTickerData(mode){
+  try{
+    const res=await fetch('/api/market?mode='+mode);
+    const data=await res.json();
+    if(data.tickers) renderTicker(mode,data.tickers);
+  }catch(e){}
 }
 
-function renderTicker(mode, tickers) {
-  const track = document.getElementById('ticker-track');
-  if (!track) return;
-
-  // Border color changes with mode
-  const borderColor = mode === 'india'
-    ? 'rgba(201,168,76,.1)'
-    : 'rgba(79,142,247,.15)';
-  document.getElementById('live-ticker').style.borderBottomColor = borderColor;
-
-  const items = tickers.filter(t => t.ok).map(t => {
-    const color  = t.up ? '#4ade80' : '#f87171';
-    const arrow  = t.up ? '▲' : '▼';
-    const val    = fmtTickerVal(t.value, t.label, mode);
-    const pct    = `${t.up ? '+' : ''}${t.pct}%`;
-    return `<div style="display:inline-flex;align-items:center;gap:10px;padding:0 24px;border-right:1px solid rgba(255,255,255,.05);height:44px;">
-      <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090A8;font-family:'DM Sans',sans-serif;">${t.label}</span>
-      <span style="font-size:12px;font-weight:600;color:#F5F0E8;font-family:'DM Mono',monospace;">${val}</span>
-      <span style="font-size:10px;font-weight:600;color:${color};font-family:'DM Mono',monospace;">${arrow} ${pct}</span>
-    </div>`;
+function renderTicker(mode,tickers){
+  const track=document.getElementById('ticker-track');
+  if(!track) return;
+  const borderColor=mode==='india'?'rgba(201,168,76,.1)':'rgba(79,142,247,.15)';
+  document.getElementById('live-ticker').style.borderBottomColor=borderColor;
+  const items=tickers.filter(t=>t.ok).map(t=>{
+    const color=t.up?'#4ade80':'#f87171';
+    const arrow=t.up?'▲':'▼';
+    const val=fmtTickerVal(t.value,t.label,mode);
+    const pct=(t.up?'+':'')+t.pct+'%';
+    return '<div style="display:inline-flex;align-items:center;gap:10px;padding:0 24px;border-right:1px solid rgba(255,255,255,.05);height:44px;">'
+      +'<span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090A8;font-family:\'DM Sans\',sans-serif;">'+t.label+'</span>'
+      +'<span style="font-size:12px;font-weight:600;color:#F5F0E8;font-family:\'DM Mono\',monospace;">'+val+'</span>'
+      +'<span style="font-size:10px;font-weight:600;color:'+color+';font-family:\'DM Mono\',monospace;">'+arrow+' '+pct+'</span>'
+      +'</div>';
   }).join('');
-
-  if (!items) {
-    track.innerHTML = `<div style="padding:0 20px;font-size:11px;color:#6b7280;line-height:44px;">Loading market data…</div>`;
+  if(!items){
+    track.innerHTML='<div style="padding:0 20px;font-size:11px;color:#6b7280;line-height:44px;">Loading market data…</div>';
     return;
   }
-
-  // Duplicate content for seamless infinite scroll
-  track.innerHTML = items + items;
+  track.innerHTML=items+items;
   startTickerScroll(track);
 }
 
-function fmtTickerVal(val, label, mode) {
-  if (!val && val !== 0) return '—';
-  const indiaIndices = ['SENSEX','NIFTY 50','NIFTY BANK'];
-  const forex        = ['USD/INR','EUR/INR','EUR/USD','GBP/USD'];
-  const crypto       = ['BITCOIN','ETHEREUM'];
-  if (indiaIndices.includes(label))
-    return val.toLocaleString('en-IN', { maximumFractionDigits: 2 });
-  if (forex.includes(label))
-    return val.toFixed(4);
-  if (crypto.includes(label))
-    return '$' + val.toLocaleString('en-US', { maximumFractionDigits: 2 });
-  // Indian stocks — prefix ₹
-  if (mode === 'india' && val > 10)
-    return '₹' + val.toLocaleString('en-IN', { maximumFractionDigits: 2 });
-  return val.toLocaleString('en-US', { maximumFractionDigits: 2 });
+function fmtTickerVal(val,label,mode){
+  if(!val&&val!==0) return '—';
+  const indiaIndices=['SENSEX','NIFTY 50','NIFTY BANK'];
+  const forex=['USD/INR','EUR/INR','EUR/USD','GBP/USD'];
+  const crypto=['BITCOIN','ETHEREUM'];
+  if(indiaIndices.includes(label)) return val.toLocaleString('en-IN',{maximumFractionDigits:2});
+  if(forex.includes(label)) return val.toFixed(4);
+  if(crypto.includes(label)) return '$'+val.toLocaleString('en-US',{maximumFractionDigits:2});
+  if(mode==='india'&&val>10) return '₹'+val.toLocaleString('en-IN',{maximumFractionDigits:2});
+  return val.toLocaleString('en-US',{maximumFractionDigits:2});
 }
 
-function startTickerScroll(track) {
-  if (tickerAnimation) cancelAnimationFrame(tickerAnimation);
-  let pos = 0;
-  const speed = 0.45; // px per frame — tweak for faster/slower
-
-  function step() {
-    const half = track.scrollWidth / 2;
-    pos += speed;
-    if (pos >= half) pos = 0;
-    track.style.transform = `translateX(${-pos}px)`;
-    tickerAnimation = requestAnimationFrame(step);
+function startTickerScroll(track){
+  if(tickerAnimation) cancelAnimationFrame(tickerAnimation);
+  let pos=0;
+  const speed=0.45;
+  function step(){
+    const half=track.scrollWidth/2;
+    pos+=speed;
+    if(pos>=half) pos=0;
+    track.style.transform='translateX('+(-pos)+'px)';
+    tickerAnimation=requestAnimationFrame(step);
   }
-  tickerAnimation = requestAnimationFrame(step);
+  tickerAnimation=requestAnimationFrame(step);
 }
 
-// Pause scroll on hover
-const liveTicker = document.getElementById('live-ticker');
-if (liveTicker) {
-  liveTicker.addEventListener('mouseenter', () => {
-    if (tickerAnimation) cancelAnimationFrame(tickerAnimation);
-  });
-  liveTicker.addEventListener('mouseleave', () => {
-    const track = document.getElementById('ticker-track');
-    if (track && track.innerHTML) startTickerScroll(track);
-  });
+const liveTicker=document.getElementById('live-ticker');
+if(liveTicker){
+  liveTicker.addEventListener('mouseenter',()=>{if(tickerAnimation) cancelAnimationFrame(tickerAnimation);});
+  liveTicker.addEventListener('mouseleave',()=>{const t=document.getElementById('ticker-track');if(t&&t.innerHTML) startTickerScroll(t);});
 }
-
-// Refresh ticker every 30s in sync with sidebar
-setInterval(() => loadTickerData(currentMode), 30000);
+setInterval(()=>loadTickerData(currentMode),30000);
 </script>
 </body>
 </html>
