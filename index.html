@@ -3,157 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WealthHub 2026 Pro | Ultimate Finance Suite</title>
+    <title>WealthHub 2026 | Ultimate Finance Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-        tailwind.config = { darkMode: 'class' }
-    </script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
     <style>
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        input[type="range"] { accent-color: #4f46e5; }
         .nav-btn.active { border-left: 4px solid #10b981; background: rgba(255,255,255,0.1); }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 transition-colors duration-300 flex h-screen overflow-hidden">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex h-screen overflow-hidden transition-colors">
 
     <nav class="w-72 bg-indigo-950 dark:bg-black text-white flex flex-col p-6 shadow-2xl">
         <h1 class="text-2xl font-black mb-10 tracking-tighter italic">WEALTH HUB <span class="text-emerald-400">2026</span></h1>
-        
         <div class="space-y-2 flex-1">
-            <button onclick="showTab('sip')" class="nav-btn w-full text-left p-3 rounded-xl hover:bg-white/10 transition active" id="btn-sip">📈 SIP & Growth</button>
-            <button onclick="showTab('loan')" class="nav-btn w-full text-left p-3 rounded-xl hover:bg-white/10 transition" id="btn-loan">🏠 Mortgage & EMI</button>
-            <button onclick="showTab('fire')" class="nav-btn w-full text-left p-3 rounded-xl hover:bg-white/10 transition" id="btn-fire">🔥 Retirement (FIRE)</button>
-            <button onclick="showTab('insurance')" class="nav-btn w-full text-left p-3 rounded-xl hover:bg-white/10 transition" id="btn-insurance">🛡️ Life Insurance</button>
-            <button onclick="showTab('roi')" class="nav-btn w-full text-left p-3 rounded-xl hover:bg-white/10 transition" id="btn-roi">📊 ROI & Compound</button>
+            <button onclick="showTab('sip')" class="nav-btn w-full text-left p-3 rounded-xl hover:bg-white/10 active" id="btn-sip">📈 SIP Calculator</button>
+            <button onclick="showTab('emi')" class="nav-btn w-full text-left p-3 rounded-xl hover:bg-white/10" id="btn-emi">🏠 EMI / Mortgage</button>
         </div>
-
-        <div class="pt-6 border-t border-white/10 space-y-4">
+        <div class="pt-6 border-t border-white/10 space-y-4 text-sm">
             <button onclick="toggleDarkMode()" class="w-full bg-slate-800 p-3 rounded-xl flex justify-between items-center">
                 <span>Theme</span><span id="theme-icon">🌙</span>
             </button>
-            <button onclick="downloadPDF()" class="w-full bg-emerald-500 hover:bg-emerald-600 p-3 rounded-xl font-bold transition">Export PDF</button>
+            <button onclick="downloadPDF()" class="w-full bg-emerald-500 p-3 rounded-xl font-bold">Export Report (PDF)</button>
         </div>
     </nav>
 
     <main class="flex-1 overflow-y-auto p-12">
-        
         <div id="sip" class="tab-content active space-y-8">
-            <div class="flex justify-between items-end">
-                <div>
-                    <h2 class="text-4xl font-black">SIP Calculator</h2>
-                    <p class="text-slate-500 mt-2">Wealth creation via systematic compounding.</p>
-                </div>
-                <div class="bg-indigo-100 dark:bg-indigo-900/30 p-4 rounded-2xl text-right">
-                    <p class="text-xs uppercase font-bold text-indigo-600 dark:text-indigo-400">Annual Tax Saved (80C)</p>
-                    <h3 class="text-2xl font-black" id="sip_tax_display">₹0</h3>
+            <div class="flex justify-between items-start">
+                <h2 class="text-4xl font-black">SIP Engine</h2>
+                <div class="text-right">
+                    <p class="text-xs font-bold text-indigo-500 uppercase">Tax Savings (80C)</p>
+                    <h3 class="text-2xl font-black" id="sip_tax">₹0</h3>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div class="space-y-8 bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl">
+                <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl space-y-6">
                     <div>
-                        <label class="flex justify-between"><span>Monthly SIP</span><b>₹<span id="v_sip_p">25000</span></b></label>
-                        <input type="range" id="sip_p" min="1000" max="200000" step="1000" value="25000" class="w-full mt-2">
+                        <label class="flex justify-between text-sm">Monthly Investment <b>₹<span id="v_sip_p">25000</span></b></label>
+                        <input type="range" id="sip_p" min="1000" max="200000" step="1000" value="25000" class="w-full accent-indigo-600">
                     </div>
-                    <div>
-                        <label class="flex justify-between"><span>Expected Return (%)</span><b><span id="v_sip_r">12</span>%</b></label>
-                        <input type="range" id="sip_r" min="1" max="30" step="0.5" value="12" class="w-full mt-2">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-bold text-slate-400">Tax Slab</label>
+                            <select id="taxSlab" class="w-full bg-slate-100 dark:bg-slate-800 p-2 rounded-lg mt-1">
+                                <option value="5">5%</option><option value="20">20%</option><option value="30" selected>30%</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-400">Inflation %</label>
+                            <input type="number" id="inflation" value="6" class="w-full bg-slate-100 dark:bg-slate-800 p-2 rounded-lg mt-1">
+                        </div>
                     </div>
-                    <div>
-                        <label class="flex justify-between"><span>Tenure (Years)</span><b><span id="v_sip_t">15</span> Yrs</b></label>
-                        <input type="range" id="sip_t" min="1" max="40" value="15" class="w-full mt-2">
-                    </div>
+                    <button onclick="calculateSip()" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold">Calculate Growth</button>
                 </div>
-                <div class="flex flex-col justify-center items-center">
-                    <canvas id="sipChart" class="max-w-xs"></canvas>
+
+                <div class="flex flex-col items-center">
+                    <canvas id="sipChart" class="max-w-[280px]"></canvas>
                     <div class="mt-6 text-center">
-                        <p class="text-sm text-slate-400">Total Value</p>
+                        <p class="text-sm text-slate-400">Maturity Value</p>
                         <h4 class="text-5xl font-black text-indigo-600" id="sip_res">₹0</h4>
+                        <p class="text-xs text-slate-500 mt-2">Inflation Adjusted: <span id="sip_real" class="font-bold">₹0</span></p>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="loan" class="tab-content">
-            <h2 class="text-4xl font-black mb-4">Loan EMI Planner</h2>
-            <p class="text-slate-500">Calculate repayments and mortgage tax benefits.</p>
-            </div>
-
-        <div class="mt-20 border-t border-slate-200 dark:border-slate-800 pt-10">
-            <h3 class="text-xl font-bold mb-4">Glossary & Definitions</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-500">
-                <p><b>SIP:</b> Systematic Investment Plan. Uses Dollar/Rupee Cost Averaging to mitigate market volatility.</p>
-                <p><b>FIRE:</b> Financial Independence, Retire Early. Reaching a corpus 25x your annual expenses.</p>
-                <p><b>Section 80C:</b> Indian Tax Code allowing deductions up to ₹1.5 Lakhs for SIPs (ELSS) and Loan Principals.</p>
-                <p><b>Section 24(b):</b> Deduction on Home Loan Interest up to ₹2 Lakhs per annum.</p>
+            <div class="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden shadow-sm border dark:border-slate-800">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50 dark:bg-slate-800">
+                        <tr><th class="p-4">Year</th><th class="p-4">Invested</th><th class="p-4">Returns</th><th class="p-4">Total</th></tr>
+                    </thead>
+                    <tbody id="breakdown_body"></tbody>
+                </table>
             </div>
         </div>
     </main>
 
     <script>
         let sipChart;
-
         function showTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('btn-'+id).classList.add('active');
-            calculateSip();
         }
 
         async function calculateSip() {
-            const p = document.getElementById('sip_p').value;
-            const r = document.getElementById('sip_r').value;
-            const t = document.getElementById('sip_t').value;
-            
-            // UI Updates
-            document.getElementById('v_sip_p').innerText = Number(p).toLocaleString();
-            document.getElementById('v_sip_r').innerText = r;
-            document.getElementById('v_sip_t').innerText = t;
+            const params = {
+                type: 'sip',
+                p: document.getElementById('sip_p').value,
+                r: 12, // Assume 12% for example
+                t: 10, // Assume 10 years
+                taxSlab: document.getElementById('taxSlab').value,
+                inflation: document.getElementById('inflation').value
+            };
+            document.getElementById('v_sip_p').innerText = Number(params.p).toLocaleString();
 
             const res = await fetch('/api/calculate', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ type: 'sip', p, r, t })
+                body: JSON.stringify(params)
             });
             const data = await res.json();
             
             document.getElementById('sip_res').innerText = "₹" + Number(data.value).toLocaleString('en-IN');
-            document.getElementById('sip_tax_display').innerText = "₹" + data.taxSaved.toLocaleString('en-IN');
+            document.getElementById('sip_real').innerText = "₹" + Number(data.inflationAdjustedValue).toLocaleString('en-IN');
+            document.getElementById('sip_tax').innerText = "₹" + data.taxSaved.toLocaleString('en-IN');
             
-            renderChart('sipChart', ['Invested', 'Earnings'], [data.invested, data.earnings], ['#cbd5e1', '#4f46e5']);
+            updateTable(params.p, 12, 10);
+            renderChart([data.invested, data.earnings]);
         }
 
-        function renderChart(id, labels, data, colors) {
-            if (sipChart) sipChart.destroy();
-            const ctx = document.getElementById(id).getContext('2d');
-            sipChart = new Chart(ctx, {
+        function updateTable(p, r, t) {
+            let html = "";
+            for(let i = 1; i <= t; i++) {
+                const inv = p * 12 * i;
+                const val = p * (((Math.pow(1 + (r/1200), i*12) - 1) / (r/1200)) * (1 + (r/1200)));
+                html += `<tr class="border-t dark:border-slate-800"><td class="p-4">Year ${i}</td><td class="p-4">₹${Math.round(inv).toLocaleString()}</td><td class="p-4 text-emerald-500">+₹${Math.round(val-inv).toLocaleString()}</td><td class="p-4 font-bold">₹${Math.round(val).toLocaleString()}</td></tr>`;
+            }
+            document.getElementById('breakdown_body').innerHTML = html;
+        }
+
+        function renderChart(data) {
+            if(sipChart) sipChart.destroy();
+            sipChart = new Chart(document.getElementById('sipChart'), {
                 type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{ data: data, backgroundColor: colors, borderWeight: 0 }]
-                },
-                options: { cutout: '75%', plugins: { legend: { display: false } } }
+                data: { labels: ['Invested', 'Earnings'], datasets: [{ data, backgroundColor: ['#e2e8f0', '#4f46e5'], borderWeight: 0 }] },
+                options: { cutout: '80%', plugins: { legend: { display: false } } }
             });
         }
 
         function toggleDarkMode() {
             document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            document.getElementById('theme-icon').innerText = isDark ? '☀️' : '🌙';
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
         }
 
-        // Event listeners
-        ['sip_p', 'sip_r', 'sip_t'].forEach(id => {
-            document.getElementById(id).addEventListener('input', calculateSip);
-        });
-
         window.onload = () => {
-            if(localStorage.getItem('theme') === 'dark') toggleDarkMode();
+            if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
             calculateSip();
         };
     </script>
