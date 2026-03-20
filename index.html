@@ -1221,24 +1221,35 @@ async function loadTickerData(mode){
 function renderTicker(mode,tickers){
   const track=document.getElementById('ticker-track');
   if(!track) return;
-  const borderColor=mode==='india'?'rgba(201,168,76,.1)':'rgba(79,142,247,.15)';
-  document.getElementById('live-ticker').style.borderBottomColor=borderColor;
+  const isIndia=mode==='india';
+  const ticker=document.getElementById('live-ticker');
+  ticker.style.borderBottomColor=isIndia?'rgba(201,168,76,.15)':'rgba(79,142,247,.2)';
+  ticker.style.background='#0e0e14';
   const items=tickers.filter(t=>t.ok).map(t=>{
-    const color=t.up?'#4ade80':'#f87171';
-    const arrow=t.up?'▲':'▼';
+    const up=t.up;
+    const color=up?'#22C55E':'#EF4444';
+    const bgCol=up?'rgba(34,197,94,.1)':'rgba(239,68,68,.1)';
+    const borderCol=up?'rgba(34,197,94,.25)':'rgba(239,68,68,.25)';
+    const arrow=up?'▲':'▼';
     const val=fmtTickerVal(t.value,t.label,mode);
-    const pct=(t.up?'+':'')+t.pct+'%';
-    return '<div style="display:inline-flex;align-items:center;gap:10px;padding:0 24px;border-right:1px solid rgba(255,255,255,.05);height:44px;">'
-      +'<span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#9090A8;font-family:\'DM Sans\',sans-serif;">'+t.label+'</span>'
-      +'<span style="font-size:12px;font-weight:600;color:#F5F0E8;font-family:\'DM Mono\',monospace;">'+val+'</span>'
-      +'<span style="font-size:10px;font-weight:600;color:'+color+';font-family:\'DM Mono\',monospace;">'+arrow+' '+pct+'</span>'
+    const pct=(up?'+':'')+t.pct+'%';
+    return '<div style="display:inline-flex;align-items:center;padding:0 18px 0 16px;border-right:1px solid rgba(255,255,255,.05);height:44px;">'
+      +'<span style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6b7280;font-family:\'DM Sans\',sans-serif;margin-right:9px;">'+t.label+'</span>'
+      +'<span style="font-size:13.5px;font-weight:600;color:#F0EDE6;font-family:\'DM Mono\',monospace;letter-spacing:-.4px;margin-right:7px;">'+val+'</span>'
+      +'<span style="display:inline-flex;align-items:center;gap:2px;background:'+bgCol+';border:1px solid '+borderCol+';border-radius:4px;padding:2px 7px;">'
+        +'<span style="font-size:7.5px;line-height:1;color:'+color+';">'+arrow+'</span>'
+        +'<span style="font-size:10.5px;font-weight:700;color:'+color+';font-family:\'DM Mono\',monospace;letter-spacing:-.2px;">'+pct+'</span>'
+      +'</span>'
       +'</div>';
   }).join('');
   if(!items){
     track.innerHTML='<div style="padding:0 20px;font-size:11px;color:#6b7280;line-height:44px;">Loading market data…</div>';
     return;
   }
-  track.innerHTML=items+items;
+  const badge=isIndia
+    ?'<div style="display:inline-flex;align-items:center;padding:0 16px;height:44px;border-right:1px solid rgba(201,168,76,.2);flex-shrink:0;"><span style="font-size:9px;font-weight:800;letter-spacing:2px;color:#C9A84C;font-family:\'DM Sans\',sans-serif;">🇮🇳 LIVE</span></div>'
+    :'<div style="display:inline-flex;align-items:center;padding:0 16px;height:44px;border-right:1px solid rgba(99,102,241,.2);flex-shrink:0;"><span style="font-size:9px;font-weight:800;letter-spacing:2px;color:#818cf8;font-family:\'DM Sans\',sans-serif;">🌍 LIVE</span></div>';
+  track.innerHTML=badge+items+badge+items;
   startTickerScroll(track);
 }
 
