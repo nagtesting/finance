@@ -8,14 +8,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ===== VARIABLES ===== */
 :root{
   --gold:#C9A84C;--gold-light:#E8C97A;--cream:#F5F0E8;
   --dark:#0A0A0F;--dark2:#111118;--dark3:#18181F;--dark4:#22222C;
   --muted:#9090A8;--green:#22C55E;--red:#EF4444;--blue:#6366F1;
-  --sidebar-w:256px;
-  --topbar-h:56px;
-  --bottomnav-h:62px;
+  --sidebar-w:264px;--topbar-h:56px;--bottomnav-h:62px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
@@ -23,262 +20,182 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:var(--dark2);}
 ::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
-
-/* ===== NOISE ===== */
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9998;opacity:.5;}
 
-/* ===== LAYOUT ===== */
 .app{display:flex;height:100vh;height:100dvh;overflow:hidden;}
 
-/* ===== SIDEBAR (desktop) ===== */
 #sidebar{
   width:var(--sidebar-w);min-width:var(--sidebar-w);
   background:var(--dark2);border-right:1px solid rgba(201,168,76,.15);
   display:flex;flex-direction:column;height:100vh;height:100dvh;
-  position:sticky;top:0;overflow-y:auto;
-  transition:transform .3s ease;
-  z-index:200;
+  position:sticky;top:0;overflow-y:auto;transition:transform .3s ease;z-index:200;
 }
-
-/* ===== MAIN AREA ===== */
 #main{flex:1;display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;min-width:0;}
 #main-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
 
-/* ===== MOBILE TOP BAR ===== */
 #topbar{
   display:none;height:var(--topbar-h);
   background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.15);
-  padding:0 16px;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:150;flex-shrink:0;
+  padding:0 14px;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:150;flex-shrink:0;gap:10px;
 }
-#menu-btn{
-  width:40px;height:40px;background:transparent;border:none;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;
-}
+#menu-btn{width:40px;height:40px;background:transparent;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;flex-shrink:0;}
 #menu-btn span{display:block;width:22px;height:2px;background:var(--cream);border-radius:2px;transition:all .3s;}
 
-/* ===== MOBILE DRAWER OVERLAY ===== */
-#drawer-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
-  z-index:190;opacity:0;transition:opacity .3s;backdrop-filter:blur(4px);
-}
+#drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:190;opacity:0;transition:opacity .3s;backdrop-filter:blur(4px);}
 #drawer-overlay.open{opacity:1;}
 
-/* ===== MOBILE BOTTOM NAV ===== */
 #bottom-nav{
   display:none;height:var(--bottomnav-h);
   background:var(--dark2);border-top:1px solid rgba(201,168,76,.15);
-  padding:0 4px 8px;align-items:flex-end;
-  position:sticky;bottom:0;z-index:150;flex-shrink:0;
-  overflow-x:auto;
+  padding:0 2px 8px;align-items:flex-end;
+  position:sticky;bottom:0;z-index:150;flex-shrink:0;overflow-x:auto;
 }
 .bnav-item{
-  flex:1;min-width:56px;min-height:44px;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:3px;padding:8px 4px 4px;border-radius:10px;
+  flex:1;min-width:48px;min-height:44px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;padding:8px 2px 4px;border-radius:10px;
   cursor:pointer;transition:all .2s;border:none;background:transparent;
   color:var(--muted);font-family:'DM Sans',sans-serif;
-  -webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
 }
 .bnav-item.active{color:var(--gold-light);}
-.bnav-item .bnav-icon{font-size:18px;line-height:1;}
-.bnav-item .bnav-label{font-size:9px;font-weight:600;letter-spacing:.3px;white-space:nowrap;}
-.bnav-indicator{
-  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-  width:4px;height:4px;border-radius:50%;background:var(--gold);
-  opacity:0;transition:opacity .2s;
-}
+.bnav-item .bnav-icon{font-size:17px;line-height:1;}
+.bnav-item .bnav-label{font-size:8px;font-weight:600;letter-spacing:.3px;white-space:nowrap;}
+.bnav-indicator{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold);opacity:0;transition:opacity .2s;}
 .bnav-item.active .bnav-indicator{opacity:1;}
 
-/* ===== SIDEBAR INTERNALS ===== */
+/* ===== MODE SELECTOR — 4 options ===== */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:12px;}
+.mode-btn{
+  padding:6px 8px;border-radius:8px;font-size:10px;font-weight:700;
+  cursor:pointer;border:1px solid rgba(255,255,255,.08);background:transparent;
+  transition:all .25s;color:var(--muted);font-family:'DM Sans',sans-serif;
+  text-align:center;line-height:1.3;
+}
+.mode-btn:hover{border-color:rgba(255,255,255,.15);color:var(--cream);}
+.mode-btn.active-india{background:rgba(255,107,53,.15);border-color:rgba(255,107,53,.4);color:#FF8C5A;}
+.mode-btn.active-usa{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4);color:#60a5fa;}
+.mode-btn.active-europe{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4);color:#a5b4fc;}
+.mode-btn.active-world{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3);color:#4ade80;}
+
+/* Mobile top-bar mode — compact row */
+.mob-mode-row{display:flex;gap:3px;}
+.mob-mode-btn{
+  padding:4px 7px;border-radius:6px;font-size:9px;font-weight:700;
+  cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;
+  color:var(--muted);font-family:'DM Sans',sans-serif;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.mob-mode-btn.active-india{background:rgba(255,107,53,.2);border-color:rgba(255,107,53,.5);color:#FF8C5A;}
+.mob-mode-btn.active-usa{background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.5);color:#60a5fa;}
+.mob-mode-btn.active-europe{background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.5);color:#a5b4fc;}
+.mob-mode-btn.active-world{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4);color:#4ade80;}
+
+.mode-banner{padding:6px 20px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:all .4s;flex-shrink:0;}
+.mode-banner.india{background:rgba(255,107,53,.08);border-bottom:1px solid rgba(255,107,53,.15);color:#FF8C5A;}
+.mode-banner.usa{background:rgba(59,130,246,.08);border-bottom:1px solid rgba(59,130,246,.15);color:#60a5fa;}
+.mode-banner.europe{background:rgba(99,102,241,.08);border-bottom:1px solid rgba(99,102,241,.15);color:#a5b4fc;}
+.mode-banner.world{background:rgba(34,197,94,.07);border-bottom:1px solid rgba(34,197,94,.15);color:#4ade80;}
+
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;border-radius:8px;cursor:pointer;transition:all .2s;font-size:13px;font-weight:500;color:var(--muted);border-left:3px solid transparent;margin:1px 10px;}
 .nav-item:hover{background:rgba(201,168,76,.07);color:var(--cream);}
 .nav-item.active{background:rgba(201,168,76,.12);color:var(--gold-light);border-left:3px solid var(--gold);}
 
-/* ===== MODE TOGGLE ===== */
-.mode-toggle{display:flex;align-items:center;background:var(--dark4);border:1px solid rgba(201,168,76,.2);border-radius:100px;padding:3px;gap:2px;}
-.mode-btn{padding:5px 14px;border-radius:100px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:transparent;transition:all .25s;color:var(--muted);}
-.mode-btn.active-india{background:linear-gradient(135deg,#FF6B35,#FF8C5A);color:#fff;box-shadow:0 2px 10px rgba(255,107,53,.3);}
-.mode-btn.active-world{background:linear-gradient(135deg,#4f8ef7,#7cb5ff);color:#fff;box-shadow:0 2px 10px rgba(79,142,247,.3);}
-
-/* ===== MODE BANNER ===== */
-.mode-banner{padding:7px 20px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:all .4s;flex-shrink:0;}
-.mode-banner.india{background:rgba(255,107,53,.08);border-bottom:1px solid rgba(255,107,53,.15);color:#FF8C5A;}
-.mode-banner.world{background:rgba(79,142,247,.08);border-bottom:1px solid rgba(79,142,247,.15);color:#7cb5ff;}
-
-/* ===== TICKER ===== */
-.tv-ticker{flex-shrink:0;}
-
-/* ===== TYPOGRAPHY ===== */
 .display{font-family:'Playfair Display',serif;}
 .mono{font-family:'DM Mono',monospace;}
 .section-eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
 .gold-line{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
 
-/* ===== CARDS ===== */
 .card{background:var(--dark3);border:1px solid rgba(201,168,76,.12);border-radius:14px;padding:20px;transition:border-color .3s;}
 .card:hover{border-color:rgba(201,168,76,.26);}
 .result-box{background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.03));border:1px solid rgba(201,168,76,.25);border-radius:10px;padding:16px;text-align:center;}
 
-/* ===== BIG NUMBER ===== */
 .big-number{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:900;color:var(--gold-light);line-height:1;letter-spacing:-1px;}
 
-/* ===== GRIDS — RESPONSIVE ===== */
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 .grid-2-1{display:grid;grid-template-columns:1.2fr 0.8fr;gap:18px;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 
-/* ===== RANGE INPUTS ===== */
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--dark4);border-radius:2px;outline:none;margin-top:10px;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 0 3px rgba(201,168,76,.2);}
 
-/* ===== BADGES ===== */
 .badge-green{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.2);border-radius:100px;padding:2px 9px;font-size:10px;font-weight:600;}
 .badge-red{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.2);border-radius:100px;padding:2px 9px;font-size:10px;font-weight:600;}
 .badge-gold{background:rgba(201,168,76,.12);color:var(--gold-light);border:1px solid rgba(201,168,76,.2);border-radius:100px;padding:2px 9px;font-size:10px;font-weight:600;}
 .stat-pill{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);border-radius:100px;padding:3px 12px;font-size:11px;color:var(--gold-light);font-weight:600;}
 
-/* ===== PROGRESS ===== */
 .progress-bar{height:5px;background:var(--dark4);border-radius:3px;overflow:hidden;}
 .progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light));transition:width .6s ease;}
 
-/* ===== TABLE ===== */
 table{width:100%;border-collapse:collapse;}
 th{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06);}
 td{padding:10px 12px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.04);}
 tr:hover td{background:rgba(255,255,255,.02);}
 
-/* ===== BUTTONS ===== */
 .btn-outline{background:transparent;color:var(--gold-light);font-weight:600;padding:8px 18px;border-radius:8px;border:1px solid rgba(201,168,76,.35);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;transition:all .2s;}
 .btn-outline:hover,.btn-outline:active{background:rgba(201,168,76,.1);}
 
-/* ===== EDU CARD ===== */
 .edu-card{background:var(--dark3);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:18px;transition:all .3s;cursor:pointer;}
 .edu-card:hover{border-color:var(--gold);transform:translateY(-2px);}
 
-/* ===== CHART ===== */
 .chart-wrap{position:relative;max-width:190px;margin:0 auto;}
 .chart-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
 
-/* ===== COMPARE BAR ===== */
 .compare-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
 .compare-label{width:130px;font-size:11px;color:var(--muted);flex-shrink:0;}
 .compare-bar{flex:1;height:7px;background:var(--dark4);border-radius:4px;overflow:hidden;}
 .compare-fill{height:100%;border-radius:4px;transition:width .8s ease;}
 .compare-val{width:70px;text-align:right;font-size:11px;font-family:'DM Mono',monospace;color:var(--gold-light);}
 
-/* ===== MILESTONE ===== */
 .milestone{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);}
 .milestone:last-child{border-bottom:none;}
 .milestone-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);margin-top:4px;flex-shrink:0;box-shadow:0 0 7px rgba(201,168,76,.5);}
 
-/* ===== TABS ===== */
 .tab{display:none;padding:24px 20px;max-width:1100px;}.tab.active{display:block;}
 
-/* ===== ACCORDION ===== */
 .accordion-content{max-height:0;overflow:hidden;transition:max-height .4s ease;}
 .accordion-content.open{max-height:500px;}
 
-/* ===== LIVE DOT ===== */
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 .live-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block;animation:pulse 2s infinite;}
 
-/* ===== SKELETON ===== */
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 .sb-skeleton{height:16px;border-radius:4px;margin-bottom:8px;background:linear-gradient(90deg,var(--dark4) 25%,var(--dark3) 50%,var(--dark4) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}
 
-/* ===== NUM INPUT ===== */
 .num-input{background:var(--dark4);border:1px solid rgba(201,168,76,.2);border-radius:8px;color:var(--cream);padding:10px 14px;font-family:'DM Mono',monospace;font-size:14px;width:100%;outline:none;}
 .num-input:focus{border-color:var(--gold);}
 
-/* ===== FADE IN ===== */
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 .fade-in{animation:fadeUp .4s ease forwards;}
 .d1{animation-delay:.1s;opacity:0;}.d2{animation-delay:.2s;opacity:0;}
 
-/* ===================================================
-   RESPONSIVE — MOBILE (≤ 768px)
-   =================================================== */
+/* ===== MOBILE ===== */
 @media(max-width:768px){
-  /* Show mobile UI, hide desktop sidebar */
-  #sidebar{
-    position:fixed;left:0;top:0;height:100vh;height:100dvh;
-    transform:translateX(-100%);
-    box-shadow:4px 0 40px rgba(0,0,0,.5);
-  }
+  #sidebar{position:fixed;left:0;top:0;height:100vh;height:100dvh;transform:translateX(-100%);box-shadow:4px 0 40px rgba(0,0,0,.5);}
   #sidebar.open{transform:translateX(0);}
   #topbar{display:flex;}
   #bottom-nav{display:flex;}
   #drawer-overlay{display:block;}
-
-  /* Full-height stack */
-  .app{
-    flex-direction:column;
-    height:100vh;
-    height:100dvh;
-    overflow:hidden;
-  }
-
-  #main{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    height:100vh;
-    height:100dvh;
-    overflow:hidden;
-  }
-
-  #main-scroll{
-    flex:1;
-    overflow-y:auto;
-    overflow-x:hidden;
-    -webkit-overflow-scrolling:touch;
-    padding-bottom:16px;
-  }
-
-  /* Typography scale down */
+  .app{flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
+  #main{flex:1;display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
+  #main-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:16px;}
   .big-number{font-size:2rem;}
   .tab{padding:16px 14px;}
   h1.display{font-size:1.8rem !important;}
-
-  /* Grids collapse to single column */
   .grid-3{grid-template-columns:1fr;}
   .grid-2-1{grid-template-columns:1fr;}
   .grid-2{grid-template-columns:1fr;}
-
-  /* Cards tighten up */
   .card{padding:16px;}
   .result-box{padding:14px;}
-
-  /* Mode banner compact */
-  .mode-banner{padding:6px 14px;font-size:9px;}
-
-  /* Table horizontal scroll */
+  .mode-banner{padding:5px 14px;font-size:8px;}
   .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-
-  /* Compare label shorten */
   .compare-label{width:90px;}
   .compare-val{width:58px;}
-
-  /* Chart smaller on mobile */
   .chart-wrap{max-width:150px;}
-
-  /* Hide tooltip on mobile (no hover) */
-  .tooltip::after{display:none;}
-
-  /* edu cards single col */
   .edu-3{grid-template-columns:1fr !important;}
-
-  /* Better tap targets for bottom nav */
-  .bnav-item{
-    min-height:44px;
-    padding:8px 4px 4px;
-  }
 }
-
-/* Tablet (769–1024px) */
 @media(min-width:769px) and (max-width:1024px){
-  :root{--sidebar-w:220px;}
+  :root{--sidebar-w:230px;}
   .grid-3{grid-template-columns:repeat(2,1fr);}
   .tab{padding:28px 24px;}
   .big-number{font-size:2.3rem;}
@@ -288,36 +205,38 @@ tr:hover td{background:rgba(255,255,255,.02);}
 <body>
 <div class="app">
 
-<!-- ======== MOBILE TOP BAR ======== -->
+<!-- MOBILE TOP BAR -->
 <div id="topbar">
   <button id="menu-btn" onclick="toggleDrawer()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
-  <div class="display" style="font-size:17px;font-weight:900;letter-spacing:-.3px;">
+  <div class="display" style="font-size:16px;font-weight:900;letter-spacing:-.3px;flex-shrink:0;">
     WEALTH<span style="color:var(--gold);">HUB</span>
   </div>
-  <!-- Mobile mode toggle in topbar -->
-  <div class="mode-toggle">
-    <button class="mode-btn active-india" id="mob-toggle-india" onclick="setMode('india')">🇮🇳</button>
-    <button class="mode-btn" id="mob-toggle-world" onclick="setMode('world')">🌍</button>
+  <div class="mob-mode-row">
+    <button class="mob-mode-btn active-india" id="mob-btn-india" onclick="setMode('india')">🇮🇳</button>
+    <button class="mob-mode-btn" id="mob-btn-usa" onclick="setMode('usa')">🇺🇸</button>
+    <button class="mob-mode-btn" id="mob-btn-europe" onclick="setMode('europe')">🇪🇺</button>
+    <button class="mob-mode-btn" id="mob-btn-world" onclick="setMode('world')">🌍</button>
   </div>
 </div>
 
-<!-- ======== DRAWER OVERLAY ======== -->
 <div id="drawer-overlay" onclick="closeDrawer()"></div>
 
-<!-- ======== SIDEBAR ======== -->
+<!-- SIDEBAR -->
 <nav id="sidebar">
-  <div style="padding:22px 18px 16px;">
+  <div style="padding:20px 18px 14px;">
     <div class="display" style="font-size:18px;font-weight:900;letter-spacing:-.5px;">
       WEALTH<span style="color:var(--gold);">HUB</span>
     </div>
     <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:2px;">Pro Finance Suite</div>
-    <div style="margin-top:16px;">
-      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;">Market Mode</div>
-      <div class="mode-toggle">
-        <button class="mode-btn active-india" id="toggle-india" onclick="setMode('india')">🇮🇳 India</button>
-        <button class="mode-btn" id="toggle-world" onclick="setMode('world')">🌍 World</button>
+    <div style="margin-top:14px;">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;">Market Region</div>
+      <div class="mode-grid">
+        <button class="mode-btn active-india" id="desk-btn-india" onclick="setMode('india')">🇮🇳 India</button>
+        <button class="mode-btn" id="desk-btn-usa" onclick="setMode('usa')">🇺🇸 USA</button>
+        <button class="mode-btn" id="desk-btn-europe" onclick="setMode('europe')">🇪🇺 Europe</button>
+        <button class="mode-btn" id="desk-btn-world" onclick="setMode('world')">🌍 World</button>
       </div>
     </div>
   </div>
@@ -326,18 +245,17 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
   <div style="padding:12px 0;flex:1;overflow-y:auto;">
     <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 20px 5px;">Calculators</div>
-    <div class="nav-item active" id="btn-sip"       onclick="navTo('sip')">📈 SIP & Wealth Growth</div>
-    <div class="nav-item"        id="btn-emi"       onclick="navTo('emi')">🏠 EMI & Mortgage</div>
-    <div class="nav-item"        id="btn-fire"      onclick="navTo('fire')">🔥 FIRE Retirement</div>
-    <div class="nav-item"        id="btn-roi"       onclick="navTo('roi')">💹 ROI & Compound</div>
-    <div class="nav-item"        id="btn-insurance" onclick="navTo('insurance')">🛡️ Insurance Planner</div>
-    <div class="nav-item"        id="btn-tax"       onclick="navTo('tax')">📋 Tax Optimizer</div>
+    <div class="nav-item active" id="btn-sip"       onclick="navTo('sip')">📈 Investment Planner</div>
+    <div class="nav-item"       id="btn-emi"        onclick="navTo('emi')">🏠 Loan & Mortgage</div>
+    <div class="nav-item"       id="btn-fire"       onclick="navTo('fire')">🔥 FIRE Retirement</div>
+    <div class="nav-item"       id="btn-roi"        onclick="navTo('roi')">💹 ROI & Compound</div>
+    <div class="nav-item"       id="btn-insurance"  onclick="navTo('insurance')">🛡️ Insurance Planner</div>
+    <div class="nav-item"       id="btn-tax"        onclick="navTo('tax')">📋 Tax Optimizer</div>
     <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">Learn</div>
     <div class="nav-item" id="btn-edu"      onclick="navTo('edu')">🎓 Financial Academy</div>
     <div class="nav-item" id="btn-glossary" onclick="navTo('glossary')">📖 Glossary</div>
   </div>
 
-  <!-- Live market panel -->
   <div style="padding:14px 18px;border-top:1px solid rgba(201,168,76,.1);">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
       <div style="display:flex;align-items:center;gap:5px;">
@@ -355,11 +273,10 @@ tr:hover td{background:rgba(255,255,255,.02);}
   </div>
 </nav>
 
-<!-- ======== MAIN ======== -->
+<!-- MAIN -->
 <div id="main">
-  <div class="mode-banner india" id="mode-banner">🇮🇳 &nbsp;India Mode — INR · NSE/BSE · Indian Tax Laws</div>
+  <div class="mode-banner india" id="mode-banner">🇮🇳 &nbsp;India — INR · NSE/BSE · Indian Tax Laws</div>
 
-  <!-- Custom Live Ticker -->
   <div id="live-ticker" style="background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.1);overflow:hidden;height:44px;position:relative;flex-shrink:0;">
     <div id="ticker-track" style="display:flex;align-items:center;height:100%;position:absolute;white-space:nowrap;will-change:transform;"></div>
   </div>
@@ -370,24 +287,24 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <div id="sip" class="tab active">
     <div class="fade-in">
       <div class="section-eyebrow" id="sip-eyebrow">SIP · India</div>
-      <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">SIP Wealth Calculator</h1>
+      <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;" id="sip-title">Investment Planner</h1>
       <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;max-width:500px;" id="sip-desc">Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.</p>
     </div>
 
     <div class="grid-3 fade-in d1" style="margin-bottom:20px;">
       <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);">
         <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Corpus</div>
-        <div class="big-number" id="sip_total">₹0</div>
+        <div class="big-number" id="sip_total">—</div>
         <div class="stat-pill" style="margin-top:8px;display:inline-block;" id="sip_xbadge">0x</div>
       </div>
       <div class="result-box">
         <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Amount Invested</div>
-        <div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="sip_invested">₹0</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="sip_invested">—</div>
         <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="sip_inv_note">—</div>
       </div>
       <div class="result-box">
         <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Wealth Gained</div>
-        <div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="sip_gains">₹0</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="sip_gains">—</div>
         <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="sip_gain_pct">0% gains</div>
       </div>
     </div>
@@ -397,8 +314,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
         <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;margin-bottom:18px;">PARAMETERS</div>
         <div style="margin-bottom:20px;">
           <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <label style="font-size:12px;color:var(--muted);" id="sip-p-label">Monthly SIP</label>
-            <span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_p">₹25,000</span>
+            <label style="font-size:12px;color:var(--muted);" id="sip-p-label">Monthly Investment</label>
+            <span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_p">—</span>
           </div>
           <input type="range" id="sip_p" min="500" max="200000" step="500" value="25000">
         </div>
@@ -418,11 +335,11 @@ tr:hover td{background:rgba(255,255,255,.02);}
           <input type="range" id="sip_t" min="1" max="40" step="1" value="15">
         </div>
         <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:12px;">
-          <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;" id="sip-tax-label">Tax Saved (80C/ELSS)</div>
-          <div style="font-size:1.3rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--gold-light);" id="sip_tax">₹0</div>
+          <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;" id="sip-tax-label">Tax Benefit</div>
+          <div style="font-size:1.3rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--gold-light);" id="sip_tax">—</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:3px;" id="sip-tax-note">—</div>
         </div>
       </div>
-
       <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
         <div class="section-eyebrow" style="text-align:center;">Corpus Breakdown</div>
         <div class="chart-wrap">
@@ -455,34 +372,34 @@ tr:hover td{background:rgba(255,255,255,.02);}
     </div>
 
     <div class="edu-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-      <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">⚡</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Start Early</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" id="edu-sip-1">₹5,000/month at 25 = ₹3.52 Cr by 60. At 35, same SIP = only ₹1.17 Cr. Compounding rewards the early bird by 3x.</p></div>
+      <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">⚡</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Start Early</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" id="edu-sip-1">Time in market beats timing the market. Every decade of delay roughly halves your final corpus.</p></div>
       <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">📐</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Rule of 72</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">Divide 72 by return rate = doubling time. At 12%, money doubles every 6 years.</p></div>
-      <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">📊</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;" id="edu-sip-3-title">Rupee Cost Averaging</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" id="edu-sip-3">SIPs buy more units when markets fall and fewer when high — automatically lowering average cost.</p></div>
+      <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">📊</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;" id="edu-sip-3-title">Cost Averaging</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" id="edu-sip-3">Regular investing buys more units when prices fall and fewer when high — automatically lowering average cost.</p></div>
     </div>
   </div>
 
   <!-- ====== EMI TAB ====== -->
   <div id="emi" class="tab">
-    <div class="section-eyebrow" id="emi-eyebrow">Loan Planning · India</div>
-    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">EMI & Mortgage Planner</h1>
-    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="emi-desc">Calculate EMI, total interest burden and Section 24(b) tax benefits on your home loan.</p>
+    <div class="section-eyebrow" id="emi-eyebrow">Loan Planning</div>
+    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;" id="emi-title">Loan & Mortgage Planner</h1>
+    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="emi-desc">Calculate monthly repayments, total interest burden and tax benefits on your home loan.</p>
 
     <div class="grid-3" style="margin-bottom:20px;">
-      <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Monthly EMI</div><div class="big-number" id="emi_monthly">₹0</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Interest</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="emi_interest">₹0</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Payment</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="emi_total">₹0</div></div>
+      <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" id="emi-monthly-label">Monthly EMI</div><div class="big-number" id="emi_monthly">—</div></div>
+      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Interest</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="emi_interest">—</div></div>
+      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Payment</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="emi_total">—</div></div>
     </div>
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
         <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">LOAN PARAMETERS</div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="emi-p-label">Loan Amount</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_p">₹50L</span></div><input type="range" id="emi_p" min="100000" max="20000000" step="100000" value="5000000"></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Interest Rate</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_r">8.5</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="emi_r" min="2" max="20" step="0.25" value="8.5"><div style="font-size:9px;color:var(--muted);margin-top:3px;text-align:center;" id="emi-rate-hint">SBI Home Loan ~8.25% (Mar 2026)</div></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="emi-p-label">Loan Amount</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_p">—</span></div><input type="range" id="emi_p" min="10000" max="20000000" step="10000" value="5000000"></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Interest Rate</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_r">8.5</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="emi_r" min="1" max="20" step="0.25" value="8.5"><div style="font-size:9px;color:var(--muted);margin-top:3px;text-align:center;" id="emi-rate-hint">SBI Home Loan ~8.25% (2026)</div></div>
         <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Tenure</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_t">20</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div><input type="range" id="emi_t" min="1" max="30" step="1" value="20"></div>
         <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15);border-radius:10px;padding:12px;">
-          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;" id="emi-tax-label">Tax Benefit Sec 24(b)</div>
-          <div style="font-size:1.2rem;font-weight:700;font-family:'DM Mono',monospace;color:#4ade80;" id="emi_tax_saved">₹0</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;" id="emi-tax-note">Up to ₹2L deduction/yr</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;" id="emi-tax-label">Tax Benefit</div>
+          <div style="font-size:1.2rem;font-weight:700;font-family:'DM Mono',monospace;color:#4ade80;" id="emi_tax_saved">—</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;" id="emi-tax-note">Loading…</div>
         </div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
@@ -493,9 +410,9 @@ tr:hover td{background:rgba(255,255,255,.02);}
           <div class="compare-row"><span class="compare-label">Interest</span><div class="compare-bar"><div class="compare-fill" id="emi_bar_i" style="width:50%;background:#ef4444;"></div></div><span class="compare-val" id="emi_pct_i">50%</span></div>
         </div>
         <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:8px;padding:10px;width:100%;text-align:center;">
-          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">Min income needed</div>
-          <div style="font-size:12px;color:var(--cream);">EMI &lt;40% of gross</div>
-          <div style="font-size:11px;color:var(--gold-light);margin-top:2px;" id="emi_income_req">₹0/mo</div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">Min income recommended</div>
+          <div style="font-size:12px;color:var(--cream);" id="emi-dti-label">EMI &lt;40% of gross</div>
+          <div style="font-size:11px;color:var(--gold-light);margin-top:2px;" id="emi_income_req">—</div>
         </div>
       </div>
     </div>
@@ -511,25 +428,25 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
   <!-- ====== FIRE TAB ====== -->
   <div id="fire" class="tab">
-    <div class="section-eyebrow" id="fire-eyebrow">Financial Independence · India</div>
+    <div class="section-eyebrow" id="fire-eyebrow">Financial Independence</div>
     <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">🔥 FIRE Calculator</h1>
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="fire-desc">Find your <strong style="color:var(--cream);">FIRE Number</strong> — the corpus that funds your lifestyle forever.</p>
 
     <div class="grid-3" style="margin-bottom:20px;">
-      <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">🎯 FIRE Corpus</div><div class="big-number" id="fire_corpus">₹0</div></div>
+      <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">🎯 FIRE Corpus</div><div class="big-number" id="fire_corpus">—</div></div>
       <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Years to FIRE</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="fire_years">0 yrs</div><div style="font-size:11px;margin-top:5px;color:var(--muted);" id="fire_year_label">—</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Safe Withdrawal/mo</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="fire_swr">₹0</div></div>
+      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Safe Withdrawal/mo</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="fire_swr">—</div></div>
     </div>
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
         <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">FIRE INPUTS</div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_age">30</span></div><input type="range" id="fire_age" min="20" max="55" value="30"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="fire-exp-label">Monthly Expenses</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_exp">₹75,000</span></div><input type="range" id="fire_exp" min="10000" max="500000" step="5000" value="75000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Savings</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_saved">₹25L</span></div><input type="range" id="fire_saved" min="0" max="50000000" step="100000" value="2500000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Monthly Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inv">₹50,000</span></div><input type="range" id="fire_inv" min="5000" max="300000" step="5000" value="50000"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="fire-exp-label">Monthly Expenses</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_exp">—</span></div><input type="range" id="fire_exp" min="500" max="30000" step="100" value="5000"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Savings</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_saved">—</span></div><input type="range" id="fire_saved" min="0" max="2000000" step="5000" value="100000"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Monthly Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inv">—</span></div><input type="range" id="fire_inv" min="100" max="20000" step="100" value="2000"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Portfolio Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_ret">10</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_ret" min="4" max="20" step="0.5" value="10"></div>
-        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Inflation</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inf">6</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_inf" min="2" max="12" step="0.5" value="6"></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Inflation</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inf">6</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_inf" min="1" max="12" step="0.5" value="6"></div>
       </div>
       <div class="card">
         <div class="section-eyebrow" style="margin-bottom:12px;">FIRE Journey</div>
@@ -546,19 +463,19 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
   <!-- ====== ROI TAB ====== -->
   <div id="roi" class="tab">
-    <div class="section-eyebrow" id="roi-eyebrow">Returns Analysis · India</div>
+    <div class="section-eyebrow" id="roi-eyebrow">Returns Analysis</div>
     <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">ROI & Compound Growth</h1>
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Compare investment vehicles and understand compound growth.</p>
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
         <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">LUMP SUM CALCULATOR</div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="roi-p-label">Initial Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_p">₹10L</span></div><input type="range" id="roi_p" min="10000" max="10000000" step="10000" value="1000000"></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="roi-p-label">Initial Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_p">—</span></div><input type="range" id="roi_p" min="1000" max="1000000" step="1000" value="100000"></div>
         <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Annual Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_r">12</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="roi_r" min="1" max="30" step="0.5" value="12"></div>
         <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Period</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_t">20</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div><input type="range" id="roi_t" min="1" max="50" step="1" value="20"></div>
         <div class="grid-3" style="margin-top:20px;gap:8px;">
-          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Final</div><div style="font-size:1.1rem;font-weight:800;color:var(--gold-light);font-family:'Playfair Display',serif;" id="roi_final">₹0</div></div>
-          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Returns</div><div style="font-size:1.1rem;font-weight:800;color:#4ade80;font-family:'Playfair Display',serif;" id="roi_returns">₹0</div></div>
+          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Final</div><div style="font-size:1.1rem;font-weight:800;color:var(--gold-light);font-family:'Playfair Display',serif;" id="roi_final">—</div></div>
+          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Returns</div><div style="font-size:1.1rem;font-weight:800;color:#4ade80;font-family:'Playfair Display',serif;" id="roi_returns">—</div></div>
           <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Multiplier</div><div style="font-size:1.1rem;font-weight:800;font-family:'Playfair Display',serif;" id="roi_mult">0x</div></div>
         </div>
       </div>
@@ -566,78 +483,52 @@ tr:hover td{background:rgba(255,255,255,.02);}
     </div>
 
     <div class="card">
-      <h3 style="font-size:14px;font-weight:700;margin-bottom:5px;" id="roi-compare-title">Asset Class Comparison — ₹1 Lakh, 20 Years</h3>
-      <p style="font-size:11px;color:var(--muted);margin-bottom:16px;">Historical averages</p>
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:5px;" id="roi-compare-title">Asset Class Comparison — 20 Years</h3>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:16px;" id="roi-compare-sub">Historical averages</p>
       <div id="asset_compare"></div>
     </div>
   </div>
 
   <!-- ====== INSURANCE TAB ====== -->
   <div id="insurance" class="tab">
-    <div class="section-eyebrow" id="ins-eyebrow">Protection Planning · India</div>
-    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">Life Insurance Planner</h1>
-    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="ins-desc">Calculate recommended cover using the HLV method.</p>
+    <div class="section-eyebrow" id="ins-eyebrow">Protection Planning</div>
+    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;" id="ins-title">Life Insurance Planner</h1>
+    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="ins-desc">Calculate recommended cover and explore local insurance products.</p>
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
         <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">YOUR PROFILE</div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-inc-label">Annual Income</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_inc">₹18L</span></div><input type="range" id="ins_inc" min="300000" max="10000000" step="100000" value="1800000"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-inc-label">Annual Income</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_inc">—</span></div><input type="range" id="ins_inc" min="10000" max="500000" step="5000" value="60000"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_age">32</span></div><input type="range" id="ins_age" min="18" max="55" value="32"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Retirement Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_ret">60</span></div><input type="range" id="ins_ret" min="55" max="70" value="60"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-liab-label">Liabilities</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_liab">₹30L</span></div><input type="range" id="ins_liab" min="0" max="20000000" step="100000" value="3000000"></div>
-        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Existing Cover</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_exist">₹0</span></div><input type="range" id="ins_exist" min="0" max="20000000" step="100000" value="0"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Retirement Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_ret">65</span></div><input type="range" id="ins_ret" min="55" max="70" value="65"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-liab-label">Liabilities</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_liab">—</span></div><input type="range" id="ins_liab" min="0" max="500000" step="5000" value="100000"></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Existing Cover</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_exist">—</span></div><input type="range" id="ins_exist" min="0" max="500000" step="5000" value="0"></div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;gap:12px;">
-        <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Recommended Cover</div><div class="big-number" id="ins_cover">₹0</div></div>
-        <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Coverage Gap</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="ins_gap">₹0</div></div>
+        <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Recommended Cover</div><div class="big-number" id="ins_cover">—</div></div>
+        <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Coverage Gap</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="ins_gap">—</div></div>
         <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:12px;">
-          <div style="font-size:9px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:1px;" id="ins-premium-label">Est. Term Premium/yr</div>
-          <div style="font-size:1.2rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--gold-light);" id="ins_premium">₹0</div>
-          <div style="font-size:9px;color:var(--muted);margin-top:2px;" id="ins-premium-note">30-year term plan (approx)</div>
+          <div style="font-size:9px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:1px;" id="ins-premium-label">Est. Premium/yr</div>
+          <div style="font-size:1.2rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--gold-light);" id="ins_premium">—</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:2px;" id="ins-premium-note">Term plan estimate</div>
         </div>
       </div>
+    </div>
+
+    <!-- Local products panel — populated by JS -->
+    <div class="card" id="ins-local-panel">
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;" id="ins-local-title">Popular Products</h3>
+      <div id="ins-local-content"></div>
     </div>
   </div>
 
   <!-- ====== TAX TAB ====== -->
   <div id="tax" class="tab">
-    <div class="section-eyebrow" id="tax-eyebrow">Tax Optimization · India</div>
+    <div class="section-eyebrow" id="tax-eyebrow">Tax Optimization</div>
     <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;" id="tax-title">Tax Optimizer</h1>
-    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="tax-desc">Compare Old vs New regime (FY2025-26) and maximize deductions.</p>
-
-    <div id="tax-india-section">
-      <div class="grid-2-1" style="margin-bottom:20px;">
-        <div class="card">
-          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">INCOME & DEDUCTIONS</div>
-          <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Gross Annual Income (CTC)</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_inc">₹18L</span></div><input type="range" id="tax_inc" min="500000" max="10000000" step="50000" value="1800000"></div>
-          <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80C (ELSS, PPF, LIC…)</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_80c">₹1.5L</span></div><input type="range" id="tax_80c" min="0" max="150000" step="5000" value="150000"></div>
-          <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80D Health Insurance</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_80d">₹25K</span></div><input type="range" id="tax_80d" min="0" max="75000" step="5000" value="25000"></div>
-          <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">24(b) Home Loan Interest</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_hl">₹0</span></div><input type="range" id="tax_hl" min="0" max="200000" step="5000" value="0"></div>
-          <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80CCD(1B) NPS Extra</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_nps">₹50K</span></div><input type="range" id="tax_nps" min="0" max="50000" step="5000" value="50000"></div>
-        </div>
-        <div class="card">
-          <div class="section-eyebrow" style="margin-bottom:14px;">Regime Comparison</div>
-          <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">Old Regime Tax</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;color:var(--gold-light);" id="tax_old">₹0</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_old_eff">Eff: 0%</div></div>
-          <div class="gold-line" style="margin:12px 0;"></div>
-          <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">New Regime Tax</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;" id="tax_new">₹0</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_new_eff">Eff: 0%</div></div>
-          <div class="gold-line" style="margin:12px 0;"></div>
-          <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:12px;">
-            <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Best Regime</div>
-            <div style="font-size:1rem;font-weight:800;color:#4ade80;" id="tax_rec">—</div>
-            <div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_saving">You save ₹0</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="tax-world-section" style="display:none;">
-      <div class="grid-2">
-        <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇺🇸</div><h4 style="font-weight:700;margin-bottom:7px;">USA — Federal Tax 2026</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">7 brackets: 10%→37%. Standard deduction $15,000. 401(k) limit $23,500/yr. LTCG: 0%/15%/20%.</p></div>
-        <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇬🇧</div><h4 style="font-weight:700;margin-bottom:7px;">UK — Income Tax 2025/26</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Personal allowance £12,570. Basic 20%. Higher 40%. ISA allowance £20,000/yr tax-free.</p></div>
-        <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇩🇪</div><h4 style="font-weight:700;margin-bottom:7px;">Germany — Einkommensteuer</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 0%→45%. Solidarity surcharge 5.5%. Capital gains 25% flat (Abgeltungsteuer).</p></div>
-        <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇸🇬</div><h4 style="font-weight:700;margin-bottom:7px;">Singapore — Low-Tax Hub</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 0–24%. No capital gains tax. No dividend tax. CPF 20% employee + 17% employer.</p></div>
-      </div>
-    </div>
+    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="tax-desc">Maximize deductions and compare tax regimes.</p>
+    <!-- Dynamically rendered by JS per region -->
+    <div id="tax-content"></div>
   </div>
 
   <!-- ====== EDU TAB ====== -->
@@ -646,7 +537,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">Master Your Money</h1>
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Structured learning for every stage of your wealth journey.</p>
     <div class="grid-3" style="margin-bottom:28px;">
-      <div style="background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.03));border:1px solid rgba(201,168,76,.3);border-radius:14px;padding:20px;"><span class="badge-gold" style="margin-bottom:12px;display:inline-block;">Beginner</span><h3 style="font-size:15px;font-weight:800;margin-bottom:6px;">Financial Foundation</h3><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Emergency fund, insurance, first SIP — the non-negotiables.</p><div style="font-size:10px;color:var(--muted);">6 modules · 45 min</div></div>
+      <div style="background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.03));border:1px solid rgba(201,168,76,.3);border-radius:14px;padding:20px;"><span class="badge-gold" style="margin-bottom:12px;display:inline-block;">Beginner</span><h3 style="font-size:15px;font-weight:800;margin-bottom:6px;">Financial Foundation</h3><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Emergency fund, insurance, first investment — the non-negotiables.</p><div style="font-size:10px;color:var(--muted);">6 modules · 45 min</div></div>
       <div style="background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.25);border-radius:14px;padding:20px;"><span class="badge-gold" style="background:rgba(99,102,241,.12);color:#818cf8;border-color:rgba(99,102,241,.25);margin-bottom:12px;display:inline-block;">Intermediate</span><h3 style="font-size:15px;font-weight:800;margin-bottom:6px;">Wealth Architect</h3><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Asset allocation, equity vs debt, tax-efficient investing.</p><div style="font-size:10px;color:var(--muted);">8 modules · 75 min</div></div>
       <div style="background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,197,94,.02));border:1px solid rgba(34,197,94,.2);border-radius:14px;padding:20px;"><span class="badge-green" style="margin-bottom:12px;display:inline-block;">Advanced</span><h3 style="font-size:15px;font-weight:800;margin-bottom:6px;">FIRE Mastermind</h3><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Retirement, withdrawal strategy, estate planning.</p><div style="font-size:10px;color:var(--muted);">10 modules · 90 min</div></div>
     </div>
@@ -670,53 +561,274 @@ tr:hover td{background:rgba(255,255,255,.02);}
   </div><!-- end main-scroll -->
 </div><!-- end main -->
 
-<!-- ======== MOBILE BOTTOM NAV ======== -->
+<!-- MOBILE BOTTOM NAV -->
 <nav id="bottom-nav">
-  <button class="bnav-item active" id="bnav-sip" onclick="navTo('sip')" style="position:relative;">
-    <span class="bnav-icon">📈</span><span class="bnav-label">SIP</span>
-    <span class="bnav-indicator"></span>
-  </button>
-  <button class="bnav-item" id="bnav-emi" onclick="navTo('emi')" style="position:relative;">
-    <span class="bnav-icon">🏠</span><span class="bnav-label">EMI</span>
-    <span class="bnav-indicator"></span>
-  </button>
-  <button class="bnav-item" id="bnav-fire" onclick="navTo('fire')" style="position:relative;">
-    <span class="bnav-icon">🔥</span><span class="bnav-label">FIRE</span>
-    <span class="bnav-indicator"></span>
-  </button>
-  <button class="bnav-item" id="bnav-roi" onclick="navTo('roi')" style="position:relative;">
-    <span class="bnav-icon">💹</span><span class="bnav-label">ROI</span>
-    <span class="bnav-indicator"></span>
-  </button>
-  <button class="bnav-item" id="bnav-insurance" onclick="navTo('insurance')" style="position:relative;">
-    <span class="bnav-icon">🛡️</span><span class="bnav-label">Insure</span>
-    <span class="bnav-indicator"></span>
-  </button>
-  <button class="bnav-item" id="bnav-tax" onclick="navTo('tax')" style="position:relative;">
-    <span class="bnav-icon">📋</span><span class="bnav-label">Tax</span>
-    <span class="bnav-indicator"></span>
-  </button>
-  <button class="bnav-item" id="bnav-edu" onclick="navTo('edu')" style="position:relative;">
-    <span class="bnav-icon">🎓</span><span class="bnav-label">Learn</span>
-    <span class="bnav-indicator"></span>
-  </button>
-  <button class="bnav-item" id="bnav-glossary" onclick="navTo('glossary')" style="position:relative;">
-    <span class="bnav-icon">📖</span><span class="bnav-label">Glossary</span>
-    <span class="bnav-indicator"></span>
-  </button>
+  <button class="bnav-item active" id="bnav-sip" onclick="navTo('sip')" style="position:relative;"><span class="bnav-icon">📈</span><span class="bnav-label">Invest</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-emi" onclick="navTo('emi')" style="position:relative;"><span class="bnav-icon">🏠</span><span class="bnav-label">Loan</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-fire" onclick="navTo('fire')" style="position:relative;"><span class="bnav-icon">🔥</span><span class="bnav-label">FIRE</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-roi" onclick="navTo('roi')" style="position:relative;"><span class="bnav-icon">💹</span><span class="bnav-label">ROI</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-insurance" onclick="navTo('insurance')" style="position:relative;"><span class="bnav-icon">🛡️</span><span class="bnav-label">Insure</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-tax" onclick="navTo('tax')" style="position:relative;"><span class="bnav-icon">📋</span><span class="bnav-label">Tax</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-edu" onclick="navTo('edu')" style="position:relative;"><span class="bnav-icon">🎓</span><span class="bnav-label">Learn</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-glossary" onclick="navTo('glossary')" style="position:relative;"><span class="bnav-icon">📖</span><span class="bnav-label">Glossary</span><span class="bnav-indicator"></span></button>
 </nav>
 
 </div><!-- end app -->
 
 <script>
 // ================================================================
-// DRAWER / MOBILE NAV
+// REGION CONFIG — all locale data in one place
+// ================================================================
+const REGIONS = {
+  india: {
+    flag:'🇮🇳', name:'India',
+    currency:'₹', code:'INR',
+    bannerClass:'india',
+    bannerText:'🇮🇳 &nbsp;India — INR · NSE/BSE · Indian Tax Laws',
+    // SIP
+    sipLabel:'Monthly SIP',
+    sipDefault:25000, sipMin:500, sipMax:200000, sipStep:500,
+    sipRateHint:'Nifty 50 hist. avg ~13%',
+    sipTaxLabel:'Tax Saved (80C/ELSS)',
+    sipTaxNote:'Up to ₹1.5L/yr deduction',
+    sipTaxCalc:(p,r,t)=>Math.min(p*12,150000)*0.30,
+    sipDesc:"Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.",
+    sipEdu1:'₹5,000/month at 25 = ₹3.5 Cr by 60. At 35, same SIP = only ₹1.2 Cr. Start early.',
+    sipEdu3:'Rupee Cost Averaging',
+    sipEdu3Desc:'SIPs buy more units when markets fall and fewer when high — automatically lowering average cost.',
+    // EMI
+    emiLabel:'Loan Amount',
+    emiDefault:5000000, emiMin:100000, emiMax:20000000, emiStep:100000,
+    emiRateDefault:8.5, emiRateHint:'SBI Home Loan ~8.25% (2026)',
+    emiTaxLabel:'Tax Benefit Sec 24(b)',
+    emiTaxNote:'Up to ₹2L deduction/yr',
+    emiTaxCalc:(totalInt,t)=>Math.min(totalInt/t,200000)*0.30,
+    emiDtiLabel:'EMI <40% of gross income',
+    emiMonthlyLabel:'Monthly EMI',
+    emiDesc:'Calculate EMI, total interest and Section 24(b) tax benefits on your home loan.',
+    // FIRE
+    fireExpDefault:75000, fireExpMin:10000, fireExpMax:500000, fireExpStep:5000,
+    fireSavedDefault:2500000, fireSavedMin:0, fireSavedMax:50000000, fireSavedStep:100000,
+    fireInvDefault:50000, fireInvMin:5000, fireInvMax:300000, fireInvStep:5000,
+    fireLeanMax:40000, fireFatMin:150000,
+    // ROI
+    roiDefault:1000000, roiMin:10000, roiMax:10000000, roiStep:10000,
+    roiAssets:[
+      {name:'Savings A/C',rate:3.5,color:'#64748b'},{name:'FD (5yr)',rate:7.0,color:'#0ea5e9'},
+      {name:'PPF (15yr)',rate:7.1,color:'#6366f1'},{name:'Gold (hist.)',rate:9.5,color:'#f59e0b'},
+      {name:'Nifty 50',rate:13.0,color:'#C9A84C'},{name:'Equity MF',rate:14.0,color:'#4ade80'},
+      {name:'Real Estate',rate:9.0,color:'#ec4899'},
+    ],
+    roiBase:100000,
+    roiCompareSub:'Historical averages · Base: ₹1 Lakh',
+    // Insurance
+    insIncDefault:1800000, insIncMin:300000, insIncMax:10000000, insIncStep:100000,
+    insRetDefault:60,
+    insLiabDefault:3000000, insLiabMin:0, insLiabMax:20000000, insLiabStep:100000,
+    insExistMin:0, insExistMax:20000000, insExistStep:100000,
+    insPremiumRate:(age)=>age<35?0.0012:age<45?0.002:0.004,
+    insDesc:'Calculate recommended cover using the Human Life Value (HLV) method.',
+    insLocalTitle:'Popular Indian Insurance Products',
+    insLocalItems:[
+      {name:'LIC Tech Term Plan',detail:'Pure term cover up to ₹5 Cr. Online, no agent commission. Sec 80C deduction on premium.'},
+      {name:'HDFC Click 2 Protect',detail:'Whole-life option available. Critical illness add-on. Premium waiver on disability.'},
+      {name:'Max Life Smart Secure',detail:'Return of premium option. Increasing cover option to beat inflation.'},
+      {name:'Star Health (Family Floater)',detail:'Cashless at 14,000+ hospitals. No co-pay. Includes AYUSH treatment.'},
+      {name:'Niva Bupa Reassure 2.0',detail:'No room rent cap. Unlimited recharge. Mental health coverage included.'},
+    ],
+    // Tax
+    taxDesc:'Compare Old vs New regime (FY2025-26) and maximize deductions.',
+  },
+  usa: {
+    flag:'🇺🇸', name:'USA',
+    currency:'$', code:'USD',
+    bannerClass:'usa',
+    bannerText:'🇺🇸 &nbsp;USA — USD · NYSE/NASDAQ · Federal Tax 2026',
+    sipLabel:'Monthly Contribution',
+    sipDefault:1500, sipMin:100, sipMax:10000, sipStep:100,
+    sipRateHint:'S&P 500 hist. avg ~10.5%',
+    sipTaxLabel:'401(k) Tax Saving (est.)',
+    sipTaxNote:'22% bracket, $23,500 limit/yr',
+    sipTaxCalc:(p,r,t)=>Math.min(p*12,23500)*0.22,
+    sipDesc:'Build long-term wealth through consistent 401(k) and index fund investing — the American way.',
+    sipEdu1:'$500/month at 25 in S&P 500 index = ~$1.9M by 65 at 10.5%. Start in your employer 401(k) first for the match.',
+    sipEdu3:'Dollar-Cost Averaging',
+    sipEdu3Desc:'Investing a fixed dollar amount regularly means buying more shares when prices drop — lowering your average cost per share.',
+    emiLabel:'Loan Amount',
+    emiDefault:400000, emiMin:50000, emiMax:2000000, emiStep:10000,
+    emiRateDefault:6.75, emiRateHint:'30yr Fixed Mortgage ~6.75% (2026)',
+    emiTaxLabel:'Mortgage Interest Deduction',
+    emiTaxNote:'Up to $750K principal deductible',
+    emiTaxCalc:(totalInt,t)=>Math.min(totalInt/t,25000)*0.22,
+    emiDtiLabel:'DTI ratio should stay below 43%',
+    emiMonthlyLabel:'Monthly Payment',
+    emiDesc:'Calculate monthly payments, total interest and mortgage interest deduction on your home loan.',
+    fireExpDefault:5000, fireExpMin:1000, fireExpMax:30000, fireExpStep:500,
+    fireSavedDefault:100000, fireSavedMin:0, fireSavedMax:2000000, fireSavedStep:10000,
+    fireInvDefault:2000, fireInvMin:200, fireInvMax:20000, fireInvStep:200,
+    fireLeanMax:2500, fireFatMin:8000,
+    roiDefault:100000, roiMin:5000, roiMax:1000000, roiStep:5000,
+    roiAssets:[
+      {name:'HYSA',rate:4.5,color:'#64748b'},{name:'US Treasury (10yr)',rate:4.3,color:'#0ea5e9'},
+      {name:'S&P 500 Index',rate:10.5,color:'#6366f1'},{name:'Gold (hist.)',rate:8.5,color:'#f59e0b'},
+      {name:'NASDAQ 100',rate:12.0,color:'#C9A84C'},{name:'Real Estate (REIT)',rate:8.0,color:'#4ade80'},
+      {name:'Total Bond Market',rate:4.0,color:'#ec4899'},
+    ],
+    roiBase:10000,
+    roiCompareSub:'Historical averages · Base: $10,000',
+    insIncDefault:80000, insIncMin:30000, insIncMax:500000, insIncStep:5000,
+    insRetDefault:65,
+    insLiabDefault:200000, insLiabMin:0, insLiabMax:1000000, insLiabStep:10000,
+    insExistMin:0, insExistMax:2000000, insExistStep:50000,
+    insPremiumRate:(age)=>age<35?0.0012:age<45?0.002:0.004,
+    insDesc:'Calculate recommended life cover using the DIME (Debt, Income, Mortgage, Education) method.',
+    insLocalTitle:'Popular US Insurance Products',
+    insLocalItems:[
+      {name:'Term Life (20-30yr)',detail:'Pure death benefit. $500K policy for 30yr old ~$25/mo. Shop via Policygenius or Haven Life.'},
+      {name:'Whole Life / IUL',detail:'Cash value builds tax-deferred. More complex — often better to buy term and invest the difference.'},
+      {name:'Health Insurance (ACA)',detail:'Marketplace plans. Check for premium tax credits if income 100–400% of FPL. HSA eligible with HDHP.'},
+      {name:'HSA — Health Savings Account',detail:'Triple tax advantage: pre-tax contributions, tax-free growth, tax-free medical withdrawals. 2026 limit: $4,300 single.'},
+      {name:'Umbrella Insurance',detail:'Extra liability beyond home/auto policy. $1M coverage ~$200–300/yr. Essential for high net worth.'},
+    ],
+    taxDesc:'Calculate federal income tax, understand brackets and maximize deductions (FY2026).',
+  },
+  europe: {
+    flag:'🇪🇺', name:'Europe',
+    currency:'€', code:'EUR',
+    bannerClass:'europe',
+    bannerText:'🇪🇺 &nbsp;Europe — EUR · Euro Stoxx · EU Tax Overview',
+    sipLabel:'Monthly Investment',
+    sipDefault:500, sipMin:50, sipMax:10000, sipStep:50,
+    sipRateHint:'Euro Stoxx 50 hist. avg ~8.5%',
+    sipTaxLabel:'Tax-Advantaged Saving (est.)',
+    sipTaxNote:'Varies by country',
+    sipTaxCalc:(p,r,t)=>p*12*0.15*0.25,
+    sipDesc:'Build wealth through diversified Euro-denominated ETFs and tax-advantaged European savings vehicles.',
+    sipEdu1:'€300/month at 25 invested in a pan-European ETF = ~€830K at 60 at 8.5% avg. Use your country\'s ISA equivalent first.',
+    sipEdu3:'Euro Cost Averaging',
+    sipEdu3Desc:'Investing a fixed euro amount regularly means buying more units when markets fall — naturally lowering your average cost.',
+    emiLabel:'Loan Amount',
+    emiDefault:250000, emiMin:20000, emiMax:1500000, emiStep:10000,
+    emiRateDefault:4.5, emiRateHint:'ECB rate ~3.65% · avg mortgage ~4.5% (2026)',
+    emiTaxLabel:'Mortgage Interest Relief',
+    emiTaxNote:'Varies by EU country',
+    emiTaxCalc:(totalInt,t)=>(totalInt/t)*0.15,
+    emiDtiLabel:'DTI ratio below 40% recommended',
+    emiMonthlyLabel:'Monthly Payment',
+    emiDesc:'Calculate monthly repayments and total interest on your European mortgage.',
+    fireExpDefault:2500, fireExpMin:500, fireExpMax:15000, fireExpStep:250,
+    fireSavedDefault:80000, fireSavedMin:0, fireSavedMax:1000000, fireSavedStep:5000,
+    fireInvDefault:1000, fireInvMin:100, fireInvMax:10000, fireInvStep:100,
+    fireLeanMax:1500, fireFatMin:5000,
+    roiDefault:50000, roiMin:1000, roiMax:500000, roiStep:1000,
+    roiAssets:[
+      {name:'Savings Account',rate:3.0,color:'#64748b'},{name:'German Bunds (10yr)',rate:2.8,color:'#0ea5e9'},
+      {name:'Euro Stoxx 50',rate:8.5,color:'#6366f1'},{name:'Gold (hist.)',rate:8.5,color:'#f59e0b'},
+      {name:'MSCI World ETF',rate:9.5,color:'#C9A84C'},{name:'European REIT',rate:6.5,color:'#4ade80'},
+      {name:'Pan-EU Bond Fund',rate:3.5,color:'#ec4899'},
+    ],
+    roiBase:10000,
+    roiCompareSub:'Historical averages · Base: €10,000',
+    insIncDefault:60000, insIncMin:15000, insIncMax:300000, insIncStep:5000,
+    insRetDefault:67,
+    insLiabDefault:150000, insLiabMin:0, insLiabMax:800000, insLiabStep:10000,
+    insExistMin:0, insExistMax:1000000, insExistStep:25000,
+    insPremiumRate:(age)=>age<35?0.0010:age<45?0.0018:0.0035,
+    insDesc:'Calculate recommended life cover — supplementing European social security systems.',
+    insLocalTitle:'European Insurance Overview',
+    insLocalItems:[
+      {name:'Germany — Risikolebensversicherung',detail:'Pure term life. Very competitive rates. Separate Berufsunfähigkeitsversicherung (BU) for disability — critical in Germany.'},
+      {name:'France — Assurance Vie',detail:'Tax-advantaged investment wrapper after 8 years. €152,500 inheritance exemption per beneficiary. Very popular.'},
+      {name:'UK — ISA + Term Life',detail:'Stocks & Shares ISA (£20K/yr tax-free). Separate term life outside your estate for clean IHT planning.'},
+      {name:'Netherlands — Lijfrente',detail:'Annuity product with tax deductibility. Jaarruimte calculation determines max annual deduction.'},
+      {name:'Spain — Plan de Pensiones',detail:'Pension plan with deductible contributions up to €1,500/yr (individual). Employer contributions up to €8,500.'},
+    ],
+    taxDesc:'Overview of major European tax systems — income tax, VAT, and investment taxation.',
+  },
+  world: {
+    flag:'🌍', name:'Global',
+    currency:'$', code:'USD',
+    bannerClass:'world',
+    bannerText:'🌍 &nbsp;Global — Multi-Currency · World Markets',
+    sipLabel:'Monthly Investment',
+    sipDefault:1000, sipMin:100, sipMax:10000, sipStep:100,
+    sipRateHint:'MSCI World hist. avg ~10%',
+    sipTaxLabel:'Tax-Deferred Estimate',
+    sipTaxNote:'Varies by jurisdiction',
+    sipTaxCalc:(p,r,t)=>p*12*0.20*0.15,
+    sipDesc:'Build a globally diversified portfolio across world-class markets and asset classes.',
+    sipEdu1:'Consistent global investing over 30+ years in low-cost MSCI World ETFs has historically outperformed most active strategies.',
+    sipEdu3:'Global Diversification',
+    sipEdu3Desc:'Spreading investments across geographies reduces single-country risk. Currency diversification adds another layer of protection.',
+    emiLabel:'Loan Amount',
+    emiDefault:300000, emiMin:10000, emiMax:2000000, emiStep:10000,
+    emiRateDefault:6.0, emiRateHint:'Global avg mortgage ~5–7% (2026)',
+    emiTaxLabel:'Interest Deduction (est.)',
+    emiTaxNote:'Varies by jurisdiction',
+    emiTaxCalc:(totalInt,t)=>(totalInt/t)*0.20,
+    emiDtiLabel:'DTI ratio below 43% recommended',
+    emiMonthlyLabel:'Monthly Payment',
+    emiDesc:'Calculate loan repayments for any currency and region.',
+    fireExpDefault:3000, fireExpMin:500, fireExpMax:20000, fireExpStep:250,
+    fireSavedDefault:100000, fireSavedMin:0, fireSavedMax:2000000, fireSavedStep:10000,
+    fireInvDefault:1500, fireInvMin:100, fireInvMax:15000, fireInvStep:100,
+    fireLeanMax:2000, fireFatMin:7000,
+    roiDefault:50000, roiMin:1000, roiMax:500000, roiStep:1000,
+    roiAssets:[
+      {name:'Cash/T-Bills',rate:4.0,color:'#64748b'},{name:'Global Bonds',rate:4.5,color:'#0ea5e9'},
+      {name:'MSCI World',rate:10.0,color:'#6366f1'},{name:'Gold',rate:8.5,color:'#f59e0b'},
+      {name:'MSCI EM',rate:9.0,color:'#C9A84C'},{name:'Global REITs',rate:7.5,color:'#4ade80'},
+      {name:'Commodities',rate:5.5,color:'#ec4899'},
+    ],
+    roiBase:10000,
+    roiCompareSub:'Historical averages · Base: $10,000',
+    insIncDefault:70000, insIncMin:15000, insIncMax:500000, insIncStep:5000,
+    insRetDefault:65,
+    insLiabDefault:150000, insLiabMin:0, insLiabMax:1000000, insLiabStep:10000,
+    insExistMin:0, insExistMax:2000000, insExistStep:25000,
+    insPremiumRate:(age)=>age<35?0.0012:age<45?0.002:0.004,
+    insDesc:'Calculate your recommended life insurance cover based on global best practices.',
+    insLocalTitle:'Global Insurance Principles',
+    insLocalItems:[
+      {name:'Human Life Value (HLV)',detail:'Cover = Annual income × years to retirement + liabilities. Widely used in India, UK, and SE Asia.'},
+      {name:'DIME Method',detail:'Debt + Income (10yr) + Mortgage + Education costs. Popular in USA and Canada for comprehensive coverage.'},
+      {name:'10× Income Rule',detail:'Simple rule of thumb: cover = 10× annual gross income. Good starting point for most markets.'},
+      {name:'Income Replacement Ratio',detail:'Most planners target 70–80% income replacement in retirement. Ensure your corpus supports this after inflation.'},
+      {name:'Critical Illness + Disability',detail:'Often overlooked — disability is 3× more likely than death during working years. Add a rider or standalone policy.'},
+    ],
+    taxDesc:'Tax systems around the world — compare rates and structures across major economies.',
+  }
+};
+
+// ================================================================
+// STATE
+// ================================================================
+let currentMode = 'india';
+const R = ()=>REGIONS[currentMode];
+const sym = ()=>R().currency;
+const fmtK = (n,s)=>{
+  s = s||sym();
+  const a=Math.abs(n);
+  if(currentMode==='india'){
+    if(a>=10000000) return s+(n/10000000).toFixed(2)+' Cr';
+    if(a>=100000)   return s+(n/100000).toFixed(2)+' L';
+    return s+Math.round(n).toLocaleString('en-IN');
+  }
+  if(a>=1000000) return s+(n/1000000).toFixed(2)+'M';
+  if(a>=1000)    return s+(n/1000).toFixed(1)+'K';
+  return s+Math.round(n).toLocaleString();
+};
+const fmtSym = n=>fmtK(n);
+
+let sipChart,emiChart,roiChart;
+function destroyChart(c){if(c){try{c.destroy();}catch(e){}}}
+
+// ================================================================
+// DRAWER
 // ================================================================
 function toggleDrawer(){
-  const s=document.getElementById('sidebar');
-  const o=document.getElementById('drawer-overlay');
-  s.classList.toggle('open');
-  o.classList.toggle('open');
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('drawer-overlay').classList.toggle('open');
 }
 function closeDrawer(){
   document.getElementById('sidebar').classList.remove('open');
@@ -724,185 +836,136 @@ function closeDrawer(){
 }
 
 // ================================================================
-// NAVIGATION — FIXED FOR MOBILE
-// ================================================================
-function navTo(id){
-  closeDrawer();
-  showTab(id);
-  // Scroll content area to top after switching tabs
-  var scroll = document.getElementById('main-scroll');
-  if(scroll){ scroll.scrollTop = 0; }
-}
-
-// ================================================================
-// UTILS
-// ================================================================
-const fmtK=(n,s='₹')=>{
-  const a=Math.abs(n);
-  if(a>=10000000) return s+(n/10000000).toFixed(2)+' Cr';
-  if(a>=100000)   return s+(n/100000).toFixed(2)+' L';
-  return s+Math.round(n).toLocaleString('en-IN');
-};
-let sipChart,emiChart,roiChart;
-function destroyChart(c){if(c){try{c.destroy();}catch(e){}}}
-let currentMode='india';
-const isIndia=()=>currentMode==='india';
-const sym=()=>isIndia()?'₹':'$';
-const fmtSym=n=>fmtK(n,sym());
-
-// ================================================================
-// MODE
-// ================================================================
-function setMode(mode){
-  currentMode=mode;
-  ['toggle-india','toggle-world','mob-toggle-india','mob-toggle-world'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(!el) return;
-    el.className='mode-btn'+(id.includes('india')&&mode==='india'?' active-india':id.includes('world')&&mode==='world'?' active-world':'');
-  });
-  const banner=document.getElementById('mode-banner');
-  if(mode==='india'){banner.className='mode-banner india';banner.innerHTML='🇮🇳 &nbsp;India Mode — INR · NSE/BSE · Indian Tax Laws';}
-  else{banner.className='mode-banner world';banner.innerHTML='🌍 &nbsp;World Mode — Global Markets · Multi-Currency';}
-  loadTickerData(mode);
-  updateLabels();
-  startSidebarRefresh();
-  const activeTab=document.querySelector('.tab.active')?.id;
-  if(activeTab) triggerCalc(activeTab);
-}
-
-function updateLabels(){
-  const ind=isIndia();
-  document.getElementById('sip-eyebrow').textContent=ind?'SIP · India':'Investment Plan · Global';
-  document.getElementById('sip-desc').textContent=ind?"Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.":'Calculate long-term growth of regular investments across global markets.';
-  document.getElementById('sip-p-label').textContent=ind?'Monthly SIP':'Monthly Investment';
-  document.getElementById('sip-rate-hint').textContent=ind?'Nifty 50 hist. avg ~13%':'S&P 500 hist. avg ~10.5%';
-  document.getElementById('sip-tax-label').textContent=ind?'Tax Saved (80C/ELSS)':'Tax-Deferred Benefit (est.)';
-  document.getElementById('emi-eyebrow').textContent=ind?'Loan Planning · India':'Loan Planning · Global';
-  document.getElementById('emi-p-label').textContent=ind?'Loan Amount (₹)':'Loan Amount ($)';
-  document.getElementById('emi-rate-hint').textContent=ind?'SBI Home Loan ~8.25% (Mar 2026)':'US 30yr Mortgage ~6.7% (Mar 2026)';
-  document.getElementById('emi-tax-label').textContent=ind?'Tax Benefit Sec 24(b)':'Mortgage Interest Deduction';
-  document.getElementById('emi-tax-note').textContent=ind?'Up to ₹2L deduction/yr':'US: up to $750K mortgage interest deductible';
-  document.getElementById('fire-eyebrow').textContent=ind?'Financial Independence · India':'Financial Independence · Global';
-  document.getElementById('fire-exp-label').textContent=ind?'Monthly Expenses (₹)':'Monthly Expenses ($)';
-  document.getElementById('roi-eyebrow').textContent=ind?'Returns Analysis · India':'Returns Analysis · Global';
-  document.getElementById('roi-p-label').textContent=ind?'Initial Investment (₹)':'Initial Investment ($)';
-  document.getElementById('roi-compare-title').textContent=ind?'Asset Class Comparison — ₹1 Lakh, 20 Years':'Asset Class Comparison — $10,000, 20 Years';
-  document.getElementById('ins-eyebrow').textContent=ind?'Protection Planning · India':'Protection Planning · Global';
-  document.getElementById('ins-inc-label').textContent=ind?'Annual Income (₹)':'Annual Income ($)';
-  document.getElementById('ins-liab-label').textContent=ind?'Liabilities (₹)':'Liabilities ($)';
-  document.getElementById('tax-eyebrow').textContent=ind?'Tax Optimization · India':'Tax Overview · World';
-  document.getElementById('tax-title').textContent=ind?'Tax Optimizer':'Global Tax Comparison';
-  document.getElementById('tax-desc').textContent=ind?'Compare Old vs New regime (FY2025-26) and maximize deductions.':'Understand tax structures across major economies.';
-  document.getElementById('tax-india-section').style.display=ind?'block':'none';
-  document.getElementById('tax-world-section').style.display=ind?'none':'block';
-}
-
-// ================================================================
-// LIVE SIDEBAR
-// ================================================================
-const STATIC_INDIA=[
-  {label:'SENSEX',    value:'74,532',  pct:'+0.44', up:true},
-  {label:'NIFTY 50',  value:'23,114',  pct:'+0.49', up:true},
-  {label:'NIFTY BANK',value:'54,018',  pct:'-2.36', up:false},
-  {label:'GOLD ETF',  value:'₹6,842',  pct:'+0.43', up:true},
-  {label:'USD/INR',   value:'93.75',   pct:'-0.12', up:false},
-];
-const STATIC_WORLD=[
-  {label:'S&P 500',   value:'6,606',   pct:'-0.27', up:false},
-  {label:'NASDAQ',    value:'22,090',  pct:'-0.28', up:false},
-  {label:'FTSE 100',  value:'10,063',  pct:'-2.35', up:false},
-  {label:'BITCOIN',   value:'$69,770', pct:'-2.60', up:false},
-  {label:'GOLD',      value:'$4,617',  pct:'-5.69', up:false},
-];
-
-let sidebarTimer=null;
-
-async function loadSidebarLive(){
-  try{
-    const res=await fetch(`/api/market?mode=${currentMode}`,{signal:AbortSignal.timeout(5000)});
-    if(!res.ok) throw new Error('non-200');
-    const data=await res.json();
-    if(data.fallback) throw new Error('fallback');
-    const fallback=currentMode==='india'?STATIC_INDIA:STATIC_WORLD;
-    const items=data.tickers.map((t,i)=>
-      t.ok
-        ?{label:t.label,value:t.value.toLocaleString('en-IN',{maximumFractionDigits:2}),pct:(t.pct>=0?'+':'')+t.pct,up:t.pct>=0}
-        :(fallback[i]||{label:t.label,value:'—',pct:'—',up:null})
-    ).slice(0,5);
-    renderSidebar(items,true);
-  }catch{
-    renderSidebar(currentMode==='india'?STATIC_INDIA:STATIC_WORLD,false);
-  }
-}
-
-function renderSidebar(items,live){
-  const el=document.getElementById('sidebar-market');
-  const dot=document.getElementById('sidebar-live-dot');
-  const upd=document.getElementById('sidebar-updated');
-  dot.style.background=live?'#4ade80':'#9090A8';
-  upd.textContent=live?new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'Snapshot';
-  el.innerHTML=items.map(t=>{
-    const c=t.up===true?'#4ade80':t.up===false?'#f87171':'var(--muted)';
-    const arrow=t.up===true?'▲':t.up===false?'▼':'';
-    return`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);">
-      <span style="font-size:10px;color:var(--muted);">${t.label}</span>
-      <div style="text-align:right;">
-        <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--cream);display:block;">${t.value}</span>
-        <span style="font-size:9px;color:${c};">${arrow} ${t.pct}%</span>
-      </div></div>`;
-  }).join('');
-}
-
-function startSidebarRefresh(){
-  if(sidebarTimer) clearInterval(sidebarTimer);
-  loadSidebarLive();
-  sidebarTimer=setInterval(loadSidebarLive,30000);
-}
-
-// ================================================================
-// SHOW TAB — CORE NAVIGATION ENGINE
+// NAVIGATION
 // ================================================================
 const ALL_TABS=['sip','emi','fire','roi','insurance','tax','edu','glossary'];
-
-function showTab(id){
+function navTo(id){
+  closeDrawer();
   ALL_TABS.forEach(t=>{
     document.getElementById(t).classList.toggle('active',t===id);
-    const btn=document.getElementById('btn-'+t);
-    if(btn) btn.classList.toggle('active',t===id);
-    const bnav=document.getElementById('bnav-'+t);
-    if(bnav) bnav.classList.toggle('active',t===id);
+    const b=document.getElementById('btn-'+t);if(b)b.classList.toggle('active',t===id);
+    const nb=document.getElementById('bnav-'+t);if(nb)nb.classList.toggle('active',t===id);
   });
-  triggerCalc(id);
-}
-
-function triggerCalc(id){
   if(id==='sip') calcSIP();
   else if(id==='emi') calcEMI();
   else if(id==='fire') calcFIRE();
   else if(id==='roi') calcROI();
   else if(id==='insurance') calcInsurance();
-  else if(id==='tax') calcTax();
+  else if(id==='tax') renderTax();
   else if(id==='edu') buildEdu();
   else if(id==='glossary') buildGlossary();
+  var s=document.getElementById('main-scroll');if(s)s.scrollTop=0;
 }
 
 // ================================================================
-// SIP
+// SET MODE
+// ================================================================
+function setMode(mode){
+  currentMode=mode;
+  // Update all mode buttons
+  ['india','usa','europe','world'].forEach(m=>{
+    ['desk-btn-','mob-btn-'].forEach(pfx=>{
+      const el=document.getElementById(pfx+m);
+      if(!el)return;
+      el.className=(pfx==='desk-btn-'?'mode-btn':'mob-mode-btn')+(m===mode?' active-'+m:'');
+    });
+  });
+  const b=document.getElementById('mode-banner');
+  b.className='mode-banner '+R().bannerClass;
+  b.innerHTML=R().bannerText;
+  loadTickerData(mode);
+  startSidebarRefresh();
+  updateSliderRanges();
+  updateStaticLabels();
+  // Recalc active tab
+  const at=document.querySelector('.tab.active');
+  if(at)navTo(at.id);
+}
+
+function updateSliderRanges(){
+  const r=R();
+  // SIP
+  setSlider('sip_p',r.sipMin,r.sipMax,r.sipStep,r.sipDefault);
+  // EMI
+  setSlider('emi_p',r.emiMin,r.emiMax,r.emiStep,r.emiDefault);
+  document.getElementById('emi_r').value=r.emiRateDefault;
+  // FIRE
+  setSlider('fire_exp',r.fireExpMin,r.fireExpMax,r.fireExpStep,r.fireExpDefault);
+  setSlider('fire_saved',r.fireSavedMin,r.fireSavedMax,r.fireSavedStep,r.fireSavedDefault);
+  setSlider('fire_inv',r.fireInvMin,r.fireInvMax,r.fireInvStep,r.fireInvDefault);
+  // ROI
+  setSlider('roi_p',r.roiMin,r.roiMax,r.roiStep,r.roiDefault);
+  // Insurance
+  setSlider('ins_inc',r.insIncMin,r.insIncMax,r.insIncStep,r.insIncDefault);
+  document.getElementById('ins_ret').value=r.insRetDefault;
+  setSlider('ins_liab',r.insLiabMin,r.insLiabMax,r.insLiabStep,r.insLiabDefault);
+  setSlider('ins_exist',r.insExistMin,r.insExistMax,r.insExistStep,0);
+}
+function setSlider(id,min,max,step,val){
+  const el=document.getElementById(id);
+  el.min=min;el.max=max;el.step=step;el.value=Math.min(Math.max(val,min),max);
+}
+
+function updateStaticLabels(){
+  const r=R();
+  document.getElementById('sip-eyebrow').textContent='Investment · '+r.name;
+  document.getElementById('sip-desc').textContent=r.sipDesc;
+  document.getElementById('sip-p-label').textContent=r.sipLabel;
+  document.getElementById('sip-rate-hint').textContent=r.sipRateHint;
+  document.getElementById('sip-tax-label').textContent=r.sipTaxLabel;
+  document.getElementById('sip-tax-note').textContent=r.sipTaxNote;
+  document.getElementById('edu-sip-1').textContent=r.sipEdu1;
+  document.getElementById('edu-sip-3-title').textContent=r.sipEdu3;
+  document.getElementById('edu-sip-3').textContent=r.sipEdu3Desc;
+
+  document.getElementById('emi-eyebrow').textContent='Loan · '+r.name;
+  document.getElementById('emi-desc').textContent=r.emiDesc;
+  document.getElementById('emi-p-label').textContent=r.emiLabel;
+  document.getElementById('emi-rate-hint').textContent=r.emiRateHint;
+  document.getElementById('emi-tax-label').textContent=r.emiTaxLabel;
+  document.getElementById('emi-tax-note').textContent=r.emiTaxNote;
+  document.getElementById('emi-dti-label').textContent=r.emiDtiLabel;
+  document.getElementById('emi-monthly-label').textContent=r.emiMonthlyLabel;
+
+  document.getElementById('fire-eyebrow').textContent='FIRE · '+r.name;
+  document.getElementById('fire-exp-label').textContent='Monthly Expenses ('+r.currency+')';
+
+  document.getElementById('roi-eyebrow').textContent='Returns · '+r.name;
+  document.getElementById('roi-p-label').textContent='Initial Investment ('+r.currency+')';
+  document.getElementById('roi-compare-title').textContent='Asset Class Comparison — 20 Years';
+  document.getElementById('roi-compare-sub').textContent=r.roiCompareSub;
+
+  document.getElementById('ins-eyebrow').textContent='Insurance · '+r.name;
+  document.getElementById('ins-desc').textContent=r.insDesc;
+  document.getElementById('ins-inc-label').textContent='Annual Income ('+r.currency+')';
+  document.getElementById('ins-liab-label').textContent='Liabilities ('+r.currency+')';
+  document.getElementById('ins-local-title').textContent=r.insLocalTitle;
+  document.getElementById('ins-local-content').innerHTML=r.insLocalItems.map(item=>
+    `<div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+      <div style="font-size:12px;font-weight:700;color:var(--cream);margin-bottom:4px;">${item.name}</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.7;">${item.detail}</div>
+    </div>`
+  ).join('');
+
+  document.getElementById('tax-eyebrow').textContent='Tax · '+r.name;
+  document.getElementById('tax-desc').textContent=r.taxDesc;
+}
+
+// ================================================================
+// SIP CALCULATOR
 // ================================================================
 function calcSIP(){
   const p=+document.getElementById('sip_p').value;
   const r=+document.getElementById('sip_r').value;
   const t=+document.getElementById('sip_t').value;
-  document.getElementById('v_sip_p').textContent=sym()+Math.round(p).toLocaleString('en-IN');
+  document.getElementById('v_sip_p').textContent=fmtSym(p);
   document.getElementById('v_sip_r').textContent=r.toFixed(1);
   document.getElementById('v_sip_t').textContent=t;
   const months=t*12,mr=r/12/100;
   const invested=p*months;
   const total=p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
-  const earnings=total-invested;
-  const mult=total/invested;
-  const gainPct=(earnings/invested)*100;
-  const tax=isIndia()?Math.min(p*12,150000)*0.30:p*12*0.22*0.10;
+  const earnings=total-invested,mult=total/invested,gainPct=(earnings/invested)*100;
+  const tax=R().sipTaxCalc(p,r,t);
   document.getElementById('sip_total').textContent=fmtSym(total);
   document.getElementById('sip_invested').textContent=fmtSym(invested);
   document.getElementById('sip_gains').textContent=fmtSym(earnings);
@@ -916,28 +979,34 @@ function calcSIP(){
     type:'doughnut',data:{labels:['Invested','Earnings'],datasets:[{data:[Math.round(invested),Math.round(earnings)],backgroundColor:['#334155','#C9A84C'],borderWidth:0,hoverOffset:4}]},
     options:{cutout:'72%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtSym(c.raw)}}}}
   });
+  const mr2=mr;
   let rows='';
   for(let y=1;y<=t;y++){
     const m=y*12,iy=p*m;
-    const vy=p*(((Math.pow(1+mr,m)-1)/mr)*(1+mr));
+    const vy=p*(((Math.pow(1+mr2,m)-1)/mr2)*(1+mr2));
     const gy=vy-iy,gp=gy/iy*100,prog=(vy/total)*100;
     rows+=`<tr><td><span class="badge-gold">${y}</span></td><td class="mono">${fmtSym(iy)}</td><td class="mono" style="color:var(--gold-light);">${fmtSym(vy)}</td><td class="mono" style="color:#4ade80;">${fmtSym(gy)}</td><td><span class="badge-${gp>0?'green':'red'}">${gp.toFixed(1)}%</span></td><td style="min-width:80px;"><div class="progress-bar"><div class="progress-fill" style="width:${prog}%;"></div></div></td></tr>`;
   }
   document.getElementById('sip_tbody').innerHTML=rows;
-  const targets=isIndia()?[200000,500000,1000000,5000000,10000000]:[10000,50000,100000,500000,1000000];
-  const labels=isIndia()?['₹2L','₹5L','₹10L','₹50L','₹1Cr']:['$10K','$50K','$100K','$500K','$1M'];
+  // Milestones — region-aware
+  const targets=currentMode==='india'
+    ?[200000,500000,1000000,5000000,10000000,50000000]
+    :[5000,10000,50000,100000,500000,1000000];
+  const lbls=currentMode==='india'
+    ?['₹2L','₹5L','₹10L','₹50L','₹1Cr','₹5Cr']
+    :['5K','10K','50K','100K','500K','1M'].map(l=>sym()+l);
   let mhtml='';
   targets.forEach((tgt,i)=>{
     if(tgt>total) return;
     let yr=0;
-    for(let m=1;m<=t*12;m++){const v=p*(((Math.pow(1+mr,m)-1)/mr)*(1+mr));if(v>=tgt){yr=Math.ceil(m/12);break;}}
-    if(yr>0) mhtml+=`<div class="milestone"><div class="milestone-dot"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${labels[i]}</div><div style="color:var(--muted);font-size:10px;">Year ${yr}</div></div></div>`;
+    for(let m=1;m<=t*12;m++){const v=p*(((Math.pow(1+mr2,m)-1)/mr2)*(1+mr2));if(v>=tgt){yr=Math.ceil(m/12);break;}}
+    if(yr>0) mhtml+=`<div class="milestone"><div class="milestone-dot"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${lbls[i]}</div><div style="color:var(--muted);font-size:10px;">Year ${yr}</div></div></div>`;
   });
   document.getElementById('sip_milestones').innerHTML=mhtml||'<div style="color:var(--muted);font-size:10px;">Increase tenure to see milestones.</div>';
 }
 
 // ================================================================
-// EMI
+// EMI CALCULATOR
 // ================================================================
 function calcEMI(){
   const p=+document.getElementById('emi_p').value;
@@ -949,7 +1018,7 @@ function calcEMI(){
   const mr=r/12/100,months=t*12;
   const emi=(p*mr*Math.pow(1+mr,months))/(Math.pow(1+mr,months)-1);
   const totalPaid=emi*months,totalInt=totalPaid-p;
-  const taxSaved=isIndia()?Math.min(totalInt/t,200000)*0.30:totalInt/t*0.22;
+  const taxSaved=R().emiTaxCalc(totalInt,t);
   document.getElementById('emi_monthly').textContent=fmtSym(emi);
   document.getElementById('emi_interest').textContent=fmtSym(totalInt);
   document.getElementById('emi_total').textContent=fmtSym(totalPaid);
@@ -969,7 +1038,7 @@ function calcEMI(){
   let rows='',balance=p;
   for(let y=1;y<=t;y++){
     const ob=balance;let yP=0,yI=0;
-    for(let m=0;m<12;m++){const i=balance*mr,pr=emi-i;yP+=pr;yI+=i;balance-=pr;}
+    for(let m=0;m<12&&balance>0;m++){const i=balance*mr,pr=Math.min(emi-i,balance);yP+=pr;yI+=i;balance-=pr;}
     const cb=Math.max(balance,0);
     rows+=`<tr><td><span class="badge-gold">${y}</span></td><td class="mono">${fmtSym(ob)}</td><td class="mono" style="color:#818cf8;">${fmtSym(yP)}</td><td class="mono" style="color:#f87171;">${fmtSym(yI)}</td><td class="mono" style="color:var(--muted);">${fmtSym(cb)}</td></tr>`;
   }
@@ -977,7 +1046,7 @@ function calcEMI(){
 }
 
 // ================================================================
-// FIRE
+// FIRE CALCULATOR
 // ================================================================
 function calcFIRE(){
   const age=+document.getElementById('fire_age').value;
@@ -1002,8 +1071,8 @@ function calcFIRE(){
   const prog=Math.min((saved/fireCorpus)*100,100);
   document.getElementById('fire_progress_pct').textContent=prog.toFixed(1)+'%';
   document.getElementById('fire_progress_bar').style.width=prog+'%';
-  const tL=isIndia()?40000:2000,tH=isIndia()?150000:8000;
-  const [ft,fd]=exp<tL?['🌿 Lean FIRE','Minimal lifestyle, max speed to independence.']:exp>tH?['🏆 Fat FIRE','Luxury retirement — needs large corpus.']:['⚖️ Regular FIRE','Balanced approach — part-time optional.'];
+  const tL=R().fireLeanMax,tH=R().fireFatMin;
+  const [ft,fd]=exp<tL?['🌿 Lean FIRE','Minimal lifestyle, maximum speed to independence.']:exp>tH?['🏆 Fat FIRE','Luxury retirement — needs a large corpus.']:['⚖️ Regular FIRE','Balanced approach — part-time optional.'];
   document.getElementById('fire_type').textContent=ft;
   document.getElementById('fire_type_desc').textContent=fd;
   let mhtml='';
@@ -1018,7 +1087,7 @@ function calcFIRE(){
 }
 
 // ================================================================
-// ROI
+// ROI CALCULATOR
 // ================================================================
 function calcROI(){
   const p=+document.getElementById('roi_p').value;
@@ -1038,27 +1107,17 @@ function calcROI(){
     type:'line',data:{labels,datasets:[{data:vals,borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,.08)',fill:true,tension:.4,borderWidth:2,pointRadius:0,pointHoverRadius:4}]},
     options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtSym(c.raw)}}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9090A8',font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9090A8',font:{size:9},callback:v=>fmtSym(v)}}}}
   });
-  const assets=isIndia()?[
-    {name:'Savings A/C',rate:3.5,color:'#64748b'},{name:'FD (5yr)',rate:7.0,color:'#0ea5e9'},
-    {name:'PPF (15yr)',rate:7.1,color:'#6366f1'},{name:'Gold (hist.)',rate:9.5,color:'#f59e0b'},
-    {name:'Nifty 50',rate:13.0,color:'#C9A84C'},{name:'Equity MF',rate:14.0,color:'#4ade80'},
-    {name:'Real Estate',rate:9.0,color:'#ec4899'},
-  ]:[
-    {name:'Savings A/C',rate:3.5,color:'#64748b'},{name:'US Treasury',rate:4.3,color:'#0ea5e9'},
-    {name:'S&P 500',rate:10.5,color:'#6366f1'},{name:'Gold (hist.)',rate:8.5,color:'#f59e0b'},
-    {name:'Real Estate',rate:7.0,color:'#ec4899'},{name:'NASDAQ 100',rate:12.0,color:'#C9A84C'},
-    {name:'Global REIT',rate:8.0,color:'#4ade80'},
-  ];
-  const base=isIndia()?100000:10000,yrs=20;
+  const assets=R().roiAssets;
+  const base=R().roiBase,yrs=20;
   const maxV=Math.max(...assets.map(a=>base*Math.pow(1+a.rate/100,yrs)));
   document.getElementById('asset_compare').innerHTML=assets.map(a=>{
     const v=base*Math.pow(1+a.rate/100,yrs),w=(v/maxV)*100;
-    return`<div class="compare-row"><span class="compare-label">${a.name}</span><div class="compare-bar"><div class="compare-fill" style="width:${w}%;background:${a.color};"></div></div><span class="compare-val">${fmtSym(v)}</span><span style="width:32px;text-align:right;font-size:10px;color:${a.color};">${a.rate}%</span></div>`;
+    return`<div class="compare-row"><span class="compare-label">${a.name}</span><div class="compare-bar"><div class="compare-fill" style="width:${w}%;background:${a.color};"></div></div><span class="compare-val">${fmtSym(v)}</span><span style="width:36px;text-align:right;font-size:10px;color:${a.color};">${a.rate}%</span></div>`;
   }).join('');
 }
 
 // ================================================================
-// INSURANCE
+// INSURANCE CALCULATOR
 // ================================================================
 function calcInsurance(){
   const inc=+document.getElementById('ins_inc').value;
@@ -1072,17 +1131,57 @@ function calcInsurance(){
   document.getElementById('v_ins_liab').textContent=fmtSym(liab);
   document.getElementById('v_ins_exist').textContent=fmtSym(exist);
   const hlv=(inc*(ret-age))+liab,gap=Math.max(hlv-exist,0);
-  const pr=age<35?0.0012:age<45?0.002:0.004;
+  const pr=R().insPremiumRate(age);
   document.getElementById('ins_cover').textContent=fmtSym(hlv);
   document.getElementById('ins_gap').textContent=fmtSym(gap);
   document.getElementById('ins_premium').textContent=fmtSym(gap*pr)+'/yr approx';
 }
 
 // ================================================================
-// TAX
+// TAX — fully localized per region
 // ================================================================
-function calcTax(){
-  if(!isIndia()) return;
+function renderTax(){
+  const c=document.getElementById('tax-content');
+  if(currentMode==='india') c.innerHTML=buildIndiaTax();
+  else if(currentMode==='usa') c.innerHTML=buildUSATax();
+  else if(currentMode==='europe') c.innerHTML=buildEuropeTax();
+  else c.innerHTML=buildWorldTax();
+  if(currentMode==='india') wireIndiaTax();
+}
+
+function buildIndiaTax(){
+  return`
+  <div class="grid-2-1" style="margin-bottom:20px;">
+    <div class="card">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">INCOME & DEDUCTIONS (FY2025-26)</div>
+      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Gross Annual Income (CTC)</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_inc">₹18L</span></div><input type="range" id="tax_inc" min="500000" max="10000000" step="50000" value="1800000"></div>
+      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80C (ELSS, PPF, LIC…)</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_80c">₹1.5L</span></div><input type="range" id="tax_80c" min="0" max="150000" step="5000" value="150000"></div>
+      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80D Health Insurance</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_80d">₹25K</span></div><input type="range" id="tax_80d" min="0" max="75000" step="5000" value="25000"></div>
+      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">24(b) Home Loan Interest</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_hl">₹0</span></div><input type="range" id="tax_hl" min="0" max="200000" step="5000" value="0"></div>
+      <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80CCD(1B) NPS Extra</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_nps">₹50K</span></div><input type="range" id="tax_nps" min="0" max="50000" step="5000" value="50000"></div>
+    </div>
+    <div class="card">
+      <div class="section-eyebrow" style="margin-bottom:14px;">Regime Comparison</div>
+      <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">Old Regime Tax</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;color:var(--gold-light);" id="tax_old">₹0</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_old_eff">Eff: 0%</div></div>
+      <div class="gold-line" style="margin:12px 0;"></div>
+      <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">New Regime Tax</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;" id="tax_new">₹0</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_new_eff">Eff: 0%</div></div>
+      <div class="gold-line" style="margin:12px 0;"></div>
+      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:12px;">
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Best Regime</div>
+        <div style="font-size:1rem;font-weight:800;color:#4ade80;" id="tax_rec">—</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_saving">You save ₹0</div>
+      </div>
+    </div>
+  </div>`;
+}
+function wireIndiaTax(){
+  ['tax_inc','tax_80c','tax_80d','tax_hl','tax_nps'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.removeEventListener('input',calcIndiaTax);el.addEventListener('input',calcIndiaTax);}
+  });
+  calcIndiaTax();
+}
+function calcIndiaTax(){
   const inc=+document.getElementById('tax_inc').value;
   const c80=+document.getElementById('tax_80c').value;
   const c80d=+document.getElementById('tax_80d').value;
@@ -1104,49 +1203,93 @@ function calcTax(){
   document.getElementById('tax_rec').textContent='✅ '+better+' saves more';
   document.getElementById('tax_saving').textContent='Annual saving: '+fmtK(Math.abs(oldTax-newTax),'₹');
 }
-function calcOldTax(i){
-  let t=0;
-  if(i>1000000)t=112500+(i-1000000)*0.30;
-  else if(i>500000)t=12500+(i-500000)*0.20;
-  else if(i>250000)t=(i-250000)*0.05;
-  if(i<=500000)t=0;
-  return t*1.04;
+function calcOldTax(i){let t=0;if(i>1000000)t=112500+(i-1000000)*0.30;else if(i>500000)t=12500+(i-500000)*0.20;else if(i>250000)t=(i-250000)*0.05;if(i<=500000)t=0;return t*1.04;}
+function calcNewTax(i){let t=0,p=0;for(const[l,r]of[[300000,0],[600000,.05],[900000,.10],[1200000,.15],[1500000,.20],[Infinity,.30]]){if(i>p){t+=Math.min(i-p,l-p)*r;p=l;}}if(i<=700000)t=0;return t*1.04;}
+
+function buildUSATax(){
+  return`
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div style="font-size:22px;margin-bottom:10px;">📊</div>
+      <h4 style="font-weight:700;margin-bottom:10px;font-size:14px;">Federal Tax Brackets 2026</h4>
+      <table><thead><tr><th>Rate</th><th>Single</th><th>Married Filing Jointly</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge-gold">10%</span></td><td>$0 – $11,925</td><td>$0 – $23,850</td></tr>
+        <tr><td><span class="badge-gold">12%</span></td><td>$11,925 – $48,475</td><td>$23,850 – $96,950</td></tr>
+        <tr><td><span class="badge-gold">22%</span></td><td>$48,475 – $103,350</td><td>$96,950 – $206,700</td></tr>
+        <tr><td><span class="badge-gold">24%</span></td><td>$103,350 – $197,300</td><td>$206,700 – $394,600</td></tr>
+        <tr><td><span class="badge-gold">32%</span></td><td>$197,300 – $250,525</td><td>$394,600 – $501,050</td></tr>
+        <tr><td><span class="badge-gold">35%</span></td><td>$250,525 – $626,350</td><td>$501,050 – $751,600</td></tr>
+        <tr><td><span class="badge-red">37%</span></td><td>$626,350+</td><td>$751,600+</td></tr>
+      </tbody></table>
+    </div>
+    <div class="card">
+      <div style="font-size:22px;margin-bottom:10px;">🏦</div>
+      <h4 style="font-weight:700;margin-bottom:10px;font-size:14px;">Key Deductions & Limits (2026)</h4>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">Standard Deduction (Single)</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$15,000</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">Standard Deduction (MFJ)</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$30,000</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">401(k) Contribution Limit</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$23,500</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">IRA Contribution Limit</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$7,000</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">HSA Limit (Self)</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$4,300</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">LTCG Rate (income dependent)</span><span class="mono" style="font-size:12px;color:var(--gold-light);">0% / 15% / 20%</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="font-size:12px;color:var(--muted);">Estate Tax Exemption</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$13.99M</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">💼</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Retirement Accounts</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">401(k): pre-tax contributions reduce taxable income. Employer match = free money — always contribute enough to get the full match first. Roth IRA: after-tax but grows and withdraws tax-free. Mega Backdoor Roth available at some employers up to $69,000 total.</p></div>
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">📈</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">SALT & Itemized Deductions</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">State And Local Tax (SALT) deduction capped at $10,000. Mortgage interest deductible on up to $750K of principal. Medical expenses >7.5% of AGI deductible. Consider whether itemizing beats the standard deduction for your situation.</p></div>
+  </div>`;
 }
-function calcNewTax(i){
-  let t=0,p=0;
-  for(const[l,r]of[[300000,0],[600000,.05],[900000,.10],[1200000,.15],[1500000,.20],[Infinity,.30]]){
-    if(i>p){t+=Math.min(i-p,l-p)*r;p=l;}
-  }
-  if(i<=700000)t=0;
-  return t*1.04;
+
+function buildEuropeTax(){
+  return`
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇩🇪</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Germany</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 0%–45%. Basic allowance: €11,784. Solidarity surcharge 5.5% on high earners. Capital gains: 25% flat (Abgeltungsteuer) + solidarity. Church tax optional 8–9%. Sparerpauschbetrag: €1,000 capital gains allowance.</p></div>
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇫🇷</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">France</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">11%–45% income tax + social charges (17.2% on investment income). PFU (Prélèvement Forfaitaire Unique): 30% flat tax on investments. Assurance Vie: tax advantages after 8 years. PEA: tax-free EU equity gains after 5 years (€150K limit).</p></div>
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇬🇧</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">United Kingdom</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Personal allowance £12,570 (2025/26). Basic 20% (£12,570–£50,270). Higher 40% (£50,270–£125,140). Additional 45% (£125,140+). CGT: 18%/24% (residential), 10%/20% (other assets). ISA: £20,000/yr tax-free. SIPP pension: 25% tax-free lump sum.</p></div>
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇳🇱</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Netherlands</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Box 1 (income): up to 49.5%. Box 2 (substantial interest): 24.5%/33%. Box 3 (savings/investments): notional yield tax — currently under reform. Hypotheekrenteaftrek: mortgage interest deductible at max 36.97%. No wealth tax on pension assets.</p></div>
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇪🇸</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Spain</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Income tax 19%–47% (varies by region). Savings income: 19%–28% flat. Plan de Pensiones: deductible up to €1,500 individual + €8,500 employer. Beckham Law: 24% flat rate for qualifying expats. Non-resident: 19% (EU) or 24% (non-EU).</p></div>
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇮🇹</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Italy</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">IRPEF: 23%–43% on income. Capital gains: 26% flat. PIR (Piano Individuale di Risparmio): tax-free gains after 5yr if 70% in Italian assets. Flat tax for new residents: €100K/yr on foreign income. Regional/municipal surtaxes apply.</p></div>
+  </div>`;
+}
+
+function buildWorldTax(){
+  return`
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇸🇬</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Singapore — Low-Tax Hub</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 0%–24%. No capital gains tax. No dividend tax. CPF: 20% employee + 17% employer (up to age 55). SRS: Supplementary Retirement Scheme for tax deferral. Very favourable for global wealth accumulation.</p></div>
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇦🇺</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Australia</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 19%–45% + 2% Medicare levy. Super: 11.5% employer contributions (rising to 12%). Concessional cap: A$30K/yr. Non-concessional: A$120K/yr. CGT discount: 50% for assets held >12 months. HECS-HELP repayments income-contingent.</p></div>
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇨🇦</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Canada</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Federal 15%–33% + provincial tax (5%–25%). RRSP: deductible contributions, tax-deferred growth (18% of income, max C$31,560). TFSA: C$7,000/yr completely tax-free. Capital gains inclusion rate raised to 2/3 in 2024 for gains over C$250K.</p></div>
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇦🇪</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">UAE — Zero Tax</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">No personal income tax. No capital gains tax. Corporate tax: 9% above AED 375K profit (from 2023). VAT: 5%. No withholding tax on dividends. Popular for global entrepreneurs — requires genuine residency and economic substance.</p></div>
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇯🇵</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Japan</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Income tax 5%–45% + 10% inhabitant tax. NISA: ¥3.6M/yr tax-free growth (lifetime ¥18M). iDeCo: pension with deductible contributions. Exit tax on assets >¥100M when leaving Japan. Complex for foreigners.</p></div>
+    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇧🇷</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Brazil</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">IRPF: 7.5%–27.5% on income. Dividends currently exempt (reform pending). Capital gains: 15%–22.5%. PGBL/VGBL: pension products with deduction up to 12% of gross income. High social security contributions (INSS up to 14%).</p></div>
+  </div>`;
 }
 
 // ================================================================
-// EDUCATION
+// EDUCATION & GLOSSARY
 // ================================================================
 const concepts=[
-  {title:'What is Compound Interest and why it matters',body:'Compound interest is earned on both principal and previously earned interest. At 12% returns, ₹1 Lakh becomes ₹3.1L in 10 years, ₹9.6L in 20 years, and ₹29.9L in 30 years — purely through reinvesting returns. Starting 5 years earlier can double your final corpus.'},
+  {title:'What is Compound Interest and why it matters',body:'Compound interest is earned on both principal and previously earned interest. At 10% returns, $10,000 becomes $27,000 in 10 years, $67,000 in 20 years, and $174,000 in 30 years — purely through reinvesting returns. Starting 5 years earlier can double your final corpus.'},
   {title:'How to build an Emergency Fund',body:'An emergency fund is 3–6 months of expenses in liquid instruments. It protects you from derailing long-term investments during unexpected expenses — job loss, medical emergencies. Rule: Build emergency fund FIRST before any equity investment.'},
-  {title:'Asset Allocation — Balancing Equity vs Debt',body:'Classic rule: Equity % = 100 minus your age. At 30 → 70% equity, 30% debt. At 50 → 50/50. Equity gives higher returns with volatility; debt gives stability. Rebalance annually. Match allocation to goal time horizon.'},
-  {title:'What is XIRR and how to measure fund returns',body:'XIRR accounts for the timing of cash flows, making it perfect for SIPs. A fund showing 15% absolute return over 3 years is only ~4.8% CAGR. Always compare trailing 3yr, 5yr, and 10yr XIRR across funds.'},
-  {title:'Direct vs Regular Mutual Funds — The Hidden Cost',body:'Regular plans pay 1–1.5% commission annually to distributors. On ₹50L corpus over 20 years at 12%, direct plans create ₹35–40L more wealth. Always invest through direct plans via AMC websites, MFCentral, or Coin/Zerodha.'},
-  {title:'Inflation — The Silent Wealth Destroyer',body:'At 6% inflation, purchasing power halves every 12 years. ₹1 Lakh today = ₹33K in 18 years. Your investments must beat inflation meaningfully. Equity returns 12–15% vs 6% inflation — a real return of 6–9%.'},
+  {title:'Asset Allocation — Balancing Equity vs Debt',body:'Classic rule: Equity % = 110 minus your age. At 30 → 80% equity. At 50 → 60% equity. Equity gives higher returns with volatility; bonds/debt give stability. Rebalance annually. Match allocation to goal time horizon.'},
+  {title:'What is XIRR and how to measure fund returns',body:'XIRR accounts for the timing of cash flows — essential for regular investment plans. A fund showing 15% absolute return over 3 years is only ~4.8% CAGR. Always compare trailing 3yr, 5yr, and 10yr returns across funds.'},
+  {title:'Low-Cost Index Funds vs Active Management',body:'Decades of data show 90%+ of active funds underperform their benchmark index over 15+ years. A low-cost S&P 500 or MSCI World index fund with 0.05–0.20% expense ratio beats most actively managed funds charging 1–2% annually.'},
+  {title:'Inflation — The Silent Wealth Destroyer',body:'At 5% inflation, purchasing power halves every 14 years. Your investments must beat inflation meaningfully. Equity has historically returned 8–14% vs 3–7% inflation globally — a positive real return of 5–8%.'},
 ];
 const milestones=[
-  {age:'22–25',title:'Foundation',items:['Emergency fund','Term + Health insurance','First SIP','Build credit history']},
-  {age:'25–30',title:'Accelerate',items:['SIP = 20–30% of income','Max out 80C','Add NPS','No consumer debt']},
-  {age:'30–40',title:'Asset Building',items:['Real estate (goal-aligned)','Step up SIP','Review insurance','Diversify globally']},
-  {age:'40–50',title:'Consolidation',items:['Shift equity → hybrid','Education corpus ready','50% of FIRE target','Estate planning']},
-  {age:'50–60',title:'Pre-Retirement',items:['Reduce equity','Clear all loans','Max NPS/VPF','Withdrawal strategy']},
-  {age:'60+',title:'Freedom Phase',items:['4% SWR activated','Senior FD + SCSS','Health top-up','Will & legacy']},
+  {age:'22–25',title:'Foundation',items:['Emergency fund (3–6mo)','Term + Health insurance','First investment','Credit history']},
+  {age:'25–30',title:'Accelerate',items:['Save 20–30% of income','Max tax-advantaged accounts','No consumer debt','Clear student loans']},
+  {age:'30–40',title:'Asset Building',items:['Real estate (goal-aligned)','Increase contributions','Review insurance','Global diversification']},
+  {age:'40–50',title:'Consolidation',items:['Shift to balanced portfolio','Children education corpus','50% of FIRE target','Estate planning']},
+  {age:'50–60',title:'Pre-Retirement',items:['Reduce equity gradually','Clear all major loans','Max pension contributions','Withdrawal strategy']},
+  {age:'60+',title:'Freedom Phase',items:['4% SWR activated','Low-risk instruments','Health top-up cover','Will & legacy']},
 ];
-
 function buildEdu(){
-  const ac=document.getElementById('accordion_container');
-  ac.innerHTML='';
+  const ac=document.getElementById('accordion_container');ac.innerHTML='';
   concepts.forEach(c=>{
-    const d=document.createElement('div');
-    d.className='card';d.style.cssText='padding:0;overflow:hidden;';
+    const d=document.createElement('div');d.className='card';d.style.cssText='padding:0;overflow:hidden;';
     d.innerHTML=`<div onclick="toggleAcc(this)" style="padding:14px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;"><span style="font-size:12px;font-weight:600;">${c.title}</span><span class="aic" style="font-size:16px;color:var(--gold);transition:transform .3s;flex-shrink:0;margin-left:8px;">+</span></div><div class="accordion-content"><div style="padding:0 18px 16px;font-size:12px;color:var(--muted);line-height:1.7;border-top:1px solid rgba(255,255,255,.05);">${c.body}</div></div>`;
     ac.appendChild(d);
   });
@@ -1158,34 +1301,38 @@ function toggleAcc(h){
   document.querySelectorAll('.aic').forEach(x=>x.textContent='+');
   if(!open){c.classList.add('open');i.textContent='−';}
 }
-
-// ================================================================
-// GLOSSARY
-// ================================================================
 const glossaryData=[
-  {term:'SIP',def:'Systematic Investment Plan. Fixed amount invested regularly in a mutual fund, enabling rupee cost averaging.'},
+  {term:'SIP',def:'Systematic Investment Plan. Fixed amount invested regularly in a mutual fund, enabling rupee/dollar cost averaging.'},
   {term:'CAGR',def:'Compound Annual Growth Rate. Annualised growth rate accounting for compounding.'},
   {term:'NAV',def:'Net Asset Value. Per-unit price of a mutual fund: (Total Assets − Liabilities) ÷ Units.'},
-  {term:'ELSS',def:'Equity Linked Savings Scheme. Mutual fund qualifying under Section 80C, 3-year lock-in.'},
-  {term:'PPF',def:'Public Provident Fund. Government savings at 7.1% tax-free, 15-year lock-in.'},
-  {term:'NPS',def:'National Pension System. Market-linked retirement scheme with extra ₹50K deduction under 80CCD(1B).'},
+  {term:'ELSS',def:'Equity Linked Savings Scheme (India). Mutual fund qualifying under Section 80C, 3-year lock-in.'},
+  {term:'PPF',def:'Public Provident Fund (India). Government savings at 7.1% tax-free, 15-year lock-in.'},
+  {term:'NPS',def:'National Pension System (India). Market-linked retirement scheme with extra ₹50K deduction under 80CCD(1B).'},
+  {term:'401(k)',def:'US employer-sponsored retirement plan with pre-tax contributions reducing taxable income. 2026 limit: $23,500.'},
+  {term:'Roth IRA',def:'US after-tax retirement account. Contributions non-deductible but growth and qualified withdrawals tax-free.'},
+  {term:'ISA',def:'Individual Savings Account (UK). Tax-free investment wrapper — £20,000/yr allowance. Stocks & Shares or Cash.'},
+  {term:'ETF',def:'Exchange-Traded Fund. Basket of securities trading on exchange like a stock. Typically low cost.'},
   {term:'EMI',def:'Equated Monthly Instalment. Fixed monthly repayment of principal + interest on loans.'},
   {term:'FIRE',def:'Financial Independence, Retire Early. Corpus = 25× annual expenses so investments sustain lifestyle forever.'},
   {term:'HLV',def:'Human Life Value. Life insurance need = PV of future income until retirement.'},
-  {term:'XIRR',def:'Extended Internal Rate of Return. Standard metric for SIP returns accounting for cash flow timing.'},
-  {term:'4% Rule',def:'Withdrawing 4% of corpus annually sustains a portfolio for 30+ years (Trinity Study, 1998).'},
-  {term:'Expense Ratio',def:'Annual fee charged by a mutual fund as % of AUM. Direct plans have lower ratios than regular.'},
-  {term:'Alpha',def:'Excess return above benchmark. Fund at 15% vs Nifty 12% has alpha of 3%.'},
+  {term:'XIRR',def:'Extended Internal Rate of Return. Standard metric for periodic investment returns accounting for cash flow timing.'},
+  {term:'4% Rule',def:'Withdrawing 4% of corpus annually sustains a portfolio for 30+ years (Trinity Study, 1998). Conservative: 3.5%.'},
+  {term:'Expense Ratio',def:'Annual fee charged by a mutual fund as % of AUM. Index funds typically 0.03–0.20%; active funds 0.5–2%.'},
+  {term:'Alpha',def:'Excess return above benchmark. A fund at 15% vs index at 12% has alpha of 3%.'},
   {term:'Beta',def:'Volatility vs market. Beta >1 = more volatile than market; <1 = less volatile.'},
   {term:'AUM',def:'Assets Under Management. Total market value of investments a fund house manages.'},
-  {term:'ETF',def:'Exchange-Traded Fund. Basket of securities trading on exchange like a stock. Lower cost than active funds.'},
   {term:'Rebalancing',def:'Realigning portfolio back to target allocation annually by selling overperformers and buying underperformers.'},
   {term:'Corpus',def:'Total accumulated investment portfolio value, often referenced as retirement or goal corpus.'},
   {term:'SWR',def:'Safe Withdrawal Rate. Percentage of portfolio withdrawn annually without depleting it. Standard: 4%.'},
-  {term:'S&P 500',def:'US index tracking 500 large-cap companies. Global benchmark for equity performance.'},
-  {term:'Nifty 50',def:"India's benchmark index of 50 largest companies on the National Stock Exchange (NSE)."},
+  {term:'Dollar-Cost Averaging',def:'Investing a fixed amount at regular intervals regardless of price — reduces timing risk.'},
+  {term:'Diversification',def:'Spreading investments across assets, geographies, and sectors to reduce risk without proportionally reducing returns.'},
+  {term:'S&P 500',def:'US index tracking 500 large-cap companies. Global benchmark for equity performance (~10.5% hist. annual return).'},
+  {term:'Nifty 50',def:"India's benchmark index of 50 largest companies on NSE (~13% hist. annual return)."},
+  {term:'MSCI World',def:'Index tracking ~1,500 large/mid-cap stocks across 23 developed markets. Core holding in global portfolios.'},
+  {term:'Assurance Vie',def:'French tax-advantaged investment wrapper. Major tax benefits after 8 years of holding.'},
+  {term:'Super (Superannuation)',def:'Australian mandatory retirement savings — currently 11.5% of salary contributed by employer.'},
+  {term:'CPF',def:'Central Provident Fund (Singapore). Mandatory social security savings: 20% employee + 17% employer.'},
 ];
-
 function buildGlossary(){
   renderGlossary(glossaryData);
   document.getElementById('gloss_search').oninput=function(){
@@ -1198,7 +1345,7 @@ function renderGlossary(data){
   const grp={};data.forEach(g=>{const l=g.term[0].toUpperCase();if(!grp[l])grp[l]=[];grp[l].push(g);});
   Object.keys(grp).sort().forEach(letter=>{
     let html=`<div style="font-size:10px;font-weight:800;letter-spacing:3px;color:var(--gold);margin:20px 0 8px;text-transform:uppercase;">${letter}</div>`;
-    grp[letter].forEach(g=>{html+=`<div style="display:grid;grid-template-columns:110px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);"><div style="font-size:12px;font-weight:700;color:var(--cream);">${g.term}</div><div style="font-size:11px;color:var(--muted);line-height:1.7;">${g.def}</div></div>`;});
+    grp[letter].forEach(g=>{html+=`<div style="display:grid;grid-template-columns:130px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);"><div style="font-size:12px;font-weight:700;color:var(--cream);">${g.term}</div><div style="font-size:11px;color:var(--muted);line-height:1.7;">${g.def}</div></div>`;});
     const s=document.createElement('div');s.innerHTML=html;c.appendChild(s);
   });
 }
@@ -1221,96 +1368,114 @@ function downloadSIPCSV(){
 ['fire_age','fire_exp','fire_saved','fire_inv','fire_ret','fire_inf'].forEach(id=>document.getElementById(id).addEventListener('input',calcFIRE));
 ['roi_p','roi_r','roi_t'].forEach(id=>document.getElementById(id).addEventListener('input',calcROI));
 ['ins_inc','ins_age','ins_ret','ins_liab','ins_exist'].forEach(id=>document.getElementById(id).addEventListener('input',calcInsurance));
-['tax_inc','tax_80c','tax_80d','tax_hl','tax_nps'].forEach(id=>document.getElementById(id).addEventListener('input',calcTax));
 
-// ================================================================
-// INIT
-// ================================================================
-window.onload=function(){
-  setMode('india');
-  calcSIP();
-};
+window.onload=function(){setMode('india');};
 </script>
 
 <script>
 // ================================================================
-// CUSTOM LIVE TICKER
+// LIVE SIDEBAR & TICKER
 // ================================================================
-let tickerAnimation=null;
-
-async function loadTickerData(mode){
+const STATIC_FALLBACK={
+  india:[
+    {label:'SENSEX',value:'74,532',pct:'+0.44',up:true},{label:'NIFTY 50',value:'23,114',pct:'+0.49',up:true},
+    {label:'NIFTY BANK',value:'54,018',pct:'-2.36',up:false},{label:'GOLD',value:'₹6,842',pct:'+0.43',up:true},
+    {label:'USD/INR',value:'93.75',pct:'-0.12',up:false},
+  ],
+  usa:[
+    {label:'S&P 500',value:'6,606',pct:'-0.27',up:false},{label:'NASDAQ',value:'22,090',pct:'-0.28',up:false},
+    {label:'DOW',value:'43,215',pct:'-0.15',up:false},{label:'GOLD',value:'$4,617',pct:'+0.31',up:true},
+    {label:'USD/EUR',value:'0.9241',pct:'+0.12',up:true},
+  ],
+  europe:[
+    {label:'EURO STOXX 50',value:'5,372',pct:'-1.62',up:false},{label:'DAX',value:'22,391',pct:'-1.45',up:false},
+    {label:'FTSE 100',value:'8,673',pct:'-2.35',up:false},{label:'GOLD',value:'€4,263',pct:'+0.21',up:true},
+    {label:'EUR/USD',value:'1.0823',pct:'-0.12',up:false},
+  ],
+  world:[
+    {label:'S&P 500',value:'6,606',pct:'-0.27',up:false},{label:'MSCI WORLD',value:'3,841',pct:'-0.31',up:false},
+    {label:'BITCOIN',value:'$84,200',pct:'-1.80',up:false},{label:'GOLD',value:'$4,617',pct:'+0.31',up:true},
+    {label:'OIL (WTI)',value:'$68.40',pct:'-0.90',up:false},
+  ]
+};
+let sidebarTimer=null;
+async function loadSidebarLive(){
   try{
-    const res=await fetch('/api/market?mode='+mode);
+    const res=await fetch('/api/market?mode='+currentMode,{signal:AbortSignal.timeout(5000)});
+    if(!res.ok) throw new Error('non-200');
     const data=await res.json();
-    if(data.tickers) renderTicker(mode,data.tickers);
-  }catch(e){}
+    if(data.fallback) throw new Error('fallback');
+    const fb=STATIC_FALLBACK[currentMode]||STATIC_FALLBACK.india;
+    const items=data.tickers.map((t,i)=>
+      t.ok?{label:t.label,value:String(t.value),pct:(t.pct>=0?'+':'')+t.pct,up:t.pct>=0}:(fb[i]||{label:t.label,value:'—',pct:'—',up:null})
+    ).slice(0,5);
+    renderSidebar(items,true);
+  }catch{renderSidebar(STATIC_FALLBACK[currentMode]||STATIC_FALLBACK.india,false);}
+}
+function renderSidebar(items,live){
+  const el=document.getElementById('sidebar-market');
+  document.getElementById('sidebar-live-dot').style.background=live?'#4ade80':'#9090A8';
+  document.getElementById('sidebar-updated').textContent=live?new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'Snapshot';
+  el.innerHTML=items.map(t=>{
+    const c=t.up===true?'#4ade80':t.up===false?'#f87171':'var(--muted)';
+    const arrow=t.up===true?'▲':t.up===false?'▼':'';
+    return`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);">
+      <span style="font-size:10px;color:var(--muted);">${t.label}</span>
+      <div style="text-align:right;"><span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--cream);display:block;">${t.value}</span>
+      <span style="font-size:9px;color:${c};">${arrow} ${t.pct}%</span></div></div>`;
+  }).join('');
+}
+function startSidebarRefresh(){
+  if(sidebarTimer)clearInterval(sidebarTimer);
+  loadSidebarLive();
+  sidebarTimer=setInterval(loadSidebarLive,30000);
 }
 
+let tickerAnimation=null;
+async function loadTickerData(mode){
+  try{const res=await fetch('/api/market?mode='+mode);const data=await res.json();if(data.tickers)renderTicker(mode,data.tickers);}
+  catch(e){renderTickerFallback(mode);}
+}
+function renderTickerFallback(mode){
+  const fb=STATIC_FALLBACK[mode]||STATIC_FALLBACK.india;
+  renderTickerItems(mode,fb.map(t=>({...t,ok:true,value:parseFloat(String(t.value).replace(/[^0-9.]/g,''))||0,pct:parseFloat(t.pct)||0,up:t.up})));
+}
 function renderTicker(mode,tickers){
-  const track=document.getElementById('ticker-track');
-  if(!track) return;
-  const indiaMode=mode==='india';
-  const ticker=document.getElementById('live-ticker');
-  ticker.style.borderBottomColor=indiaMode?'rgba(201,168,76,.15)':'rgba(79,142,247,.2)';
-  ticker.style.background='#0e0e14';
-  const items=tickers.filter(t=>t.ok).map(t=>{
-    const up=t.up;
-    const color=up?'#22C55E':'#EF4444';
-    const bgCol=up?'rgba(34,197,94,.1)':'rgba(239,68,68,.1)';
-    const borderCol=up?'rgba(34,197,94,.25)':'rgba(239,68,68,.25)';
+  const live=tickers.filter(t=>t.ok);
+  if(!live.length){renderTickerFallback(mode);return;}
+  renderTickerItems(mode,live);
+}
+function renderTickerItems(mode,items){
+  const track=document.getElementById('ticker-track');if(!track)return;
+  const modeColors={india:'#C9A84C',usa:'#60a5fa',europe:'#a5b4fc',world:'#4ade80'};
+  const modeFlags={india:'🇮🇳',usa:'🇺🇸',europe:'🇪🇺',world:'🌍'};
+  const html=items.map(t=>{
+    const up=t.up;const color=up?'#22C55E':'#EF4444';
     const arrow=up?'▲':'▼';
-    const val=fmtTickerVal(t.value,t.label,mode);
+    const val=typeof t.value==='number'?t.value.toLocaleString('en-US',{maximumFractionDigits:2}):t.value;
     const pct=(up?'+':'')+t.pct+'%';
-    return '<div style="display:inline-flex;align-items:center;padding:0 18px 0 16px;border-right:1px solid rgba(255,255,255,.05);height:44px;">'
-      +'<span style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6b7280;font-family:\'DM Sans\',sans-serif;margin-right:9px;">'+t.label+'</span>'
-      +'<span style="font-size:13.5px;font-weight:600;color:#F0EDE6;font-family:\'DM Mono\',monospace;letter-spacing:-.4px;margin-right:7px;">'+val+'</span>'
-      +'<span style="display:inline-flex;align-items:center;gap:2px;background:'+bgCol+';border:1px solid '+borderCol+';border-radius:4px;padding:2px 7px;">'
-        +'<span style="font-size:7.5px;line-height:1;color:'+color+';">'+arrow+'</span>'
-        +'<span style="font-size:10.5px;font-weight:700;color:'+color+';font-family:\'DM Mono\',monospace;letter-spacing:-.2px;">'+pct+'</span>'
-      +'</span>'
-      +'</div>';
+    return`<div style="display:inline-flex;align-items:center;padding:0 18px 0 16px;border-right:1px solid rgba(255,255,255,.05);height:44px;">
+      <span style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6b7280;margin-right:9px;">${t.label}</span>
+      <span style="font-size:13px;font-weight:600;color:#F0EDE6;font-family:'DM Mono',monospace;margin-right:7px;">${val}</span>
+      <span style="display:inline-flex;align-items:center;gap:2px;background:${up?'rgba(34,197,94,.1)':'rgba(239,68,68,.1)'};border:1px solid ${up?'rgba(34,197,94,.25)':'rgba(239,68,68,.25)'};border-radius:4px;padding:2px 7px;">
+        <span style="font-size:7px;color:${color};">${arrow}</span>
+        <span style="font-size:10px;font-weight:700;color:${color};font-family:'DM Mono',monospace;">${pct}</span>
+      </span></div>`;
   }).join('');
-  if(!items){
-    track.innerHTML='<div style="padding:0 20px;font-size:11px;color:#6b7280;line-height:44px;">Loading market data…</div>';
-    return;
-  }
-  const badge=indiaMode
-    ?'<div style="display:inline-flex;align-items:center;padding:0 16px;height:44px;border-right:1px solid rgba(201,168,76,.2);flex-shrink:0;"><span style="font-size:9px;font-weight:800;letter-spacing:2px;color:#C9A84C;font-family:\'DM Sans\',sans-serif;">🇮🇳 LIVE</span></div>'
-    :'<div style="display:inline-flex;align-items:center;padding:0 16px;height:44px;border-right:1px solid rgba(99,102,241,.2);flex-shrink:0;"><span style="font-size:9px;font-weight:800;letter-spacing:2px;color:#818cf8;font-family:\'DM Sans\',sans-serif;">🌍 LIVE</span></div>';
-  track.innerHTML=badge+items+badge+items;
+  const badge=`<div style="display:inline-flex;align-items:center;padding:0 16px;height:44px;border-right:1px solid rgba(201,168,76,.2);flex-shrink:0;"><span style="font-size:9px;font-weight:800;letter-spacing:2px;color:${modeColors[mode]};font-family:'DM Sans',sans-serif;">${modeFlags[mode]} LIVE</span></div>`;
+  track.innerHTML=badge+html+badge+html;
   startTickerScroll(track);
 }
-
-function fmtTickerVal(val,label,mode){
-  if(!val&&val!==0) return '—';
-  const indiaIndices=['SENSEX','NIFTY 50','NIFTY BANK'];
-  const forex=['USD/INR','EUR/INR','EUR/USD','GBP/USD'];
-  const crypto=['BITCOIN','ETHEREUM'];
-  if(indiaIndices.includes(label)) return val.toLocaleString('en-IN',{maximumFractionDigits:2});
-  if(forex.includes(label)) return val.toFixed(4);
-  if(crypto.includes(label)) return '$'+val.toLocaleString('en-US',{maximumFractionDigits:2});
-  if(mode==='india'&&val>10) return '₹'+val.toLocaleString('en-IN',{maximumFractionDigits:2});
-  return val.toLocaleString('en-US',{maximumFractionDigits:2});
-}
-
 function startTickerScroll(track){
-  if(tickerAnimation) cancelAnimationFrame(tickerAnimation);
+  if(tickerAnimation)cancelAnimationFrame(tickerAnimation);
   let pos=0;
-  const speed=0.45;
-  function step(){
-    const half=track.scrollWidth/2;
-    pos+=speed;
-    if(pos>=half) pos=0;
-    track.style.transform='translateX('+(-pos)+'px)';
-    tickerAnimation=requestAnimationFrame(step);
-  }
+  function step(){const half=track.scrollWidth/2;pos+=0.45;if(pos>=half)pos=0;track.style.transform='translateX('+(-pos)+'px)';tickerAnimation=requestAnimationFrame(step);}
   tickerAnimation=requestAnimationFrame(step);
 }
-
-const liveTicker=document.getElementById('live-ticker');
-if(liveTicker){
-  liveTicker.addEventListener('mouseenter',function(){if(tickerAnimation) cancelAnimationFrame(tickerAnimation);});
-  liveTicker.addEventListener('mouseleave',function(){const t=document.getElementById('ticker-track');if(t&&t.innerHTML) startTickerScroll(t);});
+const lt=document.getElementById('live-ticker');
+if(lt){
+  lt.addEventListener('mouseenter',function(){if(tickerAnimation)cancelAnimationFrame(tickerAnimation);});
+  lt.addEventListener('mouseleave',function(){const t=document.getElementById('ticker-track');if(t&&t.innerHTML)startTickerScroll(t);});
 }
 setInterval(function(){loadTickerData(currentMode);},30000);
 </script>
