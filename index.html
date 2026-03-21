@@ -327,6 +327,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">Learn</div>
     <div class="nav-item" id="btn-edu"      onclick="navTo('edu')">🎓 Financial Academy</div>
     <div class="nav-item" id="btn-glossary" onclick="navTo('glossary')">📖 Glossary</div>
+    <div class="nav-item" id="btn-compare" onclick="navTo('compare')">⚖️ SIP vs Lump Sum</div>
   </div>
 
   <div style="padding:14px 18px;border-top:1px solid rgba(201,168,76,.1);">
@@ -433,6 +434,11 @@ tr:hover td{background:rgba(255,255,255,.02);}
       </div>
     </div>
 
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+      <button class="btn-outline" onclick="shareResult('sip')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;"><span>📤</span> Share Result</button>
+      <button class="btn-outline" onclick="navTo('compare')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;background:rgba(201,168,76,.08);"><span>⚖️</span> SIP vs Lump Sum</button>
+    </div>
+
     <div class="card" style="margin-bottom:20px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
         <h3 style="font-size:14px;font-weight:700;">Year-by-Year Projection</h3>
@@ -497,6 +503,12 @@ tr:hover td{background:rgba(255,255,255,.02);}
         <tbody id="emi_tbody"></tbody></table>
       </div>
     </div>
+
+    <div class="edu-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:20px;">
+      <div class="edu-card" onclick="showLesson('emi-prepay')"><div style="font-size:20px;margin-bottom:8px;">💰</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Prepay Your Loan</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">Even one extra EMI/year can slash years off your loan and save lakhs in interest.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+      <div class="edu-card" onclick="showLesson('emi-tax')"><div style="font-size:20px;margin-bottom:8px;">📋</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Tax Benefits</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">A home loan gives you dual tax deductions — principal under 80C and interest under 24(b).</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+      <div class="edu-card" onclick="showLesson('emi-vs-rent')"><div style="font-size:20px;margin-bottom:8px;">🏠</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Buy vs Rent</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">Buying isn't always better than renting. The real calculation is more nuanced than most think.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+    </div>
   </div>
 
   <!-- ====== FIRE TAB ====== -->
@@ -532,6 +544,12 @@ tr:hover td{background:rgba(255,255,255,.02);}
         </div>
       </div>
     </div>
+
+    <div class="edu-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:20px;">
+      <div class="edu-card" onclick="showLesson('fire-4pct')"><div style="font-size:20px;margin-bottom:8px;">🔥</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">The 4% Rule</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">The safest withdrawal rate that lets your corpus last 30+ years without running out.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+      <div class="edu-card" onclick="showLesson('fire-types')"><div style="font-size:20px;margin-bottom:8px;">🎯</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Types of FIRE</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">Lean FIRE, Fat FIRE, Barista FIRE — find the retirement style that fits your lifestyle.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+      <div class="edu-card" onclick="showLesson('fire-inflation')"><div style="font-size:20px;margin-bottom:8px;">📉</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Inflation Risk</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">The silent destroyer of retirement plans — how to inflation-proof your FIRE corpus.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+    </div>
   </div>
 
   <!-- ====== ROI TAB ====== -->
@@ -559,6 +577,12 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <h3 style="font-size:14px;font-weight:700;margin-bottom:5px;" id="roi-compare-title">Asset Class Comparison — 20 Years</h3>
       <p style="font-size:11px;color:var(--muted);margin-bottom:16px;" id="roi-compare-sub">Historical averages</p>
       <div id="asset_compare"></div>
+    </div>
+
+    <div class="edu-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:20px;">
+      <div class="edu-card" onclick="showLesson('roi-cagr')"><div style="font-size:20px;margin-bottom:8px;">📈</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">What is CAGR?</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">Compound Annual Growth Rate — the one number that tells you how an investment truly performed.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+      <div class="edu-card" onclick="showLesson('roi-xirr')"><div style="font-size:20px;margin-bottom:8px;">🧮</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">CAGR vs XIRR</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">Why XIRR is the correct metric for SIPs — and why CAGR alone can mislead you.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+      <div class="edu-card" onclick="showLesson('roi-rebalance')"><div style="font-size:20px;margin-bottom:8px;">⚖️</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Rebalancing</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">Why rebalancing your portfolio annually beats buy-and-hold in risk-adjusted returns.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
     </div>
   </div>
 
@@ -631,6 +655,62 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div id="glossary_list"></div>
   </div>
 
+  <!-- ====== COMPARE TAB ====== -->
+  <div id="compare" class="tab">
+    <div class="section-eyebrow">Side-by-Side Analysis</div>
+    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">SIP vs Lump Sum</h1>
+    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Same money, same return, same duration — which strategy wins?</p>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">COMPARISON INPUTS</div>
+      <div class="grid-3" style="gap:18px;">
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Monthly Amount</label><span class="mono" style="font-size:13px;font-weight:600;color:var(--gold-light);" id="cmp_p_val">—</span></div>
+          <input type="range" id="cmp_p" min="500" max="200000" step="500" value="25000" oninput="buildCompare()">
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Annual Return</label><span class="mono" style="font-size:13px;font-weight:600;color:var(--gold-light);" id="cmp_r_val">12%</span></div>
+          <input type="range" id="cmp_r" min="1" max="30" step="0.5" value="12" oninput="buildCompare()">
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Years</label><span class="mono" style="font-size:13px;font-weight:600;color:var(--gold-light);" id="cmp_t_val">15 yrs</span></div>
+          <input type="range" id="cmp_t" min="1" max="40" step="1" value="15" oninput="buildCompare()">
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:20px;">
+      <div class="result-box" id="cmp_sip_box" style="padding:20px;">
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">📈 SIP (Monthly)</div>
+        <div style="font-family:Playfair Display,serif;font-size:1.9rem;font-weight:900;color:var(--gold-light);" id="cmp_sip_corpus">—</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="cmp_sip_detail">—</div>
+        <div style="margin-top:12px;font-size:10px;font-weight:700;color:#4ade80;" id="cmp_sip_winner"></div>
+      </div>
+      <div class="result-box" id="cmp_ls_box" style="padding:20px;">
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">💰 Lump Sum (Upfront)</div>
+        <div style="font-family:Playfair Display,serif;font-size:1.9rem;font-weight:900;color:var(--gold-light);" id="cmp_ls_corpus">—</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="cmp_ls_detail">—</div>
+        <div style="margin-top:12px;font-size:10px;font-weight:700;color:#4ade80;" id="cmp_ls_winner"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">YEAR-BY-YEAR GROWTH</div>
+      <canvas id="cmpChart" height="180"></canvas>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:16px;">THE VERDICT</div>
+      <div id="cmp_verdict" style="font-size:13px;color:var(--cream);line-height:1.8;"></div>
+    </div>
+
+    <div class="edu-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div class="edu-card" onclick="showLesson('cmp-when-sip')"><div style="font-size:20px;margin-bottom:8px;">📅</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">When to Choose SIP</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">SIPs shine in volatile markets and for salaried investors who earn monthly.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+      <div class="edu-card" onclick="showLesson('cmp-when-ls')"><div style="font-size:20px;margin-bottom:8px;">💸</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">When Lump Sum Wins</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">After a market crash or when you have a windfall, lump sum can dramatically outperform.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+      <div class="edu-card" onclick="showLesson('cmp-hybrid')"><div style="font-size:20px;margin-bottom:8px;">🔀</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Hybrid Strategy</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">Lump sum into debt + STP to equity — how the pros deploy large amounts safely.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+    </div>
+  </div>
+
   </div><!-- end main-scroll -->
 </div><!-- end main -->
 
@@ -644,6 +724,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <button class="bnav-item" id="bnav-tax" onclick="navTo('tax')" style="position:relative;"><span class="bnav-icon">📋</span><span class="bnav-label">Tax</span><span class="bnav-indicator"></span></button>
   <button class="bnav-item" id="bnav-edu" onclick="navTo('edu')" style="position:relative;"><span class="bnav-icon">🎓</span><span class="bnav-label">Learn</span><span class="bnav-indicator"></span></button>
   <button class="bnav-item" id="bnav-glossary" onclick="navTo('glossary')" style="position:relative;"><span class="bnav-icon">📖</span><span class="bnav-label">Glossary</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-compare" onclick="navTo('compare')" style="position:relative;"><span class="bnav-icon">⚖️</span><span class="bnav-label">Compare</span><span class="bnav-indicator"></span></button>
 </nav>
 
 </div><!-- end app -->
@@ -911,7 +992,7 @@ function closeDrawer(){
 // ================================================================
 // NAVIGATION
 // ================================================================
-const ALL_TABS=['sip','emi','fire','roi','insurance','tax','edu','glossary'];
+const ALL_TABS=['sip','emi','fire','roi','insurance','tax','edu','glossary','compare'];
 function navTo(id){
   closeDrawer();
   ALL_TABS.forEach(t=>{
@@ -927,6 +1008,7 @@ function navTo(id){
   else if(id==='tax') renderTax();
   else if(id==='edu') buildEdu();
   else if(id==='glossary') buildGlossary();
+  else if(id==='compare') buildCompare();
   var s=document.getElementById('main-scroll');if(s)s.scrollTop=0;
 }
 
@@ -1673,6 +1755,90 @@ var LESSONS = {
     body:"Spreading investments across geographies means your portfolio is not tied to any single economy, politics, or currency. When one market falls, others may hold or rise.<br><br>Currency diversification adds another layer of protection.",
     example:"<strong>2022 Market Performance:</strong><br><br>India Nifty 50: <strong style='color:#4ade80'>+4.3%</strong><br>USA S&P 500: <strong style='color:#f87171'>-19.4%</strong><br>Brazil Bovespa: <strong style='color:#4ade80'>+4.7%</strong><br>UK FTSE 100: <strong style='color:#4ade80'>+0.9%</strong><br><br>A globally diversified portfolio smoothed out the US crash significantly.",
     tip:"Low-cost MSCI World ETFs give exposure to 1,500+ companies across 23 developed countries in a single instrument."
+  },
+  "emi-prepay": {
+    icon:"💰", tag:"Loan Strategy",
+    title:"Prepay Your Loan — The Best Risk-Free Return",
+    body:"Every rupee you prepay on your home loan saves you interest at the full loan rate — which is currently 8-9%. That is a guaranteed, risk-free return higher than FDs, PPF, or even many equity funds net of tax.",
+    example:"<strong>50L loan at 8.5% for 20 years:</strong><br><br>Normal: EMI 43,391 · Total interest 54.1L<br>Prepay 1L in Year 1: saves <strong style='color:#4ade80'>4.8L interest</strong>, cuts 2.5 years<br>Prepay 1 extra EMI/year: saves <strong style='color:#4ade80'>8L+</strong>, cuts 4 years<br><br>The earlier you prepay, the more you save — interest is front-loaded.",
+    tip:"Always ask your bank to reduce tenure (not EMI) when prepaying. Reducing tenure saves far more interest than reducing EMI."
+  },
+  "emi-tax": {
+    icon:"📋", tag:"Tax Planning",
+    title:"Home Loan Tax Benefits — Double Deduction",
+    body:"A home loan gives you two simultaneous tax deductions under Indian tax law — making it one of the most tax-efficient financial instruments available to salaried employees.",
+    example:"<strong>On a 60L home loan at 8.5%:</strong><br><br>Section 80C: Principal repaid up to <strong style='color:#4ade80'>1.5L/yr</strong> — saves 46,800/yr at 30% slab<br>Section 24(b): Interest paid up to <strong style='color:#4ade80'>2L/yr</strong> — saves 62,400/yr<br><br>Combined annual tax saving: <strong style='color:#4ade80'>1,09,200/yr</strong> for 3-4 years",
+    tip:"Under the New Tax Regime, Section 24(b) and 80C deductions are NOT available. This is the biggest reason many home loan borrowers are better off in the Old Regime."
+  },
+  "emi-vs-rent": {
+    icon:"🏠", tag:"Buy vs Rent",
+    title:"Buy vs Rent — The Real Calculation",
+    body:"Buying feels safer but is not always the smarter financial decision. The real comparison must account for opportunity cost — what would the down payment earn if invested instead?",
+    example:"<strong>1 Cr property in Mumbai:</strong><br><br>Down payment 20L → if invested at 12% for 20yr = <strong style='color:#4ade80'>1.93 Cr</strong><br>EMI 75K/mo vs rent 25K/mo → extra 50K/mo SIP for 20yr = <strong style='color:#4ade80'>4.99 Cr</strong><br>Property appreciation 6%/yr for 20yr = 3.2 Cr<br><br>Renting + investing: 6.9 Cr. Buying: 3.2 Cr. <strong style='color:#f87171'>Big difference.</strong>",
+    tip:"Buying makes emotional and financial sense when: you plan to stay 10+ years, the price-to-rent ratio is below 20x, and the city has strong appreciation history."
+  },
+  "fire-4pct": {
+    icon:"🔥", tag:"FIRE Rule",
+    title:"The 4% Rule — How It Was Discovered",
+    body:"The 4% rule comes from the Trinity Study (1998), which analyzed 30-year retirement periods from 1926-1995. It found that withdrawing 4% of your portfolio in year 1, then adjusting for inflation annually, had a 95%+ success rate across all historical periods.",
+    example:"<strong>Monthly expenses 75,000:</strong><br><br>Annual expenses: 9L<br>FIRE corpus needed (25x): <strong style='color:#4ade80'>2.25 Cr</strong><br>Monthly safe withdrawal: 75,000<br>Portfolio survives: 30+ years in 95% of historical scenarios<br><br>At 3% withdrawal (33x): essentially perpetual — corpus grows.",
+    tip:"For Indian investors, use a 3-3.5% withdrawal rate. India has higher inflation (6% vs 2-3% in the US), so the 4% rule is slightly aggressive for INR-based retirements."
+  },
+  "fire-types": {
+    icon:"🎯", tag:"FIRE Lifestyle",
+    title:"Lean FIRE, Fat FIRE, Barista FIRE",
+    body:"FIRE is not one-size-fits-all. Different people have different income levels, lifestyles, and risk tolerances — leading to very different retirement targets.",
+    example:"<strong>Monthly expenses determine your FIRE type:</strong><br><br>Under 30K/mo: <strong style='color:#60a5fa'>Lean FIRE</strong> — frugal, corpus 90L-1Cr<br>30-75K/mo: <strong style='color:#4ade80'>Regular FIRE</strong> — comfortable, corpus 1-2.25Cr<br>75K-2L/mo: <strong style='color:#C9A84C'>Fat FIRE</strong> — luxurious, corpus 2.25-6Cr<br>Part-time work: <strong style='color:#a78bfa'>Barista FIRE</strong> — smaller corpus, earn 15-20K to cover basics",
+    tip:"Barista FIRE is underrated — working 2-3 days a week at something you enjoy covers daily expenses, letting your corpus compound untouched for 5-7 more years before full retirement."
+  },
+  "fire-inflation": {
+    icon:"📉", tag:"Inflation Risk",
+    title:"Inflation — The Silent Retirement Killer",
+    body:"At 6% inflation, your purchasing power halves every 12 years. A corpus that supports 75K/month today will only support 37K/month in real terms by 2037 — unless your investments grow faster than inflation.",
+    example:"<strong>75,000/month today at 6% inflation:</strong><br><br>In 10 years: needs <strong style='color:#f87171'>1,34,000/mo</strong> to maintain same lifestyle<br>In 20 years: needs <strong style='color:#f87171'>2,40,000/mo</strong><br>In 30 years: needs <strong style='color:#f87171'>4,30,000/mo</strong><br><br>Your FIRE corpus must grow at least 6%/yr just to stay even.",
+    tip:"Keep 60-70% of your FIRE corpus in equity even after retirement. Bonds and FDs alone will not beat inflation over a 30-year horizon. A 60/40 equity-debt split is the historical sweet spot."
+  },
+  "roi-cagr": {
+    icon:"📈", tag:"Performance Metric",
+    title:"CAGR — The Only Return Metric That Matters",
+    body:"Compounded Annual Growth Rate (CAGR) tells you the smooth annual rate at which an investment grew, eliminating the noise of year-to-year volatility. It is the standard for comparing any two investments.",
+    example:"<strong>Investment grew from 1L to 3.1L in 10 years:</strong><br><br>Simple math says 210% return — but that ignores time.<br>CAGR = (3.1/1)^(1/10) - 1 = <strong style='color:#4ade80'>12% per year</strong><br><br>Now you can compare: FD at 7% CAGR vs Nifty at 13% CAGR vs Gold at 9.5% CAGR — apples to apples.",
+    tip:"Always demand CAGR when evaluating any investment product. Absolute returns (200% in 10 years!) are meaningless without knowing the time period."
+  },
+  "roi-xirr": {
+    icon:"🧮", tag:"SIP Returns",
+    title:"CAGR vs XIRR — Why SIPs Need XIRR",
+    body:"CAGR works for lump sum investments. For SIPs with multiple investments at different times, you need XIRR (Extended Internal Rate of Return) — it accounts for the timing of each investment.",
+    example:"<strong>Why CAGR misleads for SIPs:</strong><br><br>You invest 1L/month for 10 years = 12L total<br>Final value = 23L. Simple CAGR on 12L = 92% = 6.8% CAGR<br>But your first payment had 10 years to grow, last had 1 month.<br>XIRR correctly calculates: <strong style='color:#4ade80'>12.4% annualised</strong>",
+    tip:"Use the XIRR function in Excel or Google Sheets to calculate true SIP returns. Input each SIP date/amount as negative cash flows and final value as positive."
+  },
+  "roi-rebalance": {
+    icon:"⚖️", tag:"Portfolio Management",
+    title:"Rebalancing — Sell High, Buy Low Automatically",
+    body:"Rebalancing means restoring your target asset allocation (e.g. 70% equity, 30% debt) once a year. When equities rally, you sell some equity and buy debt. When equities crash, you buy more equity. It forces you to sell high and buy low — systematically.",
+    example:"<strong>Starting: 70% equity, 30% debt</strong><br><br>After a bull run: equity becomes 85% of portfolio<br>Rebalance: sell equity, buy debt to restore 70/30<br>After a crash: equity drops to 55%<br>Rebalance: sell debt, buy equity at low prices<br><br>Studies show annual rebalancing adds <strong style='color:#4ade80'>0.5-1.5% CAGR</strong> vs no rebalancing.",
+    tip:"Rebalance once a year on your birthday — easy to remember, avoids over-trading. Do not rebalance more than twice a year as transaction costs erode the benefit."
+  },
+  "cmp-when-sip": {
+    icon:"📅", tag:"Investment Timing",
+    title:"When SIP Wins — Volatility Is Your Friend",
+    body:"SIPs outperform lump sum when markets are volatile or trending sideways. Because you buy at multiple price points, you catch both highs and lows — resulting in a lower average cost than a single entry point.",
+    example:"<strong>2008-2018 (volatile decade):</strong><br><br>Lump sum 12L in Jan 2008 (market peak): final value 38L = <strong style='color:#f59e0b'>12% CAGR</strong><br>SIP 10K/month same period: invested 12L, final value 51L = <strong style='color:#4ade80'>16.2% CAGR</strong><br><br>Volatility cost the lump sum investor — and rewarded the SIP investor.",
+    tip:"For salaried investors, SIP is almost always the right choice — not just for returns, but for financial discipline. Automating the investment removes emotion from the equation."
+  },
+  "cmp-when-ls": {
+    icon:"💸", tag:"Investment Timing",
+    title:"When Lump Sum Wins — Catch the Bottom",
+    body:"Lump sum beats SIP in consistently rising markets. If you invest a large amount at a market bottom or at the start of a multi-year bull run, every rupee benefits from the full period of growth.",
+    example:"<strong>March 2020 (COVID crash bottom):</strong><br><br>Lump sum 12L at Nifty 7,500: grew to 52L in 3 years = <strong style='color:#4ade80'>63% CAGR</strong><br>SIP 33K/month same period: invested 12L, grew to 18L = <strong style='color:#f59e0b'>28% CAGR</strong><br><br>Perfect market timing with lump sum was 2.25x better.",
+    tip:"The problem: nobody can reliably time market bottoms. Studies show that time IN the market beats time OF the market for 90%+ of investors. SIP removes the guesswork."
+  },
+  "cmp-hybrid": {
+    icon:"🔀", tag:"Advanced Strategy",
+    title:"STP — The Smart Hybrid Strategy",
+    body:"Systematic Transfer Plan (STP): park your lump sum in a liquid/debt fund first, then automatically transfer a fixed amount to equity every month. You get the safety of gradual equity entry AND your idle cash earns 6-7% in debt.",
+    example:"<strong>You receive 24L bonus:</strong><br><br>Put 24L in liquid fund (earning 7%)<br>Set STP: transfer 2L/month to equity fund<br>Month 1-12: entering equity gradually, no timing risk<br>Liquid fund balance earns 7% while waiting<br><br>Result: better than pure SIP (idle cash earns) + safer than pure lump sum.",
+    tip:"STP is the professional way to deploy bonuses, RSU vesting, property sale proceeds, or inheritance into equity markets. Most major AMCs offer STP with zero exit load."
   }
 };
 
@@ -1786,9 +1952,187 @@ setTimeout(function(){
     if (!p.name && !localStorage.getItem("wh_visited")) {
       localStorage.setItem("wh_visited","1");
       openOnboard();
+    } else if (p.name) {
+      applyProfileToSliders(p);
     }
   } catch(e) {}
 }, 1500);
+
+// ============================================================
+// PROFILE AUTO-FILL SLIDERS
+// ============================================================
+function applyProfileToSliders(p) {
+  if (!p) return;
+  var age = parseInt(p.age);
+  var income = parseFloat(p.income);
+  if (age && age >= 18 && age <= 65) {
+    ["fire_age","ins_age"].forEach(function(id){
+      var el = document.getElementById(id);
+      var vEl = document.getElementById("v_" + id.replace("_","_"));
+      if (el) { el.value = age; }
+    });
+    var fa = document.getElementById("fire_age");
+    if (fa) { fa.value = age; document.getElementById("v_fire_age").textContent = age; }
+    var ia = document.getElementById("ins_age");
+    if (ia) { ia.value = Math.min(age,55); document.getElementById("v_ins_age").textContent = Math.min(age,55); }
+  }
+  if (income && income > 0) {
+    var r = REGIONS[currentMode];
+    // Set SIP to ~20% of monthly income
+    var sipAmt = Math.round(income * 0.20 / r.sipStep) * r.sipStep;
+    sipAmt = Math.max(r.sipMin, Math.min(r.sipMax, sipAmt));
+    var sipEl = document.getElementById("sip_p");
+    if (sipEl) { sipEl.value = sipAmt; }
+    // Set insurance income
+    var annualInc = income * 12;
+    var insEl = document.getElementById("ins_inc");
+    if (insEl) {
+      var clipped = Math.max(r.insIncMin, Math.min(r.insIncMax, annualInc));
+      insEl.value = clipped;
+    }
+  }
+}
+
+// Also call applyProfileToSliders when obNext saves profile
+var _origObNext = obNext;
+obNext = function() {
+  _origObNext();
+  try {
+    var p = JSON.parse(localStorage.getItem("wh_profile")||"{}");
+    if (p.name) applyProfileToSliders(p);
+  } catch(e) {}
+};
+
+// ============================================================
+// SHARE RESULT
+// ============================================================
+function shareResult(tab) {
+  var lines = [];
+  var url = "https://moneyveda.org";
+  if (tab === "sip") {
+    var corpus = document.getElementById("sip_total").textContent;
+    var invested = document.getElementById("sip_invested").textContent;
+    var gains = document.getElementById("sip_gains").textContent;
+    var mult = document.getElementById("sip_xbadge").textContent;
+    var p = document.getElementById("sip_p").value;
+    var r = document.getElementById("sip_r").value;
+    var t = document.getElementById("sip_t").value;
+    lines = [
+      "My SIP Wealth Projection",
+      "Monthly SIP: " + fmtSym(+p),
+      "Return: " + r + "% for " + t + " years",
+      "Total Corpus: " + corpus,
+      "Amount Invested: " + invested,
+      "Wealth Gained: " + gains + " (" + mult + ")",
+      "Calculate yours: " + url
+    ];
+  }
+  var text = lines.join("\n");
+  if (navigator.share) {
+    navigator.share({ title: "WealthHub Result", text: text, url: url })
+      .catch(function(){});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function(){
+      showToast("Result copied to clipboard!");
+    });
+  } else {
+    showToast("Copy: " + corpus);
+  }
+}
+
+function showToast(msg) {
+  var t = document.createElement("div");
+  t.textContent = msg;
+  t.style.cssText = "position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#22222C;color:#F5F0E8;border:1px solid rgba(201,168,76,.3);padding:10px 20px;border-radius:100px;font-size:12px;z-index:3000;font-family:DM Sans,sans-serif;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5);";
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity="0"; t.style.transition="opacity .4s"; setTimeout(function(){ t.remove(); }, 400); }, 2200);
+}
+
+// ============================================================
+// COMPARE CALCULATOR
+// ============================================================
+var cmpChart = null;
+function buildCompare() {
+  var pEl = document.getElementById("cmp_p"); if (!pEl) return;
+  var p = +pEl.value;
+  var r = +document.getElementById("cmp_r").value;
+  var t = +document.getElementById("cmp_t").value;
+  var s = fmtSym(p);
+  document.getElementById("cmp_p_val").textContent = s;
+  document.getElementById("cmp_r_val").textContent = r.toFixed(1) + "%";
+  document.getElementById("cmp_t_val").textContent = t + " yrs";
+
+  var months = t * 12;
+  var mr = r / 12 / 100;
+  var lumpsum = p * months; // same total money
+
+  // SIP final value
+  var sipFinal = p * (((Math.pow(1+mr, months)-1)/mr)*(1+mr));
+  var sipGains = sipFinal - lumpsum;
+
+  // Lump sum final value (invest total upfront)
+  var lsFinal = lumpsum * Math.pow(1 + r/100, t);
+  var lsGains = lsFinal - lumpsum;
+
+  document.getElementById("cmp_sip_corpus").textContent = fmtSym(sipFinal);
+  document.getElementById("cmp_sip_detail").textContent = "Invested " + fmtSym(lumpsum) + " · Gains " + fmtSym(sipGains);
+  document.getElementById("cmp_ls_corpus").textContent = fmtSym(lsFinal);
+  document.getElementById("cmp_ls_detail").textContent = "Invested " + fmtSym(lumpsum) + " · Gains " + fmtSym(lsGains);
+
+  // Winner badges
+  var sipWins = sipFinal >= lsFinal;
+  document.getElementById("cmp_sip_winner").textContent = sipWins ? "🏆 WINNER" : "";
+  document.getElementById("cmp_ls_winner").textContent = !sipWins ? "🏆 WINNER" : "";
+  document.getElementById("cmp_sip_box").style.borderColor = sipWins ? "rgba(201,168,76,.6)" : "rgba(201,168,76,.25)";
+  document.getElementById("cmp_ls_box").style.borderColor = !sipWins ? "rgba(201,168,76,.6)" : "rgba(201,168,76,.25)";
+
+  // Verdict
+  var diff = Math.abs(sipFinal - lsFinal);
+  var winner = sipWins ? "SIP" : "Lump Sum";
+  var loser = sipWins ? "Lump Sum" : "SIP";
+  document.getElementById("cmp_verdict").innerHTML =
+    "<strong style='color:var(--gold-light)'>" + winner + " wins</strong> by <strong style='color:#4ade80'>" + fmtSym(diff) + "</strong> over " + t + " years.<br><br>" +
+    "With the same total capital of <strong>" + fmtSym(lumpsum) + "</strong>, " + winner.toLowerCase() + " delivers " + fmtSym(sipWins ? sipFinal : lsFinal) + " vs " + loser.toLowerCase() + "'s " + fmtSym(sipWins ? lsFinal : sipFinal) + ".<br><br>" +
+    (sipWins
+      ? "SIP wins here because spreading investments over " + t + " years means early months benefit from compounding AND you reduce timing risk. The monthly compounding frequency of SIP also adds up significantly over long periods."
+      : "Lump sum wins here because investing the full capital upfront means every rupee compounds for the entire " + t + " years. In steadily rising markets, more time in the market always wins.");
+
+  // Chart
+  var labels = [], sipData = [], lsData = [];
+  for (var y = 1; y <= t; y++) {
+    labels.push("Yr " + y);
+    var m2 = y * 12;
+    var mr2 = r / 12 / 100;
+    var sipY = p * (((Math.pow(1+mr2,m2)-1)/mr2)*(1+mr2));
+    var lsY = lumpsum * Math.pow(1+r/100, y);
+    sipData.push(Math.round(sipY));
+    lsData.push(Math.round(lsY));
+  }
+
+  if (cmpChart) { try { cmpChart.destroy(); } catch(e) {} }
+  var ctx = document.getElementById("cmpChart").getContext("2d");
+  cmpChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        { label: "SIP", data: sipData, borderColor: "#C9A84C", backgroundColor: "rgba(201,168,76,.1)", borderWidth: 2, pointRadius: 0, fill: true, tension: 0.4 },
+        { label: "Lump Sum", data: lsData, borderColor: "#6366f1", backgroundColor: "rgba(99,102,241,.08)", borderWidth: 2, pointRadius: 0, fill: true, tension: 0.4 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: "#9090A8", font: { size: 11 } } },
+        tooltip: { callbacks: { label: function(c){ return " " + c.dataset.label + ": " + fmtSym(c.raw); } } }
+      },
+      scales: {
+        x: { ticks: { color: "#9090A8", font: { size: 9 } }, grid: { color: "rgba(255,255,255,.04)" } },
+        y: { ticks: { color: "#9090A8", font: { size: 9 }, callback: function(v){ return fmtSym(v); } }, grid: { color: "rgba(255,255,255,.04)" } }
+      }
+    }
+  });
+}
 </script>
 
 </body>
