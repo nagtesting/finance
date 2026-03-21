@@ -200,20 +200,6 @@ tr:hover td{background:rgba(255,255,255,.02);}
   .tab{padding:28px 24px;}
   .big-number{font-size:2.3rem;}
 }
-
-/* ===== LANGUAGE SWITCHER ===== */
-.lang-switcher{display:flex;gap:3px;margin-top:10px;}
-.lang-btn{
-  flex:1;padding:5px 4px;border-radius:6px;font-size:9px;font-weight:700;
-  cursor:pointer;border:1px solid rgba(255,255,255,.08);background:transparent;
-  color:var(--muted);font-family:'DM Sans',sans-serif;text-align:center;
-  transition:all .2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
-}
-.lang-btn:hover{border-color:rgba(255,255,255,.2);color:var(--cream);}
-.lang-btn.active{background:rgba(201,168,76,.18);border-color:rgba(201,168,76,.5);color:var(--gold-light);}
-/* Mobile lang bar */
-#mob-lang-bar{display:none;background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.08);padding:4px 14px;gap:4px;}
-@media(max-width:768px){#mob-lang-bar{display:flex;}}
 </style>
 </head>
 <body>
@@ -237,24 +223,15 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
 <div id="drawer-overlay" onclick="closeDrawer()"></div>
 
-<!-- MOBILE LANG BAR -->
-<div id="mob-lang-bar">
-  <button class="lang-btn active" id="mob-lang-en" onclick="setLang('en')">🇬🇧 EN</button>
-  <button class="lang-btn" id="mob-lang-hi" onclick="setLang('hi')">🇮🇳 हि</button>
-  <button class="lang-btn" id="mob-lang-es" onclick="setLang('es')">🇪🇸 ES</button>
-  <button class="lang-btn" id="mob-lang-de" onclick="setLang('de')">🇩🇪 DE</button>
-</div>
-
-
 <!-- SIDEBAR -->
 <nav id="sidebar">
   <div style="padding:20px 18px 14px;">
     <div class="display" style="font-size:18px;font-weight:900;letter-spacing:-.5px;">
       WEALTH<span style="color:var(--gold);">HUB</span>
     </div>
-    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:2px;" data-i18n="appSubtitle">Pro Finance Suite</div>
+    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:2px;">Pro Finance Suite</div>
     <div style="margin-top:14px;">
-      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;" data-i18n="marketRegion">Market Region</div>
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;">Market Region</div>
       <div class="mode-grid">
         <button class="mode-btn active-india" id="desk-btn-india" onclick="setMode('india')">🇮🇳 India</button>
         <button class="mode-btn" id="desk-btn-usa" onclick="setMode('usa')">🇺🇸 USA</button>
@@ -262,39 +239,28 @@ tr:hover td{background:rgba(255,255,255,.02);}
         <button class="mode-btn" id="desk-btn-world" onclick="setMode('world')">🌍 World</button>
       </div>
     </div>
-
-    <div style="margin-top:12px;">
-      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" id="lang-label-sidebar">Language</div>
-      <div class="lang-switcher">
-        <button class="lang-btn active" id="desk-lang-en" onclick="setLang('en')">🇬🇧 EN</button>
-        <button class="lang-btn" id="desk-lang-hi" onclick="setLang('hi')">🇮🇳 हि</button>
-        <button class="lang-btn" id="desk-lang-es" onclick="setLang('es')">🇪🇸 ES</button>
-        <button class="lang-btn" id="desk-lang-de" onclick="setLang('de')">🇩🇪 DE</button>
-      </div>
-    </div>
-
   </div>
 
   <div class="gold-line" style="margin:0 18px;"></div>
 
   <div style="padding:12px 0;flex:1;overflow-y:auto;">
-    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 20px 5px;" data-i18n="calculators">Calculators</div>
-    <div class="nav-item active" id="btn-sip"       onclick="navTo('sip')">📈 <span data-i18n="nav_sip_text">Investment Planner</span></div>
-    <div class="nav-item"       id="btn-emi"        onclick="navTo('emi')">🏠 <span data-i18n="nav_emi_text">Loan & Mortgage</span></div>
-    <div class="nav-item"       id="btn-fire"       onclick="navTo('fire')">🔥 <span data-i18n="nav_fire_text">FIRE Retirement</span></div>
-    <div class="nav-item"       id="btn-roi"        onclick="navTo('roi')">💹 <span data-i18n="nav_roi_text">ROI & Compound</span></div>
-    <div class="nav-item"       id="btn-insurance"  onclick="navTo('insurance')">🛡️ <span data-i18n="nav_insurance_text">Insurance Planner</span></div>
-    <div class="nav-item"       id="btn-tax"        onclick="navTo('tax')">📋 <span data-i18n="nav_tax_text">Tax Optimizer</span></div>
-    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;" data-i18n="learn">Learn</div>
-    <div class="nav-item" id="btn-edu"      onclick="navTo('edu')">🎓 <span data-i18n="nav_edu_text">Financial Academy</span></div>
-    <div class="nav-item" id="btn-glossary" onclick="navTo('glossary')">📖 <span data-i18n="nav_glossary_text">Glossary</span></div>
+    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 20px 5px;">Calculators</div>
+    <div class="nav-item active" id="btn-sip"       onclick="navTo('sip')">📈 Investment Planner</div>
+    <div class="nav-item"       id="btn-emi"        onclick="navTo('emi')">🏠 Loan & Mortgage</div>
+    <div class="nav-item"       id="btn-fire"       onclick="navTo('fire')">🔥 FIRE Retirement</div>
+    <div class="nav-item"       id="btn-roi"        onclick="navTo('roi')">💹 ROI & Compound</div>
+    <div class="nav-item"       id="btn-insurance"  onclick="navTo('insurance')">🛡️ Insurance Planner</div>
+    <div class="nav-item"       id="btn-tax"        onclick="navTo('tax')">📋 Tax Optimizer</div>
+    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">Learn</div>
+    <div class="nav-item" id="btn-edu"      onclick="navTo('edu')">🎓 Financial Academy</div>
+    <div class="nav-item" id="btn-glossary" onclick="navTo('glossary')">📖 Glossary</div>
   </div>
 
   <div style="padding:14px 18px;border-top:1px solid rgba(201,168,76,.1);">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
       <div style="display:flex;align-items:center;gap:5px;">
         <span class="live-dot" id="sidebar-live-dot"></span>
-        <span style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;" data-i18n="live">Live</span>
+        <span style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Live</span>
       </div>
       <span style="font-size:9px;color:var(--muted);" id="sidebar-updated">—</span>
     </div>
@@ -327,17 +293,17 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <div class="grid-3 fade-in d1" style="margin-bottom:20px;">
       <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);">
-        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" data-i18n="totalCorpus">Total Corpus</div>
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Corpus</div>
         <div class="big-number" id="sip_total">—</div>
         <div class="stat-pill" style="margin-top:8px;display:inline-block;" id="sip_xbadge">0x</div>
       </div>
       <div class="result-box">
-        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" data-i18n="amountInvested">Amount Invested</div>
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Amount Invested</div>
         <div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="sip_invested">—</div>
         <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="sip_inv_note">—</div>
       </div>
       <div class="result-box">
-        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" data-i18n="wealthGained">Wealth Gained</div>
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Wealth Gained</div>
         <div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="sip_gains">—</div>
         <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="sip_gain_pct">0% gains</div>
       </div>
@@ -345,7 +311,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <div class="grid-2-1 fade-in d2" style="margin-bottom:20px;">
       <div class="card">
-        <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;margin-bottom:18px;" data-i18n="parameters">PARAMETERS</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;margin-bottom:18px;">PARAMETERS</div>
         <div style="margin-bottom:20px;">
           <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
             <label style="font-size:12px;color:var(--muted);" id="sip-p-label">Monthly Investment</label>
@@ -355,7 +321,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
         </div>
         <div style="margin-bottom:20px;">
           <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <label style="font-size:12px;color:var(--muted);" data-i18n="expectedReturn">Expected Return</label>
+            <label style="font-size:12px;color:var(--muted);">Expected Return</label>
             <span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_r">12.0</span><span style="font-size:10px;color:var(--muted);">%</span></span>
           </div>
           <input type="range" id="sip_r" min="1" max="30" step="0.5" value="12">
@@ -363,8 +329,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
         </div>
         <div style="margin-bottom:20px;">
           <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <label style="font-size:12px;color:var(--muted);" data-i18n="tenure">Tenure</label>
-            <span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_t">15</span><span style="font-size:10px;color:var(--muted);" data-i18n="yrs">yrs</span></span>
+            <label style="font-size:12px;color:var(--muted);">Tenure</label>
+            <span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_t">15</span><span style="font-size:10px;color:var(--muted);">yrs</span></span>
           </div>
           <input type="range" id="sip_t" min="1" max="40" step="1" value="15">
         </div>
@@ -375,20 +341,20 @@ tr:hover td{background:rgba(255,255,255,.02);}
         </div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
-        <div class="section-eyebrow" style="text-align:center;" data-i18n="corpusBreakdown">Corpus Breakdown</div>
+        <div class="section-eyebrow" style="text-align:center;">Corpus Breakdown</div>
         <div class="chart-wrap">
           <canvas id="sipChart" width="160" height="160"></canvas>
           <div class="chart-center">
-            <div style="font-size:8px;color:var(--muted);" data-i18n="returns">Returns</div>
+            <div style="font-size:8px;color:var(--muted);">Returns</div>
             <div style="font-size:1.1rem;font-weight:700;font-family:'Playfair Display',serif;color:var(--gold-light);" id="sip_return_pct_center">0%</div>
           </div>
         </div>
         <div style="display:flex;gap:12px;">
-          <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:#334155;"></div><span style="font-size:10px;color:var(--muted);" data-i18n="invested">Invested</span></div>
-          <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:var(--gold);"></div><span style="font-size:10px;color:var(--muted);" data-i18n="earnings">Earnings</span></div>
+          <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:#334155;"></div><span style="font-size:10px;color:var(--muted);">Invested</span></div>
+          <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:var(--gold);"></div><span style="font-size:10px;color:var(--muted);">Earnings</span></div>
         </div>
         <div style="width:100%;">
-          <div style="font-size:10px;color:var(--muted);margin-bottom:6px;text-align:center;" data-i18n="milestones">Milestones</div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:6px;text-align:center;">Milestones</div>
           <div id="sip_milestones" style="font-size:11px;"></div>
         </div>
       </div>
@@ -396,18 +362,18 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <div class="card" style="margin-bottom:20px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
-        <h3 style="font-size:14px;font-weight:700;" data-i18n="yearByYear">Year-by-Year Projection</h3>
-        <button class="btn-outline" onclick="downloadSIPCSV()" data-i18n="exportCsv">⬇ Export CSV</button>
+        <h3 style="font-size:14px;font-weight:700;">Year-by-Year Projection</h3>
+        <button class="btn-outline" onclick="downloadSIPCSV()">⬇ Export CSV</button>
       </div>
       <div class="table-wrap" style="max-height:280px;overflow-y:auto;">
-        <table><thead><tr><th id='th-yr'>Yr</th><th id='th-inv'>Invested</th><th id='th-val'>Value</th><th id='th-gains'>Gains</th><th>%</th><th id='th-prog'>Progress</th></tr></thead>
+        <table><thead><tr><th>Yr</th><th>Invested</th><th>Value</th><th>Gains</th><th>%</th><th>Progress</th></tr></thead>
         <tbody id="sip_tbody"></tbody></table>
       </div>
     </div>
 
     <div class="edu-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-      <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">⚡</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;" data-i18n="startEarly">Start Early</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" id="edu-sip-1">Time in market beats timing the market. Every decade of delay roughly halves your final corpus.</p></div>
-      <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">📐</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;" data-i18n="rule72">Rule of 72</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" data-i18n="rule72Desc">Divide 72 by return rate = doubling time. At 12%, money doubles every 6 years.</p></div>
+      <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">⚡</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Start Early</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" id="edu-sip-1">Time in market beats timing the market. Every decade of delay roughly halves your final corpus.</p></div>
+      <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">📐</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Rule of 72</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">Divide 72 by return rate = doubling time. At 12%, money doubles every 6 years.</p></div>
       <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">📊</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;" id="edu-sip-3-title">Cost Averaging</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" id="edu-sip-3">Regular investing buys more units when prices fall and fewer when high — automatically lowering average cost.</p></div>
     </div>
   </div>
@@ -420,16 +386,16 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <div class="grid-3" style="margin-bottom:20px;">
       <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" id="emi-monthly-label">Monthly EMI</div><div class="big-number" id="emi_monthly">—</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" data-i18n="totalInterest">Total Interest</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="emi_interest">—</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" data-i18n="totalPayment">Total Payment</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="emi_total">—</div></div>
+      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Interest</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="emi_interest">—</div></div>
+      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Payment</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="emi_total">—</div></div>
     </div>
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
-        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;" data-i18n="loanParameters">LOAN PARAMETERS</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">LOAN PARAMETERS</div>
         <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="emi-p-label">Loan Amount</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_p">—</span></div><input type="range" id="emi_p" min="10000" max="20000000" step="10000" value="5000000"></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="interestRate">Interest Rate</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_r">8.5</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="emi_r" min="1" max="20" step="0.25" value="8.5"><div style="font-size:9px;color:var(--muted);margin-top:3px;text-align:center;" id="emi-rate-hint">SBI Home Loan ~8.25% (2026)</div></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="tenure">Tenure</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_t">20</span><span style="font-size:10px;color:var(--muted);" data-i18n="yrs">yrs</span></span></div><input type="range" id="emi_t" min="1" max="30" step="1" value="20"></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Interest Rate</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_r">8.5</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="emi_r" min="1" max="20" step="0.25" value="8.5"><div style="font-size:9px;color:var(--muted);margin-top:3px;text-align:center;" id="emi-rate-hint">SBI Home Loan ~8.25% (2026)</div></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Tenure</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_t">20</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div><input type="range" id="emi_t" min="1" max="30" step="1" value="20"></div>
         <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15);border-radius:10px;padding:12px;">
           <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;" id="emi-tax-label">Tax Benefit</div>
           <div style="font-size:1.2rem;font-weight:700;font-family:'DM Mono',monospace;color:#4ade80;" id="emi_tax_saved">—</div>
@@ -437,14 +403,14 @@ tr:hover td{background:rgba(255,255,255,.02);}
         </div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
-        <div class="section-eyebrow" style="text-align:center;" data-i18n="paymentBreakdown">Payment Breakdown</div>
-        <div class="chart-wrap"><canvas id="emiChart" width="160" height="160"></canvas><div class="chart-center"><div style="font-size:8px;color:var(--muted);" data-i18n="interest">Interest</div><div style="font-size:1.1rem;font-weight:700;font-family:'Playfair Display',serif;color:#f87171;" id="emi_interest_pct_center">0%</div></div></div>
+        <div class="section-eyebrow" style="text-align:center;">Payment Breakdown</div>
+        <div class="chart-wrap"><canvas id="emiChart" width="160" height="160"></canvas><div class="chart-center"><div style="font-size:8px;color:var(--muted);">Interest</div><div style="font-size:1.1rem;font-weight:700;font-family:'Playfair Display',serif;color:#f87171;" id="emi_interest_pct_center">0%</div></div></div>
         <div style="width:100%;">
-          <div class="compare-row"><span class="compare-label" data-i18n="principal">Principal</span><div class="compare-bar"><div class="compare-fill" id="emi_bar_p" style="width:50%;background:#4f46e5;"></div></div><span class="compare-val" id="emi_pct_p">50%</span></div>
-          <div class="compare-row"><span class="compare-label" data-i18n="interest">Interest</span><div class="compare-bar"><div class="compare-fill" id="emi_bar_i" style="width:50%;background:#ef4444;"></div></div><span class="compare-val" id="emi_pct_i">50%</span></div>
+          <div class="compare-row"><span class="compare-label">Principal</span><div class="compare-bar"><div class="compare-fill" id="emi_bar_p" style="width:50%;background:#4f46e5;"></div></div><span class="compare-val" id="emi_pct_p">50%</span></div>
+          <div class="compare-row"><span class="compare-label">Interest</span><div class="compare-bar"><div class="compare-fill" id="emi_bar_i" style="width:50%;background:#ef4444;"></div></div><span class="compare-val" id="emi_pct_i">50%</span></div>
         </div>
         <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:8px;padding:10px;width:100%;text-align:center;">
-          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;" data-i18n="minIncome">Min income recommended</div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">Min income recommended</div>
           <div style="font-size:12px;color:var(--cream);" id="emi-dti-label">EMI &lt;40% of gross</div>
           <div style="font-size:11px;color:var(--gold-light);margin-top:2px;" id="emi_income_req">—</div>
         </div>
@@ -452,9 +418,9 @@ tr:hover td{background:rgba(255,255,255,.02);}
     </div>
 
     <div class="card">
-      <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;" data-i18n="amortSchedule">Amortization Schedule</h3>
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;">Amortization Schedule</h3>
       <div class="table-wrap" style="max-height:280px;overflow-y:auto;">
-        <table><thead><tr><th data-i18n="tableYr">Yr</th><th data-i18n="tableOpening">Opening</th><th data-i18n="principal">Principal</th><th data-i18n="interest">Interest</th><th data-i18n="tableClosing">Closing</th></tr></thead>
+        <table><thead><tr><th>Yr</th><th>Opening</th><th>Principal</th><th>Interest</th><th>Closing</th></tr></thead>
         <tbody id="emi_tbody"></tbody></table>
       </div>
     </div>
@@ -467,27 +433,27 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="fire-desc">Find your <strong style="color:var(--cream);">FIRE Number</strong> — the corpus that funds your lifestyle forever.</p>
 
     <div class="grid-3" style="margin-bottom:20px;">
-      <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" data-i18n="fireCorpusLabel">🎯 FIRE Corpus</div><div class="big-number" id="fire_corpus">—</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" data-i18n="yearsToFire">Years to FIRE</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="fire_years">0 yrs</div><div style="font-size:11px;margin-top:5px;color:var(--muted);" id="fire_year_label">—</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" data-i18n="safeWithdrawal">Safe Withdrawal/mo</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="fire_swr">—</div></div>
+      <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">🎯 FIRE Corpus</div><div class="big-number" id="fire_corpus">—</div></div>
+      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Years to FIRE</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="fire_years">0 yrs</div><div style="font-size:11px;margin-top:5px;color:var(--muted);" id="fire_year_label">—</div></div>
+      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Safe Withdrawal/mo</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="fire_swr">—</div></div>
     </div>
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
-        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;" data-i18n="fireInputs">FIRE INPUTS</div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="currentAge">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_age">30</span></div><input type="range" id="fire_age" min="20" max="55" value="30"></div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">FIRE INPUTS</div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_age">30</span></div><input type="range" id="fire_age" min="20" max="55" value="30"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="fire-exp-label">Monthly Expenses</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_exp">—</span></div><input type="range" id="fire_exp" min="500" max="30000" step="100" value="5000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="currentSavings">Current Savings</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_saved">—</span></div><input type="range" id="fire_saved" min="0" max="2000000" step="5000" value="100000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="monthlyInvestment">Monthly Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inv">—</span></div><input type="range" id="fire_inv" min="100" max="20000" step="100" value="2000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="portfolioReturn">Portfolio Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_ret">10</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_ret" min="4" max="20" step="0.5" value="10"></div>
-        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="inflation">Inflation</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inf">6</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_inf" min="1" max="12" step="0.5" value="6"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Savings</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_saved">—</span></div><input type="range" id="fire_saved" min="0" max="2000000" step="5000" value="100000"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Monthly Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inv">—</span></div><input type="range" id="fire_inv" min="100" max="20000" step="100" value="2000"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Portfolio Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_ret">10</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_ret" min="4" max="20" step="0.5" value="10"></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Inflation</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inf">6</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_inf" min="1" max="12" step="0.5" value="6"></div>
       </div>
       <div class="card">
-        <div class="section-eyebrow" style="margin-bottom:12px;" data-i18n="fireJourney">FIRE Journey</div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:11px;color:var(--muted);" data-i18n="progressToFire">Progress to FIRE</span><span style="font-size:11px;color:var(--gold-light);font-weight:600;" id="fire_progress_pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="fire_progress_bar" style="width:0%;"></div></div></div>
+        <div class="section-eyebrow" style="margin-bottom:12px;">FIRE Journey</div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:11px;color:var(--muted);">Progress to FIRE</span><span style="font-size:11px;color:var(--gold-light);font-weight:600;" id="fire_progress_pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="fire_progress_bar" style="width:0%;"></div></div></div>
         <div id="fire_milestones" style="font-size:11px;"></div>
         <div style="margin-top:14px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:12px;">
-          <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;" data-i18n="yourFireType">Your FIRE Type</div>
+          <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Your FIRE Type</div>
           <div id="fire_type" style="font-size:12px;font-weight:700;color:var(--gold-light);margin-bottom:4px;">—</div>
           <div id="fire_type_desc" style="font-size:10px;color:var(--muted);line-height:1.6;"></div>
         </div>
@@ -498,22 +464,22 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <!-- ====== ROI TAB ====== -->
   <div id="roi" class="tab">
     <div class="section-eyebrow" id="roi-eyebrow">Returns Analysis</div>
-    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;" data-i18n="roiTabLabel">ROI & Compound Growth</h1>
-    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" data-i18n="roiDesc">Compare investment vehicles and understand compound growth.</p>
+    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">ROI & Compound Growth</h1>
+    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Compare investment vehicles and understand compound growth.</p>
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
-        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;" data-i18n="lumpSum">LUMP SUM CALCULATOR</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">LUMP SUM CALCULATOR</div>
         <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="roi-p-label">Initial Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_p">—</span></div><input type="range" id="roi_p" min="1000" max="1000000" step="1000" value="100000"></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="annualReturn">Annual Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_r">12</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="roi_r" min="1" max="30" step="0.5" value="12"></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="period">Period</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_t">20</span><span style="font-size:10px;color:var(--muted);" data-i18n="yrs">yrs</span></span></div><input type="range" id="roi_t" min="1" max="50" step="1" value="20"></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Annual Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_r">12</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="roi_r" min="1" max="30" step="0.5" value="12"></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Period</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_t">20</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div><input type="range" id="roi_t" min="1" max="50" step="1" value="20"></div>
         <div class="grid-3" style="margin-top:20px;gap:8px;">
-          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;" data-i18n="final">Final</div><div style="font-size:1.1rem;font-weight:800;color:var(--gold-light);font-family:'Playfair Display',serif;" id="roi_final">—</div></div>
-          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;" data-i18n="returns">Returns</div><div style="font-size:1.1rem;font-weight:800;color:#4ade80;font-family:'Playfair Display',serif;" id="roi_returns">—</div></div>
-          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;" data-i18n="multiplier">Multiplier</div><div style="font-size:1.1rem;font-weight:800;font-family:'Playfair Display',serif;" id="roi_mult">0x</div></div>
+          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Final</div><div style="font-size:1.1rem;font-weight:800;color:var(--gold-light);font-family:'Playfair Display',serif;" id="roi_final">—</div></div>
+          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Returns</div><div style="font-size:1.1rem;font-weight:800;color:#4ade80;font-family:'Playfair Display',serif;" id="roi_returns">—</div></div>
+          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Multiplier</div><div style="font-size:1.1rem;font-weight:800;font-family:'Playfair Display',serif;" id="roi_mult">0x</div></div>
         </div>
       </div>
-      <div class="card"><div class="section-eyebrow" style="text-align:center;margin-bottom:12px;" data-i18n="growthCurve">Growth Curve</div><canvas id="roiChart" height="200"></canvas></div>
+      <div class="card"><div class="section-eyebrow" style="text-align:center;margin-bottom:12px;">Growth Curve</div><canvas id="roiChart" height="200"></canvas></div>
     </div>
 
     <div class="card">
@@ -531,16 +497,16 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
-        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;" data-i18n="yourProfile">YOUR PROFILE</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">YOUR PROFILE</div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-inc-label">Annual Income</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_inc">—</span></div><input type="range" id="ins_inc" min="10000" max="500000" step="5000" value="60000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="currentAge">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_age">32</span></div><input type="range" id="ins_age" min="18" max="55" value="32"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="retirementAge">Retirement Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_ret">65</span></div><input type="range" id="ins_ret" min="55" max="70" value="65"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_age">32</span></div><input type="range" id="ins_age" min="18" max="55" value="32"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Retirement Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_ret">65</span></div><input type="range" id="ins_ret" min="55" max="70" value="65"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-liab-label">Liabilities</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_liab">—</span></div><input type="range" id="ins_liab" min="0" max="500000" step="5000" value="100000"></div>
-        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" data-i18n="existingCover">Existing Cover</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_exist">—</span></div><input type="range" id="ins_exist" min="0" max="500000" step="5000" value="0"></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Existing Cover</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_exist">—</span></div><input type="range" id="ins_exist" min="0" max="500000" step="5000" value="0"></div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;gap:12px;">
-        <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" data-i18n="recommendedCover">Recommended Cover</div><div class="big-number" id="ins_cover">—</div></div>
-        <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" data-i18n="coverageGap">Coverage Gap</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="ins_gap">—</div></div>
+        <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Recommended Cover</div><div class="big-number" id="ins_cover">—</div></div>
+        <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Coverage Gap</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="ins_gap">—</div></div>
         <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:12px;">
           <div style="font-size:9px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:1px;" id="ins-premium-label">Est. Premium/yr</div>
           <div style="font-size:1.2rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--gold-light);" id="ins_premium">—</div>
@@ -568,25 +534,25 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <!-- ====== EDU TAB ====== -->
   <div id="edu" class="tab">
     <div class="section-eyebrow">Financial Academy</div>
-    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;" data-i18n="eduTabLabel">Master Your Money</h1>
-    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" data-i18n="eduSubtitle">Structured learning for every stage of your wealth journey.</p>
+    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">Master Your Money</h1>
+    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Structured learning for every stage of your wealth journey.</p>
     <div class="grid-3" style="margin-bottom:28px;">
-      <div style="background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.03));border:1px solid rgba(201,168,76,.3);border-radius:14px;padding:20px;"><span class="badge-gold" style="margin-bottom:12px;display:inline-block;" data-i18n="beginner">Beginner</span><h3 style="font-size:15px;font-weight:800;margin-bottom:6px;" data-i18n="financialFoundation">Financial Foundation</h3><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Emergency fund, insurance, first investment — the non-negotiables.</p><div style="font-size:10px;color:var(--muted);">6 modules · 45 min</div></div>
-      <div style="background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.25);border-radius:14px;padding:20px;"><span class="badge-gold" style="background:rgba(99,102,241,.12);color:#818cf8;border-color:rgba(99,102,241,.25);margin-bottom:12px;display:inline-block;" data-i18n="intermediate">Intermediate</span><h3 style="font-size:15px;font-weight:800;margin-bottom:6px;" data-i18n="wealthArchitect">Wealth Architect</h3><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Asset allocation, equity vs debt, tax-efficient investing.</p><div style="font-size:10px;color:var(--muted);">8 modules · 75 min</div></div>
-      <div style="background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,197,94,.02));border:1px solid rgba(34,197,94,.2);border-radius:14px;padding:20px;"><span class="badge-green" style="margin-bottom:12px;display:inline-block;" data-i18n="advanced">Advanced</span><h3 style="font-size:15px;font-weight:800;margin-bottom:6px;" data-i18n="fireMastermind">FIRE Mastermind</h3><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Retirement, withdrawal strategy, estate planning.</p><div style="font-size:10px;color:var(--muted);">10 modules · 90 min</div></div>
+      <div style="background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.03));border:1px solid rgba(201,168,76,.3);border-radius:14px;padding:20px;"><span class="badge-gold" style="margin-bottom:12px;display:inline-block;">Beginner</span><h3 style="font-size:15px;font-weight:800;margin-bottom:6px;">Financial Foundation</h3><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Emergency fund, insurance, first investment — the non-negotiables.</p><div style="font-size:10px;color:var(--muted);">6 modules · 45 min</div></div>
+      <div style="background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.25);border-radius:14px;padding:20px;"><span class="badge-gold" style="background:rgba(99,102,241,.12);color:#818cf8;border-color:rgba(99,102,241,.25);margin-bottom:12px;display:inline-block;">Intermediate</span><h3 style="font-size:15px;font-weight:800;margin-bottom:6px;">Wealth Architect</h3><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Asset allocation, equity vs debt, tax-efficient investing.</p><div style="font-size:10px;color:var(--muted);">8 modules · 75 min</div></div>
+      <div style="background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,197,94,.02));border:1px solid rgba(34,197,94,.2);border-radius:14px;padding:20px;"><span class="badge-green" style="margin-bottom:12px;display:inline-block;">Advanced</span><h3 style="font-size:15px;font-weight:800;margin-bottom:6px;">FIRE Mastermind</h3><p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px;">Retirement, withdrawal strategy, estate planning.</p><div style="font-size:10px;color:var(--muted);">10 modules · 90 min</div></div>
     </div>
-    <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;" data-i18n="keyConceptsTitle">Key Financial Concepts</h3>
+    <h3 style="font-size:15px;font-weight:700;margin-bottom:14px;">Key Financial Concepts</h3>
     <div id="accordion_container" style="display:flex;flex-direction:column;gap:6px;"></div>
-    <div class="card" style="margin-top:24px;"><h3 style="font-size:14px;font-weight:700;margin-bottom:16px;" data-i18n="milestoneTimeline">Ideal Milestone Timeline</h3><div id="timeline_content"></div></div>
+    <div class="card" style="margin-top:24px;"><h3 style="font-size:14px;font-weight:700;margin-bottom:16px;">Ideal Milestone Timeline</h3><div id="timeline_content"></div></div>
   </div>
 
   <!-- ====== GLOSSARY TAB ====== -->
   <div id="glossary" class="tab">
     <div class="section-eyebrow">Reference</div>
-    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;" data-i18n="glossaryTabLabel">Finance Glossary</h1>
-    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" data-i18n="glossarySubtitle">Every financial term in plain language.</p>
+    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">Finance Glossary</h1>
+    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Every financial term in plain language.</p>
     <div style="position:relative;margin-bottom:20px;">
-      <input id="gloss_search" type="text" placeholder="Search any term…" data-i18n-placeholder="searchTerm" class="num-input" style="padding-left:40px;">
+      <input id="gloss_search" type="text" placeholder="Search any term…" class="num-input" style="padding-left:40px;">
       <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);">🔍</span>
     </div>
     <div id="glossary_list"></div>
@@ -597,14 +563,14 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
 <!-- MOBILE BOTTOM NAV -->
 <nav id="bottom-nav">
-  <button class="bnav-item active" id="bnav-sip" onclick="navTo('sip')" style="position:relative;"><span class="bnav-icon">📈</span><span class="bnav-label" data-i18n="bnav_sip">Invest</span><span class="bnav-indicator"></span></button>
-  <button class="bnav-item" id="bnav-emi" onclick="navTo('emi')" style="position:relative;"><span class="bnav-icon">🏠</span><span class="bnav-label" data-i18n="bnav_emi">Loan</span><span class="bnav-indicator"></span></button>
-  <button class="bnav-item" id="bnav-fire" onclick="navTo('fire')" style="position:relative;"><span class="bnav-icon">🔥</span><span class="bnav-label" data-i18n="bnav_fire">FIRE</span><span class="bnav-indicator"></span></button>
-  <button class="bnav-item" id="bnav-roi" onclick="navTo('roi')" style="position:relative;"><span class="bnav-icon">💹</span><span class="bnav-label" data-i18n="bnav_roi">ROI</span><span class="bnav-indicator"></span></button>
-  <button class="bnav-item" id="bnav-insurance" onclick="navTo('insurance')" style="position:relative;"><span class="bnav-icon">🛡️</span><span class="bnav-label" data-i18n="bnav_insurance">Insure</span><span class="bnav-indicator"></span></button>
-  <button class="bnav-item" id="bnav-tax" onclick="navTo('tax')" style="position:relative;"><span class="bnav-icon">📋</span><span class="bnav-label" data-i18n="bnav_tax">Tax</span><span class="bnav-indicator"></span></button>
-  <button class="bnav-item" id="bnav-edu" onclick="navTo('edu')" style="position:relative;"><span class="bnav-icon">🎓</span><span class="bnav-label" data-i18n="bnav_edu">Learn</span><span class="bnav-indicator"></span></button>
-  <button class="bnav-item" id="bnav-glossary" onclick="navTo('glossary')" style="position:relative;"><span class="bnav-icon">📖</span><span class="bnav-label" data-i18n="bnav_glossary">Glossary</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item active" id="bnav-sip" onclick="navTo('sip')" style="position:relative;"><span class="bnav-icon">📈</span><span class="bnav-label">Invest</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-emi" onclick="navTo('emi')" style="position:relative;"><span class="bnav-icon">🏠</span><span class="bnav-label">Loan</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-fire" onclick="navTo('fire')" style="position:relative;"><span class="bnav-icon">🔥</span><span class="bnav-label">FIRE</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-roi" onclick="navTo('roi')" style="position:relative;"><span class="bnav-icon">💹</span><span class="bnav-label">ROI</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-insurance" onclick="navTo('insurance')" style="position:relative;"><span class="bnav-icon">🛡️</span><span class="bnav-label">Insure</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-tax" onclick="navTo('tax')" style="position:relative;"><span class="bnav-icon">📋</span><span class="bnav-label">Tax</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-edu" onclick="navTo('edu')" style="position:relative;"><span class="bnav-icon">🎓</span><span class="bnav-label">Learn</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-glossary" onclick="navTo('glossary')" style="position:relative;"><span class="bnav-icon">📖</span><span class="bnav-label">Glossary</span><span class="bnav-indicator"></span></button>
 </nav>
 
 </div><!-- end app -->
@@ -942,8 +908,7 @@ function setSlider(id,min,max,step,val){
 
 function updateStaticLabels(){
   const r=R();
-  // SIP section — region data (market-specific) + i18n labels
-  document.getElementById('sip-eyebrow').textContent=t('sipEyebrow')||('Investment · '+r.name);
+  document.getElementById('sip-eyebrow').textContent='Investment · '+r.name;
   document.getElementById('sip-desc').textContent=r.sipDesc;
   document.getElementById('sip-p-label').textContent=r.sipLabel;
   document.getElementById('sip-rate-hint').textContent=r.sipRateHint;
@@ -953,8 +918,7 @@ function updateStaticLabels(){
   document.getElementById('edu-sip-3-title').textContent=r.sipEdu3;
   document.getElementById('edu-sip-3').textContent=r.sipEdu3Desc;
 
-  // EMI section
-  document.getElementById('emi-eyebrow').textContent=t('emiEyebrow')||('Loan · '+r.name);
+  document.getElementById('emi-eyebrow').textContent='Loan · '+r.name;
   document.getElementById('emi-desc').textContent=r.emiDesc;
   document.getElementById('emi-p-label').textContent=r.emiLabel;
   document.getElementById('emi-rate-hint').textContent=r.emiRateHint;
@@ -963,21 +927,18 @@ function updateStaticLabels(){
   document.getElementById('emi-dti-label').textContent=r.emiDtiLabel;
   document.getElementById('emi-monthly-label').textContent=r.emiMonthlyLabel;
 
-  // FIRE section
-  document.getElementById('fire-eyebrow').textContent=t('fireEyebrow')||('FIRE · '+r.name);
-  document.getElementById('fire-exp-label').textContent=(t('monthlyExpenses')||'Monthly Expenses')+' ('+r.currency+')';
+  document.getElementById('fire-eyebrow').textContent='FIRE · '+r.name;
+  document.getElementById('fire-exp-label').textContent='Monthly Expenses ('+r.currency+')';
 
-  // ROI section
-  document.getElementById('roi-eyebrow').textContent=t('roiEyebrow')||('Returns · '+r.name);
-  document.getElementById('roi-p-label').textContent=(t('initialInvestment')||'Initial Investment')+' ('+r.currency+')';
-  document.getElementById('roi-compare-title').textContent=t('assetCompareTitle')||'Asset Class Comparison — 20 Years';
+  document.getElementById('roi-eyebrow').textContent='Returns · '+r.name;
+  document.getElementById('roi-p-label').textContent='Initial Investment ('+r.currency+')';
+  document.getElementById('roi-compare-title').textContent='Asset Class Comparison — 20 Years';
   document.getElementById('roi-compare-sub').textContent=r.roiCompareSub;
 
-  // Insurance section
-  document.getElementById('ins-eyebrow').textContent=t('insEyebrow')||('Insurance · '+r.name);
+  document.getElementById('ins-eyebrow').textContent='Insurance · '+r.name;
   document.getElementById('ins-desc').textContent=r.insDesc;
-  document.getElementById('ins-inc-label').textContent=(t('annualIncome')||'Annual Income')+' ('+r.currency+')';
-  document.getElementById('ins-liab-label').textContent=(t('liabilities')||'Liabilities')+' ('+r.currency+')';
+  document.getElementById('ins-inc-label').textContent='Annual Income ('+r.currency+')';
+  document.getElementById('ins-liab-label').textContent='Liabilities ('+r.currency+')';
   document.getElementById('ins-local-title').textContent=r.insLocalTitle;
   document.getElementById('ins-local-content').innerHTML=r.insLocalItems.map(item=>
     `<div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);">
@@ -986,29 +947,8 @@ function updateStaticLabels(){
     </div>`
   ).join('');
 
-  // Tax section
-  document.getElementById('tax-eyebrow').textContent=t('taxEyebrow')||('Tax · '+r.name);
+  document.getElementById('tax-eyebrow').textContent='Tax · '+r.name;
   document.getElementById('tax-desc').textContent=r.taxDesc;
-
-  // SIP title (h1) — use i18n key
-  const sipTitleEl=document.getElementById('sip-title');
-  if(sipTitleEl) sipTitleEl.textContent=t('sipTabLabel')||'Investment Planner';
-  const emiTitleEl=document.getElementById('emi-title');
-  if(emiTitleEl) emiTitleEl.textContent=t('emiTabLabel')||'Loan & Mortgage Planner';
-  const insTitleEl=document.getElementById('ins-title');
-  if(insTitleEl) insTitleEl.textContent=t('insTabLabel')||'Life Insurance Planner';
-  const taxTitleEl=document.getElementById('tax-title');
-  if(taxTitleEl) taxTitleEl.textContent=t('taxTabLabel')||'Tax Optimizer';
-
-  // Apply all data-i18n elements (covers bottom nav, static labels etc.)
-  applyTranslations();
-
-  // Refresh SIP table headers (dynamically injected)
-  const thYr=document.getElementById('th-yr');if(thYr)thYr.textContent=t('tableYr');
-  const thInv=document.getElementById('th-inv');if(thInv)thInv.textContent=t('tableInvested');
-  const thVal=document.getElementById('th-val');if(thVal)thVal.textContent=t('tableValue');
-  const thGains=document.getElementById('th-gains');if(thGains)thGains.textContent=t('tableGains');
-  const thProg=document.getElementById('th-prog');if(thProg)thProg.textContent=t('tableProgress');
 }
 
 // ================================================================
@@ -1030,13 +970,13 @@ function calcSIP(){
   document.getElementById('sip_invested').textContent=fmtSym(invested);
   document.getElementById('sip_gains').textContent=fmtSym(earnings);
   document.getElementById('sip_xbadge').textContent=mult.toFixed(1)+'x';
-  document.getElementById('sip_gain_pct').textContent=gainPct.toFixed(0)+'% '+t('gains');
-  document.getElementById('sip_inv_note').textContent=months+' '+t('months');
-  document.getElementById('sip_tax').textContent=fmtSym(tax)+'/'+t('yr');
+  document.getElementById('sip_gain_pct').textContent=gainPct.toFixed(0)+'% gains';
+  document.getElementById('sip_inv_note').textContent=months+' months';
+  document.getElementById('sip_tax').textContent=fmtSym(tax)+'/yr';
   document.getElementById('sip_return_pct_center').textContent=((earnings/total)*100).toFixed(0)+'%';
   destroyChart(sipChart);
   sipChart=new Chart(document.getElementById('sipChart').getContext('2d'),{
-    type:'doughnut',data:{labels:[t('invested'),t('earnings')],datasets:[{data:[Math.round(invested),Math.round(earnings)],backgroundColor:['#334155','#C9A84C'],borderWidth:0,hoverOffset:4}]},
+    type:'doughnut',data:{labels:['Invested','Earnings'],datasets:[{data:[Math.round(invested),Math.round(earnings)],backgroundColor:['#334155','#C9A84C'],borderWidth:0,hoverOffset:4}]},
     options:{cutout:'72%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtSym(c.raw)}}}}
   });
   const mr2=mr;
@@ -1060,9 +1000,9 @@ function calcSIP(){
     if(tgt>total) return;
     let yr=0;
     for(let m=1;m<=t*12;m++){const v=p*(((Math.pow(1+mr2,m)-1)/mr2)*(1+mr2));if(v>=tgt){yr=Math.ceil(m/12);break;}}
-    if(yr>0) mhtml+=`<div class="milestone"><div class="milestone-dot"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${lbls[i]}</div><div style="color:var(--muted);font-size:10px;">${t('year')} ${yr}</div></div></div>`;
+    if(yr>0) mhtml+=`<div class="milestone"><div class="milestone-dot"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${lbls[i]}</div><div style="color:var(--muted);font-size:10px;">Year ${yr}</div></div></div>`;
   });
-  document.getElementById('sip_milestones').innerHTML=mhtml||'<div style="color:var(--muted);font-size:10px;">'+t('increaseTenure')+'</div>';
+  document.getElementById('sip_milestones').innerHTML=mhtml||'<div style="color:var(--muted);font-size:10px;">Increase tenure to see milestones.</div>';
 }
 
 // ================================================================
@@ -1126,12 +1066,13 @@ function calcFIRE(){
   document.getElementById('fire_swr').textContent=fmtSym(swr);
   const mr=ret/12;let corpus=saved,years=0;
   for(let m=0;m<600;m++){corpus=corpus*(1+mr)+inv;if(corpus>=fireCorpus){years=Math.ceil(m/12);break;}}
-  document.getElementById('fire_years').textContent=years>0?years+' '+t('yrs'):t('alreadyFire');
-  document.getElementById('fire_year_label').textContent=years>0?t('retireAtAge')+' '+(age+years):'🎉';
+  document.getElementById('fire_years').textContent=years>0?years+' yrs':'Already FIRE! 🎉';
+  document.getElementById('fire_year_label').textContent=years>0?'Retire at age '+(age+years):'Congrats!';
   const prog=Math.min((saved/fireCorpus)*100,100);
   document.getElementById('fire_progress_pct').textContent=prog.toFixed(1)+'%';
   document.getElementById('fire_progress_bar').style.width=prog+'%';
-  const [ft,fd]=tFireType(exp);
+  const tL=R().fireLeanMax,tH=R().fireFatMin;
+  const [ft,fd]=exp<tL?['🌿 Lean FIRE','Minimal lifestyle, maximum speed to independence.']:exp>tH?['🏆 Fat FIRE','Luxury retirement — needs a large corpus.']:['⚖️ Regular FIRE','Balanced approach — part-time optional.'];
   document.getElementById('fire_type').textContent=ft;
   document.getElementById('fire_type_desc').textContent=fd;
   let mhtml='';
@@ -1140,7 +1081,7 @@ function calcFIRE(){
     let yr=0,c=saved;
     for(let m=0;m<600;m++){c=c*(1+mr)+inv;if(c>=tgt){yr=Math.ceil(m/12);break;}}
     const reached=saved>=tgt;
-    mhtml+=`<div class="milestone"><div class="milestone-dot" style="background:${reached?'#4ade80':'var(--gold)'};box-shadow:0 0 7px ${reached?'rgba(34,197,94,.5)':'rgba(201,168,76,.4)'};"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${pc}% — ${fmtSym(tgt)}</div><div style="color:var(--muted);font-size:10px;">${yr>0?t('year')+' '+yr+' ('+t('age')+' '+(age+yr)+')':(reached?'✅ '+t('done'):'—')}</div></div></div>`;
+    mhtml+=`<div class="milestone"><div class="milestone-dot" style="background:${reached?'#4ade80':'var(--gold)'};box-shadow:0 0 7px ${reached?'rgba(34,197,94,.5)':'rgba(201,168,76,.4)'};"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${pc}% — ${fmtSym(tgt)}</div><div style="color:var(--muted);font-size:10px;">${yr>0?'Year '+yr+' (Age '+(age+yr)+')':(reached?'✅ Done':'—')}</div></div></div>`;
   });
   document.getElementById('fire_milestones').innerHTML=mhtml;
 }
@@ -1193,7 +1134,7 @@ function calcInsurance(){
   const pr=R().insPremiumRate(age);
   document.getElementById('ins_cover').textContent=fmtSym(hlv);
   document.getElementById('ins_gap').textContent=fmtSym(gap);
-  document.getElementById('ins_premium').textContent=fmtSym(gap*pr)+'/'+t('yr')+' '+(t('approx')||'approx');
+  document.getElementById('ins_premium').textContent=fmtSym(gap*pr)+'/yr approx';
 }
 
 // ================================================================
@@ -1212,23 +1153,23 @@ function buildIndiaTax(){
   return`
   <div class="grid-2-1" style="margin-bottom:20px;">
     <div class="card">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">${t('incomeDeductions')||'INCOME & DEDUCTIONS (FY2025-26)'}</div>
-      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">${t('grossIncome')||'Gross Annual Income (CTC)'}</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_inc">₹18L</span></div><input type="range" id="tax_inc" min="500000" max="10000000" step="50000" value="1800000"></div>
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">INCOME & DEDUCTIONS (FY2025-26)</div>
+      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Gross Annual Income (CTC)</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_inc">₹18L</span></div><input type="range" id="tax_inc" min="500000" max="10000000" step="50000" value="1800000"></div>
       <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80C (ELSS, PPF, LIC…)</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_80c">₹1.5L</span></div><input type="range" id="tax_80c" min="0" max="150000" step="5000" value="150000"></div>
-      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80D ${t('healthInsurance')||'Health Insurance'}</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_80d">₹25K</span></div><input type="range" id="tax_80d" min="0" max="75000" step="5000" value="25000"></div>
-      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">24(b) ${t('homeLoanInterest')||'Home Loan Interest'}</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_hl">₹0</span></div><input type="range" id="tax_hl" min="0" max="200000" step="5000" value="0"></div>
-      <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80CCD(1B) NPS ${t('extra')||'Extra'}</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_nps">₹50K</span></div><input type="range" id="tax_nps" min="0" max="50000" step="5000" value="50000"></div>
+      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80D Health Insurance</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_80d">₹25K</span></div><input type="range" id="tax_80d" min="0" max="75000" step="5000" value="25000"></div>
+      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">24(b) Home Loan Interest</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_hl">₹0</span></div><input type="range" id="tax_hl" min="0" max="200000" step="5000" value="0"></div>
+      <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80CCD(1B) NPS Extra</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_nps">₹50K</span></div><input type="range" id="tax_nps" min="0" max="50000" step="5000" value="50000"></div>
     </div>
     <div class="card">
-      <div class="section-eyebrow" style="margin-bottom:14px;">${t('regimeComparison')||'Regime Comparison'}</div>
-      <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">${t('oldRegimeTax')||'Old Regime Tax'}</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;color:var(--gold-light);" id="tax_old">₹0</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_old_eff">${t('effRate')||'Eff'}: 0%</div></div>
+      <div class="section-eyebrow" style="margin-bottom:14px;">Regime Comparison</div>
+      <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">Old Regime Tax</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;color:var(--gold-light);" id="tax_old">₹0</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_old_eff">Eff: 0%</div></div>
       <div class="gold-line" style="margin:12px 0;"></div>
-      <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">${t('newRegimeTax')||'New Regime Tax'}</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;" id="tax_new">₹0</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_new_eff">${t('effRate')||'Eff'}: 0%</div></div>
+      <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">New Regime Tax</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;" id="tax_new">₹0</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_new_eff">Eff: 0%</div></div>
       <div class="gold-line" style="margin:12px 0;"></div>
       <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:12px;">
-        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">${t('bestRegime')||'Best Regime'}</div>
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Best Regime</div>
         <div style="font-size:1rem;font-weight:800;color:#4ade80;" id="tax_rec">—</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_saving">—</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_saving">You save ₹0</div>
       </div>
     </div>
   </div>`;
@@ -1255,12 +1196,12 @@ function calcIndiaTax(){
   const oldTax=calcOldTax(oldTaxable);
   const newTax=calcNewTax(Math.max(inc-75000,0));
   document.getElementById('tax_old').textContent=fmtK(oldTax,'₹');
-  document.getElementById('tax_old_eff').textContent=(t('effRate')||'Eff')+': '+(oldTax/inc*100).toFixed(1)+'%';
+  document.getElementById('tax_old_eff').textContent='Eff: '+(oldTax/inc*100).toFixed(1)+'%';
   document.getElementById('tax_new').textContent=fmtK(newTax,'₹');
-  document.getElementById('tax_new_eff').textContent=(t('effRate')||'Eff')+': '+(newTax/inc*100).toFixed(1)+'%';
-  const betterKey=oldTax<=newTax?'oldRegime':'newRegime';
-  document.getElementById('tax_rec').textContent='✅ '+(t(betterKey)||betterKey)+' '+(t('savesMore')||'saves more');
-  document.getElementById('tax_saving').textContent=(t('annualSaving')||'Annual saving')+': '+fmtK(Math.abs(oldTax-newTax),'₹');
+  document.getElementById('tax_new_eff').textContent='Eff: '+(newTax/inc*100).toFixed(1)+'%';
+  const better=oldTax<=newTax?'Old Regime':'New Regime';
+  document.getElementById('tax_rec').textContent='✅ '+better+' saves more';
+  document.getElementById('tax_saving').textContent='Annual saving: '+fmtK(Math.abs(oldTax-newTax),'₹');
 }
 function calcOldTax(i){let t=0;if(i>1000000)t=112500+(i-1000000)*0.30;else if(i>500000)t=12500+(i-500000)*0.20;else if(i>250000)t=(i-250000)*0.05;if(i<=500000)t=0;return t*1.04;}
 function calcNewTax(i){let t=0,p=0;for(const[l,r]of[[300000,0],[600000,.05],[900000,.10],[1200000,.15],[1500000,.20],[Infinity,.30]]){if(i>p){t+=Math.min(i-p,l-p)*r;p=l;}}if(i<=700000)t=0;return t*1.04;}
@@ -1329,26 +1270,23 @@ function buildWorldTax(){
 // ================================================================
 // EDUCATION & GLOSSARY
 // ================================================================
-// concepts built dynamically in buildEdu()
-// milestones built dynamically in buildEdu()
+const concepts=[
+  {title:'What is Compound Interest and why it matters',body:'Compound interest is earned on both principal and previously earned interest. At 10% returns, $10,000 becomes $27,000 in 10 years, $67,000 in 20 years, and $174,000 in 30 years — purely through reinvesting returns. Starting 5 years earlier can double your final corpus.'},
+  {title:'How to build an Emergency Fund',body:'An emergency fund is 3–6 months of expenses in liquid instruments. It protects you from derailing long-term investments during unexpected expenses — job loss, medical emergencies. Rule: Build emergency fund FIRST before any equity investment.'},
+  {title:'Asset Allocation — Balancing Equity vs Debt',body:'Classic rule: Equity % = 110 minus your age. At 30 → 80% equity. At 50 → 60% equity. Equity gives higher returns with volatility; bonds/debt give stability. Rebalance annually. Match allocation to goal time horizon.'},
+  {title:'What is XIRR and how to measure fund returns',body:'XIRR accounts for the timing of cash flows — essential for regular investment plans. A fund showing 15% absolute return over 3 years is only ~4.8% CAGR. Always compare trailing 3yr, 5yr, and 10yr returns across funds.'},
+  {title:'Low-Cost Index Funds vs Active Management',body:'Decades of data show 90%+ of active funds underperform their benchmark index over 15+ years. A low-cost S&P 500 or MSCI World index fund with 0.05–0.20% expense ratio beats most actively managed funds charging 1–2% annually.'},
+  {title:'Inflation — The Silent Wealth Destroyer',body:'At 5% inflation, purchasing power halves every 14 years. Your investments must beat inflation meaningfully. Equity has historically returned 8–14% vs 3–7% inflation globally — a positive real return of 5–8%.'},
+];
+const milestones=[
+  {age:'22–25',title:'Foundation',items:['Emergency fund (3–6mo)','Term + Health insurance','First investment','Credit history']},
+  {age:'25–30',title:'Accelerate',items:['Save 20–30% of income','Max tax-advantaged accounts','No consumer debt','Clear student loans']},
+  {age:'30–40',title:'Asset Building',items:['Real estate (goal-aligned)','Increase contributions','Review insurance','Global diversification']},
+  {age:'40–50',title:'Consolidation',items:['Shift to balanced portfolio','Children education corpus','50% of FIRE target','Estate planning']},
+  {age:'50–60',title:'Pre-Retirement',items:['Reduce equity gradually','Clear all major loans','Max pension contributions','Withdrawal strategy']},
+  {age:'60+',title:'Freedom Phase',items:['4% SWR activated','Low-risk instruments','Health top-up cover','Will & legacy']},
+];
 function buildEdu(){
-  // Rebuild concepts array with current language
-  const concepts=[
-    {title:t('eduConceptTitle1'),body:t('eduConceptBody1')},
-    {title:t('eduConceptTitle2'),body:t('eduConceptBody2')},
-    {title:t('eduConceptTitle3'),body:t('eduConceptBody3')},
-    {title:t('eduConceptTitle4'),body:t('eduConceptBody4')},
-    {title:t('eduConceptTitle5'),body:t('eduConceptBody5')},
-    {title:t('eduConceptTitle6'),body:t('eduConceptBody6')},
-  ];
-  const milestones=[
-    {age:t('ms1Age'),title:t('ms1Title'),items:t('ms1Items')},
-    {age:t('ms2Age'),title:t('ms2Title'),items:t('ms2Items')},
-    {age:t('ms3Age'),title:t('ms3Title'),items:t('ms3Items')},
-    {age:t('ms4Age'),title:t('ms4Title'),items:t('ms4Items')},
-    {age:t('ms5Age'),title:t('ms5Title'),items:t('ms5Items')},
-    {age:t('ms6Age'),title:t('ms6Title'),items:t('ms6Items')},
-  ];
   const ac=document.getElementById('accordion_container');ac.innerHTML='';
   concepts.forEach(c=>{
     const d=document.createElement('div');d.className='card';d.style.cssText='padding:0;overflow:hidden;';
@@ -1431,544 +1369,7 @@ function downloadSIPCSV(){
 ['roi_p','roi_r','roi_t'].forEach(id=>document.getElementById(id).addEventListener('input',calcROI));
 ['ins_inc','ins_age','ins_ret','ins_liab','ins_exist'].forEach(id=>document.getElementById(id).addEventListener('input',calcInsurance));
 
-// This will be inserted into the HTML as the i18n system
-const I18N = {
-  en: {
-    // App shell
-    appSubtitle: 'Pro Finance Suite',
-    marketRegion: 'Market Region',
-    calculators: 'Calculators',
-    learn: 'Learn',
-    live: 'Live',
-    notForTrading: 'Live via /api/market · 30s refresh\nNot for trading.',
-    searchTerm: 'Search any term…',
-    // Nav items (full with emoji — for reference)
-    nav_sip: '📈 Investment Planner',
-    nav_emi: '🏠 Loan & Mortgage',
-    nav_fire: '🔥 FIRE Retirement',
-    nav_roi: '💹 ROI & Compound',
-    nav_insurance: '🛡️ Insurance Planner',
-    nav_tax: '📋 Tax Optimizer',
-    nav_edu: '🎓 Financial Academy',
-    nav_glossary: '📖 Glossary',
-    // Nav text only (emoji stays fixed in HTML)
-    nav_sip_text: 'Investment Planner',
-    nav_emi_text: 'Loan & Mortgage',
-    nav_fire_text: 'FIRE Retirement',
-    nav_roi_text: 'ROI & Compound',
-    nav_insurance_text: 'Insurance Planner',
-    nav_tax_text: 'Tax Optimizer',
-    nav_edu_text: 'Financial Academy',
-    nav_glossary_text: 'Glossary',
-    // Bottom nav labels
-    bnav_sip: 'Invest',
-    bnav_emi: 'Loan',
-    bnav_fire: 'FIRE',
-    bnav_roi: 'ROI',
-    bnav_insurance: 'Insure',
-    bnav_tax: 'Tax',
-    bnav_edu: 'Learn',
-    bnav_glossary: 'Glossary',
-    // Language label
-    langLabel: 'Language',
-    // Eyebrow labels (shown above tab titles, include region name via JS)
-    sipEyebrow: null, // built dynamically: 'Investment · India'
-    emiEyebrow: null,
-    fireEyebrow: null,
-    roiEyebrow: null,
-    insEyebrow: null,
-    taxEyebrow: null,
-    // Extra label keys used by updateStaticLabels
-    monthlyExpenses: 'Monthly Expenses',
-    annualIncome: 'Annual Income',
-    liabilities: 'Liabilities',
-    assetCompareTitle: 'Asset Class Comparison — 20 Years',
-    // SIP tab
-    sipTabLabel: 'Investment Planner',
-    totalCorpus: 'Total Corpus',
-    amountInvested: 'Amount Invested',
-    wealthGained: 'Wealth Gained',
-    gains: 'gains',
-    parameters: 'PARAMETERS',
-    expectedReturn: 'Expected Return',
-    tenure: 'Tenure',
-    yrs: 'yrs',
-    corpusBreakdown: 'Corpus Breakdown',
-    returns: 'Returns',
-    invested: 'Invested',
-    earnings: 'Earnings',
-    milestones: 'Milestones',
-    yearByYear: 'Year-by-Year Projection',
-    exportCsv: '⬇ Export CSV',
-    startEarly: 'Start Early',
-    rule72: 'Rule of 72',
-    rule72Desc: 'Divide 72 by return rate = doubling time. At 12%, money doubles every 6 years.',
-    tableYr: 'Yr', tableInvested: 'Invested', tableValue: 'Value', tableGains: 'Gains', tableProgress: 'Progress',
-    increaseTenure: 'Increase tenure to see milestones.',
-    months: 'months', yr: 'yr', year: 'Year', age: 'Age', done: 'Done', approx: 'approx',
-    // EMI tab
-    emiTabLabel: 'Loan & Mortgage Planner',
-    monthlyPayment: 'Monthly Payment',
-    totalInterest: 'Total Interest',
-    totalPayment: 'Total Payment',
-    loanParameters: 'LOAN PARAMETERS',
-    interestRate: 'Interest Rate',
-    paymentBreakdown: 'Payment Breakdown',
-    principal: 'Principal',
-    interest: 'Interest',
-    minIncome: 'Min income recommended',
-    amortSchedule: 'Amortization Schedule',
-    tableOpening: 'Opening', tableClosing: 'Closing',
-    // FIRE tab
-    fireTabLabel: '🔥 FIRE Calculator',
-    fireCorpusLabel: '🎯 FIRE Corpus',
-    yearsToFire: 'Years to FIRE',
-    safeWithdrawal: 'Safe Withdrawal/mo',
-    fireInputs: 'FIRE INPUTS',
-    currentAge: 'Current Age',
-    currentSavings: 'Current Savings',
-    monthlyInvestment: 'Monthly Investment',
-    portfolioReturn: 'Portfolio Return',
-    inflation: 'Inflation',
-    fireJourney: 'FIRE Journey',
-    progressToFire: 'Progress to FIRE',
-    yourFireType: 'Your FIRE Type',
-    retireAtAge: 'Retire at age',
-    alreadyFire: 'Already FIRE! 🎉',
-    // ROI tab
-    roiTabLabel: 'ROI & Compound Growth',
-    roiDesc: 'Compare investment vehicles and understand compound growth.',
-    lumpSum: 'LUMP SUM CALCULATOR',
-    initialInvestment: 'Initial Investment',
-    annualReturn: 'Annual Return',
-    period: 'Period',
-    final: 'Final',
-    multiplier: 'Multiplier',
-    growthCurve: 'Growth Curve',
-    historicalAvg: 'Historical averages',
-    // Insurance tab
-    insTabLabel: 'Life Insurance Planner',
-    yourProfile: 'YOUR PROFILE',
-    retirementAge: 'Retirement Age',
-    existingCover: 'Existing Cover',
-    recommendedCover: 'Recommended Cover',
-    coverageGap: 'Coverage Gap',
-    popularProducts: 'Popular Products',
-    taxTabLabel: 'Tax Optimizer',
-    effRate: 'Eff', oldRegime: 'Old Regime', newRegime: 'New Regime',
-    savesMore: 'saves more', annualSaving: 'Annual saving',
-    bestRegime: 'Best Regime',
-    incomeDeductions: 'INCOME & DEDUCTIONS (FY2025-26)',
-    grossIncome: 'Gross Annual Income (CTC)',
-    healthInsurance: 'Health Insurance',
-    homeLoanInterest: 'Home Loan Interest',
-    extra: 'Extra',
-    regimeComparison: 'Regime Comparison',
-    oldRegimeTax: 'Old Regime Tax',
-    newRegimeTax: 'New Regime Tax',
-    // Edu tab
-    eduTabLabel: 'Master Your Money',
-    eduSubtitle: 'Structured learning for every stage of your wealth journey.',
-    beginner: 'Beginner',
-    intermediate: 'Intermediate',
-    advanced: 'Advanced',
-    financialFoundation: 'Financial Foundation',
-    wealthArchitect: 'Wealth Architect',
-    fireMastermind: 'FIRE Mastermind',
-    keyConceptsTitle: 'Key Financial Concepts',
-    milestoneTimeline: 'Ideal Milestone Timeline',
-    // Glossary tab
-    glossaryTabLabel: 'Finance Glossary',
-    glossarySubtitle: 'Every financial term in plain language.',
-    // FIRE types
-    leanFire: '🌿 Lean FIRE',
-    regularFire: '⚖️ Regular FIRE',
-    fatFire: '🏆 Fat FIRE',
-    leanFireDesc: 'Minimal lifestyle, maximum speed to independence.',
-    regularFireDesc: 'Balanced approach — part-time optional.',
-    fatFireDesc: 'Luxury retirement — needs a large corpus.',
-    // Edu concepts
-    eduConceptTitle1: 'What is Compound Interest and why it matters',
-    eduConceptBody1: 'Compound interest is earned on both principal and previously earned interest. At 10% returns, $10,000 becomes $27,000 in 10 years, $67,000 in 20 years, and $174,000 in 30 years — purely through reinvesting returns. Starting 5 years earlier can double your final corpus.',
-    eduConceptTitle2: 'How to build an Emergency Fund',
-    eduConceptBody2: 'An emergency fund is 3–6 months of expenses in liquid instruments. It protects you from derailing long-term investments during unexpected expenses — job loss, medical emergencies. Rule: Build emergency fund FIRST before any equity investment.',
-    eduConceptTitle3: 'Asset Allocation — Balancing Equity vs Debt',
-    eduConceptBody3: 'Classic rule: Equity % = 110 minus your age. At 30 → 80% equity. At 50 → 60% equity. Equity gives higher returns with volatility; bonds/debt give stability. Rebalance annually.',
-    eduConceptTitle4: 'What is XIRR and how to measure fund returns',
-    eduConceptBody4: 'XIRR accounts for the timing of cash flows — essential for regular investment plans. A fund showing 15% absolute return over 3 years is only ~4.8% CAGR. Always compare trailing 3yr, 5yr, and 10yr returns.',
-    eduConceptTitle5: 'Low-Cost Index Funds vs Active Management',
-    eduConceptBody5: 'Decades of data show 90%+ of active funds underperform their benchmark index over 15+ years. A low-cost index fund with 0.05–0.20% expense ratio beats most actively managed funds charging 1–2% annually.',
-    eduConceptTitle6: 'Inflation — The Silent Wealth Destroyer',
-    eduConceptBody6: 'At 5% inflation, purchasing power halves every 14 years. Your investments must beat inflation meaningfully. Equity has historically returned 8–14% vs 3–7% inflation globally.',
-    // Milestone timeline
-    ms1Age:'22–25', ms1Title:'Foundation', ms1Items:['Emergency fund (3–6mo)','Term + Health insurance','First investment','Credit history'],
-    ms2Age:'25–30', ms2Title:'Accelerate', ms2Items:['Save 20–30% of income','Max tax-advantaged accounts','No consumer debt','Clear student loans'],
-    ms3Age:'30–40', ms3Title:'Asset Building', ms3Items:['Real estate (goal-aligned)','Increase contributions','Review insurance','Global diversification'],
-    ms4Age:'40–50', ms4Title:'Consolidation', ms4Items:['Shift to balanced portfolio','Education corpus','50% of FIRE target','Estate planning'],
-    ms5Age:'50–60', ms5Title:'Pre-Retirement', ms5Items:['Reduce equity gradually','Clear all major loans','Max pension contributions','Withdrawal strategy'],
-    ms6Age:'60+', ms6Title:'Freedom Phase', ms6Items:['4% SWR activated','Low-risk instruments','Health top-up cover','Will & legacy'],
-  },
-  hi: {
-    appSubtitle: 'प्रो फाइनेंस सूट',
-    marketRegion: 'बाज़ार क्षेत्र',
-    calculators: 'कैलकुलेटर',
-    learn: 'सीखें',
-    live: 'लाइव',
-    notForTrading: 'लाइव /api/market · 30s रिफ्रेश\nट्रेडिंग के लिए नहीं।',
-    searchTerm: 'कोई भी शब्द खोजें…',
-    nav_sip: '📈 निवेश योजनाकार',
-    nav_emi: '🏠 ऋण और बंधक',
-    nav_fire: '🔥 FIRE सेवानिवृत्ति',
-    nav_roi: '💹 ROI और चक्रवृद्धि',
-    nav_insurance: '🛡️ बीमा योजनाकार',
-    nav_tax: '📋 कर अनुकूलक',
-    nav_edu: '🎓 वित्तीय अकादमी',
-    nav_glossary: '📖 शब्दकोश',
-    nav_sip_text: 'निवेश योजनाकार',
-    nav_emi_text: 'ऋण और बंधक',
-    nav_fire_text: 'FIRE सेवानिवृत्ति',
-    nav_roi_text: 'ROI और चक्रवृद्धि',
-    nav_insurance_text: 'बीमा योजनाकार',
-    nav_tax_text: 'कर अनुकूलक',
-    nav_edu_text: 'वित्तीय अकादमी',
-    nav_glossary_text: 'शब्दकोश',
-    bnav_sip: 'निवेश', bnav_emi: 'ऋण', bnav_fire: 'FIRE', bnav_roi: 'ROI',
-    bnav_insurance: 'बीमा', bnav_tax: 'कर', bnav_edu: 'सीखें', bnav_glossary: 'शब्दकोश',
-    langLabel: 'भाषा',
-    monthlyExpenses: 'मासिक खर्च',
-    annualIncome: 'वार्षिक आय',
-    liabilities: 'देनदारियां',
-    assetCompareTitle: 'परिसंपत्ति वर्ग तुलना — 20 वर्ष',
-    totalCorpus: 'कुल कोष', amountInvested: 'निवेश की राशि', wealthGained: 'अर्जित संपत्ति',
-    gains: 'लाभ', parameters: 'मानदंड', expectedReturn: 'अपेक्षित रिटर्न',
-    tenure: 'अवधि', yrs: 'वर्ष', corpusBreakdown: 'कोष विश्लेषण',
-    returns: 'रिटर्न', invested: 'निवेशित', earnings: 'कमाई',
-    milestones: 'मील के पत्थर', yearByYear: 'वर्ष-दर-वर्ष प्रक्षेपण',
-    exportCsv: '⬇ CSV डाउनलोड करें',
-    startEarly: 'जल्दी शुरू करें',
-    rule72: '72 का नियम',
-    rule72Desc: '72 को रिटर्न दर से भाग दें = दोगुना होने का समय। 12% पर, पैसा 6 साल में दोगुना होता है।',
-    tableYr: 'वर्ष', tableInvested: 'निवेशित', tableValue: 'मूल्य', tableGains: 'लाभ', tableProgress: 'प्रगति',
-    increaseTenure: 'मील के पत्थर देखने के लिए अवधि बढ़ाएं।',
-    months: 'महीने', yr: 'वर्ष', year: 'वर्ष', age: 'आयु', done: 'पूर्ण', approx: 'अनुमानित',
-    sipTabLabel: 'निवेश योजनाकार',
-    emiTabLabel: 'ऋण और बंधक योजनाकार',
-    monthlyPayment: 'मासिक ईएमआई', totalInterest: 'कुल ब्याज', totalPayment: 'कुल भुगतान',
-    loanParameters: 'ऋण मानदंड', interestRate: 'ब्याज दर',
-    paymentBreakdown: 'भुगतान विश्लेषण', principal: 'मूलधन', interest: 'ब्याज',
-    minIncome: 'न्यूनतम आय अनुशंसित', amortSchedule: 'परिशोधन अनुसूची',
-    tableOpening: 'शुरुआत', tableClosing: 'समापन',
-    fireTabLabel: '🔥 FIRE कैलकुलेटर',
-    fireCorpusLabel: '🎯 FIRE कोष', yearsToFire: 'FIRE तक वर्ष', safeWithdrawal: 'सुरक्षित निकासी/माह',
-    fireInputs: 'FIRE इनपुट', currentAge: 'वर्तमान आयु', currentSavings: 'वर्तमान बचत',
-    monthlyInvestment: 'मासिक निवेश', portfolioReturn: 'पोर्टफोलियो रिटर्न', inflation: 'मुद्रास्फीति',
-    fireJourney: 'FIRE यात्रा', progressToFire: 'FIRE की ओर प्रगति', yourFireType: 'आपका FIRE प्रकार',
-    retireAtAge: 'सेवानिवृत्ति की आयु', alreadyFire: 'पहले से FIRE! 🎉',
-    roiTabLabel: 'ROI और चक्रवृद्धि वृद्धि', roiDesc: 'निवेश साधनों की तुलना करें और चक्रवृद्धि वृद्धि को समझें।',
-    lumpSum: 'एकमुश्त कैलकुलेटर', initialInvestment: 'प्रारंभिक निवेश', annualReturn: 'वार्षिक रिटर्न',
-    period: 'अवधि', final: 'अंतिम', multiplier: 'गुणक', growthCurve: 'विकास वक्र', historicalAvg: 'ऐतिहासिक औसत',
-    insTabLabel: 'जीवन बीमा योजनाकार', yourProfile: 'आपकी प्रोफ़ाइल', retirementAge: 'सेवानिवृत्ति आयु',
-    existingCover: 'मौजूदा कवर', recommendedCover: 'अनुशंसित कवर', coverageGap: 'कवरेज अंतर', popularProducts: 'लोकप्रिय उत्पाद',
-    taxTabLabel: 'कर अनुकूलक',
-    effRate: 'प्रभावी', oldRegime: 'पुरानी व्यवस्था', newRegime: 'नई व्यवस्था',
-    savesMore: 'अधिक बचत करती है', annualSaving: 'वार्षिक बचत', bestRegime: 'सर्वोत्तम व्यवस्था',
-    incomeDeductions: 'आय और कटौतियां (FY2025-26)',
-    grossIncome: 'सकल वार्षिक आय (CTC)',
-    healthInsurance: 'स्वास्थ्य बीमा',
-    homeLoanInterest: 'गृह ऋण ब्याज',
-    extra: 'अतिरिक्त',
-    regimeComparison: 'व्यवस्था तुलना',
-    oldRegimeTax: 'पुरानी व्यवस्था कर',
-    newRegimeTax: 'नई व्यवस्था कर',
-    eduTabLabel: 'अपना पैसा मास्टर करें', eduSubtitle: 'आपकी संपत्ति यात्रा के हर चरण के लिए संरचित शिक्षा।',
-    beginner: 'शुरुआती', intermediate: 'मध्यवर्ती', advanced: 'उन्नत',
-    financialFoundation: 'वित्तीय नींव', wealthArchitect: 'संपत्ति वास्तुकार', fireMastermind: 'FIRE मास्टरमाइंड',
-    keyConceptsTitle: 'मुख्य वित्तीय अवधारणाएं', milestoneTimeline: 'आदर्श मील के पत्थर की समयरेखा',
-    glossaryTabLabel: 'वित्त शब्दकोश', glossarySubtitle: 'हर वित्तीय शब्द सरल भाषा में।',
-    leanFire: '🌿 लीन FIRE', regularFire: '⚖️ नियमित FIRE', fatFire: '🏆 फैट FIRE',
-    leanFireDesc: 'न्यूनतम जीवनशैली, स्वतंत्रता की अधिकतम गति।', regularFireDesc: 'संतुलित दृष्टिकोण — अंशकालिक वैकल्पिक।', fatFireDesc: 'विलासिता सेवानिवृत्ति — बड़े कोष की आवश्यकता।',
-    eduConceptTitle1: 'चक्रवृद्धि ब्याज क्या है और यह क्यों मायने रखता है',
-    eduConceptBody1: 'चक्रवृद्धि ब्याज मूलधन और पहले से अर्जित ब्याज दोनों पर मिलता है। 10% रिटर्न पर, ₹1 लाख 10 साल में ₹2.6 लाख, 20 साल में ₹6.7 लाख, और 30 साल में ₹17.4 लाख बन जाता है। 5 साल पहले शुरू करने से अंतिम कोष दोगुना हो सकता है।',
-    eduConceptTitle2: 'आपातकालीन निधि कैसे बनाएं',
-    eduConceptBody2: 'आपातकालीन निधि तरल साधनों में 3–6 महीने के खर्च के बराबर होनी चाहिए। यह आपको नौकरी छूटने या चिकित्सा आपात स्थिति में दीर्घकालिक निवेश से हाथ न धोने से बचाती है। नियम: इक्विटी में निवेश से पहले हमेशा आपातकालीन निधि बनाएं।',
-    eduConceptTitle3: 'संपत्ति आवंटन — इक्विटी और डेट में संतुलन',
-    eduConceptBody3: 'क्लासिक नियम: इक्विटी % = 110 माइनस आपकी उम्र। 30 पर → 80% इक्विटी। 50 पर → 60% इक्विटी। इक्विटी उतार-चढ़ाव के साथ अधिक रिटर्न देती है; बांड स्थिरता देते हैं। सालाना पुनर्संतुलन करें।',
-    eduConceptTitle4: 'XIRR क्या है और फंड रिटर्न कैसे मापें',
-    eduConceptBody4: 'XIRR नकदी प्रवाह के समय का हिसाब लगाता है — SIP के लिए जरूरी। 3 साल में 15% पूर्ण रिटर्न दिखाने वाला फंड केवल ~4.8% CAGR है। हमेशा 3yr, 5yr और 10yr XIRR की तुलना करें।',
-    eduConceptTitle5: 'कम लागत इंडेक्स फंड बनाम सक्रिय प्रबंधन',
-    eduConceptBody5: 'दशकों के डेटा से पता चलता है कि 90%+ सक्रिय फंड 15+ साल में अपने बेंचमार्क इंडेक्स से कम प्रदर्शन करते हैं। 0.05–0.20% शुल्क वाला इंडेक्स फंड अधिकांश सक्रिय फंडों से बेहतर प्रदर्शन करता है।',
-    eduConceptTitle6: 'मुद्रास्फीति — मूक संपत्ति विनाशक',
-    eduConceptBody6: '5% मुद्रास्फीति पर क्रय शक्ति 14 साल में आधी हो जाती है। ₹1 लाख आज = 14 साल बाद ₹50,000। आपके निवेश को मुद्रास्फीति से अधिक कमाना चाहिए। भारत में इक्विटी ने ऐतिहासिक रूप से 12–15% दिया है।',
-    ms1Age:'22–25', ms1Title:'नींव', ms1Items:['आपातकालीन निधि (3–6 माह)','टर्म + स्वास्थ्य बीमा','पहला SIP','क्रेडिट इतिहास'],
-    ms2Age:'25–30', ms2Title:'त्वरण', ms2Items:['आय का 20–30% बचाएं','80C अधिकतम करें','कोई उपभोक्ता ऋण नहीं','छात्र ऋण चुकाएं'],
-    ms3Age:'30–40', ms3Title:'संपत्ति निर्माण', ms3Items:['रियल एस्टेट','SIP बढ़ाएं','बीमा समीक्षा','वैश्विक विविधता'],
-    ms4Age:'40–50', ms4Title:'समेकन', ms4Items:['संतुलित पोर्टफोलियो','शिक्षा कोष','FIRE लक्ष्य का 50%','संपत्ति नियोजन'],
-    ms5Age:'50–60', ms5Title:'सेवानिवृत्ति-पूर्व', ms5Items:['इक्विटी कम करें','सभी ऋण चुकाएं','NPS/VPF अधिकतम','निकासी रणनीति'],
-    ms6Age:'60+', ms6Title:'स्वतंत्रता चरण', ms6Items:['4% SWR सक्रिय','वरिष्ठ FD + SCSS','स्वास्थ्य टॉप-अप','वसीयत और विरासत'],
-  },
-  es: {
-    appSubtitle: 'Suite Financiera Pro',
-    marketRegion: 'Región de Mercado',
-    calculators: 'Calculadoras',
-    learn: 'Aprender',
-    live: 'En Vivo',
-    notForTrading: 'En vivo via /api/market · actualiz. 30s\nNo para trading.',
-    searchTerm: 'Buscar cualquier término…',
-    nav_sip: '📈 Planificador de Inversión',
-    nav_emi: '🏠 Préstamo e Hipoteca',
-    nav_fire: '🔥 Retiro FIRE',
-    nav_roi: '💹 ROI y Compuesto',
-    nav_insurance: '🛡️ Planificador de Seguros',
-    nav_tax: '📋 Optimizador Fiscal',
-    nav_edu: '🎓 Academia Financiera',
-    nav_glossary: '📖 Glosario',
-    nav_sip_text: 'Planificador de Inversión',
-    nav_emi_text: 'Préstamo e Hipoteca',
-    nav_fire_text: 'Retiro FIRE',
-    nav_roi_text: 'ROI y Compuesto',
-    nav_insurance_text: 'Planificador de Seguros',
-    nav_tax_text: 'Optimizador Fiscal',
-    nav_edu_text: 'Academia Financiera',
-    nav_glossary_text: 'Glosario',
-    bnav_sip: 'Invertir', bnav_emi: 'Préstamo', bnav_fire: 'FIRE', bnav_roi: 'ROI',
-    bnav_insurance: 'Seguro', bnav_tax: 'Impuesto', bnav_edu: 'Aprender', bnav_glossary: 'Glosario',
-    langLabel: 'Idioma',
-    monthlyExpenses: 'Gastos Mensuales',
-    annualIncome: 'Ingreso Anual',
-    liabilities: 'Pasivos',
-    assetCompareTitle: 'Comparación de Clases de Activos — 20 Años',
-    totalCorpus: 'Corpus Total', amountInvested: 'Cantidad Invertida', wealthGained: 'Riqueza Ganada',
-    gains: 'ganancias', parameters: 'PARÁMETROS', expectedReturn: 'Retorno Esperado',
-    tenure: 'Plazo', yrs: 'años', corpusBreakdown: 'Desglose del Corpus',
-    returns: 'Retornos', invested: 'Invertido', earnings: 'Ganancias',
-    milestones: 'Hitos', yearByYear: 'Proyección Año a Año',
-    exportCsv: '⬇ Exportar CSV',
-    startEarly: 'Empieza Temprano',
-    rule72: 'Regla del 72',
-    rule72Desc: 'Divide 72 entre la tasa de retorno = tiempo de duplicación. Al 12%, el dinero se duplica cada 6 años.',
-    tableYr: 'Año', tableInvested: 'Invertido', tableValue: 'Valor', tableGains: 'Ganancias', tableProgress: 'Progreso',
-    increaseTenure: 'Aumenta el plazo para ver hitos.',
-    months: 'meses', yr: 'año', year: 'Año', age: 'Edad', done: 'Listo', approx: 'aprox',
-    sipTabLabel: 'Planificador de Inversión',
-    emiTabLabel: 'Planificador de Préstamo e Hipoteca',
-    monthlyPayment: 'Pago Mensual', totalInterest: 'Interés Total', totalPayment: 'Pago Total',
-    loanParameters: 'PARÁMETROS DEL PRÉSTAMO', interestRate: 'Tasa de Interés',
-    paymentBreakdown: 'Desglose del Pago', principal: 'Principal', interest: 'Interés',
-    minIncome: 'Ingreso mínimo recomendado', amortSchedule: 'Tabla de Amortización',
-    tableOpening: 'Apertura', tableClosing: 'Cierre',
-    fireTabLabel: '🔥 Calculadora FIRE',
-    fireCorpusLabel: '🎯 Corpus FIRE', yearsToFire: 'Años para FIRE', safeWithdrawal: 'Retiro Seguro/mes',
-    fireInputs: 'DATOS FIRE', currentAge: 'Edad Actual', currentSavings: 'Ahorros Actuales',
-    monthlyInvestment: 'Inversión Mensual', portfolioReturn: 'Retorno del Portafolio', inflation: 'Inflación',
-    fireJourney: 'Camino al FIRE', progressToFire: 'Progreso hacia FIRE', yourFireType: 'Tu Tipo de FIRE',
-    retireAtAge: 'Retiro a la edad de', alreadyFire: '¡Ya eres FIRE! 🎉',
-    roiTabLabel: 'ROI y Crecimiento Compuesto', roiDesc: 'Compara vehículos de inversión y entiende el crecimiento compuesto.',
-    lumpSum: 'CALCULADORA DE SUMA FIJA', initialInvestment: 'Inversión Inicial', annualReturn: 'Retorno Anual',
-    period: 'Período', final: 'Final', multiplier: 'Multiplicador', growthCurve: 'Curva de Crecimiento', historicalAvg: 'Promedios históricos',
-    insTabLabel: 'Planificador de Seguro de Vida', yourProfile: 'TU PERFIL', retirementAge: 'Edad de Retiro',
-    existingCover: 'Cobertura Existente', recommendedCover: 'Cobertura Recomendada', coverageGap: 'Brecha de Cobertura', popularProducts: 'Productos Populares',
-    taxTabLabel: 'Optimizador Fiscal',
-    effRate: 'Ef.', oldRegime: 'Régimen Antiguo', newRegime: 'Régimen Nuevo',
-    savesMore: 'ahorra más', annualSaving: 'Ahorro anual', bestRegime: 'Mejor Régimen',
-    incomeDeductions: 'INGRESOS Y DEDUCCIONES (FY2025-26)',
-    grossIncome: 'Ingreso Bruto Anual (CTC)',
-    healthInsurance: 'Seguro de Salud',
-    homeLoanInterest: 'Interés de Préstamo Hipotecario',
-    extra: 'Extra',
-    regimeComparison: 'Comparación de Régimen',
-    oldRegimeTax: 'Impuesto Régimen Antiguo',
-    newRegimeTax: 'Impuesto Régimen Nuevo',
-    eduTabLabel: 'Domina tu Dinero', eduSubtitle: 'Aprendizaje estructurado para cada etapa de tu viaje de riqueza.',
-    beginner: 'Principiante', intermediate: 'Intermedio', advanced: 'Avanzado',
-    financialFoundation: 'Base Financiera', wealthArchitect: 'Arquitecto de Riqueza', fireMastermind: 'Mente Maestra FIRE',
-    keyConceptsTitle: 'Conceptos Financieros Clave', milestoneTimeline: 'Línea de Tiempo de Hitos Ideales',
-    glossaryTabLabel: 'Glosario Financiero', glossarySubtitle: 'Cada término financiero en lenguaje simple.',
-    leanFire: '🌿 FIRE Austero', regularFire: '⚖️ FIRE Regular', fatFire: '🏆 FIRE Abundante',
-    leanFireDesc: 'Estilo de vida mínimo, máxima velocidad hacia la independencia.', regularFireDesc: 'Enfoque equilibrado — trabajo a tiempo parcial opcional.', fatFireDesc: 'Retiro de lujo — necesita un gran corpus.',
-    eduConceptTitle1: 'Qué es el Interés Compuesto y por qué importa',
-    eduConceptBody1: 'El interés compuesto se gana sobre el capital y los intereses ya ganados. Al 10% de retorno, $10,000 se convierten en $27,000 en 10 años, $67,000 en 20 años y $174,000 en 30 años. Empezar 5 años antes puede duplicar tu corpus final.',
-    eduConceptTitle2: 'Cómo construir un Fondo de Emergencia',
-    eduConceptBody2: 'Un fondo de emergencia equivale a 3–6 meses de gastos en instrumentos líquidos. Te protege ante gastos inesperados — pérdida de empleo, emergencias médicas. Regla: Crea el fondo de emergencia ANTES de cualquier inversión en acciones.',
-    eduConceptTitle3: 'Asignación de Activos — Equilibrio entre Renta Variable y Fija',
-    eduConceptBody3: 'Regla clásica: % en acciones = 110 menos tu edad. A los 30 → 80% acciones. A los 50 → 60% acciones. Las acciones dan mayor retorno con volatilidad; los bonos dan estabilidad. Reequilibra anualmente.',
-    eduConceptTitle4: 'Qué es XIRR y cómo medir los retornos de fondos',
-    eduConceptBody4: 'XIRR tiene en cuenta el momento de los flujos de efectivo — esencial para planes de inversión regulares. Un fondo con 15% de retorno absoluto en 3 años es solo ~4.8% CAGR. Compara siempre los retornos a 3, 5 y 10 años.',
-    eduConceptTitle5: 'Fondos Indexados de Bajo Costo vs Gestión Activa',
-    eduConceptBody5: 'Décadas de datos muestran que más del 90% de los fondos activos tienen peor rendimiento que su índice de referencia a lo largo de 15+ años. Un fondo indexado de bajo costo con 0.05–0.20% de comisión supera a la mayoría de fondos activos.',
-    eduConceptTitle6: 'Inflación — El Destructor Silencioso de Riqueza',
-    eduConceptBody6: 'Con una inflación del 5%, el poder adquisitivo se reduce a la mitad en 14 años. Tus inversiones deben superar la inflación de manera significativa. La renta variable ha rentado históricamente un 8–14% frente a una inflación del 3–7%.',
-    ms1Age:'22–25', ms1Title:'Fundación', ms1Items:['Fondo de emergencia (3–6 meses)','Seguro de vida + salud','Primera inversión','Historial crediticio'],
-    ms2Age:'25–30', ms2Title:'Acelerar', ms2Items:['Ahorra 20–30% del ingreso','Maximiza cuentas fiscales','Sin deuda de consumo','Paga préstamos estudiantiles'],
-    ms3Age:'30–40', ms3Title:'Construir Activos', ms3Items:['Bienes raíces','Aumenta aportaciones','Revisa seguros','Diversificación global'],
-    ms4Age:'40–50', ms4Title:'Consolidación', ms4Items:['Portafolio equilibrado','Fondo educación hijos','50% del objetivo FIRE','Planificación patrimonial'],
-    ms5Age:'50–60', ms5Title:'Pre-Retiro', ms5Items:['Reduce renta variable','Cancela deudas mayores','Maximiza pensiones','Estrategia de retiro'],
-    ms6Age:'60+', ms6Title:'Fase de Libertad', ms6Items:['4% SWR activado','Instrumentos de bajo riesgo','Seguro médico reforzado','Testamento y herencia'],
-  },
-  de: {
-    appSubtitle: 'Pro-Finanz-Suite',
-    marketRegion: 'Marktregion',
-    calculators: 'Rechner',
-    learn: 'Lernen',
-    live: 'Live',
-    notForTrading: 'Live via /api/market · 30s Aktualisierung\nNicht für den Handel.',
-    searchTerm: 'Begriff suchen…',
-    nav_sip: '📈 Investitionsplaner',
-    nav_emi: '🏠 Kredit & Hypothek',
-    nav_fire: '🔥 FIRE Rente',
-    nav_roi: '💹 ROI & Zinseszins',
-    nav_insurance: '🛡️ Versicherungsplaner',
-    nav_tax: '📋 Steueroptimierung',
-    nav_edu: '🎓 Finanzakademie',
-    nav_glossary: '📖 Glossar',
-    nav_sip_text: 'Investitionsplaner',
-    nav_emi_text: 'Kredit & Hypothek',
-    nav_fire_text: 'FIRE Rente',
-    nav_roi_text: 'ROI & Zinseszins',
-    nav_insurance_text: 'Versicherungsplaner',
-    nav_tax_text: 'Steueroptimierung',
-    nav_edu_text: 'Finanzakademie',
-    nav_glossary_text: 'Glossar',
-    bnav_sip: 'Invest', bnav_emi: 'Kredit', bnav_fire: 'FIRE', bnav_roi: 'ROI',
-    bnav_insurance: 'Versich.', bnav_tax: 'Steuer', bnav_edu: 'Lernen', bnav_glossary: 'Glossar',
-    langLabel: 'Sprache',
-    monthlyExpenses: 'Monatliche Ausgaben',
-    annualIncome: 'Jahreseinkommen',
-    liabilities: 'Verbindlichkeiten',
-    assetCompareTitle: 'Anlageklassen-Vergleich — 20 Jahre',
-    totalCorpus: 'Gesamtvermögen', amountInvested: 'Investierter Betrag', wealthGained: 'Erwirtschaftetes Vermögen',
-    gains: 'Gewinn', parameters: 'PARAMETER', expectedReturn: 'Erwartete Rendite',
-    tenure: 'Laufzeit', yrs: 'J.', corpusBreakdown: 'Vermögensaufschlüsselung',
-    returns: 'Rendite', invested: 'Investiert', earnings: 'Erträge',
-    milestones: 'Meilensteine', yearByYear: 'Jahresprognose',
-    exportCsv: '⬇ CSV exportieren',
-    startEarly: 'Früh anfangen',
-    rule72: 'Die 72er-Regel',
-    rule72Desc: '72 geteilt durch die Rendite = Verdopplungszeit. Bei 12% verdoppelt sich das Geld alle 6 Jahre.',
-    tableYr: 'J.', tableInvested: 'Investiert', tableValue: 'Wert', tableGains: 'Gewinn', tableProgress: 'Fortschritt',
-    increaseTenure: 'Laufzeit verlängern, um Meilensteine zu sehen.',
-    months: 'Monate', yr: 'J.', year: 'Jahr', age: 'Alter', done: 'Fertig', approx: 'ca.',
-    sipTabLabel: 'Investitionsplaner',
-    emiTabLabel: 'Kredit- und Hypothekenplaner',
-    monthlyPayment: 'Monatliche Rate', totalInterest: 'Gesamtzinsen', totalPayment: 'Gesamtzahlung',
-    loanParameters: 'KREDITPARAMETER', interestRate: 'Zinssatz',
-    paymentBreakdown: 'Zahlungsaufschlüsselung', principal: 'Tilgung', interest: 'Zinsen',
-    minIncome: 'Mindestempfohlenes Einkommen', amortSchedule: 'Tilgungsplan',
-    tableOpening: 'Anfang', tableClosing: 'Ende',
-    fireTabLabel: '🔥 FIRE-Rechner',
-    fireCorpusLabel: '🎯 FIRE-Zielkapital', yearsToFire: 'Jahre bis FIRE', safeWithdrawal: 'Sichere Entnahme/Monat',
-    fireInputs: 'FIRE-EINGABEN', currentAge: 'Aktuelles Alter', currentSavings: 'Aktuelles Ersparnisse',
-    monthlyInvestment: 'Monatliche Investition', portfolioReturn: 'Portfoliorendite', inflation: 'Inflation',
-    fireJourney: 'FIRE-Reise', progressToFire: 'Fortschritt zu FIRE', yourFireType: 'Ihr FIRE-Typ',
-    retireAtAge: 'Rente im Alter von', alreadyFire: 'Bereits FIRE! 🎉',
-    roiTabLabel: 'ROI und Zinseszinswachstum', roiDesc: 'Vergleichen Sie Anlageklassen und verstehen Sie das Zinseszinswachstum.',
-    lumpSum: 'EINMALANLAGE-RECHNER', initialInvestment: 'Erstanlage', annualReturn: 'Jährliche Rendite',
-    period: 'Zeitraum', final: 'Endwert', multiplier: 'Multiplikator', growthCurve: 'Wachstumskurve', historicalAvg: 'Historische Durchschnitte',
-    insTabLabel: 'Lebensversicherungsplaner', yourProfile: 'IHR PROFIL', retirementAge: 'Rentenalter',
-    existingCover: 'Bestehender Schutz', recommendedCover: 'Empfohlener Schutz', coverageGap: 'Versicherungslücke', popularProducts: 'Beliebte Produkte',
-    taxTabLabel: 'Steueroptimierung',
-    effRate: 'Eff.', oldRegime: 'Altes System', newRegime: 'Neues System',
-    savesMore: 'spart mehr', annualSaving: 'Jährliche Ersparnis', bestRegime: 'Bestes System',
-    incomeDeductions: 'EINKOMMEN & ABZÜGE (FY2025-26)',
-    grossIncome: 'Bruttogehalt (CTC)',
-    healthInsurance: 'Krankenversicherung',
-    homeLoanInterest: 'Hypothekenzinsen',
-    extra: 'Zusätzlich',
-    regimeComparison: 'Systemvergleich',
-    oldRegimeTax: 'Steuer Altes System',
-    newRegimeTax: 'Steuer Neues System',
-    eduTabLabel: 'Meistern Sie Ihr Geld', eduSubtitle: 'Strukturiertes Lernen für jede Phase Ihrer Vermögensreise.',
-    beginner: 'Anfänger', intermediate: 'Fortgeschritten', advanced: 'Experte',
-    financialFoundation: 'Finanzielles Fundament', wealthArchitect: 'Vermögensarchitekt', fireMastermind: 'FIRE-Mastermind',
-    keyConceptsTitle: 'Wichtige Finanzkonzepte', milestoneTimeline: 'Ideale Meilenstein-Zeitachse',
-    glossaryTabLabel: 'Finanzglossar', glossarySubtitle: 'Jeder Finanzbegriff in einfacher Sprache.',
-    leanFire: '🌿 Lean FIRE', regularFire: '⚖️ Standard FIRE', fatFire: '🏆 Fat FIRE',
-    leanFireDesc: 'Minimaler Lebensstil, maximale Geschwindigkeit zur Unabhängigkeit.', regularFireDesc: 'Ausgewogener Ansatz — Teilzeit optional.', fatFireDesc: 'Luxusrente — erfordert großes Kapital.',
-    eduConceptTitle1: 'Was ist Zinseszins und warum ist er wichtig',
-    eduConceptBody1: 'Zinseszins wird auf Kapital und bereits verdiente Zinsen berechnet. Bei 10% Rendite werden 10.000 € in 10 Jahren zu 27.000 €, in 20 Jahren zu 67.000 € und in 30 Jahren zu 174.000 € — allein durch Wiederanlage. 5 Jahre früher zu beginnen kann Ihr Endvermögen verdoppeln.',
-    eduConceptTitle2: 'Wie Sie einen Notgroschen aufbauen',
-    eduConceptBody2: 'Ein Notgroschen entspricht 3–6 Monatsausgaben in liquiden Anlagen. Er schützt Sie vor unerwarteten Ausgaben — Jobverlust, medizinische Notfälle. Regel: Zuerst den Notgroschen aufbauen, dann in Aktien investieren.',
-    eduConceptTitle3: 'Asset-Allokation — Gleichgewicht zwischen Aktien und Anleihen',
-    eduConceptBody3: 'Klassische Regel: Aktienanteil % = 110 minus Ihr Alter. Mit 30 → 80% Aktien. Mit 50 → 60% Aktien. Aktien bieten höhere Renditen mit Volatilität; Anleihen geben Stabilität. Jährlich neu ausbalancieren.',
-    eduConceptTitle4: 'Was ist XIRR und wie misst man Fondsrenditen',
-    eduConceptBody4: 'XIRR berücksichtigt den Zeitpunkt der Zahlungsströme — unverzichtbar für regelmäßige Sparpläne. Ein Fonds mit 15% Gesamtrendite über 3 Jahre entspricht nur ~4.8% p.a. Vergleichen Sie stets 3-, 5- und 10-Jahres-Renditen.',
-    eduConceptTitle5: 'Kostengünstige Indexfonds vs. aktives Management',
-    eduConceptBody5: 'Jahrzehntelange Daten zeigen, dass über 90% der aktiv gemanagten Fonds über 15+ Jahre ihren Referenzindex nicht schlagen. Ein kostengünstiger Indexfonds mit 0,05–0,20% Gebühren übertrifft die meisten aktiven Fonds.',
-    eduConceptTitle6: 'Inflation — Der stille Vermögenszerstörer',
-    eduConceptBody6: 'Bei 5% Inflation halbiert sich die Kaufkraft in 14 Jahren. 10.000 € heute = 5.000 € Kaufkraft in 14 Jahren. Ihre Investitionen müssen die Inflation deutlich übertreffen. Aktien haben historisch 8–14% erzielt.',
-    ms1Age:'22–25', ms1Title:'Grundlage', ms1Items:['Notgroschen (3–6 Monate)','Risikoleben + Kranken','Erste Investition','Kreditgeschichte'],
-    ms2Age:'25–30', ms2Title:'Beschleunigen', ms2Items:['20–30% Einkommen sparen','Steuervorteile maximieren','Keine Konsumschulden','Studienkredite tilgen'],
-    ms3Age:'30–40', ms3Title:'Vermögensaufbau', ms3Items:['Immobilien','Beiträge erhöhen','Versicherung prüfen','Globale Diversifikation'],
-    ms4Age:'40–50', ms4Title:'Konsolidierung', ms4Items:['Ausgewogenes Portfolio','Bildungskapital','50% des FIRE-Ziels','Nachlassplanung'],
-    ms5Age:'50–60', ms5Title:'Vorruhestand', ms5Items:['Aktienanteil reduzieren','Alle Schulden tilgen','Rente maximieren','Entnahmestrategie'],
-    ms6Age:'60+', ms6Title:'Freiheitsphase', ms6Items:['4% Entnahmeregel aktiv','Sichere Anlagen','Krankenversicherung aufstocken','Testament & Erbe'],
-  }
-};
-
-
-// ================================================================
-// I18N ENGINE
-// ================================================================
-let currentLang = 'en';
-const T = () => I18N[currentLang] || I18N.en;
-const t = (key) => (T()[key] !== undefined ? T()[key] : (I18N.en[key] || key));
-
-function setLang(lang) {
-  currentLang = lang;
-  // Update lang buttons
-  ['en','hi','es','de'].forEach(l => {
-    ['desk-lang-','mob-lang-'].forEach(pfx => {
-      const el = document.getElementById(pfx + l);
-      if (el) el.classList.toggle('active', l === lang);
-    });
-  });
-  // Update html lang attribute
-  document.documentElement.lang = lang === 'hi' ? 'hi' : lang === 'es' ? 'es' : lang === 'de' ? 'de' : 'en';
-  // Apply all data-i18n elements
-  applyTranslations();
-  // Update sidebar lang label
-  const ll = document.getElementById('lang-label-sidebar');
-  if (ll) ll.textContent = t('langLabel');
-  // Update sidebar subtitle
-  const sub = document.querySelector('[data-i18n="appSubtitle"]');
-  if (sub) sub.textContent = t('appSubtitle');
-  // Re-render active tab to apply translated dynamic content
-  const at = document.querySelector('.tab.active');
-  if (at) {
-    if (at.id === 'edu') buildEdu();
-    else if (at.id === 'glossary') buildGlossary();
-    else if (at.id === 'tax') renderTax();
-  }
-  // Re-apply region labels (which include translated strings)
-  updateStaticLabels();
-  // Re-calc to refresh translated output
-  const id = at ? at.id : 'sip';
-  if (id === 'sip') calcSIP();
-  else if (id === 'emi') calcEMI();
-  else if (id === 'fire') calcFIRE();
-  else if (id === 'roi') calcROI();
-  else if (id === 'insurance') calcInsurance();
-}
-
-function applyTranslations() {
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    const key = el.getAttribute('data-i18n-placeholder');
-    el.placeholder = t(key);
-  });
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    const val = t(key);
-    if (val !== undefined) el.textContent = val;
-  });
-}
-
-function tFireType(exp) {
-  const r = R();
-  if (exp < r.fireLeanMax) return [t('leanFire'), t('leanFireDesc')];
-  if (exp > r.fireFatMin) return [t('fatFire'), t('fatFireDesc')];
-  return [t('regularFire'), t('regularFireDesc')];
-}
-
-window.onload=function(){setMode('india');setLang('en');};
+window.onload=function(){setMode('india');};
 </script>
 
 <script>
