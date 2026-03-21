@@ -445,9 +445,9 @@ tr:hover td{background:rgba(255,255,255,.02);}
     </div>
 
     <div class="edu-3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-      <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">⚡</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Start Early</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" id="edu-sip-1">Time in market beats timing the market. Every decade of delay roughly halves your final corpus.</p></div>
-      <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">📐</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Rule of 72</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">Divide 72 by return rate = doubling time. At 12%, money doubles every 6 years.</p></div>
-      <div class="edu-card"><div style="font-size:20px;margin-bottom:8px;">📊</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;" id="edu-sip-3-title">Cost Averaging</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" id="edu-sip-3">Regular investing buys more units when prices fall and fewer when high — automatically lowering average cost.</p></div>
+      <div class="edu-card" onclick="showLesson('start-early')"><div style="font-size:20px;margin-bottom:8px;">⚡</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Start Early</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" id="edu-sip-1">Time in market beats timing the market. Every decade of delay roughly halves your final corpus.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+      <div class="edu-card" onclick="showLesson('rule-72')"><div style="font-size:20px;margin-bottom:8px;">📐</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;">Rule of 72</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;">Divide 72 by return rate = doubling time. At 12%, money doubles every 6 years.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
+      <div class="edu-card" onclick="showLesson('cost-averaging')"><div style="font-size:20px;margin-bottom:8px;">📊</div><h4 style="font-size:12px;font-weight:700;margin-bottom:6px;" id="edu-sip-3-title">Cost Averaging</h4><p style="font-size:11px;color:var(--muted);line-height:1.6;" id="edu-sip-3">Regular investing buys more units when prices fall and fewer when high — automatically lowering average cost.</p><div style="margin-top:10px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:1px;">READ MORE →</div></div>
     </div>
   </div>
 
@@ -1552,5 +1552,98 @@ if(lt){
 }
 setInterval(function(){loadTickerData(currentMode);},30000);
 </script>
+
+<!-- ============================================================ -->
+<!-- LESSON MODAL -->
+<!-- ============================================================ -->
+<div id="lesson-modal" style="display:none;position:fixed;inset:0;z-index:2000;align-items:center;justify-content:center;padding:16px;">
+  <div id="lesson-overlay" onclick="closeLesson()" style="position:absolute;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);"></div>
+  <div style="position:relative;background:var(--dark2);border:1px solid rgba(201,168,76,.25);border-radius:18px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.6);">
+    <button onclick="closeLesson()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.07);border:none;color:var(--cream);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div id="lesson-icon" style="font-size:36px;margin-bottom:12px;"></div>
+    <div id="lesson-tag" style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px;"></div>
+    <h2 id="lesson-title" style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;margin-bottom:12px;line-height:1.2;"></h2>
+    <div id="lesson-body" style="font-size:13px;color:var(--muted);line-height:1.8;"></div>
+    <div id="lesson-example" style="margin-top:20px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:16px;display:none;">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">EXAMPLE</div>
+      <div id="lesson-example-body" style="font-size:12px;color:var(--cream);line-height:1.7;"></div>
+    </div>
+    <div id="lesson-tip" style="margin-top:16px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:14px;display:none;">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#4ade80;margin-bottom:6px;">💡 PRO TIP</div>
+      <div id="lesson-tip-body" style="font-size:12px;color:var(--cream);line-height:1.7;"></div>
+    </div>
+    <button onclick="closeLesson()" style="margin-top:22px;width:100%;padding:12px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:10px;color:#0A0A0F;font-weight:800;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.5px;">Got it ✓</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ONBOARDING / CONNECT MODAL -->
+<!-- ============================================================ -->
+<div id="onboard-modal" style="display:none;position:fixed;inset:0;z-index:2000;align-items:center;justify-content:center;padding:16px;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);"></div>
+  <div style="position:relative;background:var(--dark2);border:1px solid rgba(201,168,76,.3);border-radius:20px;max-width:480px;width:100%;padding:32px;box-shadow:0 32px 100px rgba(0,0,0,.7);">
+
+    <!-- Step 1: Welcome -->
+    <div id="ob-step-1">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-size:40px;margin-bottom:10px;">👋</div>
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">WELCOME TO WEALTHHUB</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;margin-bottom:8px;">Your Personal Finance Hub</h2>
+        <p style="font-size:12px;color:var(--muted);line-height:1.7;">Let's set up your profile so we can personalise calculations, tax rules and benchmarks for you.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;">Your Name</label>
+          <input id="ob-name" type="text" placeholder="e.g. Raj Sharma" class="num-input" style="font-family:'DM Sans',sans-serif;font-size:14px;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;">Age</label>
+          <input id="ob-age" type="number" placeholder="e.g. 28" class="num-input" style="font-family:'DM Sans',sans-serif;font-size:14px;" min="18" max="80">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;">Monthly Income</label>
+          <input id="ob-income" type="number" placeholder="e.g. 80000" class="num-input" style="font-family:'DM Sans',sans-serif;font-size:14px;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;">Financial Goal</label>
+          <select id="ob-goal" class="num-input" style="font-family:'DM Sans',sans-serif;font-size:13px;">
+            <option value="">Select your primary goal…</option>
+            <option value="wealth">Build long-term wealth (SIP/MF)</option>
+            <option value="home">Buy a home (EMI planning)</option>
+            <option value="fire">Retire early (FIRE)</option>
+            <option value="tax">Save on taxes</option>
+            <option value="insurance">Get insured</option>
+            <option value="learn">Just learning about finance</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="obNext()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:12px;color:#0A0A0F;font-weight:800;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.5px;">Continue →</button>
+      <button onclick="closeOnboard()" style="width:100%;padding:10px;background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:8px;font-family:'DM Sans',sans-serif;">Skip for now</button>
+    </div>
+
+    <!-- Step 2: Guide -->
+    <div id="ob-step-2" style="display:none;">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-size:36px;margin-bottom:10px;">🗺️</div>
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">QUICK GUIDE</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;margin-bottom:8px;">Here's what you can do</h2>
+      </div>
+      <div id="ob-guide-content" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
+      <button onclick="obFinish()" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:12px;color:#0A0A0F;font-weight:800;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.5px;">Start Exploring 🚀</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Connect button (floating) -->
+<button id="connect-btn" onclick="openOnboard()" title="Your Profile & Guide" style="position:fixed;bottom:80px;right:18px;z-index:1500;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;cursor:pointer;box-shadow:0 4px 20px rgba(201,168,76,.4);font-size:20px;display:flex;align-items:center;justify-content:center;transition:transform .2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;">👤</button>
+
+<style>
+@media(min-width:769px){
+  #connect-btn{bottom:24px;}
+}
+#lesson-modal.open,#onboard-modal.open{display:flex;}
+</style>
+
 </body>
 </html>
