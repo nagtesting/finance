@@ -173,14 +173,14 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
 /* ===== MOBILE ===== */
 @media(max-width:768px){
-  #sidebar{position:fixed;left:0;top:0;height:100vh;height:100dvh;transform:translateX(-100%);box-shadow:4px 0 40px rgba(0,0,0,.5);}
+  #sidebar{position:fixed;left:0;top:0;height:100%;transform:translateX(-100%);box-shadow:4px 0 40px rgba(0,0,0,.5);}
   #sidebar.open{transform:translateX(0);}
   #topbar{display:flex;}
   #bottom-nav{display:flex;}
   #drawer-overlay{display:block;}
-  .app{flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
-  #main{flex:1;display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
-  #main-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-top:var(--topbar-h);padding-bottom:calc(var(--bottomnav-h) + 8px);}
+  .app{display:block;height:100vh;height:100dvh;overflow:hidden;}
+  #main{position:fixed;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;overflow:hidden;}
+  #main-scroll{position:absolute;top:var(--topbar-h);bottom:var(--bottomnav-h);left:0;right:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
   .big-number{font-size:2rem;}
   .tab{padding:16px 14px;}
   h1.display{font-size:1.8rem !important;}
@@ -277,13 +277,12 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
 <!-- MAIN -->
 <div id="main">
+  <div id="main-scroll">
   <div class="mode-banner india" id="mode-banner">🇮🇳 &nbsp;India — INR · NSE/BSE · Indian Tax Laws</div>
 
   <div id="live-ticker" style="background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.1);overflow:hidden;height:44px;position:relative;flex-shrink:0;">
     <div id="ticker-track" style="display:flex;align-items:center;height:100%;position:absolute;white-space:nowrap;will-change:transform;"></div>
   </div>
-
-  <div id="main-scroll">
 
   <!-- ====== SIP TAB ====== -->
   <div id="sip" class="tab active">
