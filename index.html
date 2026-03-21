@@ -29,7 +29,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   width:var(--sidebar-w);min-width:var(--sidebar-w);
   background:var(--dark2);border-right:1px solid rgba(201,168,76,.15);
   display:flex;flex-direction:column;height:100vh;height:100dvh;
-  position:sticky;top:0;overflow-y:auto;transition:transform .3s ease;z-index:200;
+  position:sticky;top:0;overflow-y:auto;transition:transform .3s ease;z-index:500;
 }
 #main{flex:1;display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;min-width:0;}
 #main-scroll{flex:1;overflow-y:auto;overflow-x:hidden;}
@@ -38,19 +38,19 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   display:none;height:var(--topbar-h);
   background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.15);
   padding:0 14px;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:150;flex-shrink:0;gap:10px;
+  position:fixed;top:0;left:0;right:0;z-index:300;flex-shrink:0;gap:10px;
 }
 #menu-btn{width:40px;height:40px;background:transparent;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;flex-shrink:0;}
 #menu-btn span{display:block;width:22px;height:2px;background:var(--cream);border-radius:2px;transition:all .3s;}
 
-#drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:190;opacity:0;transition:opacity .3s;backdrop-filter:blur(4px);}
+#drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400;opacity:0;transition:opacity .3s;backdrop-filter:blur(4px);}
 #drawer-overlay.open{opacity:1;}
 
 #bottom-nav{
   display:none;height:var(--bottomnav-h);
   background:var(--dark2);border-top:1px solid rgba(201,168,76,.15);
   padding:0 2px 8px;align-items:flex-end;
-  position:sticky;bottom:0;z-index:150;flex-shrink:0;overflow-x:auto;
+  position:fixed;bottom:0;left:0;right:0;z-index:300;flex-shrink:0;overflow-x:auto;
 }
 .bnav-item{
   flex:1;min-width:48px;min-height:44px;display:flex;flex-direction:column;align-items:center;
@@ -180,7 +180,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
   #drawer-overlay{display:block;}
   .app{flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
   #main{flex:1;display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
-  #main-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:16px;}
+  #main-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-top:var(--topbar-h);padding-bottom:calc(var(--bottomnav-h) + 8px);}
   .big-number{font-size:2rem;}
   .tab{padding:16px 14px;}
   h1.display{font-size:1.8rem !important;}
