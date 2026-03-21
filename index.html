@@ -1642,8 +1642,154 @@ setInterval(function(){loadTickerData(currentMode);},30000);
 @media(min-width:769px){
   #connect-btn{bottom:24px;}
 }
-#lesson-modal.open,#onboard-modal.open{display:flex;}
 </style>
+
+<script>
+var LESSONS = {
+  "start-early": {
+    icon:"⚡", tag:"Power of Compounding",
+    title:"Why Starting Early Changes Everything",
+    body:"Compounding means earning returns on your returns. The longer your money stays invested, the more dramatic this effect becomes — growing exponentially, not linearly.<br><br>Time in the market is the single most powerful variable in wealth creation. More than picking the right stock. More than finding the highest return. More than saving a larger amount.",
+    example:"<strong>Same amount per month. Massive difference:</strong><br><br>Start at <strong style='color:#4ade80'>Age 25</strong> → 3.5 Cr by 60 (35 yrs @ 12%)<br>Start at <strong style='color:#f87171'>Age 35</strong> → 1.2 Cr by 60 (25 yrs @ 12%)<br>Start at <strong style='color:#f87171'>Age 45</strong> → 38L by 60 (15 yrs @ 12%)<br><br>Same monthly amount. A 10-year delay costs <strong style='color:#f87171'>2.3 Crore extra.</strong>",
+    tip:"Set up an auto-debit SIP on the 1st of every month so you invest before you spend. Even a small amount started today beats a large amount started 5 years from now."
+  },
+  "rule-72": {
+    icon:"📐", tag:"Mental Math Shortcut",
+    title:"The Rule of 72 — Your Doubling Calculator",
+    body:"Divide 72 by your annual return rate to find how many years it takes your money to double. No calculator needed — works in your head instantly.<br><br>The number 72 is chosen because it gives the most accurate result across common return rates (6%–15%).",
+    example:"<strong>Doubling time at different returns:</strong><br><br>Savings A/C 3.5% → doubles in <strong style='color:#f87171'>20.6 years</strong><br>Fixed Deposit 7% → doubles in <strong style='color:#f59e0b'>10.3 years</strong><br>PPF 7.1% → doubles in <strong style='color:#f59e0b'>10.1 years</strong><br>Nifty 50 avg 12% → doubles in <strong style='color:#4ade80'>6 years</strong><br>Equity MF avg 14% → doubles in <strong style='color:#4ade80'>5.1 years</strong>",
+    tip:"Use Rule of 72 in reverse — want to double money in 8 years? You need 72÷8 = 9% return. That instantly tells you which asset classes to target."
+  },
+  "cost-averaging": {
+    icon:"📊", tag:"SIP Strategy",
+    title:"Cost Averaging — Your Market Crash Shield",
+    body:"When you invest a fixed amount monthly (SIP), you automatically buy more units when prices are low and fewer when prices are high. This brings your average cost down over time — regardless of market timing.<br><br>This is why SIPs actually benefit from market crashes.",
+    example:"<strong>10,000/month SIP example:</strong><br><br>Jan: NAV 100 → buy <strong>100 units</strong><br>Feb: NAV 80 (crash) → buy <strong>125 units</strong><br>Mar: NAV 90 → buy <strong>111 units</strong><br>Apr: NAV 110 → buy <strong>90 units</strong><br><br>Average NAV = 95. Your avg cost = <strong style='color:#4ade80'>93.60</strong> — beating the average automatically!",
+    tip:"Never pause your SIP during a market crash. That is exactly when you buy the most units at the cheapest price."
+  },
+  "global-diversification": {
+    icon:"🌍", tag:"Portfolio Strategy",
+    title:"Global Diversification — Reduce Risk, Grow Steady",
+    body:"Spreading investments across geographies means your portfolio is not tied to any single economy, politics, or currency. When one market falls, others may hold or rise.<br><br>Currency diversification adds another layer of protection.",
+    example:"<strong>2022 Market Performance:</strong><br><br>India Nifty 50: <strong style='color:#4ade80'>+4.3%</strong><br>USA S&P 500: <strong style='color:#f87171'>-19.4%</strong><br>Brazil Bovespa: <strong style='color:#4ade80'>+4.7%</strong><br>UK FTSE 100: <strong style='color:#4ade80'>+0.9%</strong><br><br>A globally diversified portfolio smoothed out the US crash significantly.",
+    tip:"Low-cost MSCI World ETFs give exposure to 1,500+ companies across 23 developed countries in a single instrument."
+  }
+};
+
+function showLesson(id) {
+  var l = LESSONS[id];
+  if (!l) return;
+  document.getElementById("lesson-icon").textContent = l.icon;
+  document.getElementById("lesson-tag").textContent = l.tag;
+  document.getElementById("lesson-title").textContent = l.title;
+  document.getElementById("lesson-body").innerHTML = l.body;
+  var ex = document.getElementById("lesson-example");
+  var tip = document.getElementById("lesson-tip");
+  if (l.example) { ex.style.display="block"; document.getElementById("lesson-example-body").innerHTML=l.example; }
+  else ex.style.display="none";
+  if (l.tip) { tip.style.display="block"; document.getElementById("lesson-tip-body").textContent=l.tip; }
+  else tip.style.display="none";
+  document.getElementById("lesson-modal").style.display="flex";
+}
+
+function closeLesson() {
+  document.getElementById("lesson-modal").style.display="none";
+}
+
+var GOAL_GUIDES = {
+  wealth:   [{icon:"📈",title:"Investment Planner",desc:"Set your monthly SIP and see your corpus grow year by year with compounding."},{icon:"💹",title:"ROI & Compound",desc:"Compare FD, PPF, Gold, Nifty 50 over 20 years side by side."},{icon:"📋",title:"Tax Optimizer",desc:"Invest in ELSS to save up to 46,800/yr under Section 80C."}],
+  home:     [{icon:"🏠",title:"EMI & Mortgage Planner",desc:"Calculate exact monthly EMI, total interest and Section 24(b) tax benefit."},{icon:"📋",title:"Tax Optimizer",desc:"Home loan interest gives up to 2L deduction under Sec 24(b) every year."},{icon:"📈",title:"Investment Planner",desc:"Start a SIP now to build your down payment corpus."}],
+  fire:     [{icon:"🔥",title:"FIRE Calculator",desc:"Find your FIRE number — corpus that funds your lifestyle forever using 4% rule."},{icon:"📈",title:"Investment Planner",desc:"Aggressive monthly SIPs are the fastest path to financial independence."},{icon:"💹",title:"ROI & Compound",desc:"Model scenarios when your corpus hits 5Cr, 10Cr, 20Cr."}],
+  tax:      [{icon:"📋",title:"Tax Optimizer",desc:"Compare Old vs New regime instantly. Find the one that saves you more."},{icon:"📈",title:"Investment Planner",desc:"ELSS SIPs give market returns AND Section 80C tax savings simultaneously."},{icon:"🏠",title:"EMI Planner",desc:"Home loan = dual benefit: principal 80C + interest 24b = up to 3.5L saved."}],
+  insurance:[{icon:"🛡️",title:"Insurance Planner",desc:"Use the HLV method to calculate exactly how much life cover you need."},{icon:"📋",title:"Tax Optimizer",desc:"Health insurance premiums save tax under 80D — up to 75,000/yr."},{icon:"🔥",title:"FIRE Calculator",desc:"Proper insurance protects your FIRE corpus from medical emergencies."}],
+  learn:    [{icon:"🎓",title:"Financial Academy",desc:"Structured modules from emergency fund basics to advanced FIRE strategy."},{icon:"📖",title:"Finance Glossary",desc:"Every term in plain language — SIP, NAV, CAGR, XIRR and 50+ more."},{icon:"📊",title:"All Calculators",desc:"The best way to learn is to play with numbers. Try every calculator!"}],
+  "":       [{icon:"📈",title:"Investment Planner",desc:"Start with SIP — the most powerful wealth creation tool."},{icon:"🔥",title:"FIRE Calculator",desc:"Discover your financial independence number."},{icon:"📋",title:"Tax Optimizer",desc:"Are you in the right tax regime? Find out instantly."}]
+};
+
+var userProfile = {};
+
+function buildGuideHTML(profile, isNew) {
+  var goalLabels={wealth:"Build Wealth",home:"Buy a Home",fire:"Retire Early",tax:"Save Tax",insurance:"Get Insured",learn:"Learning Finance","":"Exploring"};
+  var guide = GOAL_GUIDES[profile.goal||""] || GOAL_GUIDES[""];
+  var label = goalLabels[profile.goal||""] || "Exploring";
+  var header = isNew
+    ? "<div style=\"background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:14px;margin-bottom:8px;\"><div style=\"font-size:10px;color:var(--muted);margin-bottom:4px;\">WELCOME</div><div style=\"font-size:15px;font-weight:700;color:var(--cream);\">Hi " + profile.name + "! 👋</div><div style=\"font-size:11px;color:var(--gold-light);margin-top:2px;\">Goal: " + label + " · Age: " + (profile.age||"—") + "</div></div>"
+    : "<div style=\"background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:14px;margin-bottom:8px;\"><div style=\"font-size:10px;color:var(--muted);margin-bottom:4px;\">YOUR PROFILE</div><div style=\"font-size:15px;font-weight:700;color:var(--cream);\">" + (profile.name||"User") + "</div><div style=\"font-size:11px;color:var(--gold-light);margin-top:2px;\">Goal: " + label + " · Age: " + (profile.age||"—") + "</div></div>";
+  var cards = guide.map(function(g){
+    return "<div style=\"display:flex;gap:12px;align-items:flex-start;background:var(--dark3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;margin-bottom:6px;\"><div style=\"font-size:22px;flex-shrink:0;\">" + g.icon + "</div><div><div style=\"font-size:12px;font-weight:700;color:var(--cream);margin-bottom:3px;\">" + g.title + "</div><div style=\"font-size:11px;color:var(--muted);line-height:1.5;\">" + g.desc + "</div></div></div>";
+  }).join("");
+  var editBtn = isNew ? "" : "<button onclick=\"resetProfile()\" style=\"width:100%;padding:8px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--muted);font-size:11px;cursor:pointer;margin-top:4px;touch-action:manipulation;\">✏️ Edit Profile</button>";
+  return header + cards + editBtn;
+}
+
+function openOnboard() {
+  try { userProfile = JSON.parse(localStorage.getItem("wh_profile")||"{}"); } catch(e) { userProfile={}; }
+  if (userProfile.name) { showProfileCard(); return; }
+  document.getElementById("ob-step-1").style.display="block";
+  document.getElementById("ob-step-2").style.display="none";
+  document.getElementById("ob-name").value = userProfile.name||"";
+  document.getElementById("ob-age").value = userProfile.age||"";
+  document.getElementById("ob-income").value = userProfile.income||"";
+  document.getElementById("ob-goal").value = userProfile.goal||"";
+  document.getElementById("onboard-modal").style.display="flex";
+}
+
+function showProfileCard() {
+  document.getElementById("ob-step-1").style.display="none";
+  document.getElementById("ob-step-2").style.display="block";
+  document.getElementById("ob-guide-content").innerHTML = buildGuideHTML(userProfile, false);
+  document.getElementById("onboard-modal").style.display="flex";
+}
+
+function resetProfile() {
+  userProfile = {};
+  try { localStorage.removeItem("wh_profile"); } catch(e) {}
+  document.getElementById("ob-step-1").style.display="block";
+  document.getElementById("ob-step-2").style.display="none";
+  document.getElementById("ob-name").value="";
+  document.getElementById("ob-age").value="";
+  document.getElementById("ob-income").value="";
+  document.getElementById("ob-goal").value="";
+}
+
+function obNext() {
+  var name = document.getElementById("ob-name").value.trim();
+  var age = document.getElementById("ob-age").value.trim();
+  var income = document.getElementById("ob-income").value.trim();
+  var goal = document.getElementById("ob-goal").value;
+  if (!name) { document.getElementById("ob-name").focus(); return; }
+  userProfile = {name:name, age:age, income:income, goal:goal};
+  try { localStorage.setItem("wh_profile", JSON.stringify(userProfile)); } catch(e) {}
+  if (age) {
+    var a = parseInt(age);
+    var el = document.getElementById("fire_age"); if(el){el.value=a; document.getElementById("v_fire_age").textContent=a;}
+    var el2 = document.getElementById("ins_age"); if(el2){el2.value=a; document.getElementById("v_ins_age").textContent=a;}
+  }
+  document.getElementById("ob-step-1").style.display="none";
+  document.getElementById("ob-step-2").style.display="block";
+  document.getElementById("ob-guide-content").innerHTML = buildGuideHTML(userProfile, true);
+}
+
+function obFinish() {
+  closeOnboard();
+  var goalNav={wealth:"sip",home:"emi",fire:"fire",tax:"tax",insurance:"insurance",learn:"edu"};
+  navTo(goalNav[userProfile.goal||""]||"sip");
+}
+
+function closeOnboard() {
+  document.getElementById("onboard-modal").style.display="none";
+}
+
+setTimeout(function(){
+  try {
+    var p = JSON.parse(localStorage.getItem("wh_profile")||"{}");
+    if (!p.name && !localStorage.getItem("wh_visited")) {
+      localStorage.setItem("wh_visited","1");
+      openOnboard();
+    }
+  } catch(e) {}
+}, 1500);
+</script>
 
 </body>
 </html>
