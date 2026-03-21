@@ -231,22 +231,24 @@ tr:hover td{background:rgba(255,255,255,.02);}
   /* App: just a wrapper, no overflow tricks */
   .app{display:block;}
 
-  /* Main: full viewport */
+  /* Main: full viewport, flex column like desktop */
   #main{
-    display:block;
+    display:flex;
+    flex-direction:column;
     height:100vh;height:100dvh;
     overflow:hidden;
+    padding-top:var(--topbar-h);
   }
 
-  /* Scroll area: padded to avoid fixed bars */
+  /* Scroll area fills remaining space */
   #main-scroll{
-    height:100%;
+    flex:1;
     overflow-y:scroll;
     overflow-x:hidden;
     -webkit-overflow-scrolling:touch;
-    padding-top:var(--topbar-h);
     padding-bottom:var(--bottomnav-h);
     box-sizing:border-box;
+    min-height:0;
   }
 
   /* Layout */
@@ -346,6 +348,12 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
 <!-- MAIN -->
 <div id="main">
+  <div class="mode-banner india" id="mode-banner">🇮🇳 &nbsp;India — INR · NSE/BSE · Indian Tax Laws</div>
+
+  <div id="live-ticker" style="background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.1);overflow:hidden;height:44px;position:relative;flex-shrink:0;">
+    <div id="ticker-track" style="display:flex;align-items:center;height:100%;position:absolute;white-space:nowrap;will-change:transform;"></div>
+  </div>
+
   <div id="main-scroll">
 
   <!-- ====== SIP TAB ====== -->
