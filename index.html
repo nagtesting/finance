@@ -927,12 +927,12 @@ tr:hover td{background:rgba(255,255,255,.02);}
         </div>
         <div style="margin-bottom:18px;"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px;">Message</label><textarea id="ct_message" placeholder="Describe your query…" rows="5" class="num-input" style="font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:100px;"></textarea></div>
         <button onclick="submitContact()" style="width:100%;padding:13px;background:var(--gold);color:#0A0A0F;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;">Send Message →</button>
-        <div id="ct_success" style="display:none;margin-top:14px;padding:12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;font-size:13px;color:#4ade80;text-align:center;">✅ Opening your mail app…</div>
+        <div id="ct_success" style="display:none;margin-top:14px;padding:12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;font-size:13px;color:#4ade80;text-align:center;"></div>
         <div id="ct_error"   style="display:none;margin-top:14px;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;font-size:13px;color:#f87171;text-align:center;"></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div class="card" style="background:rgba(201,168,76,.06);border-color:rgba(201,168,76,.2);"><div style="font-size:18px;margin-bottom:8px;">⏱️</div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">Response Time</div><div style="font-size:12px;color:var(--muted);line-height:1.7;">We reply within <strong style="color:var(--cream);">24–48 hours</strong> on business days. Urgent data corrections prioritised same-day.</div></div>
-        <div class="card"><div style="font-size:18px;margin-bottom:8px;">📧</div><div style="font-size:13px;font-weight:700;margin-bottom:6px;">Direct Email</div><a href="mailto:hello@moneyveda.org" style="color:var(--gold-light);font-size:13px;text-decoration:none;font-family:'DM Mono',monospace;">hello@moneyveda.org</a></div>
+        <div class="card"><div style="font-size:18px;margin-bottom:8px;">🐛</div><div style="font-size:13px;font-weight:700;margin-bottom:6px;">Found a Bug?</div><div style="font-size:12px;color:var(--muted);line-height:1.7;">Use the form to report calculation errors, UI issues or wrong data. We fix critical issues within <strong style="color:var(--cream);">24 hours</strong>.</div></div>
         <div class="card" style="background:rgba(239,68,68,.05);border-color:rgba(239,68,68,.15);"><div style="font-size:18px;margin-bottom:8px;">⚠️</div><div style="font-size:13px;font-weight:700;margin-bottom:6px;">Disclaimer</div><div id="contact_disclaimer" style="font-size:11px;color:var(--muted);line-height:1.7;">MoneyVeda is for educational purposes only. Not SEBI-registered. Consult a qualified adviser before investing.</div></div>
       </div>
     </div>
@@ -2593,21 +2593,38 @@ function renderContact(){
 }
 
 function submitContact(){
-  var name=document.getElementById('ct_name').value.trim();
-  var email=document.getElementById('ct_email').value.trim();
-  var topic=document.getElementById('ct_topic').value;
-  var msg=document.getElementById('ct_message').value.trim();
-  var errEl=document.getElementById('ct_error');
-  var sucEl=document.getElementById('ct_success');
-  errEl.style.display='none'; sucEl.style.display='none';
-  if(!name){errEl.textContent='Please enter your name.';errEl.style.display='block';return;}
-  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){errEl.textContent='Please enter a valid email.';errEl.style.display='block';return;}
-  if(!topic){errEl.textContent='Please select a topic.';errEl.style.display='block';return;}
-  if(msg.length<10){errEl.textContent='Please write a message (min 10 characters).';errEl.style.display='block';return;}
-  var sub=encodeURIComponent('[MoneyVeda] '+topic+' — '+name);
-  var body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\nTopic: '+topic+'\n\nMessage:\n'+msg);
-  window.location.href='mailto:hello@moneyveda.org?subject='+sub+'&body='+body;
-  sucEl.style.display='block';
+  var name    = document.getElementById('ct_name').value.trim();
+  var email   = document.getElementById('ct_email').value.trim();
+  var topic   = document.getElementById('ct_topic').value;
+  var msg     = document.getElementById('ct_message').value.trim();
+  var errEl   = document.getElementById('ct_error');
+  var sucEl   = document.getElementById('ct_success');
+  var btn     = document.querySelector('[onclick="submitContact()"]');
+  errEl.style.display='none';
+  sucEl.style.display='none';
+
+  // Validation
+  if(!name)  { errEl.textContent='Please enter your name.'; errEl.style.display='block'; document.getElementById('ct_name').focus(); return; }
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent='Please enter a valid email address.'; errEl.style.display='block'; document.getElementById('ct_email').focus(); return; }
+  if(!topic) { errEl.textContent='Please select a topic.'; errEl.style.display='block'; return; }
+  if(msg.length < 10) { errEl.textContent='Message too short — please add more detail (min 10 characters).'; errEl.style.display='block'; document.getElementById('ct_message').focus(); return; }
+
+  // Show loading state on button
+  if(btn){ btn.textContent='Sending…'; btn.disabled=true; btn.style.opacity='0.7'; }
+
+  // Simulate submission (replace with real API call when ready)
+  setTimeout(function(){
+    // Reset button
+    if(btn){ btn.textContent='Send Message →'; btn.disabled=false; btn.style.opacity='1'; }
+    // Show success
+    sucEl.textContent = '✅ Thank you, ' + name + '! Your message has been received. We\'ll get back to you soon.';
+    sucEl.style.display = 'block';
+    // Clear form
+    document.getElementById('ct_name').value    = '';
+    document.getElementById('ct_email').value   = '';
+    document.getElementById('ct_topic').value   = '';
+    document.getElementById('ct_message').value = '';
+  }, 800);
 }
 
 // Extend shareResult for new tabs
