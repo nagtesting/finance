@@ -456,7 +456,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div id="sidebar-market">
       <div class="sb-skeleton"></div><div class="sb-skeleton"></div>
     </div>
-    <div style="font-size:8px;color:var(--muted);margin-top:6px;line-height:1.5;">15s refresh · Not for trading.</div>
+    <div style="font-size:8px;color:var(--muted);margin-top:6px;line-height:1.5;">30s refresh · Not for trading.</div>
   </div>
 </nav>
 
@@ -2029,7 +2029,7 @@ function renderSidebar(items,live){
 function startSidebarRefresh(){
   if(sidebarTimer)clearInterval(sidebarTimer);
   loadSidebarLive();
-  sidebarTimer=setInterval(loadSidebarLive,15000); // 15s — matches server cache
+  sidebarTimer=setInterval(loadSidebarLive,30000); // 30s — safe for Vercel free tier
 }
 
 let tickerAnimation=null;
@@ -2815,7 +2815,7 @@ function fetchNews(forceRefresh) {
   // Only show for India
   var strip = document.getElementById('news-strip');
   if (!strip) return;
-  if (currentMode !== 'india') { strip.style.display = 'none'; return; }
+  // Show news for ALL regions now (each has its own feeds)
   strip.style.display = 'block';
 
   // Use client cache if fresh
@@ -2830,7 +2830,7 @@ function fetchNews(forceRefresh) {
   var dot = document.getElementById('news-live-dot');
   if (dot) { dot.style.background = '#f59e0b'; }
 
-  fetch('/api/news?region=india')
+  fetch('/api/news?region=' + currentMode)
     .then(function(res) {
       // Check content-type before parsing — prevents "not valid JSON" error
       var ct = res.headers.get('content-type') || '';
@@ -2868,26 +2868,39 @@ var _newsExpanded = false;
 // the matching MoneyVeda calculator directly
 // ============================================================
 var NEWS_ROUTES = [
-  // NPS keywords → NPS Calculator
+  // ── India ──────────────────────────────────────────────────
   { keywords: ['nps','national pension','pfrda','pension corpus','pension fund'], tab: 'nps' },
-  // SIP / Mutual Fund keywords → SIP Calculator
   { keywords: ['sip','mutual fund','amfi','elss','equity fund','nfo','nav','systematic investment'], tab: 'sip' },
-  // PPF keywords → PPF Calculator
   { keywords: ['ppf','public provident fund','small savings'], tab: 'ppf' },
-  // EPF keywords → EPF Calculator
   { keywords: ['epf','provident fund','pf withdrawal','pf balance','employees provident'], tab: 'epf' },
-  // Home loan / EMI keywords → EMI Calculator
-  { keywords: ['home loan','repo rate','emi','mortgage','housing loan','interest rate','rbi rate','basis point'], tab: 'emi' },
-  // Tax keywords → Tax Optimizer
+  { keywords: ['home loan','repo rate','emi','housing loan','rbi rate'], tab: 'emi' },
   { keywords: ['income tax','tax slab','80c','section 80','itr','deduction','new regime','old regime','budget tax'], tab: 'tax' },
-  // Insurance keywords → Insurance Planner
-  { keywords: ['insurance','term plan','life cover','health insurance','sebi insurance'], tab: 'insurance' },
-  // FIRE / retirement keywords → FIRE Calculator
-  { keywords: ['retirement','retire early','fire corpus','financial independence','pension plan'], tab: 'fire' },
-  // Sukanya Samriddhi keywords → SSA
+  { keywords: ['insurance','term plan','life cover','health insurance'], tab: 'insurance' },
   { keywords: ['sukanya','girl child','ssa','samriddhi'], tab: 'ssa' },
-  // Step-up SIP keywords → Step-Up SIP
   { keywords: ['step.up sip','step up sip','increase sip','sip increment'], tab: 'stepsip' },
+  // ── USA ────────────────────────────────────────────────────
+  { keywords: ['federal reserve','fed rate','fomc','interest rate','fed hike','fed cut','rate decision'], tab: 'emi' },
+  { keywords: ['401k','roth ira','ira contribution','retirement savings','social security'], tab: 'fire' },
+  { keywords: ['mortgage rate','home purchase','housing market','refinance'], tab: 'emi' },
+  { keywords: ['s&p 500','nasdaq','stock market','equity market','bull market','bear market'], tab: 'sip' },
+  { keywords: ['sec regulation','investor protection','securities'], tab: 'insurance' },
+  { keywords: ['capital gains tax','tax bracket','irs','federal tax','tax return'], tab: 'tax' },
+  // ── Europe ─────────────────────────────────────────────────
+  { keywords: ['ecb','european central bank','euro rate','eurozone inflation'], tab: 'emi' },
+  { keywords: ['esma','mifid','ucits','european fund'], tab: 'sip' },
+  { keywords: ['pension reform','occupational pension','retirement europe'], tab: 'fire' },
+  { keywords: ['euro mortgage','housing europe','property market europe'], tab: 'emi' },
+  // ── World / Global ─────────────────────────────────────────
+  { keywords: ['imf','world bank','global growth','gdp forecast','bis','central bank'], tab: 'fire' },
+  { keywords: ['inflation','cpi','price index','deflation'], tab: 'emi' },
+  { keywords: ['cryptocurrency','bitcoin','ethereum','crypto regulation'], tab: 'roi' },
+  { keywords: ['global trade','tariff','trade war','sanctions'], tab: 'fire' },
+  // ── Universal ──────────────────────────────────────────────
+  { keywords: ['retirement','retire early','financial independence'], tab: 'fire' },
+  { keywords: ['mortgage','interest rate','basis point','rate hike','rate cut'], tab: 'emi' },
+  { keywords: ['investment','wealth','portfolio','compounding','returns'], tab: 'sip' },
+  { keywords: ['tax','taxation','fiscal','budget'], tab: 'tax' },
+  { keywords: ['life insurance','term insurance','coverage','premium'], tab: 'insurance' },
 ];
 
 function getNewsRoute(title) {
