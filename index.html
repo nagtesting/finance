@@ -2762,19 +2762,33 @@ function submitContact(){
   // Show loading state on button
   if(btn){ btn.textContent='Sending…'; btn.disabled=true; btn.style.opacity='0.7'; }
 
-  // Simulate submission (replace with real API call when ready)
-  setTimeout(function(){
-    // Reset button
+  // Submit to Formspree
+  fetch('https://formspree.io/f/xdawvrlp', {
+    method: 'POST',
+    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: name, email: email, topic: topic, message: msg })
+  })
+  .then(function(res){ return res.json().then(function(data){ return { ok: res.ok, data: data }; }); })
+  .then(function(result){
     if(btn){ btn.textContent='Send Message →'; btn.disabled=false; btn.style.opacity='1'; }
-    // Show success
-    sucEl.textContent = '✅ Thank you, ' + name + '! Your message has been received. We\'ll get back to you soon.';
-    sucEl.style.display = 'block';
-    // Clear form
-    document.getElementById('ct_name').value    = '';
-    document.getElementById('ct_email').value   = '';
-    document.getElementById('ct_topic').value   = '';
-    document.getElementById('ct_message').value = '';
-  }, 800);
+    if(result.ok){
+      sucEl.textContent = '✅ Thank you, ' + name + '! Your message has been received. We\'ll get back to you within 24–48 hours.';
+      sucEl.style.display = 'block';
+      document.getElementById('ct_name').value    = '';
+      document.getElementById('ct_email').value   = '';
+      document.getElementById('ct_topic').value   = '';
+      document.getElementById('ct_message').value = '';
+    } else {
+      var errors = result.data && result.data.errors ? result.data.errors.map(function(e){ return e.message; }).join(', ') : 'Something went wrong. Please try again.';
+      errEl.textContent = '❌ ' + errors;
+      errEl.style.display = 'block';
+    }
+  })
+  .catch(function(){
+    if(btn){ btn.textContent='Send Message →'; btn.disabled=false; btn.style.opacity='1'; }
+    errEl.textContent = '❌ Network error — please check your connection and try again.';
+    errEl.style.display = 'block';
+  });
 }
 
 // Extend shareResult for new tabs
