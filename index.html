@@ -288,6 +288,23 @@ tr:hover td{background:rgba(255,255,255,.02);}
   .tab{padding:28px 24px;}
   .big-number{font-size:2.3rem;}
 }
+
+/* ===== MARKET PULSE NEWS ===== */
+#news-strip{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);background:var(--dark2);}
+.news-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.news-header-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px;}
+.news-refresh{font-size:9px;color:var(--muted);cursor:pointer;padding:3px 8px;border-radius:100px;border:1px solid rgba(255,255,255,.08);background:transparent;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.news-refresh:hover{border-color:rgba(201,168,76,.3);color:var(--gold-light);}
+.news-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media(max-width:1024px){.news-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.news-grid{grid-template-columns:1fr 1fr;gap:8px;}#news-strip{padding:12px 14px;}}
+.news-card{background:var(--dark3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;cursor:pointer;transition:all .25s;text-decoration:none;display:block;}
+.news-card:hover{border-color:rgba(201,168,76,.25);transform:translateY(-1px);}
+.news-card-top{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.news-badge{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:100px;}
+.news-time{font-size:9px;color:var(--muted);margin-left:auto;font-family:'DM Mono',monospace;white-space:nowrap;}
+.news-title{font-size:11px;font-weight:600;color:var(--cream);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.news-skeleton{background:linear-gradient(90deg,var(--dark4) 25%,var(--dark3) 50%,var(--dark4) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;}
 </style>
 </head>
 <body>
@@ -380,6 +397,44 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
   <div id="live-ticker" style="background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.1);overflow:hidden;height:44px;position:relative;flex-shrink:0;">
     <div id="ticker-track" style="display:flex;align-items:center;height:100%;position:absolute;white-space:nowrap;will-change:transform;"></div>
+  </div>
+
+
+  <!-- ====== MARKET PULSE — India RSS News ====== -->
+  <div id="news-strip" style="display:none;">
+    <div class="news-header">
+      <div class="news-header-label">
+        <span class="live-dot" id="news-live-dot"></span>
+        📰 Market Pulse — Official Sources
+      </div>
+      <button class="news-refresh" onclick="fetchNews(true)">↻ Refresh</button>
+    </div>
+    <div class="news-grid" id="news-grid">
+      <!-- Skeletons shown on load -->
+      <div style="background:var(--dark3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;">
+        <div class="news-skeleton" style="height:12px;width:60%;margin-bottom:10px;"></div>
+        <div class="news-skeleton" style="height:10px;width:100%;margin-bottom:6px;"></div>
+        <div class="news-skeleton" style="height:10px;width:80%;"></div>
+      </div>
+      <div style="background:var(--dark3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;">
+        <div class="news-skeleton" style="height:12px;width:50%;margin-bottom:10px;"></div>
+        <div class="news-skeleton" style="height:10px;width:100%;margin-bottom:6px;"></div>
+        <div class="news-skeleton" style="height:10px;width:90%;"></div>
+      </div>
+      <div style="background:var(--dark3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;">
+        <div class="news-skeleton" style="height:12px;width:55%;margin-bottom:10px;"></div>
+        <div class="news-skeleton" style="height:10px;width:100%;margin-bottom:6px;"></div>
+        <div class="news-skeleton" style="height:10px;width:75%;"></div>
+      </div>
+      <div style="background:var(--dark3);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;">
+        <div class="news-skeleton" style="height:12px;width:65%;margin-bottom:10px;"></div>
+        <div class="news-skeleton" style="height:10px;width:100%;margin-bottom:6px;"></div>
+        <div class="news-skeleton" style="height:10px;width:85%;"></div>
+      </div>
+    </div>
+    <div style="font-size:8px;color:rgba(144,144,168,.5);margin-top:8px;text-align:right;">
+      Sources: RBI · AMFI · Official feeds only · <span id="news-updated">Updating…</span>
+    </div>
   </div>
 
   <div id="main-scroll">
@@ -1326,6 +1381,9 @@ function setMode(mode){
   if(sideDisc) sideDisc.textContent=disc;
 
   // Recalc active tab — redirect if on India-only tab and switching away
+  // Show/hide news strip based on region
+  fetchNews(false);
+
   var at=document.querySelector('.tab.active');
   if(at && !isIndia && indiaOnly.indexOf(at.id)>-1){
     navTo('sip');
@@ -2652,6 +2710,87 @@ function shareResult(tab){
   }
   _origShareResult(tab);
 }
+
+
+// ============================================================
+// MARKET PULSE — India RSS News via /api/news
+// ============================================================
+var _newsCache = null;
+var _newsCacheTime = 0;
+var _newsFetching = false;
+var NEWS_CACHE_MS = 30 * 60 * 1000; // 30 min client-side cache
+
+function fetchNews(forceRefresh) {
+  // Only show for India
+  var strip = document.getElementById('news-strip');
+  if (!strip) return;
+  if (currentMode !== 'india') { strip.style.display = 'none'; return; }
+  strip.style.display = 'block';
+
+  // Use client cache if fresh
+  if (!forceRefresh && _newsCache && (Date.now() - _newsCacheTime) < NEWS_CACHE_MS) {
+    renderNews(_newsCache);
+    return;
+  }
+  if (_newsFetching) return;
+  _newsFetching = true;
+
+  // Set live dot to pulsing orange (fetching)
+  var dot = document.getElementById('news-live-dot');
+  if (dot) { dot.style.background = '#f59e0b'; }
+
+  fetch('/api/news?region=india')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      _newsFetching = false;
+      if (data && data.articles && data.articles.length > 0) {
+        _newsCache = data.articles;
+        _newsCacheTime = Date.now();
+        renderNews(data.articles);
+        if (dot) dot.style.background = '#4ade80';
+        var upd = document.getElementById('news-updated');
+        if (upd) upd.textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      } else {
+        renderNewsError();
+      }
+    })
+    .catch(function(err) {
+      _newsFetching = false;
+      console.warn('News fetch failed:', err.message);
+      renderNewsError();
+      if (dot) dot.style.background = '#ef4444';
+    });
+}
+
+function renderNews(articles) {
+  var grid = document.getElementById('news-grid');
+  if (!grid) return;
+  // Show max 4 cards in the strip
+  var shown = articles.slice(0, 4);
+  grid.innerHTML = shown.map(function(a) {
+    var badgeStyle = 'background:' + (a.color ? a.color+'22' : 'rgba(201,168,76,.12)') + ';color:' + (a.color || 'var(--gold-light)') + ';border:1px solid ' + (a.color ? a.color+'44' : 'rgba(201,168,76,.25)') + ';';
+    // Truncate title to 80 chars
+    var title = a.title.length > 85 ? a.title.slice(0, 82) + '…' : a.title;
+    return '<a href="' + a.link + '" target="_blank" rel="noopener noreferrer" class="news-card">' +
+      '<div class="news-card-top">' +
+        '<span style="font-size:13px;">' + (a.emoji || '📰') + '</span>' +
+        '<span class="news-badge" style="' + badgeStyle + '">' + a.source + '</span>' +
+        '<span class="news-time">' + (a.timeLabel || '') + '</span>' +
+      '</div>' +
+      '<div class="news-title">' + title + '</div>' +
+    '</a>';
+  }).join('');
+}
+
+function renderNewsError() {
+  var grid = document.getElementById('news-grid');
+  if (!grid) return;
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;font-size:12px;color:var(--muted);">Unable to load news. <button onclick="fetchNews(true)" style="background:none;border:none;color:var(--gold-light);cursor:pointer;font-size:12px;text-decoration:underline;">Try again</button></div>';
+}
+
+// Auto-fetch on page load + every 30 min
+setTimeout(function() { fetchNews(false); }, 1500);
+setInterval(function() { fetchNews(false); }, NEWS_CACHE_MS);
 
 // Add SEBI disclaimer to sidebar
 (function(){
