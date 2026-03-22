@@ -1182,7 +1182,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 // ================================================================
 // REGION CONFIG — all locale data in one place
 // ================================================================
-const REGIONS = {
+var REGIONS = {
   india: {
     flag:'🇮🇳', name:'India',
     currency:'₹', code:'INR',
@@ -1448,14 +1448,16 @@ const REGIONS = {
     regulator:'Your local financial regulator',
     regulatorUrl:'https://www.iosco.org',
     contactNote:'For queries on global markets, multi-currency calculations, or international financial data, write to us.',
+  }  // end world
+}; // end REGIONS
 
 // ================================================================
 // STATE
 // ================================================================
-let currentMode = 'india';
-const R = ()=>REGIONS[currentMode];
-const sym = ()=>R().currency;
-const fmtK = (n,s)=>{
+var currentMode = 'india';
+var R = function(){ return REGIONS[currentMode]; };
+var sym = function(){ return R().currency; };
+var fmtK = function(n,s){
   s = s||sym();
   const a=Math.abs(n);
   if(currentMode==='india'){
@@ -1467,15 +1469,15 @@ const fmtK = (n,s)=>{
   if(a>=1000)    return s+(n/1000).toFixed(1)+'K';
   return s+Math.round(n).toLocaleString();
 };
-const fmtSym = n=>fmtK(n);
+var fmtSym = function(n){ return fmtK(n); };
 
-let sipChart,emiChart,roiChart;
+var sipChart,emiChart,roiChart;
 function destroyChart(c){if(c){try{c.destroy();}catch(e){}}}
 
 // ================================================================
 // B-09 FIX: Safe localStorage wrapper
 // ================================================================
-const Storage = {
+var Storage = {
   get(key){ try{ return localStorage.getItem(key); } catch(e){ return null; } },
   set(key,val){ try{ localStorage.setItem(key,val); } catch(e){} },
   remove(key){ try{ localStorage.removeItem(key); } catch(e){} }
@@ -1484,7 +1486,7 @@ const Storage = {
 // ================================================================
 // B-UX FIX: Loading state + error toast
 // ================================================================
-let _calcPending = false;
+var _calcPending = false;
 function showCalcLoading(show){
   // subtle: just throttle calls, no heavy spinner
   _calcPending = show;
@@ -1499,11 +1501,11 @@ function showErrorToast(msg){
 
 // B-UX FIX: Debounce slider → API calls
 function debounce(fn, ms){let tid; return function(...args){clearTimeout(tid);tid=setTimeout(()=>fn.apply(this,args),ms);};}
-const debouncedSIP = debounce(calcSIP, 300);
-const debouncedEMI = debounce(calcEMI, 300);
-const debouncedFIRE = debounce(calcFIRE, 300);
-const debouncedROI = debounce(calcROI, 200);
-const debouncedInsurance = debounce(calcInsurance, 250);
+var debouncedSIP = debounce((...a)=>calcSIP(...a), 300);
+var debouncedEMI = debounce((...a)=>calcEMI(...a), 300);
+var debouncedFIRE = debounce((...a)=>calcFIRE(...a), 300);
+var debouncedROI = debounce((...a)=>calcROI(...a), 200);
+var debouncedInsurance = debounce((...a)=>calcInsurance(...a), 250);
 
 // ================================================================
 // DRAWER
@@ -1520,7 +1522,7 @@ function closeDrawer(){
 // ================================================================
 // NAVIGATION
 // ================================================================
-const ALL_TABS=['sip','emi','fire','roi','insurance','tax','ppf','epf','nps','stepsip','ssa','crorepati','habit','edu','glossary','compare','contact'];
+var ALL_TABS=['sip','emi','fire','roi','insurance','tax','ppf','epf','nps','stepsip','ssa','crorepati','habit','edu','glossary','compare','contact'];
 function navTo(id){
   closeDrawer();
   ALL_TABS.forEach(t=>{
@@ -2093,7 +2095,7 @@ function buildWorldTax(){
 // ================================================================
 // EDUCATION & GLOSSARY
 // ================================================================
-const concepts=[
+var concepts=[
   {title:'What is Compound Interest and why it matters',body:'Compound interest is earned on both principal and previously earned interest. At 10% returns, $10,000 becomes $27,000 in 10 years, $67,000 in 20 years, and $174,000 in 30 years — purely through reinvesting returns. Starting 5 years earlier can double your final corpus.'},
   {title:'How to build an Emergency Fund',body:'An emergency fund is 3–6 months of expenses in liquid instruments. It protects you from derailing long-term investments during unexpected expenses — job loss, medical emergencies. Rule: Build emergency fund FIRST before any equity investment.'},
   {title:'Asset Allocation — Balancing Equity vs Debt',body:'Classic rule: Equity % = 110 minus your age. At 30 → 80% equity. At 50 → 60% equity. Equity gives higher returns with volatility; bonds/debt give stability. Rebalance annually. Match allocation to goal time horizon.'},
@@ -2101,7 +2103,7 @@ const concepts=[
   {title:'Low-Cost Index Funds vs Active Management',body:'Decades of data show 90%+ of active funds underperform their benchmark index over 15+ years. A low-cost S&P 500 or MSCI World index fund with 0.05–0.20% expense ratio beats most actively managed funds charging 1–2% annually.'},
   {title:'Inflation — The Silent Wealth Destroyer',body:'At 5% inflation, purchasing power halves every 14 years. Your investments must beat inflation meaningfully. Equity has historically returned 8–14% vs 3–7% inflation globally — a positive real return of 5–8%.'},
 ];
-const milestones=[
+var milestones=[
   {age:'22–25',title:'Foundation',items:['Emergency fund (3–6mo)','Term + Health insurance','First investment','Credit history']},
   {age:'25–30',title:'Accelerate',items:['Save 20–30% of income','Max tax-advantaged accounts','No consumer debt','Clear student loans']},
   {age:'30–40',title:'Asset Building',items:['Real estate (goal-aligned)','Increase contributions','Review insurance','Global diversification']},
@@ -2124,7 +2126,7 @@ function toggleAcc(h){
   document.querySelectorAll('.aic').forEach(x=>x.textContent='+');
   if(!open){c.classList.add('open');i.textContent='−';}
 }
-const glossaryData=[
+var glossaryData=[
   {term:'SIP',def:'Systematic Investment Plan. Fixed amount invested regularly in a mutual fund, enabling rupee/dollar cost averaging.'},
   {term:'CAGR',def:'Compound Annual Growth Rate. Annualised growth rate accounting for compounding.'},
   {term:'NAV',def:'Net Asset Value. Per-unit price of a mutual fund: (Total Assets − Liabilities) ÷ Units.'},
@@ -2193,13 +2195,11 @@ function downloadSIPCSV(){
 ['ins_inc','ins_age','ins_ret','ins_liab','ins_exist'].forEach(id=>document.getElementById(id).addEventListener('input',calcInsurance));
 
 window.onload=function(){setMode('india');};
-</script>
 
-<script>
 // ================================================================
 // LIVE SIDEBAR & TICKER
 // ================================================================
-const STATIC_FALLBACK={
+var STATIC_FALLBACK={
   india:[
     {label:'SENSEX',value:'74,532',pct:'+0.44',up:true},{label:'NIFTY 50',value:'23,114',pct:'+0.49',up:true},
     {label:'NIFTY BANK',value:'54,018',pct:'-2.36',up:false},{label:'GOLD',value:'₹6,842',pct:'+0.43',up:true},
@@ -2221,7 +2221,7 @@ const STATIC_FALLBACK={
     {label:'OIL (WTI)',value:'$68.40',pct:'-0.90',up:false},
   ]
 };
-let sidebarTimer=null;
+var sidebarTimer=null;
 async function loadSidebarLive(){
   try{
     const res=await fetch('/api/market?mode='+currentMode,{signal:AbortSignal.timeout(5000)});
@@ -2254,7 +2254,7 @@ function startSidebarRefresh(){
   sidebarTimer=setInterval(loadSidebarLive,30000);
 }
 
-let tickerAnimation=null;
+var tickerAnimation=null;
 async function loadTickerData(mode){
   try{const res=await fetch('/api/market?mode='+mode);const data=await res.json();if(data.tickers)renderTicker(mode,data.tickers);}
   catch(e){renderTickerFallback(mode);}
@@ -2295,7 +2295,7 @@ function startTickerScroll(track){
   function step(){const half=track.scrollWidth/2;pos+=0.45;if(pos>=half)pos=0;track.style.transform='translateX('+(-pos)+'px)';tickerAnimation=requestAnimationFrame(step);}
   tickerAnimation=requestAnimationFrame(step);
 }
-const lt=document.getElementById('live-ticker');
+var lt=document.getElementById('live-ticker');
 if(lt){
   lt.addEventListener('mouseenter',function(){if(tickerAnimation)cancelAnimationFrame(tickerAnimation);});
   lt.addEventListener('mouseleave',function(){const t=document.getElementById('ticker-track');if(t&&t.innerHTML)startTickerScroll(t);});
