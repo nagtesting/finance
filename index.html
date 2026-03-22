@@ -2865,29 +2865,31 @@ function getNewsRoute(title) {
 }
 
 function handleNewsClick(event, title, externalLink) {
+  event.preventDefault();
+  event.stopPropagation();
   var tab = getNewsRoute(title);
   if (tab) {
-    event.preventDefault();
-    // Collapse news strip first
+    // Collapse news strip if expanded
     var strip = document.getElementById('news-strip');
     if (strip && strip.classList.contains('news-expanded')) {
       toggleNewsExpand();
     }
-    // Navigate to the relevant calculator
+    // Navigate to the matching calculator
     navTo(tab);
-    // Show a subtle toast so user knows why they landed here
-    showNewsToast('📰 Opening ' + (tab === 'sip' ? 'Investment Planner' :
-                  tab === 'emi' ? 'Loan & EMI Calculator' :
-                  tab === 'nps' ? 'NPS Calculator' :
-                  tab === 'ppf' ? 'PPF Calculator' :
-                  tab === 'epf' ? 'EPF Calculator' :
-                  tab === 'tax' ? 'Tax Optimizer' :
-                  tab === 'fire' ? 'FIRE Calculator' :
-                  tab === 'insurance' ? 'Insurance Planner' :
-                  tab === 'ssa' ? 'Sukanya Samriddhi Calculator' :
-                  tab === 'stepsip' ? 'Step-Up SIP Calculator' : tab) + ' for you');
+    // Toast notification
+    var tabNames = {
+      sip:'Investment Planner', emi:'Loan & EMI Calculator',
+      nps:'NPS Calculator',     ppf:'PPF Calculator',
+      epf:'EPF Calculator',     tax:'Tax Optimizer',
+      fire:'FIRE Calculator',   insurance:'Insurance Planner',
+      ssa:'Sukanya Samriddhi',  stepsip:'Step-Up SIP Calculator'
+    };
+    showNewsToast('📰 Opened ' + (tabNames[tab] || tab) + ' for you');
+  } else {
+    // No internal route — open external link
+    window.open(externalLink, '_blank', 'noopener,noreferrer');
   }
-  // else: default <a> click opens external link in new tab — no preventDefault
+  return false;
 }
 
 function showNewsToast(msg) {
@@ -2905,20 +2907,22 @@ function renderNews(articles) {
   // ── TICKER (collapsed default) ──────────────────────────────
   var ticker = document.getElementById('news-ticker-inner');
   if (ticker) {
-    var pills = articles.slice(0, 8).map(function(a) {
+    var pills = articles.slice(0, 8).map(function(a, idx) {
       var title = a.title.length > 90 ? a.title.slice(0, 87) + '…' : a.title;
       var bStyle = 'background:' + (a.color||'#C9A84C') + '22;color:' + (a.color||'#C9A84C') + ';border:1px solid ' + (a.color||'#C9A84C') + '44;';
       var tab = getNewsRoute(a.title);
       var isInternal = !!tab;
-      // Internal routes use onclick, external use normal href
+      // Store article data on window object to avoid HTML quoting issues
+      window._newsArticles = window._newsArticles || {};
+      window._newsArticles['n'+idx] = { title: a.title, link: a.link };
       if (isInternal) {
-        return '<a href="#" onclick="handleNewsClick(event,' + JSON.stringify(a.title) + ',' + JSON.stringify(a.link) + ');return false;" class="news-pill" title="Open ' + a.title.slice(0,50) + '…">' +
+        return '<a href="javascript:void(0);" onclick="handleNewsClick(event,window._newsArticles[\'n'+idx+'\'].title,window._newsArticles[\'n'+idx+'\'].link);return false;" class="news-pill">' +
           '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'RBI') + '</span>' +
-          '<span style="color:var(--gold);font-size:8px;margin-right:3px;" title="Opens MoneyVeda tool">↗</span>' +
+          '<span style="color:var(--gold);font-size:8px;margin-right:2px;">↗</span>' +
           title +
         '</a><span class="news-pill-sep">◆</span>';
       } else {
-        return '<a href="' + a.link + '" target="_blank" rel="noopener noreferrer" class="news-pill" title="' + a.title.slice(0,60) + '">' +
+        return '<a href="' + a.link + '" target="_blank" rel="noopener noreferrer" class="news-pill">' +
           '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'RBI') + '</span>' +
           title +
         '</a><span class="news-pill-sep">◆</span>';
@@ -2930,7 +2934,7 @@ function renderNews(articles) {
   // ── EXPANDED GRID ───────────────────────────────────────────
   var grid = document.getElementById('news-expanded-grid');
   if (grid) {
-    grid.innerHTML = articles.slice(0, 8).map(function(a) {
+    grid.innerHTML = articles.slice(0, 8).map(function(a, idx) {
       var bStyle = 'background:' + (a.color||'#C9A84C') + '22;color:' + (a.color||'#C9A84C') + ';';
       var title = a.title.length > 100 ? a.title.slice(0,97)+'…' : a.title;
       var tab = getNewsRoute(a.title);
@@ -2938,8 +2942,11 @@ function renderNews(articles) {
       var internalBadge = isInternal
         ? '<span style="display:inline-block;margin-bottom:4px;font-size:8px;background:rgba(201,168,76,.12);color:var(--gold-light);border:1px solid rgba(201,168,76,.25);border-radius:100px;padding:1px 7px;">↗ Opens calculator</span><br>'
         : '';
+      // Reuse window._newsArticles set during ticker render
+      window._newsArticles = window._newsArticles || {};
+      window._newsArticles['n'+idx] = { title: a.title, link: a.link };
       if (isInternal) {
-        return '<a href="#" onclick="handleNewsClick(event,' + JSON.stringify(a.title) + ',' + JSON.stringify(a.link) + ');return false;" class="news-card">' +
+        return '<a href="javascript:void(0);" onclick="handleNewsClick(event,window._newsArticles[\'n'+idx+'\'].title,window._newsArticles[\'n'+idx+'\'].link);return false;" class="news-card">' +
           '<span class="news-card-src" style="' + bStyle + '">' + (a.emoji||'📰') + ' ' + (a.source||'') + '</span>' +
           internalBadge +
           '<div class="news-card-title">' + title + '</div>' +
