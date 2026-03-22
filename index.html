@@ -1437,8 +1437,14 @@ function setMode(mode){
   if(sideDisc) sideDisc.textContent=disc;
 
   // Recalc active tab — redirect if on India-only tab and switching away
-  // Show/hide news strip based on region
-  fetchNews(false);
+  // Show/hide news strip based on region — guard in case script block 4 not loaded yet
+  if (typeof fetchNews === 'function') {
+    fetchNews(false);
+  } else {
+    // fetchNews not ready yet — show/hide strip directly
+    var strip = document.getElementById('news-strip');
+    if (strip) strip.style.display = (mode === 'india') ? 'block' : 'none';
+  }
 
   var at=document.querySelector('.tab.active');
   if(at && !isIndia && indiaOnly.indexOf(at.id)>-1){
@@ -1935,7 +1941,11 @@ function downloadSIPCSV(){
 ['roi_p','roi_r','roi_t'].forEach(id=>document.getElementById(id).addEventListener('input',calcROI));
 ['ins_inc','ins_age','ins_ret','ins_liab','ins_exist'].forEach(id=>document.getElementById(id).addEventListener('input',calcInsurance));
 
-window.onload=function(){setMode('india');};
+window.onload=function(){
+  setMode('india');
+  // fetchNews is in a later script block — call after short delay to ensure it's defined
+  setTimeout(function(){ if(typeof fetchNews==='function') fetchNews(false); }, 2000);
+};
 </script>
 
 <script>
@@ -2821,7 +2831,14 @@ function fetchNews(forceRefresh) {
   if (dot) { dot.style.background = '#f59e0b'; }
 
   fetch('/api/news?region=india')
-    .then(function(res) { return res.json(); })
+    .then(function(res) {
+      // Check content-type before parsing — prevents "not valid JSON" error
+      var ct = res.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) {
+        throw new Error('API returned non-JSON response (HTTP ' + res.status + ')');
+      }
+      return res.json();
+    })
     .then(function(data) {
       _newsFetching = false;
       if (data && data.articles && data.articles.length > 0) {
@@ -3004,20 +3021,22 @@ function toggleNewsExpand() {
   if (btn) btn.textContent = _newsExpanded ? '⊟ Collapse' : '⊞ Expand';
 }
 
-// Auto-fetch on page load + every 30 min
-setTimeout(function() { fetchNews(false); }, 1500);
-setInterval(function() { fetchNews(false); }, NEWS_CACHE_MS);
+// Auto-refresh every 30 min (initial fetch handled by window.onload)
+setInterval(function() { if(typeof fetchNews==='function') fetchNews(false); }, NEWS_CACHE_MS);
 
-// Add SEBI disclaimer to sidebar
+// Add SEBI disclaimer to sidebar bottom panel
 (function(){
-  var sidebarBottom=document.querySelector('#sidebar [style*="8px;color:var(--muted)"]');
-  if(sidebarBottom){
-    var disc=document.createElement('div');
-    disc.id='sidebar-disclaimer';
-    disc.style.cssText='font-size:8px;color:rgba(144,144,168,.6);margin-top:10px;line-height:1.5;border-top:1px solid rgba(255,255,255,.05);padding-top:8px;';
-    disc.textContent='⚠️ For educational purposes only. Not SEBI-registered. Consult a qualified adviser before investing.';
-    sidebarBottom.parentNode.appendChild(disc);
-  }
+  var target = document.getElementById('sidebar-market');
+  if(!target) return;
+  var parent = target.parentNode;
+  if(!parent) return;
+  var existing = document.getElementById('sidebar-disclaimer');
+  if(existing) return; // already added
+  var disc = document.createElement('div');
+  disc.id = 'sidebar-disclaimer';
+  disc.style.cssText = 'font-size:8px;color:rgba(144,144,168,.6);margin-top:8px;line-height:1.5;border-top:1px solid rgba(255,255,255,.05);padding-top:6px;';
+  disc.textContent = '⚠️ Educational only. Not SEBI-registered. Consult a qualified adviser.';
+  parent.appendChild(disc);
 })();
 </script>
 </body>
