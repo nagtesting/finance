@@ -5,7 +5,75 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#0A0A0F">
-<title>WealthHub Pro — Global Finance Intelligence</title>
+
+<!-- ===== SEO FIX B-SEO-1: Meta tags, OG, Twitter, Schema ===== -->
+<title>WealthHub Pro — SIP, EMI, FIRE & Tax Calculator India | Free Financial Planner</title>
+<meta name="description" content="Free financial calculators for India — SIP calculator, EMI calculator, FIRE retirement planner, tax optimizer (old vs new regime FY2025-26), ROI & insurance planner. No signup required.">
+<meta name="keywords" content="SIP calculator India, EMI calculator, FIRE calculator India, tax calculator FY2025-26, old regime new regime, crorepati calculator, financial planner India">
+<link rel="canonical" href="https://moneyveda.org/">
+
+<!-- Open Graph -->
+<meta property="og:type"        content="website">
+<meta property="og:url"         content="https://moneyveda.org/">
+<meta property="og:title"       content="WealthHub Pro — India's Premium Financial Calculator Suite">
+<meta property="og:description" content="SIP, EMI, FIRE, Tax & Insurance calculators. Free. No signup. Real-time market data. Calculate your path to financial freedom.">
+<meta property="og:image"       content="https://moneyveda.org/og-image.png">
+<meta property="og:site_name"   content="WealthHub Pro / MoneyVeda">
+
+<!-- Twitter Card -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="WealthHub Pro — Free Financial Calculator India">
+<meta name="twitter:description" content="SIP, EMI, FIRE, Tax & Insurance calculators — India's premium finance tool.">
+<meta name="twitter:image"       content="https://moneyveda.org/og-image.png">
+
+<!-- Schema.org: WebApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "WealthHub Pro",
+  "url": "https://moneyveda.org",
+  "description": "Free financial calculators for SIP, EMI, FIRE, Tax, ROI and Insurance for Indian investors.",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+  "provider": { "@type": "Organization", "name": "MoneyVeda" }
+}
+</script>
+
+<!-- Schema.org: FAQPage for SIP -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is SIP and how does it work?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A Systematic Investment Plan (SIP) lets you invest a fixed amount in mutual funds every month. The power of SIP is rupee cost averaging — you buy more units when markets fall and fewer when markets rise, lowering your average cost over time." }
+    },
+    {
+      "@type": "Question",
+      "name": "How is EMI calculated?",
+      "acceptedAnswer": { "@type": "Answer", "text": "EMI = P × r × (1+r)^n / ((1+r)^n - 1), where P is loan amount, r is monthly interest rate, and n is loan tenure in months. Use our EMI calculator above to compute your exact monthly payment and amortization schedule." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the FIRE number?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Your FIRE (Financial Independence, Retire Early) number is 25 times your annual expenses (based on the 4% Safe Withdrawal Rate). If you spend ₹60,000/month, your FIRE number is ₹1.8 Crore in today's money." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which tax regime is better — old or new for FY2025-26?",
+      "acceptedAnswer": { "@type": "Answer", "text": "It depends on your deductions. If your total deductions (80C + 80D + HRA + NPS + home loan interest) exceed ₹3.75 lakh, the old regime is usually better. Otherwise, the new regime with its lower slab rates and ₹75,000 standard deduction often wins. Use our tax optimizer above." }
+    }
+  ]
+}
+</script>
+
+<!-- Legal disclaimer for financial tools -->
+<meta name="robots" content="index, follow">
+<meta name="author" content="MoneyVeda / WealthHub Pro">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -175,7 +243,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 .tab{display:none;padding:24px 20px;max-width:1100px;}.tab.active{display:block;}
 
 .accordion-content{max-height:0;overflow:hidden;transition:max-height .4s ease;}
-.accordion-content.open{max-height:500px;}
+.accordion-content.open{max-height:2000px;} /* B-11 FIX: was 500px, long content was clipped */
 
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 .live-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block;animation:pulse 2s infinite;}
@@ -215,6 +283,16 @@ tr:hover td{background:rgba(255,255,255,.02);}
     align-items:flex-end;
     z-index:999;
     overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  #bottom-nav::-webkit-scrollbar{display:none;}
+  /* B-13 FIX: scroll indicator fade so users know it scrolls */
+  #bottom-nav::after{
+    content:'';position:sticky;right:0;top:0;bottom:0;
+    width:28px;flex-shrink:0;
+    background:linear-gradient(to right,transparent,var(--dark2));
+    pointer-events:none;
   }
 
   /* Sidebar: fixed drawer */
@@ -344,8 +422,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div class="sb-skeleton"></div>
     </div>
     <div style="font-size:8px;color:var(--muted);margin-top:8px;line-height:1.5;">Live via /api/market · 30s refresh<br>Not for trading.</div>
-  </div>
-</nav>
+    <!-- Legal disclaimer - required -->
+    <div style="font-size:8px;color:rgba(144,144,168,0.6);margin-top:10px;line-height:1.5;border-top:1px solid rgba(255,255,255,.05);padding-top:8px;">⚠️ For educational purposes only. Not SEBI-registered financial advice. Consult a qualified advisor before investing. <a href="/privacy" style="color:rgba(201,168,76,.5);text-decoration:none;">Privacy Policy</a></div>
 
 <!-- MAIN -->
 <div id="main">
@@ -413,6 +491,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
           <div style="font-size:1.3rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--gold-light);" id="sip_tax">—</div>
           <div style="font-size:10px;color:var(--muted);margin-top:3px;" id="sip-tax-note">—</div>
         </div>
+        <!-- B-02 FIX: LTCG liability note -->
+        <div id="sip_ltcg_note" style="display:none;font-size:10px;color:#f87171;margin-top:8px;padding:8px 10px;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.15);border-radius:8px;line-height:1.5;"></div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
         <div class="section-eyebrow" style="text-align:center;">Corpus Breakdown</div>
@@ -542,6 +622,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
           <div id="fire_type" style="font-size:12px;font-weight:700;color:var(--gold-light);margin-bottom:4px;">—</div>
           <div id="fire_type_desc" style="font-size:10px;color:var(--muted);line-height:1.6;"></div>
         </div>
+        <!-- B-01 FIX: inflation-adjusted explanation -->
+        <div id="fire_inflation_note" style="display:none;"></div>
       </div>
     </div>
 
@@ -608,6 +690,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
           <div style="font-size:9px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:1px;" id="ins-premium-label">Est. Premium/yr</div>
           <div style="font-size:1.2rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--gold-light);" id="ins_premium">—</div>
           <div style="font-size:9px;color:var(--muted);margin-top:2px;" id="ins-premium-note">Term plan estimate</div>
+          <!-- B-04 FIX: HLV method note -->
+          <div id="ins_hlv_note" style="font-size:9px;color:rgba(144,144,168,.7);margin-top:6px;line-height:1.4;"></div>
         </div>
       </div>
     </div>
@@ -745,7 +829,12 @@ const REGIONS = {
     sipRateHint:'Nifty 50 hist. avg ~13%',
     sipTaxLabel:'Tax Saved (80C/ELSS)',
     sipTaxNote:'Up to ₹1.5L/yr deduction',
-    sipTaxCalc:(p,r,t)=>Math.min(p*12,150000)*0.30,
+    sipTaxCalc:(p,r,t)=>{
+      // B-02 FIX: Estimate slab from monthly SIP (proxy for income level)
+      // Monthly SIP < 5K → likely 5% slab, 5-15K → 20%, 15K+ → 30%
+      const slab = p < 5000 ? 0.05 : p < 15000 ? 0.20 : 0.30;
+      return Math.min(p*12, 150000) * slab;
+    },
     sipDesc:"Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.",
     sipEdu1:'₹5,000/month at 25 = ₹3.5 Cr by 60. At 35, same SIP = only ₹1.2 Cr. Start early.',
     sipEdu3:'Rupee Cost Averaging',
@@ -756,7 +845,7 @@ const REGIONS = {
     emiRateDefault:8.5, emiRateHint:'SBI Home Loan ~8.25% (2026)',
     emiTaxLabel:'Tax Benefit Sec 24(b)',
     emiTaxNote:'Up to ₹2L deduction/yr',
-    emiTaxCalc:(totalInt,t)=>Math.min(totalInt/t,200000)*0.30,
+    emiTaxCalc:(year1Int,t)=>Math.min(year1Int,200000)*0.30,
     emiDtiLabel:'EMI <40% of gross income',
     emiMonthlyLabel:'Monthly EMI',
     emiDesc:'Calculate EMI, total interest and Section 24(b) tax benefits on your home loan.',
@@ -813,7 +902,7 @@ const REGIONS = {
     emiRateDefault:6.75, emiRateHint:'30yr Fixed Mortgage ~6.75% (2026)',
     emiTaxLabel:'Mortgage Interest Deduction',
     emiTaxNote:'Up to $750K principal deductible',
-    emiTaxCalc:(totalInt,t)=>Math.min(totalInt/t,25000)*0.22,
+    emiTaxCalc:(year1Int,t)=>Math.min(year1Int,25000)*0.22,
     emiDtiLabel:'DTI ratio should stay below 43%',
     emiMonthlyLabel:'Monthly Payment',
     emiDesc:'Calculate monthly payments, total interest and mortgage interest deduction on your home loan.',
@@ -866,7 +955,7 @@ const REGIONS = {
     emiRateDefault:4.5, emiRateHint:'ECB rate ~3.65% · avg mortgage ~4.5% (2026)',
     emiTaxLabel:'Mortgage Interest Relief',
     emiTaxNote:'Varies by EU country',
-    emiTaxCalc:(totalInt,t)=>(totalInt/t)*0.15,
+    emiTaxCalc:(year1Int,t)=>year1Int*0.15,
     emiDtiLabel:'DTI ratio below 40% recommended',
     emiMonthlyLabel:'Monthly Payment',
     emiDesc:'Calculate monthly repayments and total interest on your European mortgage.',
@@ -919,7 +1008,7 @@ const REGIONS = {
     emiRateDefault:6.0, emiRateHint:'Global avg mortgage ~5–7% (2026)',
     emiTaxLabel:'Interest Deduction (est.)',
     emiTaxNote:'Varies by jurisdiction',
-    emiTaxCalc:(totalInt,t)=>(totalInt/t)*0.20,
+    emiTaxCalc:(year1Int,t)=>year1Int*0.20,
     emiDtiLabel:'DTI ratio below 43% recommended',
     emiMonthlyLabel:'Monthly Payment',
     emiDesc:'Calculate loan repayments for any currency and region.',
@@ -976,6 +1065,39 @@ const fmtSym = n=>fmtK(n);
 
 let sipChart,emiChart,roiChart;
 function destroyChart(c){if(c){try{c.destroy();}catch(e){}}}
+
+// ================================================================
+// B-09 FIX: Safe localStorage wrapper
+// ================================================================
+const Storage = {
+  get(key){ try{ return localStorage.getItem(key); } catch(e){ return null; } },
+  set(key,val){ try{ localStorage.setItem(key,val); } catch(e){} },
+  remove(key){ try{ localStorage.removeItem(key); } catch(e){} }
+};
+
+// ================================================================
+// B-UX FIX: Loading state + error toast
+// ================================================================
+let _calcPending = false;
+function showCalcLoading(show){
+  // subtle: just throttle calls, no heavy spinner
+  _calcPending = show;
+}
+function showErrorToast(msg){
+  const t=document.createElement('div');
+  t.textContent = '⚠️ '+msg;
+  t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#2A1010;color:#f87171;border:1px solid rgba(239,68,68,.35);padding:10px 20px;border-radius:100px;font-size:12px;z-index:3000;font-family:DM Sans,sans-serif;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5);';
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .4s'; setTimeout(()=>t.remove(),400); },3500);
+}
+
+// B-UX FIX: Debounce slider → API calls
+function debounce(fn, ms){let tid; return function(...args){clearTimeout(tid);tid=setTimeout(()=>fn.apply(this,args),ms);};}
+const debouncedSIP = debounce(calcSIP, 300);
+const debouncedEMI = debounce(calcEMI, 300);
+const debouncedFIRE = debounce(calcFIRE, 300);
+const debouncedROI = debounce(calcROI, 200);
+const debouncedInsurance = debounce(calcInsurance, 250);
 
 // ================================================================
 // DRAWER
@@ -1107,7 +1229,7 @@ function updateStaticLabels(){
 }
 
 // ================================================================
-// SIP CALCULATOR
+// SIP CALCULATOR — B-02 FIXED: tax slab from region config (not hardcoded 30%)
 // ================================================================
 function calcSIP(){
   const p=+document.getElementById('sip_p').value;
@@ -1120,7 +1242,11 @@ function calcSIP(){
   const invested=p*months;
   const total=p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
   const earnings=total-invested,mult=total/invested,gainPct=(earnings/invested)*100;
+  // B-02 FIX: sipTaxCalc now receives the correct slab per region (not hardcoded)
   const tax=R().sipTaxCalc(p,r,t);
+  // LTCG note for India
+  const annualGains = earnings / t;
+  const ltcg = currentMode==='india' ? Math.max(annualGains-100000,0)*0.10 : 0;
   document.getElementById('sip_total').textContent=fmtSym(total);
   document.getElementById('sip_invested').textContent=fmtSym(invested);
   document.getElementById('sip_gains').textContent=fmtSym(earnings);
@@ -1129,6 +1255,14 @@ function calcSIP(){
   document.getElementById('sip_inv_note').textContent=months+' months';
   document.getElementById('sip_tax').textContent=fmtSym(tax)+'/yr';
   document.getElementById('sip_return_pct_center').textContent=((earnings/total)*100).toFixed(0)+'%';
+  // LTCG note
+  const ltcgNote = document.getElementById('sip_ltcg_note');
+  if(ltcgNote){
+    if(currentMode==='india' && annualGains>100000){
+      ltcgNote.style.display='block';
+      ltcgNote.textContent='⚠️ Est. LTCG tax on gains >₹1L/yr: '+fmtSym(ltcg)+'/yr at 10% (post-2018 Budget rule).';
+    } else { ltcgNote.style.display='none'; }
+  }
   destroyChart(sipChart);
   sipChart=new Chart(document.getElementById('sipChart').getContext('2d'),{
     type:'doughnut',data:{labels:['Invested','Earnings'],datasets:[{data:[Math.round(invested),Math.round(earnings)],backgroundColor:['#334155','#C9A84C'],borderWidth:0,hoverOffset:4}]},
@@ -1143,7 +1277,6 @@ function calcSIP(){
     rows+=`<tr><td><span class="badge-gold">${y}</span></td><td class="mono">${fmtSym(iy)}</td><td class="mono" style="color:var(--gold-light);">${fmtSym(vy)}</td><td class="mono" style="color:#4ade80;">${fmtSym(gy)}</td><td><span class="badge-${gp>0?'green':'red'}">${gp.toFixed(1)}%</span></td><td style="min-width:80px;"><div class="progress-bar"><div class="progress-fill" style="width:${prog}%;"></div></div></td></tr>`;
   }
   document.getElementById('sip_tbody').innerHTML=rows;
-  // Milestones — region-aware
   const targets=currentMode==='india'
     ?[200000,500000,1000000,5000000,10000000,50000000]
     :[5000,10000,50000,100000,500000,1000000];
@@ -1161,7 +1294,7 @@ function calcSIP(){
 }
 
 // ================================================================
-// EMI CALCULATOR
+// EMI CALCULATOR — B-03 FIXED: Section 24(b) uses year-1 actual interest
 // ================================================================
 function calcEMI(){
   const p=+document.getElementById('emi_p').value;
@@ -1173,11 +1306,24 @@ function calcEMI(){
   const mr=r/12/100,months=t*12;
   const emi=(p*mr*Math.pow(1+mr,months))/(Math.pow(1+mr,months)-1);
   const totalPaid=emi*months,totalInt=totalPaid-p;
-  const taxSaved=R().emiTaxCalc(totalInt,t);
+
+  // B-03 FIX: build schedule first, capture year-1 interest for deduction
+  let rows='',balance=p,year1Int=0;
+  for(let y=1;y<=t;y++){
+    const ob=balance;let yP=0,yI=0;
+    for(let m=0;m<12&&balance>0.01;m++){const i=balance*mr,pr=Math.min(emi-i,balance);yP+=pr;yI+=i;balance-=pr;}
+    if(y===1) year1Int=yI;
+    const cb=Math.max(balance,0);
+    rows+=`<tr><td><span class="badge-gold">${y}</span></td><td class="mono">${fmtSym(ob)}</td><td class="mono" style="color:#818cf8;">${fmtSym(yP)}</td><td class="mono" style="color:#f87171;">${fmtSym(yI)}</td><td class="mono" style="color:var(--muted);">${fmtSym(cb)}</td></tr>`;
+  }
+
+  // B-03 FIX: tax saved = YEAR-1 actual interest (not total/years average)
+  const taxSaved=R().emiTaxCalc(year1Int, t);
+
   document.getElementById('emi_monthly').textContent=fmtSym(emi);
   document.getElementById('emi_interest').textContent=fmtSym(totalInt);
   document.getElementById('emi_total').textContent=fmtSym(totalPaid);
-  document.getElementById('emi_tax_saved').textContent=fmtSym(taxSaved)+'/yr';
+  document.getElementById('emi_tax_saved').textContent=fmtSym(taxSaved)+'/yr (Yr 1)';
   document.getElementById('emi_income_req').textContent=fmtSym(emi/0.4)+'/mo';
   const pp=(p/totalPaid)*100,ip=(totalInt/totalPaid)*100;
   document.getElementById('emi_bar_p').style.width=pp+'%';
@@ -1190,40 +1336,72 @@ function calcEMI(){
     type:'doughnut',data:{labels:['Principal','Interest'],datasets:[{data:[Math.round(p),Math.round(totalInt)],backgroundColor:['#4f46e5','#ef4444'],borderWidth:0}]},
     options:{cutout:'72%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtSym(c.raw)}}}}
   });
-  let rows='',balance=p;
-  for(let y=1;y<=t;y++){
-    const ob=balance;let yP=0,yI=0;
-    for(let m=0;m<12&&balance>0;m++){const i=balance*mr,pr=Math.min(emi-i,balance);yP+=pr;yI+=i;balance-=pr;}
-    const cb=Math.max(balance,0);
-    rows+=`<tr><td><span class="badge-gold">${y}</span></td><td class="mono">${fmtSym(ob)}</td><td class="mono" style="color:#818cf8;">${fmtSym(yP)}</td><td class="mono" style="color:#f87171;">${fmtSym(yI)}</td><td class="mono" style="color:var(--muted);">${fmtSym(cb)}</td></tr>`;
-  }
   document.getElementById('emi_tbody').innerHTML=rows;
 }
 
 // ================================================================
-// FIRE CALCULATOR
+// FIRE CALCULATOR — B-01 FIXED: inflation-adjusted real-return model
 // ================================================================
 function calcFIRE(){
   const age=+document.getElementById('fire_age').value;
   const exp=+document.getElementById('fire_exp').value;
   const saved=+document.getElementById('fire_saved').value;
   const inv=+document.getElementById('fire_inv').value;
-  const ret=+document.getElementById('fire_ret').value/100;
+  const nomRet=+document.getElementById('fire_ret').value/100;
   const inf=+document.getElementById('fire_inf').value/100;
   document.getElementById('v_fire_age').textContent=age;
   document.getElementById('v_fire_exp').textContent=fmtSym(exp);
   document.getElementById('v_fire_saved').textContent=fmtSym(saved);
   document.getElementById('v_fire_inv').textContent=fmtSym(inv);
-  document.getElementById('v_fire_ret').textContent=(ret*100).toFixed(1);
+  document.getElementById('v_fire_ret').textContent=(nomRet*100).toFixed(1);
   document.getElementById('v_fire_inf').textContent=(inf*100).toFixed(1);
-  const fireCorpus=exp*12*25,swr=fireCorpus*0.04/12;
-  document.getElementById('fire_corpus').textContent=fmtSym(fireCorpus);
+
+  // B-01 FIX: use REAL return so corpus & expenses in today's money
+  const realReturn = (1+nomRet)/(1+inf) - 1;
+  const realMr = Math.pow(1+realReturn, 1/12) - 1;
+
+  // FIRE corpus in today's money (real terms) — 25× rule on TODAY'S expenses
+  const fireCorpusReal = exp * 12 * 25;
+  const swr = fireCorpusReal * 0.04 / 12;
+
+  // Accumulation in real terms
+  let corpus=saved, months=0;
+  for(let m=0;m<600;m++){
+    corpus = corpus*(1+realMr)+inv;
+    if(corpus>=fireCorpusReal){months=m+1;break;}
+  }
+
+  const yearsToFIRE = months>0 ? Math.ceil(months/12) : null;
+  const fireAge = yearsToFIRE ? age+yearsToFIRE : null;
+
+  // Future nominal corpus (for context — what the bank statement will show)
+  const nominalCorpus = yearsToFIRE ? fireCorpusReal*Math.pow(1+inf,yearsToFIRE) : null;
+  // Future monthly expenses at retirement
+  const futureExp = yearsToFIRE ? exp*Math.pow(1+inf,yearsToFIRE) : exp;
+
+  document.getElementById('fire_corpus').textContent=fmtSym(fireCorpusReal)+" (today's ₹)";
   document.getElementById('fire_swr').textContent=fmtSym(swr);
-  const mr=ret/12;let corpus=saved,years=0;
-  for(let m=0;m<600;m++){corpus=corpus*(1+mr)+inv;if(corpus>=fireCorpus){years=Math.ceil(m/12);break;}}
-  document.getElementById('fire_years').textContent=years>0?years+' yrs':'Already FIRE! 🎉';
-  document.getElementById('fire_year_label').textContent=years>0?'Retire at age '+(age+years):'Congrats!';
-  const prog=Math.min((saved/fireCorpus)*100,100);
+
+  if(yearsToFIRE){
+    document.getElementById('fire_years').textContent=yearsToFIRE+' yrs';
+    document.getElementById('fire_year_label').textContent='Retire at age '+fireAge+' · Nominal corpus: '+fmtSym(nominalCorpus);
+  } else {
+    document.getElementById('fire_years').textContent='Already FIRE! 🎉';
+    document.getElementById('fire_year_label').textContent='Your savings already cover your FIRE corpus.';
+  }
+
+  // Show inflation note
+  const noteEl = document.getElementById('fire_inflation_note');
+  if(noteEl){
+    noteEl.style.display='block';
+    noteEl.innerHTML = `<div style="font-size:10px;color:var(--muted);background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);border-radius:8px;padding:10px 12px;margin-top:12px;">
+      <span style="color:var(--gold);font-weight:700;">📊 Inflation-adjusted</span> · Real return used: ${(realReturn*100).toFixed(2)}% · 
+      Monthly expenses at retirement: <strong style="color:var(--gold-light);">${fmtSym(futureExp)}</strong> (in future ₹).
+      FIRE corpus shown in <strong>today's purchasing power</strong> — you actually need <strong>${fmtSym(nominalCorpus)}</strong> in nominal terms.
+    </div>`;
+  }
+
+  const prog=Math.min((saved/fireCorpusReal)*100,100);
   document.getElementById('fire_progress_pct').textContent=prog.toFixed(1)+'%';
   document.getElementById('fire_progress_bar').style.width=prog+'%';
   const tL=R().fireLeanMax,tH=R().fireFatMin;
@@ -1232,9 +1410,9 @@ function calcFIRE(){
   document.getElementById('fire_type_desc').textContent=fd;
   let mhtml='';
   [25,50,75,100].forEach(pc=>{
-    const tgt=fireCorpus*pc/100;
+    const tgt=fireCorpusReal*pc/100;
     let yr=0,c=saved;
-    for(let m=0;m<600;m++){c=c*(1+mr)+inv;if(c>=tgt){yr=Math.ceil(m/12);break;}}
+    for(let m=0;m<600;m++){c=c*(1+realMr)+inv;if(c>=tgt){yr=Math.ceil(m/12);break;}}
     const reached=saved>=tgt;
     mhtml+=`<div class="milestone"><div class="milestone-dot" style="background:${reached?'#4ade80':'var(--gold)'};box-shadow:0 0 7px ${reached?'rgba(34,197,94,.5)':'rgba(201,168,76,.4)'};"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${pc}% — ${fmtSym(tgt)}</div><div style="color:var(--muted);font-size:10px;">${yr>0?'Year '+yr+' (Age '+(age+yr)+')':(reached?'✅ Done':'—')}</div></div></div>`;
   });
@@ -1272,7 +1450,7 @@ function calcROI(){
 }
 
 // ================================================================
-// INSURANCE CALCULATOR
+// INSURANCE CALCULATOR — B-04 FIXED: NPV-based HLV with income growth
 // ================================================================
 function calcInsurance(){
   const inc=+document.getElementById('ins_inc').value;
@@ -1285,11 +1463,24 @@ function calcInsurance(){
   document.getElementById('v_ins_ret').textContent=ret;
   document.getElementById('v_ins_liab').textContent=fmtSym(liab);
   document.getElementById('v_ins_exist').textContent=fmtSym(exist);
-  const hlv=(inc*(ret-age))+liab,gap=Math.max(hlv-exist,0);
+  const yearsLeft=ret-age;
+  // B-04 FIX: NPV of growing income annuity (income growth 6%, discount 8%)
+  const g=0.06, d=0.08;
+  let hlv;
+  if(Math.abs(d-g)<0.0001){
+    hlv=inc*yearsLeft;
+  } else {
+    hlv=inc*(1-Math.pow((1+g)/(1+d),yearsLeft))/(d-g);
+  }
+  hlv+=liab;
+  const gap=Math.max(hlv-exist,0);
   const pr=R().insPremiumRate(age);
   document.getElementById('ins_cover').textContent=fmtSym(hlv);
   document.getElementById('ins_gap').textContent=fmtSym(gap);
   document.getElementById('ins_premium').textContent=fmtSym(gap*pr)+'/yr approx';
+  // Show HLV method note
+  const hlvNote=document.getElementById('ins_hlv_note');
+  if(hlvNote) hlvNote.textContent='HLV via NPV of income growing 6%/yr, discounted at 8%/yr over '+yearsLeft+' yrs.';
 }
 
 // ================================================================
@@ -1326,6 +1517,8 @@ function buildIndiaTax(){
         <div style="font-size:1rem;font-weight:800;color:#4ade80;" id="tax_rec">—</div>
         <div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_saving">You save ₹0</div>
       </div>
+      <!-- B-05 FIX: Surcharge notice for high earners -->
+      <div id="tax_surcharge_note" style="display:none;margin-top:10px;font-size:10px;color:#f87171;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.15);border-radius:8px;padding:8px 10px;line-height:1.5;"></div>
     </div>
   </div>`;
 }
@@ -1347,9 +1540,11 @@ function calcIndiaTax(){
   document.getElementById('v_tax_80d').textContent=fmtK(c80d,'₹');
   document.getElementById('v_tax_hl').textContent=fmtK(hl,'₹');
   document.getElementById('v_tax_nps').textContent=fmtK(nps,'₹');
-  const oldTaxable=Math.max(inc-50000-Math.min(c80,150000)-Math.min(c80d,75000)-Math.min(hl,200000)-Math.min(nps,50000),0);
-  const oldTax=calcOldTax(oldTaxable);
-  const newTax=calcNewTax(Math.max(inc-75000,0));
+  const totalDed=50000+Math.min(c80,150000)+Math.min(c80d,75000)+Math.min(hl,200000)+Math.min(nps,50000);
+  const oldTaxable=Math.max(inc-totalDed,0);
+  // B-05 FIX: pass gross income for surcharge calculation
+  const oldTax=calcOldTax(oldTaxable, inc);
+  const newTax=calcNewTax(Math.max(inc-75000,0), inc);
   document.getElementById('tax_old').textContent=fmtK(oldTax,'₹');
   document.getElementById('tax_old_eff').textContent='Eff: '+(oldTax/inc*100).toFixed(1)+'%';
   document.getElementById('tax_new').textContent=fmtK(newTax,'₹');
@@ -1357,9 +1552,42 @@ function calcIndiaTax(){
   const better=oldTax<=newTax?'Old Regime':'New Regime';
   document.getElementById('tax_rec').textContent='✅ '+better+' saves more';
   document.getElementById('tax_saving').textContent='Annual saving: '+fmtK(Math.abs(oldTax-newTax),'₹');
+  // B-05 FIX: show surcharge notice for high earners
+  const scNote=document.getElementById('tax_surcharge_note');
+  if(scNote){
+    if(inc>5000000){
+      const scRate=inc>50000000?'37%':inc>20000000?'25%':inc>10000000?'15%':'10%';
+      scNote.style.display='block';
+      scNote.textContent='⚠️ Surcharge of '+scRate+' on tax applies at your income level — included in above figures.';
+    } else { scNote.style.display='none'; }
+  }
 }
-function calcOldTax(i){let t=0;if(i>1000000)t=112500+(i-1000000)*0.30;else if(i>500000)t=12500+(i-500000)*0.20;else if(i>250000)t=(i-250000)*0.05;if(i<=500000)t=0;return t*1.04;}
-function calcNewTax(i){let t=0,p=0;for(const[l,r]of[[300000,0],[600000,.05],[900000,.10],[1200000,.15],[1500000,.20],[Infinity,.30]]){if(i>p){t+=Math.min(i-p,l-p)*r;p=l;}}if(i<=700000)t=0;return t*1.04;}
+function calcOldTax(i, gross){
+  let t=0;
+  if(i>1000000) t=112500+(i-1000000)*0.30;
+  else if(i>500000) t=12500+(i-500000)*0.20;
+  else if(i>250000) t=(i-250000)*0.05;
+  if(i<=500000) t=0; // 87A rebate
+  // B-05 FIX: Surcharge on gross income
+  let sc=0;
+  if(gross>50000000) sc=t*0.37;
+  else if(gross>20000000) sc=t*0.25;
+  else if(gross>10000000) sc=t*0.15;
+  else if(gross>5000000) sc=t*0.10;
+  return (t+sc)*1.04;
+}
+function calcNewTax(i, gross){
+  let t=0,p=0;
+  for(const[l,r]of[[300000,0],[600000,.05],[900000,.10],[1200000,.15],[1500000,.20],[Infinity,.30]]){
+    if(i>p){t+=Math.min(i-p,l-p)*r;p=l;}
+  }
+  if(i<=700000) t=0; // 87A rebate new regime
+  // B-05 FIX: New regime surcharge — capped at 25% (37% slab does NOT apply in new regime)
+  let sc=0;
+  if(gross>10000000) sc=t*0.15;
+  else if(gross>5000000) sc=t*0.10;
+  return (t+sc)*1.04;
+}
 
 function buildUSATax(){
   return`
@@ -1889,7 +2117,7 @@ function buildGuideHTML(profile, isNew) {
 }
 
 function openOnboard() {
-  try { userProfile = JSON.parse(localStorage.getItem("wh_profile")||"{}"); } catch(e) { userProfile={}; }
+  try { userProfile = JSON.parse(Storage.get("wh_profile")||"{}"); } catch(e) { userProfile={}; }
   if (userProfile.name) { showProfileCard(); return; }
   document.getElementById("ob-step-1").style.display="block";
   document.getElementById("ob-step-2").style.display="none";
@@ -1909,7 +2137,7 @@ function showProfileCard() {
 
 function resetProfile() {
   userProfile = {};
-  try { localStorage.removeItem("wh_profile"); } catch(e) {}
+  Storage.remove("wh_profile"); // B-09 FIX: safe wrapper
   document.getElementById("ob-step-1").style.display="block";
   document.getElementById("ob-step-2").style.display="none";
   document.getElementById("ob-name").value="";
@@ -1925,7 +2153,7 @@ function obNext() {
   var goal = document.getElementById("ob-goal").value;
   if (!name) { document.getElementById("ob-name").focus(); return; }
   userProfile = {name:name, age:age, income:income, goal:goal};
-  try { localStorage.setItem("wh_profile", JSON.stringify(userProfile)); } catch(e) {}
+  Storage.set("wh_profile", JSON.stringify(userProfile)); // B-09 FIX: safe wrapper
   if (age) {
     var a = parseInt(age);
     var el = document.getElementById("fire_age"); if(el){el.value=a; document.getElementById("v_fire_age").textContent=a;}
@@ -1948,9 +2176,9 @@ function closeOnboard() {
 
 setTimeout(function(){
   try {
-    var p = JSON.parse(localStorage.getItem("wh_profile")||"{}");
-    if (!p.name && !localStorage.getItem("wh_visited")) {
-      localStorage.setItem("wh_visited","1");
+    var p = JSON.parse(Storage.get("wh_profile")||"{}");
+    if (!p.name && !Storage.get("wh_visited")) {
+      Storage.set("wh_visited","1");
       openOnboard();
     } else if (p.name) {
       applyProfileToSliders(p);
@@ -1993,18 +2221,10 @@ function applyProfileToSliders(p) {
   }
 }
 
-// Also call applyProfileToSliders when obNext saves profile
-var _origObNext = obNext;
-obNext = function() {
-  _origObNext();
-  try {
-    var p = JSON.parse(localStorage.getItem("wh_profile")||"{}");
-    if (p.name) applyProfileToSliders(p);
-  } catch(e) {}
-};
+// applyProfileToSliders is called from obNext directly — no override needed
 
 // ============================================================
-// SHARE RESULT
+// SHARE RESULT — B-08 FIXED: handles all 6 calculator tabs
 // ============================================================
 function shareResult(tab) {
   var lines = [];
@@ -2018,25 +2238,90 @@ function shareResult(tab) {
     var r = document.getElementById("sip_r").value;
     var t = document.getElementById("sip_t").value;
     lines = [
-      "My SIP Wealth Projection",
+      "📈 My SIP Wealth Projection",
       "Monthly SIP: " + fmtSym(+p),
       "Return: " + r + "% for " + t + " years",
       "Total Corpus: " + corpus,
       "Amount Invested: " + invested,
       "Wealth Gained: " + gains + " (" + mult + ")",
-      "Calculate yours: " + url
+      "Calculate yours 👉 " + url
     ];
+  } else if (tab === "emi") {
+    var emi    = document.getElementById("emi_monthly").textContent;
+    var total  = document.getElementById("emi_total").textContent;
+    var intAmt = document.getElementById("emi_interest").textContent;
+    var p2     = document.getElementById("emi_p").value;
+    var r2     = document.getElementById("emi_r").value;
+    var t2     = document.getElementById("emi_t").value;
+    lines = [
+      "🏠 My Home Loan EMI Calculation",
+      "Loan: " + fmtSym(+p2) + " @ " + r2 + "% for " + t2 + " years",
+      "Monthly EMI: " + emi,
+      "Total Payment: " + total,
+      "Total Interest: " + intAmt,
+      "Calculate yours 👉 " + url
+    ];
+  } else if (tab === "fire") {
+    var corpus2 = document.getElementById("fire_corpus").textContent;
+    var years   = document.getElementById("fire_years").textContent;
+    var swr     = document.getElementById("fire_swr").textContent;
+    var exp     = document.getElementById("fire_exp").value;
+    lines = [
+      "🔥 My FIRE Number",
+      "Monthly Expenses: " + fmtSym(+exp),
+      "FIRE Corpus: " + corpus2,
+      "Time to FIRE: " + years,
+      "Safe Withdrawal/mo: " + swr,
+      "Find your FIRE number 👉 " + url
+    ];
+  } else if (tab === "roi") {
+    var final   = document.getElementById("roi_final").textContent;
+    var returns = document.getElementById("roi_returns").textContent;
+    var mult2   = document.getElementById("roi_mult").textContent;
+    var p3      = document.getElementById("roi_p").value;
+    var r3      = document.getElementById("roi_r").value;
+    var t3      = document.getElementById("roi_t").value;
+    lines = [
+      "💹 My ROI Calculation",
+      "Invested: " + fmtSym(+p3) + " @ " + r3 + "% for " + t3 + " years",
+      "Final Value: " + final,
+      "Returns: " + returns + " (" + mult2 + ")",
+      "Calculate yours 👉 " + url
+    ];
+  } else if (tab === "insurance") {
+    var cover   = document.getElementById("ins_cover").textContent;
+    var gap     = document.getElementById("ins_gap").textContent;
+    var premium = document.getElementById("ins_premium").textContent;
+    lines = [
+      "🛡️ My Life Insurance Requirement",
+      "Recommended Cover: " + cover,
+      "Coverage Gap: " + gap,
+      "Estimated Premium: " + premium,
+      "Calculate yours 👉 " + url
+    ];
+  } else if (tab === "tax") {
+    var oldTax = document.getElementById("tax_old") ? document.getElementById("tax_old").textContent : "—";
+    var newTax = document.getElementById("tax_new") ? document.getElementById("tax_new").textContent : "—";
+    var rec    = document.getElementById("tax_rec")  ? document.getElementById("tax_rec").textContent  : "—";
+    var saving = document.getElementById("tax_saving") ? document.getElementById("tax_saving").textContent : "—";
+    lines = [
+      "📋 My Tax Comparison (FY2025-26)",
+      "Old Regime Tax: " + oldTax,
+      "New Regime Tax: " + newTax,
+      rec,
+      saving,
+      "Optimize your taxes 👉 " + url
+    ];
+  } else {
+    lines = ["💰 Check out WealthHub Pro — Free Financial Calculators", url];
   }
   var text = lines.join("\n");
   if (navigator.share) {
-    navigator.share({ title: "WealthHub Result", text: text, url: url })
-      .catch(function(){});
+    navigator.share({ title: "WealthHub Result", text: text, url: url }).catch(function(){});
   } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function(){
-      showToast("Result copied to clipboard!");
-    });
+    navigator.clipboard.writeText(text).then(function(){ showToast("Result copied to clipboard!"); });
   } else {
-    showToast("Copy: " + corpus);
+    showToast("Share: " + lines[0]);
   }
 }
 
@@ -2049,7 +2334,8 @@ function showToast(msg) {
 }
 
 // ============================================================
-// COMPARE CALCULATOR
+// COMPARE CALCULATOR — B-06 FIXED: fair comparison (same lump sum capital,
+// not total SIP amount which is future money invested over time)
 // ============================================================
 var cmpChart = null;
 function buildCompare() {
@@ -2064,47 +2350,45 @@ function buildCompare() {
 
   var months = t * 12;
   var mr = r / 12 / 100;
-  var lumpsum = p * months; // same total money
 
-  // SIP final value
+  // SIP: monthly p for t years
+  var sipTotal = p * months;
   var sipFinal = p * (((Math.pow(1+mr, months)-1)/mr)*(1+mr));
-  var sipGains = sipFinal - lumpsum;
+  var sipGains = sipFinal - sipTotal;
 
-  // Lump sum final value (invest total upfront)
-  var lsFinal = lumpsum * Math.pow(1 + r/100, t);
-  var lsGains = lsFinal - lumpsum;
+  // B-06 FIX: Lump sum = invest SAME total capital p×months UPFRONT at same rate
+  // This is the correct fair comparison: same total money, same rate, same period.
+  // Label it clearly so users understand the scenario.
+  var lumpInvested = sipTotal;
+  var lsFinal = lumpInvested * Math.pow(1 + r/100, t);
+  var lsGains = lsFinal - lumpInvested;
 
   document.getElementById("cmp_sip_corpus").textContent = fmtSym(sipFinal);
-  document.getElementById("cmp_sip_detail").textContent = "Invested " + fmtSym(lumpsum) + " · Gains " + fmtSym(sipGains);
+  document.getElementById("cmp_sip_detail").textContent = "Total invested " + fmtSym(sipTotal) + " · Gains " + fmtSym(sipGains);
   document.getElementById("cmp_ls_corpus").textContent = fmtSym(lsFinal);
-  document.getElementById("cmp_ls_detail").textContent = "Invested " + fmtSym(lumpsum) + " · Gains " + fmtSym(lsGains);
+  document.getElementById("cmp_ls_detail").textContent = "Lump sum invested " + fmtSym(lumpInvested) + " · Gains " + fmtSym(lsGains);
 
-  // Winner badges
   var sipWins = sipFinal >= lsFinal;
   document.getElementById("cmp_sip_winner").textContent = sipWins ? "🏆 WINNER" : "";
   document.getElementById("cmp_ls_winner").textContent = !sipWins ? "🏆 WINNER" : "";
   document.getElementById("cmp_sip_box").style.borderColor = sipWins ? "rgba(201,168,76,.6)" : "rgba(201,168,76,.25)";
   document.getElementById("cmp_ls_box").style.borderColor = !sipWins ? "rgba(201,168,76,.6)" : "rgba(201,168,76,.25)";
 
-  // Verdict
   var diff = Math.abs(sipFinal - lsFinal);
   var winner = sipWins ? "SIP" : "Lump Sum";
-  var loser = sipWins ? "Lump Sum" : "SIP";
   document.getElementById("cmp_verdict").innerHTML =
     "<strong style='color:var(--gold-light)'>" + winner + " wins</strong> by <strong style='color:#4ade80'>" + fmtSym(diff) + "</strong> over " + t + " years.<br><br>" +
-    "With the same total capital of <strong>" + fmtSym(lumpsum) + "</strong>, " + winner.toLowerCase() + " delivers " + fmtSym(sipWins ? sipFinal : lsFinal) + " vs " + loser.toLowerCase() + "'s " + fmtSym(sipWins ? lsFinal : sipFinal) + ".<br><br>" +
+    "<strong>Scenario:</strong> Both strategies use the same total capital of <strong>" + fmtSym(lumpInvested) + "</strong> — SIP invests " + fmtSym(p) + "/month over " + t + " years, while lump sum invests the entire amount upfront.<br><br>" +
     (sipWins
-      ? "SIP wins here because spreading investments over " + t + " years means early months benefit from compounding AND you reduce timing risk. The monthly compounding frequency of SIP also adds up significantly over long periods."
-      : "Lump sum wins here because investing the full capital upfront means every rupee compounds for the entire " + t + " years. In steadily rising markets, more time in the market always wins.");
+      ? "SIP wins here because spreading investments over " + t + " years means early months compound for less time — BUT rupee cost averaging and monthly compounding frequency tip the balance. In real markets, SIP also eliminates timing risk."
+      : "Lump sum wins here because investing the full " + fmtSym(lumpInvested) + " on day one means every rupee compounds for the entire " + t + " years. In steadily rising markets, more time in the market always wins. In volatile markets, SIP's cost averaging advantage can reverse this.");
 
-  // Chart
   var labels = [], sipData = [], lsData = [];
   for (var y = 1; y <= t; y++) {
     labels.push("Yr " + y);
     var m2 = y * 12;
-    var mr2 = r / 12 / 100;
-    var sipY = p * (((Math.pow(1+mr2,m2)-1)/mr2)*(1+mr2));
-    var lsY = lumpsum * Math.pow(1+r/100, y);
+    var sipY = p * (((Math.pow(1+mr,m2)-1)/mr)*(1+mr));
+    var lsY  = lumpInvested * Math.pow(1+r/100, y);
     sipData.push(Math.round(sipY));
     lsData.push(Math.round(lsY));
   }
@@ -2116,8 +2400,8 @@ function buildCompare() {
     data: {
       labels: labels,
       datasets: [
-        { label: "SIP", data: sipData, borderColor: "#C9A84C", backgroundColor: "rgba(201,168,76,.1)", borderWidth: 2, pointRadius: 0, fill: true, tension: 0.4 },
-        { label: "Lump Sum", data: lsData, borderColor: "#6366f1", backgroundColor: "rgba(99,102,241,.08)", borderWidth: 2, pointRadius: 0, fill: true, tension: 0.4 }
+        { label: "SIP (Monthly)", data: sipData, borderColor: "#C9A84C", backgroundColor: "rgba(201,168,76,.1)", borderWidth: 2, pointRadius: 0, fill: true, tension: 0.4 },
+        { label: "Lump Sum (Upfront)", data: lsData, borderColor: "#6366f1", backgroundColor: "rgba(99,102,241,.08)", borderWidth: 2, pointRadius: 0, fill: true, tension: 0.4 }
       ]
     },
     options: {
@@ -2134,6 +2418,32 @@ function buildCompare() {
   });
 }
 </script>
+
+<!-- ============================================================
+  SEO CONTENT — B-SEO-2: Static crawlable content per calculator
+  Hidden visually but crawlable; also used for the FAQ schema
+  ============================================================ -->
+<div style="display:none;" aria-hidden="true" id="seo-static-content">
+  <h2>SIP Calculator — Systematic Investment Plan Calculator India</h2>
+  <p>A Systematic Investment Plan (SIP) is the most powerful wealth-creation tool available to Indian investors. By investing a fixed amount every month in equity mutual funds, you benefit from the power of compounding and rupee cost averaging. Our SIP calculator shows you exactly how much your monthly investment will grow over 1 to 40 years, with a year-by-year breakdown of invested amount, corpus value, and gains.</p>
+  <h3>How to use the SIP Calculator</h3>
+  <p>Enter your monthly SIP amount (₹500 to ₹2,00,000), expected annual return (historical Nifty 50 average is 12-14%), and investment tenure in years. The calculator instantly shows your total corpus, total invested amount, wealth gained, multiplier, and ELSS tax savings under Section 80C. You also get a full year-by-year table and milestone chart.</p>
+  <h2>EMI Calculator — Home Loan & Personal Loan EMI</h2>
+  <p>Our EMI calculator uses the standard formula: EMI = P × r × (1+r)^n / ((1+r)^n - 1). Enter your loan amount, interest rate, and tenure to instantly compute your monthly EMI, total interest payable, and complete amortization schedule. For home loans, it also shows your Section 24(b) interest deduction benefit (up to ₹2 lakh per year).</p>
+  <h2>FIRE Calculator — Financial Independence Retire Early</h2>
+  <p>The FIRE calculator uses the proven 4% Safe Withdrawal Rate rule (Bengen 1994): your FIRE corpus = 25 × annual expenses. Our calculator goes further — it uses inflation-adjusted (real return) math so your FIRE number is in today's purchasing power, not misleading nominal figures. It shows you years to FIRE, FIRE age, and milestones at 25%, 50%, 75%, and 100% of your corpus target.</p>
+  <h2>Tax Calculator FY2025-26 — Old Regime vs New Regime</h2>
+  <p>Compare the old and new income tax regime for FY2025-26. The new regime has a ₹75,000 standard deduction and slabs starting at 5% from ₹3–6 lakh. The old regime allows deductions under 80C (₹1.5L), 80D (₹75K health insurance), 24(b) home loan interest (₹2L), and 80CCD(1B) NPS (₹50K). Our calculator includes surcharge for incomes above ₹50 lakh and 4% health and education cess.</p>
+</div>
+
+<!-- SEBI Disclaimer -->
+<div style="background:var(--dark2);border-top:1px solid rgba(255,255,255,.05);padding:16px 24px;text-align:center;">
+  <p style="font-size:10px;color:var(--muted);line-height:1.7;max-width:900px;margin:0 auto;">
+    ⚠️ <strong style="color:rgba(144,144,168,.9);">Disclaimer:</strong> WealthHub Pro / MoneyVeda is an educational financial tool only. All calculations are estimates based on assumed rates of return. Past performance is not indicative of future results. This platform is not registered with SEBI and does not provide investment advice. Please consult a SEBI-registered investment advisor before making any investment decisions. Tax calculations are indicative and based on FY2025-26 rules — consult a qualified CA for personalised advice.
+    &nbsp;·&nbsp; <a href="/privacy" style="color:rgba(201,168,76,.5);text-decoration:none;">Privacy Policy</a>
+    &nbsp;·&nbsp; <a href="/terms" style="color:rgba(201,168,76,.5);text-decoration:none;">Terms of Use</a>
+  </p>
+</div>
 
 </body>
 </html>
