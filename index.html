@@ -1525,17 +1525,18 @@ function closeDrawer(){
 var ALL_TABS=['sip','emi','fire','roi','insurance','tax','ppf','epf','nps','stepsip','ssa','crorepati','habit','edu','glossary','compare','contact'];
 function navTo(id){
   closeDrawer();
-  ALL_TABS.forEach(t=>{
-    document.getElementById(t).classList.toggle('active',t===id);
-    const b=document.getElementById('btn-'+t);if(b)b.classList.toggle('active',t===id);
-    const nb=document.getElementById('bnav-'+t);if(nb)nb.classList.toggle('active',t===id);
+  ALL_TABS.forEach(function(t){
+    var tabEl=document.getElementById(t);
+    if(tabEl) tabEl.classList.toggle('active',t===id);
+    var b=document.getElementById('btn-'+t); if(b) b.classList.toggle('active',t===id);
+    var nb=document.getElementById('bnav-'+t); if(nb) nb.classList.toggle('active',t===id);
   });
-  if(id==='sip') calcSIP();
-  else if(id==='emi') calcEMI();
-  else if(id==='fire') calcFIRE();
-  else if(id==='roi') calcROI();
+  if(id==='sip')        calcSIP();
+  else if(id==='emi')       calcEMI();
+  else if(id==='fire')      calcFIRE();
+  else if(id==='roi')       calcROI();
   else if(id==='insurance') calcInsurance();
-  else if(id==='tax') renderTax();
+  else if(id==='tax')       renderTax();
   else if(id==='ppf')       calcPPF();
   else if(id==='epf')       calcEPF();
   else if(id==='nps')       calcNPS();
@@ -1544,9 +1545,10 @@ function navTo(id){
   else if(id==='crorepati') calcCrorepati();
   else if(id==='habit')     calcHabit();
   else if(id==='contact')   renderContact();
-  else if(id==='glossary') buildGlossary();
-  else if(id==='compare') buildCompare();
-  var s=document.getElementById('main-scroll');if(s)s.scrollTop=0;
+  else if(id==='edu')       buildEdu();
+  else if(id==='glossary')  buildGlossary();
+  else if(id==='compare')   buildCompare();
+  var s=document.getElementById('main-scroll'); if(s) s.scrollTop=0;
 }
 
 // ================================================================
@@ -1555,46 +1557,33 @@ function navTo(id){
 function setMode(mode){
   currentMode=mode;
   // Update all mode buttons
-  ['india','usa','europe','world'].forEach(m=>{
-    ['desk-btn-','mob-btn-'].forEach(pfx=>{
-      const el=document.getElementById(pfx+m);
-      if(!el)return;
+  ['india','usa','europe','world'].forEach(function(m){
+    ['desk-btn-','mob-btn-'].forEach(function(pfx){
+      var el=document.getElementById(pfx+m);
+      if(!el) return;
       el.className=(pfx==='desk-btn-'?'mode-btn':'mob-mode-btn')+(m===mode?' active-'+m:'');
     });
   });
-  const b=document.getElementById('mode-banner');
-  b.className='mode-banner '+R().bannerClass;
-  b.innerHTML=R().bannerText;
+  var b=document.getElementById('mode-banner');
+  if(b){ b.className='mode-banner '+R().bannerClass; b.innerHTML=R().bannerText; }
   loadTickerData(mode);
   startSidebarRefresh();
   updateSliderRanges();
-  updateStaticLabels();
+  updateStaticLabels(); // handles labels, disclaimer, crorepati targets, nav label
 
-  // ── India-only tools: show/hide sidebar nav section & bottom nav buttons ──
-  const indiaOnly=['ppf','epf','nps','stepsip','ssa'];
-  const isIndia = mode==='india';
-
-  // Sidebar: hide/show the "Indian Savings" heading + its nav items
-  const indiaSection=document.getElementById('india-only-section');
+  // ── India-only tools: show/hide sidebar section & bottom nav buttons ──
+  var indiaOnly=['ppf','epf','nps','stepsip','ssa'];
+  var isIndia=(mode==='india');
+  var indiaSection=document.getElementById('india-only-section');
   if(indiaSection) indiaSection.style.display=isIndia?'':'none';
-
-  // Bottom nav: hide/show india-only buttons
-  indiaOnly.forEach(id=>{
-    const btn=document.getElementById('bnav-'+id);
+  indiaOnly.forEach(function(id){
+    var btn=document.getElementById('bnav-'+id);
     if(btn) btn.style.display=isIndia?'':'none';
   });
 
-  // ── Update Crorepati/Millionaire nav label ──
-  const crNavLabel=document.getElementById('nav-crorepati-label');
-  if(crNavLabel) crNavLabel.textContent=R().wealthGoalEmoji+' '+R().wealthGoalName+' Calc';
-
-  // ── Update dynamic disclaimer ──
-  const discEl=document.getElementById('dynamic-disclaimer');
-  if(discEl) discEl.textContent=R().disclaimer;
-
-  // If currently on an India-only tab and switching away, redirect to SIP
-  const at=document.querySelector('.tab.active');
-  if(at && !isIndia && indiaOnly.includes(at.id)){
+  // ── If on an India-only tab and switching away → redirect to SIP ──
+  var at=document.querySelector('.tab.active');
+  if(at && !isIndia && indiaOnly.indexOf(at.id)>-1){
     navTo('sip');
   } else {
     navTo(at?at.id:'sip');
@@ -1622,52 +1611,80 @@ function updateSliderRanges(){
 }
 function setSlider(id,min,max,step,val){
   const el=document.getElementById(id);
+  if(!el) return; // guard — element may not exist yet
   el.min=min;el.max=max;el.step=step;el.value=Math.min(Math.max(val,min),max);
 }
 
 function updateStaticLabels(){
   const r=R();
-  document.getElementById('sip-eyebrow').textContent='Investment · '+r.name;
-  document.getElementById('sip-desc').textContent=r.sipDesc;
-  document.getElementById('sip-p-label').textContent=r.sipLabel;
-  document.getElementById('sip-rate-hint').textContent=r.sipRateHint;
-  document.getElementById('sip-tax-label').textContent=r.sipTaxLabel;
-  document.getElementById('sip-tax-note').textContent=r.sipTaxNote;
-  document.getElementById('edu-sip-1').textContent=r.sipEdu1;
-  document.getElementById('edu-sip-3-title').textContent=r.sipEdu3;
-  document.getElementById('edu-sip-3').textContent=r.sipEdu3Desc;
+  // Helper — safe set text
+  function st(id,val){ const el=document.getElementById(id); if(el) el.textContent=val; }
+  function sh(id,val){ const el=document.getElementById(id); if(el) el.innerHTML=val; }
 
-  document.getElementById('emi-eyebrow').textContent='Loan · '+r.name;
-  document.getElementById('emi-desc').textContent=r.emiDesc;
-  document.getElementById('emi-p-label').textContent=r.emiLabel;
-  document.getElementById('emi-rate-hint').textContent=r.emiRateHint;
-  document.getElementById('emi-tax-label').textContent=r.emiTaxLabel;
-  document.getElementById('emi-tax-note').textContent=r.emiTaxNote;
-  document.getElementById('emi-dti-label').textContent=r.emiDtiLabel;
-  document.getElementById('emi-monthly-label').textContent=r.emiMonthlyLabel;
+  st('sip-eyebrow',   'Investment · '+r.name);
+  st('sip-desc',      r.sipDesc);
+  st('sip-p-label',   r.sipLabel);
+  st('sip-rate-hint', r.sipRateHint);
+  st('sip-tax-label', r.sipTaxLabel);
+  st('sip-tax-note',  r.sipTaxNote);
+  st('edu-sip-1',     r.sipEdu1);
+  st('edu-sip-3-title', r.sipEdu3);
+  st('edu-sip-3',     r.sipEdu3Desc);
 
-  document.getElementById('fire-eyebrow').textContent='FIRE · '+r.name;
-  document.getElementById('fire-exp-label').textContent='Monthly Expenses ('+r.currency+')';
+  st('emi-eyebrow',       'Loan · '+r.name);
+  st('emi-desc',          r.emiDesc);
+  st('emi-p-label',       r.emiLabel);
+  st('emi-rate-hint',     r.emiRateHint);
+  st('emi-tax-label',     r.emiTaxLabel);
+  st('emi-tax-note',      r.emiTaxNote);
+  st('emi-dti-label',     r.emiDtiLabel);
+  st('emi-monthly-label', r.emiMonthlyLabel);
 
-  document.getElementById('roi-eyebrow').textContent='Returns · '+r.name;
-  document.getElementById('roi-p-label').textContent='Initial Investment ('+r.currency+')';
-  document.getElementById('roi-compare-title').textContent='Asset Class Comparison — 20 Years';
-  document.getElementById('roi-compare-sub').textContent=r.roiCompareSub;
+  st('fire-eyebrow',   'FIRE · '+r.name);
+  st('fire-exp-label', 'Monthly Expenses ('+r.currency+')');
 
-  document.getElementById('ins-eyebrow').textContent='Insurance · '+r.name;
-  document.getElementById('ins-desc').textContent=r.insDesc;
-  document.getElementById('ins-inc-label').textContent='Annual Income ('+r.currency+')';
-  document.getElementById('ins-liab-label').textContent='Liabilities ('+r.currency+')';
-  document.getElementById('ins-local-title').textContent=r.insLocalTitle;
-  document.getElementById('ins-local-content').innerHTML=r.insLocalItems.map(item=>
+  st('roi-eyebrow',      'Returns · '+r.name);
+  st('roi-p-label',      'Initial Investment ('+r.currency+')');
+  st('roi-compare-title','Asset Class Comparison — 20 Years');
+  st('roi-compare-sub',  r.roiCompareSub);
+
+  st('ins-eyebrow',    'Insurance · '+r.name);
+  st('ins-desc',       r.insDesc);
+  st('ins-inc-label',  'Annual Income ('+r.currency+')');
+  st('ins-liab-label', 'Liabilities ('+r.currency+')');
+  st('ins-local-title',r.insLocalTitle);
+  sh('ins-local-content', r.insLocalItems.map(item=>
     `<div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);">
       <div style="font-size:12px;font-weight:700;color:var(--cream);margin-bottom:4px;">${item.name}</div>
       <div style="font-size:11px;color:var(--muted);line-height:1.7;">${item.detail}</div>
     </div>`
-  ).join('');
+  ).join(''));
 
-  document.getElementById('tax-eyebrow').textContent='Tax · '+r.name;
-  document.getElementById('tax-desc').textContent=r.taxDesc;
+  st('tax-eyebrow', 'Tax · '+r.name);
+  st('tax-desc',    r.taxDesc);
+
+  // ── Crorepati / Millionaire: update slider range + quick targets on region switch ──
+  const crSlider=document.getElementById('cr_target');
+  if(crSlider){
+    crSlider.min   = r.wealthGoalDefault / 10;
+    crSlider.max   = r.wealthGoalMax;
+    crSlider.step  = r.wealthGoalStep;
+    crSlider.value = r.wealthGoalDefault;
+  }
+  // Update quick-target buttons immediately
+  const btnWrap=document.getElementById('cr_quick_targets');
+  if(btnWrap){
+    btnWrap.innerHTML=r.wealthGoalLabels.map((lbl,i)=>
+      `<button class="btn-outline" onclick="setCrorepatiTarget(${r.wealthGoalTargets[i]})" style="font-size:11px;padding:6px 14px;">${lbl}</button>`
+    ).join('');
+  }
+  // Update Crorepati tab title/desc if visible
+  st('crorepati-title', r.wealthGoalEmoji+' '+r.wealthGoalName+' Calculator');
+  st('crorepati-desc',  r.wealthGoalDesc);
+  // Update nav label
+  st('nav-crorepati-label', r.wealthGoalEmoji+' '+r.wealthGoalName);
+  // Update dynamic disclaimer
+  st('dynamic-disclaimer', r.disclaimer);
 }
 
 // ================================================================
