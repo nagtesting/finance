@@ -428,12 +428,14 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="nav-item"       id="btn-roi"        onclick="navTo('roi')">💹 ROI & Compound</div>
     <div class="nav-item"       id="btn-insurance"  onclick="navTo('insurance')">🛡️ Insurance Planner</div>
     <div class="nav-item"       id="btn-tax"        onclick="navTo('tax')">📋 Tax Optimizer</div>
+    <div id="india-only-section">
     <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">Indian Savings</div>
     <div class="nav-item" id="btn-ppf"     onclick="navTo('ppf')">🏦 PPF Calculator</div>
     <div class="nav-item" id="btn-epf"     onclick="navTo('epf')">👷 EPF Calculator</div>
     <div class="nav-item" id="btn-nps"     onclick="navTo('nps')">🎯 NPS Calculator</div>
     <div class="nav-item" id="btn-stepsip" onclick="navTo('stepsip')">📊 Step-Up SIP</div>
     <div class="nav-item" id="btn-ssa"     onclick="navTo('ssa')">👧 Sukanya Samriddhi</div>
+    </div>
     <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">🔥 Viral Tools</div>
     <div class="nav-item" id="btn-crorepati" onclick="navTo('crorepati')" style="color:var(--gold-light);">🏆 Crorepati Calculator</div>
     <div class="nav-item" id="btn-habit"     onclick="navTo('habit')"     style="color:var(--gold-light);">☕ Habit vs Invest</div>
@@ -1427,9 +1429,28 @@ function setMode(mode){
   startSidebarRefresh();
   updateSliderRanges();
   updateStaticLabels();
-  // Recalc active tab
+
+  // ── India-only tools: show/hide sidebar nav section & bottom nav buttons ──
+  const indiaOnly=['ppf','epf','nps','stepsip','ssa'];
+  const isIndia = mode==='india';
+
+  // Sidebar: hide/show the "Indian Savings" heading + its nav items
+  const indiaSection=document.getElementById('india-only-section');
+  if(indiaSection) indiaSection.style.display=isIndia?'':'none';
+
+  // Bottom nav: hide/show india-only buttons
+  indiaOnly.forEach(id=>{
+    const btn=document.getElementById('bnav-'+id);
+    if(btn) btn.style.display=isIndia?'':'none';
+  });
+
+  // If currently on an India-only tab and switching away, redirect to SIP
   const at=document.querySelector('.tab.active');
-  if(at)navTo(at.id);
+  if(at && !isIndia && indiaOnly.includes(at.id)){
+    navTo('sip');
+  } else {
+    navTo(at?at.id:'sip');
+  }
 }
 
 function updateSliderRanges(){
