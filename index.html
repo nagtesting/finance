@@ -437,12 +437,13 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="nav-item" id="btn-ssa"     onclick="navTo('ssa')">👧 Sukanya Samriddhi</div>
     </div>
     <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">🔥 Viral Tools</div>
-    <div class="nav-item" id="btn-crorepati" onclick="navTo('crorepati')" style="color:var(--gold-light);">🏆 Crorepati Calculator</div>
+    <div class="nav-item" id="btn-crorepati" onclick="navTo('crorepati')" style="color:var(--gold-light);"><span id="nav-crorepati-label">🏆 Crorepati Calculator</span></div>
     <div class="nav-item" id="btn-habit"     onclick="navTo('habit')"     style="color:var(--gold-light);">☕ Habit vs Invest</div>
     <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">Learn</div>
     <div class="nav-item" id="btn-edu"      onclick="navTo('edu')">🎓 Financial Academy</div>
     <div class="nav-item" id="btn-glossary" onclick="navTo('glossary')">📖 Glossary</div>
     <div class="nav-item" id="btn-compare"  onclick="navTo('compare')">⚖️ SIP vs Lump Sum</div>
+    <div class="nav-item" id="btn-contact"  onclick="navTo('contact')">✉️ Write to Us</div>
   </div>
 
   <div style="padding:14px 18px;border-top:1px solid rgba(201,168,76,.1);">
@@ -984,32 +985,28 @@ tr:hover td{background:rgba(255,255,255,.02);}
     </div>
   </div>
 
-  <!-- ====== CROREPATI TAB ====== -->
+  <!-- ====== CROREPATI / MILLIONAIRE TAB ====== -->
   <div id="crorepati" class="tab">
-    <div class="section-eyebrow" style="color:var(--gold);">Viral Calculator · India</div>
-    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">🏆 Crorepati Calculator</h1>
-    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">How much do you need to invest every month to become a <strong style="color:var(--gold-light);">Crorepati?</strong> Set your target and see your exact monthly SIP.</p>
+    <div class="section-eyebrow" style="color:var(--gold);">Viral Calculator</div>
+    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;" id="crorepati-title">🏆 Crorepati Calculator</h1>
+    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="crorepati-desc">How much do you need to invest every month to become a Crorepati? Set your target and see your exact monthly SIP.</p>
     <div class="card" style="margin-bottom:20px;background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.02));border-color:rgba(201,168,76,.3);">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">YOUR CROREPATI GOAL</div>
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">YOUR WEALTH GOAL</div>
       <div class="grid-3" style="gap:20px;margin-bottom:20px;">
-        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Target Corpus</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_cr_target">—</span></div><input type="range" id="cr_target" min="10000000" max="500000000" step="10000000" value="10000000" oninput="calcCrorepati()"></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Target Corpus</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_cr_target">—</span></div><input type="range" id="cr_target" min="500000" max="500000000" step="500000" value="10000000" oninput="calcCrorepati()"></div>
         <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Time Frame</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_cr_t">15</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div><input type="range" id="cr_t" min="1" max="40" step="1" value="15" oninput="calcCrorepati()"></div>
         <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Expected Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_cr_r">12</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="cr_r" min="4" max="20" step="0.5" value="12" oninput="calcCrorepati()"></div>
       </div>
       <div style="text-align:center;padding:28px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:14px;">
         <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">YOU NEED TO INVEST</div>
         <div class="big-number" style="font-size:3.5rem;" id="cr_monthly">—</div>
-        <div style="font-size:14px;color:var(--muted);margin-top:8px;">per month to reach <span id="cr_target_label" style="color:var(--gold-light);font-weight:700;">₹1 Crore</span> in <span id="cr_t_label" style="color:var(--cream);">15 years</span></div>
+        <div style="font-size:14px;color:var(--muted);margin-top:8px;">per month to reach <span id="cr_target_label" style="color:var(--gold-light);font-weight:700;">—</span> in <span id="cr_t_label" style="color:var(--cream);">15 years</span></div>
         <button class="btn-outline" onclick="shareResult('crorepati')" style="margin-top:16px;padding:10px 24px;font-size:13px;">📤 Share on WhatsApp</button>
       </div>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
-      <span style="font-size:11px;color:var(--muted);align-self:center;">Quick targets:</span>
-      <button class="btn-outline" onclick="setCrorepatiTarget(10000000)"  style="font-size:11px;padding:6px 14px;">₹1 Cr</button>
-      <button class="btn-outline" onclick="setCrorepatiTarget(50000000)"  style="font-size:11px;padding:6px 14px;">₹5 Cr</button>
-      <button class="btn-outline" onclick="setCrorepatiTarget(100000000)" style="font-size:11px;padding:6px 14px;">₹10 Cr</button>
-      <button class="btn-outline" onclick="setCrorepatiTarget(250000000)" style="font-size:11px;padding:6px 14px;">₹25 Cr</button>
-      <button class="btn-outline" onclick="setCrorepatiTarget(500000000)" style="font-size:11px;padding:6px 14px;">₹50 Cr</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
+      <span style="font-size:11px;color:var(--muted);">Quick targets:</span>
+      <div id="cr_quick_targets" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
     </div>
     <div class="card" style="margin-bottom:20px;">
       <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">WHAT IF YOU STARTED EARLIER?</div>
@@ -1058,6 +1055,104 @@ tr:hover td{background:rgba(255,255,255,.02);}
     </div>
   </div>
 
+  <!-- ====== CONTACT TAB ====== -->
+  <div id="contact" class="tab">
+    <div class="section-eyebrow">Get in Touch</div>
+    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">✉️ Write to Us</h1>
+    <p style="color:var(--muted);line-height:1.7;margin-bottom:28px;" id="contact-region-note">We'd love to hear from you — bug reports, feature suggestions, data corrections, or partnership enquiries.</p>
+
+    <div class="grid-2" style="margin-bottom:24px;gap:16px;">
+      <!-- Contact Form -->
+      <div class="card">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;letter-spacing:.5px;">SEND A MESSAGE</div>
+        <div style="margin-bottom:14px;">
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px;">Your Name</label>
+          <input type="text" id="ct_name" placeholder="Rahul Sharma" class="num-input" style="font-family:'DM Sans',sans-serif;font-size:13px;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px;">Email Address</label>
+          <input type="email" id="ct_email" placeholder="rahul@email.com" class="num-input" style="font-family:'DM Sans',sans-serif;font-size:13px;">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px;">Topic</label>
+          <select id="ct_topic" class="num-input" style="font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;">
+            <option value="">Select a topic…</option>
+            <option value="bug">🐛 Bug Report</option>
+            <option value="feature">💡 Feature Request</option>
+            <option value="data">📊 Data / Calculation Error</option>
+            <option value="partnership">🤝 Partnership / Collaboration</option>
+            <option value="press">📰 Press / Media Enquiry</option>
+            <option value="other">💬 Other</option>
+          </select>
+        </div>
+        <div style="margin-bottom:18px;">
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:5px;">Message</label>
+          <textarea id="ct_message" placeholder="Describe your query in detail…" rows="5" class="num-input" style="font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:100px;"></textarea>
+        </div>
+        <button onclick="submitContact()" style="width:100%;padding:13px;background:var(--gold);color:#0A0A0F;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.3px;transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          Send Message →
+        </button>
+        <div id="ct_success" style="display:none;margin-top:14px;padding:12px 16px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;font-size:13px;color:#4ade80;text-align:center;">
+          ✅ Message sent! We'll reply within 48 hours.
+        </div>
+        <div id="ct_error" style="display:none;margin-top:14px;padding:12px 16px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;font-size:13px;color:#f87171;text-align:center;"></div>
+      </div>
+
+      <!-- Right column: info cards -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <!-- Response time -->
+        <div class="card" style="background:rgba(201,168,76,.06);border-color:rgba(201,168,76,.2);">
+          <div style="font-size:18px;margin-bottom:8px;">⏱️</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;">Response Time</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7;">We typically reply within <strong style="color:var(--cream);">24–48 hours</strong> on business days. For urgent data corrections, we prioritize same-day fixes.</div>
+        </div>
+        <!-- What we help with -->
+        <div class="card">
+          <div style="font-size:18px;margin-bottom:8px;">🛠️</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:10px;">We Can Help With</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            ${['Reporting a bug or wrong calculation','Suggesting a new calculator or feature','Correcting outdated interest rates or tax slabs','Press coverage and editorial partnerships','API access for developers','Advertising and sponsorship enquiries'].map(item=>`<div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--muted);"><span style="color:var(--gold);margin-top:1px;">→</span>${item}</div>`).join('')}
+          </div>
+        </div>
+        <!-- Region-specific regulator note -->
+        <div class="card" style="background:rgba(99,102,241,.06);border-color:rgba(99,102,241,.2);">
+          <div style="font-size:18px;margin-bottom:8px;">⚖️</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:6px;">Regulatory Note</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.7;" id="contact-regulator-note">MoneyVeda is not registered with SEBI. For regulated financial advice, please consult a SEBI-registered investment adviser.</div>
+          <a id="contact-regulator-link" href="https://www.sebi.gov.in" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;font-size:11px;color:var(--gold);text-decoration:none;font-weight:600;">Visit Regulator Website →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Direct contact options -->
+    <div class="card" style="margin-bottom:4px;">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:16px;letter-spacing:.5px;">DIRECT CONTACT</div>
+      <div class="grid-3" style="gap:12px;">
+        <a href="mailto:hello@moneyveda.org" style="text-decoration:none;">
+          <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;text-align:center;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(201,168,76,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+            <div style="font-size:22px;margin-bottom:8px;">📧</div>
+            <div style="font-size:12px;font-weight:700;margin-bottom:3px;">Email</div>
+            <div style="font-size:11px;color:var(--gold-light);">hello@moneyveda.org</div>
+          </div>
+        </a>
+        <a href="https://twitter.com/moneyveda" target="_blank" rel="noopener" style="text-decoration:none;">
+          <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;text-align:center;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(201,168,76,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+            <div style="font-size:22px;margin-bottom:8px;">𝕏</div>
+            <div style="font-size:12px;font-weight:700;margin-bottom:3px;">X / Twitter</div>
+            <div style="font-size:11px;color:var(--gold-light);">@moneyveda</div>
+          </div>
+        </a>
+        <a href="https://github.com/moneyveda" target="_blank" rel="noopener" style="text-decoration:none;">
+          <div style="padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;text-align:center;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(201,168,76,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+            <div style="font-size:22px;margin-bottom:8px;">⚙️</div>
+            <div style="font-size:12px;font-weight:700;margin-bottom:3px;">GitHub</div>
+            <div style="font-size:11px;color:var(--gold-light);">Report issues</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
   </div><!-- end main-scroll -->
 </div><!-- end main -->
 
@@ -1078,6 +1173,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <button class="bnav-item"        id="bnav-tax"        onclick="navTo('tax')"       style="position:relative;"><span class="bnav-icon">📋</span><span class="bnav-label">Tax</span><span class="bnav-indicator"></span></button>
   <button class="bnav-item"        id="bnav-edu"        onclick="navTo('edu')"       style="position:relative;"><span class="bnav-icon">🎓</span><span class="bnav-label">Learn</span><span class="bnav-indicator"></span></button>
   <button class="bnav-item"        id="bnav-compare"    onclick="navTo('compare')"   style="position:relative;"><span class="bnav-icon">⚖️</span><span class="bnav-label">Compare</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item"        id="bnav-contact"    onclick="navTo('contact')"   style="position:relative;"><span class="bnav-icon">✉️</span><span class="bnav-label">Contact</span><span class="bnav-indicator"></span></button>
 </nav>
 
 </div><!-- end app -->
@@ -1150,8 +1246,19 @@ const REGIONS = {
     ],
     // Tax
     taxDesc:'Compare Old vs New regime (FY2025-26) and maximize deductions.',
-  },
-  usa: {
+    // Region-specific fields
+    wealthGoalName:'Crorepati',
+    wealthGoalTargets:[10000000,50000000,100000000,250000000,500000000],
+    wealthGoalLabels:['₹1 Cr','₹5 Cr','₹10 Cr','₹25 Cr','₹50 Cr'],
+    wealthGoalDefault:10000000,
+    wealthGoalMax:500000000,
+    wealthGoalStep:10000000,
+    wealthGoalEmoji:'🏆',
+    wealthGoalDesc:'How much do you need to invest every month to become a Crorepati? Set your target and see your exact monthly SIP.',
+    disclaimer:'⚠️ MoneyVeda is an educational tool. Not SEBI-registered. All returns are estimates. Consult a SEBI-registered investment adviser before investing. Tax figures based on FY2025-26 Indian tax law.',
+    regulator:'SEBI (Securities and Exchange Board of India)',
+    regulatorUrl:'https://www.sebi.gov.in',
+    contactNote:'We are based in India. For queries on Indian tax, SEBI regulations, or Indian market data, write to us.',
     flag:'🇺🇸', name:'USA',
     currency:'$', code:'USD',
     bannerClass:'usa',
@@ -1203,8 +1310,18 @@ const REGIONS = {
       {name:'Umbrella Insurance',detail:'Extra liability beyond home/auto policy. $1M coverage ~$200–300/yr. Essential for high net worth.'},
     ],
     taxDesc:'Calculate federal income tax, understand brackets and maximize deductions (FY2026).',
-  },
-  europe: {
+    wealthGoalName:'Millionaire',
+    wealthGoalTargets:[1000000,5000000,10000000,25000000,50000000],
+    wealthGoalLabels:['$1M','$5M','$10M','$25M','$50M'],
+    wealthGoalDefault:1000000,
+    wealthGoalMax:50000000,
+    wealthGoalStep:1000000,
+    wealthGoalEmoji:'💰',
+    wealthGoalDesc:'How much do you need to invest every month to become a Millionaire? Set your target and see your exact monthly contribution.',
+    disclaimer:'⚠️ MoneyVeda is an educational tool only. Not registered with the SEC or FINRA. All returns are historical estimates and not guaranteed. Consult a licensed financial advisor (CFP/RIA) before investing.',
+    regulator:'SEC (U.S. Securities and Exchange Commission)',
+    regulatorUrl:'https://www.sec.gov',
+    contactNote:'For queries on US tax law, SEC regulations, or American market data, write to us.',
     flag:'🇪🇺', name:'Europe',
     currency:'€', code:'EUR',
     bannerClass:'europe',
@@ -1256,8 +1373,18 @@ const REGIONS = {
       {name:'Spain — Plan de Pensiones',detail:'Pension plan with deductible contributions up to €1,500/yr (individual). Employer contributions up to €8,500.'},
     ],
     taxDesc:'Overview of major European tax systems — income tax, VAT, and investment taxation.',
-  },
-  world: {
+    wealthGoalName:'Millionaire',
+    wealthGoalTargets:[1000000,5000000,10000000,25000000,50000000],
+    wealthGoalLabels:['€1M','€5M','€10M','€25M','€50M'],
+    wealthGoalDefault:1000000,
+    wealthGoalMax:50000000,
+    wealthGoalStep:1000000,
+    wealthGoalEmoji:'🏰',
+    wealthGoalDesc:'How much do you need to invest every month to become a Millionaire? Based on Euro Stoxx historical returns.',
+    disclaimer:'⚠️ MoneyVeda is an educational tool. Not regulated by ESMA or any EU national regulator. Returns are historical estimates. Consult a MiFID II-authorised investment adviser in your country before investing.',
+    regulator:'ESMA (European Securities and Markets Authority)',
+    regulatorUrl:'https://www.esma.europa.eu',
+    contactNote:'For queries on European tax, ESMA regulations, or Eurozone market data, write to us.',
     flag:'🌍', name:'Global',
     currency:'$', code:'USD',
     bannerClass:'world',
@@ -1309,8 +1436,18 @@ const REGIONS = {
       {name:'Critical Illness + Disability',detail:'Often overlooked — disability is 3× more likely than death during working years. Add a rider or standalone policy.'},
     ],
     taxDesc:'Tax systems around the world — compare rates and structures across major economies.',
-  }
-};
+    wealthGoalName:'Millionaire',
+    wealthGoalTargets:[1000000,5000000,10000000,25000000,50000000],
+    wealthGoalLabels:['$1M','$5M','$10M','$25M','$50M'],
+    wealthGoalDefault:1000000,
+    wealthGoalMax:50000000,
+    wealthGoalStep:1000000,
+    wealthGoalEmoji:'🌍',
+    wealthGoalDesc:'How much do you need to invest every month to become a Millionaire? Based on MSCI World historical returns.',
+    disclaimer:'⚠️ MoneyVeda is an educational tool only. Not regulated by any financial authority. All returns are global historical averages and not guaranteed. Please consult a licensed financial professional in your country before investing.',
+    regulator:'Your local financial regulator',
+    regulatorUrl:'https://www.iosco.org',
+    contactNote:'For queries on global markets, multi-currency calculations, or international financial data, write to us.',
 
 // ================================================================
 // STATE
@@ -1383,7 +1520,7 @@ function closeDrawer(){
 // ================================================================
 // NAVIGATION
 // ================================================================
-const ALL_TABS=['sip','emi','fire','roi','insurance','tax','ppf','epf','nps','stepsip','ssa','crorepati','habit','edu','glossary','compare'];
+const ALL_TABS=['sip','emi','fire','roi','insurance','tax','ppf','epf','nps','stepsip','ssa','crorepati','habit','edu','glossary','compare','contact'];
 function navTo(id){
   closeDrawer();
   ALL_TABS.forEach(t=>{
@@ -1404,6 +1541,7 @@ function navTo(id){
   else if(id==='ssa')       calcSSA();
   else if(id==='crorepati') calcCrorepati();
   else if(id==='habit')     calcHabit();
+  else if(id==='contact')   renderContact();
   else if(id==='glossary') buildGlossary();
   else if(id==='compare') buildCompare();
   var s=document.getElementById('main-scroll');if(s)s.scrollTop=0;
@@ -1443,6 +1581,14 @@ function setMode(mode){
     const btn=document.getElementById('bnav-'+id);
     if(btn) btn.style.display=isIndia?'':'none';
   });
+
+  // ── Update Crorepati/Millionaire nav label ──
+  const crNavLabel=document.getElementById('nav-crorepati-label');
+  if(crNavLabel) crNavLabel.textContent=R().wealthGoalEmoji+' '+R().wealthGoalName+' Calc';
+
+  // ── Update dynamic disclaimer ──
+  const discEl=document.getElementById('dynamic-disclaimer');
+  if(discEl) discEl.textContent=R().disclaimer;
 
   // If currently on an India-only tab and switching away, redirect to SIP
   const at=document.querySelector('.tab.active');
@@ -2830,30 +2976,37 @@ function calcSSA(){
 }
 
 // ================================================================
-// CROREPATI CALCULATOR
+// CROREPATI / MILLIONAIRE CALCULATOR — region-aware
 // ================================================================
 function calcCrorepati(){
   const target=+document.getElementById('cr_target').value;
   const t=+document.getElementById('cr_t').value;
   const r=+document.getElementById('cr_r').value;
+  const rg=R();
   document.getElementById('v_cr_target').textContent=fmtSym(target);
   document.getElementById('v_cr_t').textContent=t;
   document.getElementById('v_cr_r').textContent=r.toFixed(1);
   document.getElementById('cr_target_label').textContent=fmtSym(target);
   document.getElementById('cr_t_label').textContent=t+' years';
+  // Update heading & description dynamically
+  const titleEl=document.getElementById('crorepati-title');
+  const descEl=document.getElementById('crorepati-desc');
+  const emojiEl=document.getElementById('crorepati-emoji');
+  if(titleEl) titleEl.textContent=rg.wealthGoalEmoji+' '+rg.wealthGoalName+' Calculator';
+  if(descEl)  descEl.textContent=rg.wealthGoalDesc;
+  if(emojiEl) emojiEl.textContent=rg.wealthGoalEmoji;
   const mr=r/12/100, months=t*12;
-  // Reverse SIP formula: P = FV × r / ((1+r)^n - 1) / (1+r)
   const monthly=target*mr/(((Math.pow(1+mr,months)-1))*(1+mr));
   document.getElementById('cr_monthly').textContent=fmtSym(monthly);
-  // "What if started earlier?" comparison
+  // Age comparison — universal
+  const baseAge=35;
   const ages=[25,30,35,40,45];
-  const currentAge=35; // assume 35 baseline
   let ageHTML='';
   ages.forEach(startAge=>{
-    const yrs=currentAge+(t-(startAge-currentAge));
-    const mo=Math.max(1,(60-startAge)*12);
+    const yrs=(60-startAge);
+    const mo=yrs*12;
     const m2=target*mr/((Math.pow(1+mr,mo)-1)*(1+mr));
-    const isSelected=(startAge===currentAge);
+    const isSelected=(startAge===baseAge);
     ageHTML+=`<div style="display:flex;align-items:center;gap:14px;padding:10px 14px;background:${isSelected?'rgba(201,168,76,.08)':'rgba(255,255,255,.02)'};border:1px solid ${isSelected?'rgba(201,168,76,.3)':'rgba(255,255,255,.05)'};border-radius:10px;">
       <div style="width:60px;font-size:12px;font-weight:700;color:${isSelected?'var(--gold-light)':'var(--muted)'};">Age ${startAge}</div>
       <div style="flex:1;"><div style="height:5px;background:var(--dark4);border-radius:3px;overflow:hidden;"><div style="width:${Math.min(100,(monthly/m2)*100)}%;height:100%;background:${isSelected?'var(--gold)':'rgba(99,102,241,.6)'};border-radius:3px;"></div></div></div>
@@ -2862,10 +3015,16 @@ function calcCrorepati(){
     </div>`;
   });
   document.getElementById('cr_age_compare').innerHTML=ageHTML;
-  const crLabel=target>=10000000?fmtSym(target):fmtSym(target);
   document.getElementById('cr_verdict').innerHTML=`
-    To build <strong style="color:var(--gold-light);">${fmtSym(target)}</strong> in <strong style="color:var(--cream);">${t} years</strong> at ${r}% returns, you need to invest just <strong style="color:#4ade80;">${fmtSym(monthly)}/month</strong> via SIP.<br><br>
-    That's <strong style="color:var(--cream);">${fmtSym(monthly/30)}/day</strong> — less than most people spend on coffee and food delivery. The key is to <strong style="color:var(--gold-light);">start today</strong> and stay consistent. Every year of delay increases the required SIP by 15–25%.`;
+    To build <strong style="color:var(--gold-light);">${fmtSym(target)}</strong> in <strong style="color:var(--cream);">${t} years</strong> at ${r}% returns, you need just <strong style="color:#4ade80;">${fmtSym(monthly)}/month</strong>.<br><br>
+    That's <strong style="color:var(--cream);">${fmtSym(monthly/30)}/day</strong> — less than most people spend on coffee and subscriptions. Starting 5 years earlier can reduce your required monthly investment by 30–40%.`;
+  // Update quick-target buttons to region values
+  const btnWrap=document.getElementById('cr_quick_targets');
+  if(btnWrap){
+    btnWrap.innerHTML=rg.wealthGoalLabels.map((lbl,i)=>
+      `<button class="btn-outline" onclick="setCrorepatiTarget(${rg.wealthGoalTargets[i]})" style="font-size:11px;padding:6px 14px;">${lbl}</button>`
+    ).join('');
+  }
 }
 
 function setCrorepatiTarget(val){
@@ -2920,6 +3079,47 @@ function calcHabit(){
 
 // shareResult extensions for new tabs
 // (crorepati and habit share buttons handled in shareResult main fn)
+
+// ================================================================
+// CONTACT PAGE
+// ================================================================
+function renderContact(){
+  const rg=R();
+  // Update region-specific note
+  const noteEl=document.getElementById('contact-region-note');
+  if(noteEl) noteEl.textContent=rg.contactNote+' We\'d also love feature suggestions and bug reports.';
+  // Update regulator note
+  const regEl=document.getElementById('contact-regulator-note');
+  if(regEl) regEl.textContent='MoneyVeda is not registered with '+rg.regulator+'. For regulated financial advice, consult a licensed professional in your country.';
+  const regLink=document.getElementById('contact-regulator-link');
+  if(regLink){ regLink.href=rg.regulatorUrl; regLink.textContent='Visit '+rg.regulator+' →'; }
+}
+
+function submitContact(){
+  const name=document.getElementById('ct_name').value.trim();
+  const email=document.getElementById('ct_email').value.trim();
+  const topic=document.getElementById('ct_topic').value;
+  const msg=document.getElementById('ct_message').value.trim();
+  const errEl=document.getElementById('ct_error');
+  const sucEl=document.getElementById('ct_success');
+  errEl.style.display='none'; sucEl.style.display='none';
+  if(!name){ errEl.textContent='Please enter your name.'; errEl.style.display='block'; return; }
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ errEl.textContent='Please enter a valid email address.'; errEl.style.display='block'; return; }
+  if(!topic){ errEl.textContent='Please select a topic.'; errEl.style.display='block'; return; }
+  if(!msg||msg.length<10){ errEl.textContent='Please write a message (at least 10 characters).'; errEl.style.display='block'; return; }
+  // Build mailto as fallback (real implementation would POST to API)
+  const subject=encodeURIComponent('[MoneyVeda] '+topic+' — '+name);
+  const body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\nTopic: '+topic+'\nRegion: '+R().name+'\n\nMessage:\n'+msg);
+  window.location.href='mailto:hello@moneyveda.org?subject='+subject+'&body='+body;
+  sucEl.style.display='block';
+  // Clear form
+  setTimeout(()=>{
+    document.getElementById('ct_name').value='';
+    document.getElementById('ct_email').value='';
+    document.getElementById('ct_topic').value='';
+    document.getElementById('ct_message').value='';
+  }, 1000);
+}
 
 function showToast(msg) {
   var t = document.createElement("div");
@@ -3035,7 +3235,7 @@ function buildCompare() {
 <!-- SEBI Disclaimer -->
 <div style="background:var(--dark2);border-top:1px solid rgba(255,255,255,.05);padding:16px 24px;text-align:center;">
   <p style="font-size:10px;color:var(--muted);line-height:1.7;max-width:900px;margin:0 auto;">
-    ⚠️ <strong style="color:rgba(144,144,168,.9);">Disclaimer:</strong> MoneyVeda is an educational financial tool only. All calculations are estimates based on assumed rates of return. Past performance is not indicative of future results. This platform is not registered with SEBI and does not provide investment advice. Please consult a SEBI-registered investment advisor before making any investment decisions. Tax calculations are indicative and based on FY2025-26 rules — consult a qualified CA for personalised advice.
+    ⚠️ <strong style="color:rgba(144,144,168,.9);">Disclaimer:</strong> <span id="dynamic-disclaimer">MoneyVeda is an educational financial tool only. All calculations are estimates based on assumed rates of return. Past performance is not indicative of future results. This platform is not registered with SEBI and does not provide investment advice. Please consult a SEBI-registered investment advisor before making any investment decisions. Tax calculations are indicative and based on FY2025-26 rules — consult a qualified CA for personalised advice.</span>
     &nbsp;·&nbsp; <a href="/privacy" style="color:rgba(201,168,76,.5);text-decoration:none;">Privacy Policy</a>
     &nbsp;·&nbsp; <a href="/terms" style="color:rgba(201,168,76,.5);text-decoration:none;">Terms of Use</a>
   </p>
