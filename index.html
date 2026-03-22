@@ -1436,14 +1436,15 @@ function setMode(mode){
   var sideDisc=document.getElementById('sidebar-disclaimer');
   if(sideDisc) sideDisc.textContent=disc;
 
-  // Recalc active tab — redirect if on India-only tab and switching away
-  // Show/hide news strip based on region — guard in case script block 4 not loaded yet
+  // News: clear cache for new region and force fresh fetch
+  // Keeps other regions' caches intact for fast switching back
   if (typeof fetchNews === 'function') {
-    fetchNews(false);
+    delete _newsCache[mode];
+    delete _newsCacheTime[mode];
+    fetchNews(true);
   } else {
-    // fetchNews not ready yet — show/hide strip directly
     var strip = document.getElementById('news-strip');
-    if (strip) strip.style.display = (mode === 'india') ? 'block' : 'none';
+    if (strip) strip.style.display = 'block';
   }
 
   var at=document.querySelector('.tab.active');
@@ -2804,56 +2805,72 @@ function shareResult(tab){
 
 
 // ============================================================
-// MARKET PULSE — India RSS News via /api/news
+// MARKET PULSE — Region-aware RSS News via /api/news
 // ============================================================
-var _newsCache = null;
-var _newsCacheTime = 0;
+var _newsCache = {};        // keyed by region: _newsCache['india'], ['usa'] etc
+var _newsCacheTime = {};    // keyed by region
 var _newsFetching = false;
+var _newsFetchingRegion = null;
 var NEWS_CACHE_MS = 30 * 60 * 1000; // 30 min client-side cache
 
 function fetchNews(forceRefresh) {
-  // Only show for India
   var strip = document.getElementById('news-strip');
   if (!strip) return;
-  // Show news for ALL regions now (each has its own feeds)
   strip.style.display = 'block';
 
-  // Use client cache if fresh
-  if (!forceRefresh && _newsCache && (Date.now() - _newsCacheTime) < NEWS_CACHE_MS) {
-    renderNews(_newsCache);
+  var region = (typeof currentMode !== 'undefined') ? currentMode : 'india';
+
+  // Cache valid only if: not forced, has data for THIS region, and not stale
+  var cacheValid = !forceRefresh
+    && _newsCache[region]
+    && (Date.now() - (_newsCacheTime[region]||0)) < NEWS_CACHE_MS;
+
+  if (cacheValid) {
+    renderNews(_newsCache[region]);
     return;
   }
-  if (_newsFetching) return;
+
+  // Don't duplicate fetches for same region
+  if (_newsFetching && _newsFetchingRegion === region) return;
+
   _newsFetching = true;
+  _newsFetchingRegion = region;
 
   // Set live dot to pulsing orange (fetching)
   var dot = document.getElementById('news-live-dot');
   if (dot) { dot.style.background = '#f59e0b'; }
 
-  fetch('/api/news?region=' + currentMode)
+  var fetchRegion = region; // capture at fetch time
+
+  fetch('/api/news?region=' + fetchRegion)
     .then(function(res) {
-      // Check content-type before parsing — prevents "not valid JSON" error
       var ct = res.headers.get('content-type') || '';
       if (!ct.includes('application/json')) {
-        throw new Error('API returned non-JSON response (HTTP ' + res.status + ')');
+        throw new Error('Non-JSON response (HTTP ' + res.status + ')');
       }
       return res.json();
     })
     .then(function(data) {
       _newsFetching = false;
+      _newsFetchingRegion = null;
       if (data && data.articles && data.articles.length > 0) {
-        _newsCache = data.articles;
-        _newsCacheTime = Date.now();
-        renderNews(data.articles);
-        if (dot) dot.style.background = '#4ade80';
-        var upd = document.getElementById('news-updated');
-        if (upd) upd.textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        // Store in per-region cache
+        _newsCache[fetchRegion] = data.articles;
+        _newsCacheTime[fetchRegion] = Date.now();
+        // Only render if user is still on same region
+        if ((typeof currentMode !== 'undefined' ? currentMode : 'india') === fetchRegion) {
+          renderNews(data.articles);
+          if (dot) dot.style.background = '#4ade80';
+          var upd = document.getElementById('news-updated');
+          if (upd) upd.textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        }
       } else {
         renderNewsError();
       }
     })
     .catch(function(err) {
       _newsFetching = false;
+      _newsFetchingRegion = null;
       console.warn('News fetch failed:', err.message);
       renderNewsError();
       if (dot) dot.style.background = '#ef4444';
