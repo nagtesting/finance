@@ -2822,41 +2822,139 @@ function fetchNews(forceRefresh) {
 
 var _newsExpanded = false;
 
+// ============================================================
+// SMART NEWS ROUTING — maps headline keywords → internal tabs
+// Instead of opening external links, relevant headlines open
+// the matching MoneyVeda calculator directly
+// ============================================================
+var NEWS_ROUTES = [
+  // NPS keywords → NPS Calculator
+  { keywords: ['nps','national pension','pfrda','pension corpus','pension fund'], tab: 'nps' },
+  // SIP / Mutual Fund keywords → SIP Calculator
+  { keywords: ['sip','mutual fund','amfi','elss','equity fund','nfo','nav','systematic investment'], tab: 'sip' },
+  // PPF keywords → PPF Calculator
+  { keywords: ['ppf','public provident fund','small savings'], tab: 'ppf' },
+  // EPF keywords → EPF Calculator
+  { keywords: ['epf','provident fund','pf withdrawal','pf balance','employees provident'], tab: 'epf' },
+  // Home loan / EMI keywords → EMI Calculator
+  { keywords: ['home loan','repo rate','emi','mortgage','housing loan','interest rate','rbi rate','basis point'], tab: 'emi' },
+  // Tax keywords → Tax Optimizer
+  { keywords: ['income tax','tax slab','80c','section 80','itr','deduction','new regime','old regime','budget tax'], tab: 'tax' },
+  // Insurance keywords → Insurance Planner
+  { keywords: ['insurance','term plan','life cover','health insurance','sebi insurance'], tab: 'insurance' },
+  // FIRE / retirement keywords → FIRE Calculator
+  { keywords: ['retirement','retire early','fire corpus','financial independence','pension plan'], tab: 'fire' },
+  // Sukanya Samriddhi keywords → SSA
+  { keywords: ['sukanya','girl child','ssa','samriddhi'], tab: 'ssa' },
+  // Step-up SIP keywords → Step-Up SIP
+  { keywords: ['step.up sip','step up sip','increase sip','sip increment'], tab: 'stepsip' },
+];
+
+function getNewsRoute(title) {
+  if (!title) return null;
+  var lower = title.toLowerCase();
+  for (var i = 0; i < NEWS_ROUTES.length; i++) {
+    var route = NEWS_ROUTES[i];
+    for (var j = 0; j < route.keywords.length; j++) {
+      if (lower.indexOf(route.keywords[j]) > -1) {
+        return route.tab;
+      }
+    }
+  }
+  return null; // no match — open external link
+}
+
+function handleNewsClick(event, title, externalLink) {
+  var tab = getNewsRoute(title);
+  if (tab) {
+    event.preventDefault();
+    // Collapse news strip first
+    var strip = document.getElementById('news-strip');
+    if (strip && strip.classList.contains('news-expanded')) {
+      toggleNewsExpand();
+    }
+    // Navigate to the relevant calculator
+    navTo(tab);
+    // Show a subtle toast so user knows why they landed here
+    showNewsToast('📰 Opening ' + (tab === 'sip' ? 'Investment Planner' :
+                  tab === 'emi' ? 'Loan & EMI Calculator' :
+                  tab === 'nps' ? 'NPS Calculator' :
+                  tab === 'ppf' ? 'PPF Calculator' :
+                  tab === 'epf' ? 'EPF Calculator' :
+                  tab === 'tax' ? 'Tax Optimizer' :
+                  tab === 'fire' ? 'FIRE Calculator' :
+                  tab === 'insurance' ? 'Insurance Planner' :
+                  tab === 'ssa' ? 'Sukanya Samriddhi Calculator' :
+                  tab === 'stepsip' ? 'Step-Up SIP Calculator' : tab) + ' for you');
+  }
+  // else: default <a> click opens external link in new tab — no preventDefault
+}
+
+function showNewsToast(msg) {
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--dark3);color:var(--gold-light);border:1px solid rgba(201,168,76,.3);padding:8px 18px;border-radius:100px;font-size:11px;z-index:3000;font-family:DM Sans,sans-serif;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5);pointer-events:none;transition:opacity .4s;';
+  document.body.appendChild(t);
+  setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 400); }, 2500);
+}
+
 function renderNews(articles) {
   if (!articles || !articles.length) { renderNewsError(); return; }
-  _newsCache = articles; // keep for expand/collapse
+  _newsCache = articles;
 
   // ── TICKER (collapsed default) ──────────────────────────────
   var ticker = document.getElementById('news-ticker-inner');
   if (ticker) {
-    // Build pill HTML — duplicated for seamless loop
     var pills = articles.slice(0, 8).map(function(a) {
       var title = a.title.length > 90 ? a.title.slice(0, 87) + '…' : a.title;
       var bStyle = 'background:' + (a.color||'#C9A84C') + '22;color:' + (a.color||'#C9A84C') + ';border:1px solid ' + (a.color||'#C9A84C') + '44;';
-      return '<a href="' + a.link + '" target="_blank" rel="noopener noreferrer" class="news-pill">' +
-        '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'RBI') + '</span>' +
-        title +
-      '</a><span class="news-pill-sep">◆</span>';
+      var tab = getNewsRoute(a.title);
+      var isInternal = !!tab;
+      // Internal routes use onclick, external use normal href
+      if (isInternal) {
+        return '<a href="#" onclick="handleNewsClick(event,' + JSON.stringify(a.title) + ',' + JSON.stringify(a.link) + ');return false;" class="news-pill" title="Open ' + a.title.slice(0,50) + '…">' +
+          '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'RBI') + '</span>' +
+          '<span style="color:var(--gold);font-size:8px;margin-right:3px;" title="Opens MoneyVeda tool">↗</span>' +
+          title +
+        '</a><span class="news-pill-sep">◆</span>';
+      } else {
+        return '<a href="' + a.link + '" target="_blank" rel="noopener noreferrer" class="news-pill" title="' + a.title.slice(0,60) + '">' +
+          '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'RBI') + '</span>' +
+          title +
+        '</a><span class="news-pill-sep">◆</span>';
+      }
     }).join('');
-    // Duplicate for seamless infinite scroll
-    ticker.innerHTML = pills + pills;
+    ticker.innerHTML = pills + pills; // duplicate for seamless loop
   }
 
-  // ── EXPANDED GRID (pre-render, shown when user clicks expand) ──
+  // ── EXPANDED GRID ───────────────────────────────────────────
   var grid = document.getElementById('news-expanded-grid');
   if (grid) {
     grid.innerHTML = articles.slice(0, 8).map(function(a) {
       var bStyle = 'background:' + (a.color||'#C9A84C') + '22;color:' + (a.color||'#C9A84C') + ';';
       var title = a.title.length > 100 ? a.title.slice(0,97)+'…' : a.title;
-      return '<a href="' + a.link + '" target="_blank" rel="noopener noreferrer" class="news-card">' +
-        '<span class="news-card-src" style="' + bStyle + '">' + (a.emoji||'📰') + ' ' + (a.source||'') + '</span>' +
-        '<div class="news-card-title">' + title + '</div>' +
-        '<div class="news-card-time">' + (a.timeLabel||'') + '</div>' +
-      '</a>';
+      var tab = getNewsRoute(a.title);
+      var isInternal = !!tab;
+      var internalBadge = isInternal
+        ? '<span style="display:inline-block;margin-bottom:4px;font-size:8px;background:rgba(201,168,76,.12);color:var(--gold-light);border:1px solid rgba(201,168,76,.25);border-radius:100px;padding:1px 7px;">↗ Opens calculator</span><br>'
+        : '';
+      if (isInternal) {
+        return '<a href="#" onclick="handleNewsClick(event,' + JSON.stringify(a.title) + ',' + JSON.stringify(a.link) + ');return false;" class="news-card">' +
+          '<span class="news-card-src" style="' + bStyle + '">' + (a.emoji||'📰') + ' ' + (a.source||'') + '</span>' +
+          internalBadge +
+          '<div class="news-card-title">' + title + '</div>' +
+          '<div class="news-card-time">' + (a.timeLabel||'') + '</div>' +
+        '</a>';
+      } else {
+        return '<a href="' + a.link + '" target="_blank" rel="noopener noreferrer" class="news-card">' +
+          '<span class="news-card-src" style="' + bStyle + '">' + (a.emoji||'📰') + ' ' + (a.source||'') + '</span>' +
+          '<div class="news-card-title">' + title + '</div>' +
+          '<div class="news-card-time">' + (a.timeLabel||'') + '</div>' +
+        '</a>';
+      }
     }).join('');
   }
 
-  // Update live dot
   var dot = document.getElementById('news-live-dot');
   if (dot) dot.style.background = '#4ade80';
 }
