@@ -456,7 +456,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div id="sidebar-market">
       <div class="sb-skeleton"></div><div class="sb-skeleton"></div>
     </div>
-    <div style="font-size:8px;color:var(--muted);margin-top:6px;line-height:1.5;">10s refresh · Not for trading.</div>
+    <div style="font-size:8px;color:var(--muted);margin-top:6px;line-height:1.5;">15s refresh · Not for trading.</div>
   </div>
 </nav>
 
@@ -2019,7 +2019,7 @@ function renderSidebar(items,live){
 function startSidebarRefresh(){
   if(sidebarTimer)clearInterval(sidebarTimer);
   loadSidebarLive();
-  sidebarTimer=setInterval(loadSidebarLive,10000); // 10s refresh (was 30s)
+  sidebarTimer=setInterval(loadSidebarLive,15000); // 15s — matches server cache
 }
 
 let tickerAnimation=null;
