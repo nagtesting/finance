@@ -1,603 +1,448 @@
 // ============================================================
-// WealthHub / MultiCalci — FIXED Calculation Handler v2
+// /api/calculate.js — MoneyVeda v4 (Full Protection Edition)
 //
-// Previous fixes retained:
-//   B-01 FIRE inflation, B-02 SIP tax slab,
-//   B-03 EMI tax per-year, B-04 HLV growth, B-05 surcharge,
-//   B-09 input validation, B-10 retry logic
+// ALL computation is server-side. index.html contains zero
+// math — only DOM reads (slider values) and DOM writes
+// (displaying returned numbers + building charts/tables).
+// Without this server, every calculator shows "—" only.
 //
-// Audit fixes applied (this version):
-//
-//   ISS-01 — Holiday-aware isMarketOpen()
-//     - NSE trading holiday calendar fetched from NSE API, cached
-//       for 24 hours. Falls back to weekday-only logic on failure.
-//     - Muhurat session override via MUHURAT_DATE env var.
-//
-//   ISS-02 — Externalised Tax Configuration
-//     - All slab boundaries, rebate limits, deduction ceilings,
-//       surcharge rates, and cess rates extracted into TAX_CONFIG.
-//     - Keyed by assessment year ("AY2025-26") for auditability.
-//     - Tax functions accept a config argument; handler passes the
-//       current AY config. Updating for Budget changes requires
-//       only editing TAX_CONFIG — no logic changes needed.
-//
-//   ISS-03 — Dual-Rate Inflation Model in FIRE
-//     - Accepts healthcare_inflation and healthcare_pct params.
-//     - Blended effective inflation is computed each year as:
-//         general_inflation × (1 - healthcare_pct)
-//         + healthcare_inflation × healthcare_pct
-//     - Optional lifestyle_creep param (real annual expense growth).
-//     - Deterministic result unchanged when new params are omitted
-//       (defaults match previous single-rate behaviour).
-//
-//   ISS-08 — Financial Sanity Validation
-//     - validateNumeric extended into validateWithWarning() which
-//       returns { value, warnings[] } instead of a bare number.
-//     - Warnings (not rejections) are returned to the caller for
-//       implausible-but-technically-valid inputs.
-//     - Cross-field guard: insurance discount_rate vs income_growth.
+// SUPPORTED TYPES:
+//   sip, emi, fire, roi, insurance, tax,
+//   ppf, epf, nps, stepsip, ssa, crorepati, habit, compare
 // ============================================================
 
-// ================================================================
-// ISS-02 — TAX CONFIGURATION (externalised, versioned by AY)
-// ================================================================
+// ── Tax config ────────────────────────────────────────────────
 const TAX_CONFIG = {
   'AY2025-26': {
-    assessmentYear: 'AY2025-26',
-    cess: 0.04,  // Health & Education cess
-
+    cess: 0.04,
     old: {
-      standardDeduction: 50_000,
-      rebate87A:         500_000,    // taxable income ceiling for full rebate
-      slabs: [
-        // [upperBound, rate] — lower bound is previous entry's upper bound
-        [250_000,   0.00],
-        [500_000,   0.05],
-        [1_000_000, 0.20],
-        [Infinity,  0.30],
-      ],
-      surcharge: [
-        // [grossIncomeCeiling, rate] — checked highest first
-        [Infinity,  0.37],   // > 5 Cr
-        [20_000_000, 0.25],  // > 2 Cr
-        [10_000_000, 0.15],  // > 1 Cr
-        [5_000_000,  0.10],  // > 50 L
-        [0,          0.00],
-      ],
-      deductionLimits: {
-        sec80c:       150_000,
-        sec80d:        75_000,
-        sec24b:       200_000,
-        nps80ccd1b:    50_000,
-        nps80ccd2pct:  0.10,   // % of gross salary
-      },
+      standardDeduction: 50000,
+      rebate87A: 500000,
+      slabs: [[250000,0],[500000,0.05],[1000000,0.20],[Infinity,0.30]],
+      surcharge: [[Infinity,0.37],[20000000,0.25],[10000000,0.15],[5000000,0.10],[0,0.00]],
+      deductionLimits: { sec80c:150000, sec80d:75000, sec24b:200000, nps80ccd1b:50000, nps80ccd2pct:0.10 },
     },
-
     new: {
-      standardDeduction: 75_000,
-      rebate87A:         700_000,    // higher threshold in new regime
-      slabs: [
-        [300_000,   0.00],
-        [600_000,   0.05],
-        [900_000,   0.10],
-        [1_200_000, 0.15],
-        [1_500_000, 0.20],
-        [Infinity,  0.30],
-      ],
-      surcharge: [
-        // New regime: surcharge capped at 25% (no 37% slab)
-        [Infinity,   0.25],  // > 2 Cr and above all capped at 25%
-        [10_000_000, 0.15],  // > 1 Cr
-        [5_000_000,  0.10],  // > 50 L
-        [0,          0.00],
-      ],
-      deductionLimits: {
-        nps80ccd2pct: 0.10,  // 80CCD(2) employer contribution still allowed
-      },
+      standardDeduction: 75000,
+      rebate87A: 700000,
+      slabs: [[300000,0],[600000,0.05],[900000,0.10],[1200000,0.15],[1500000,0.20],[Infinity,0.30]],
+      surcharge: [[Infinity,0.25],[10000000,0.15],[5000000,0.10],[0,0.00]],
+      deductionLimits: { nps80ccd2pct:0.10 },
     },
   },
 };
-
-// Active assessment year — change this string when Budget is announced
 const ACTIVE_AY = 'AY2025-26';
 
-// ================================================================
-// ISS-08 — ENHANCED VALIDATION WITH FINANCIAL SANITY WARNINGS
-// ================================================================
-
-/**
- * Clamps val to [min, max] and returns it (replaces with fallback if invalid).
- * Pure numeric guard — unchanged from original.
- */
-function validateNumeric(val, min, max, fallback) {
+function clamp(val, min, max, def) {
   const n = parseFloat(val);
-  if (!isFinite(n) || n < min || n > max) return fallback;
-  return n;
+  return (!isFinite(n) || n < min || n > max) ? def : n;
 }
 
-/**
- * ISS-08: Extended validator that also emits financial sanity warnings.
- * Returns { value: number, warnings: string[] }.
- * Warnings are advisory — the value is still accepted.
- */
-function validateWithWarning(val, min, max, fallback, warnings, warningRules = []) {
-  const value = validateNumeric(val, min, max, fallback);
-  for (const { condition, message } of warningRules) {
-    if (condition(value)) warnings.push(message);
+function calcRegimeTax(taxable, gross, regime, cess) {
+  let tax = 0, prev = 0;
+  for (const [upper, rate] of regime.slabs) {
+    if (taxable > prev) { tax += Math.min(taxable - prev, upper - prev) * rate; prev = upper; }
   }
-  return value;
-}
-
-/**
- * ISS-08: Cross-field guard for insurance (discount_rate vs income_growth).
- * Returns a warning string if the relationship is financially unsound.
- */
-function guardDiscountVsGrowth(discountRate, incomeGrowth) {
-  if (incomeGrowth >= discountRate) {
-    return `Income growth rate (${(incomeGrowth * 100).toFixed(1)}%) is ≥ discount rate `
-      + `(${(discountRate * 100).toFixed(1)}%). HLV will be very large or negative — `
-      + `consider setting discount rate higher than income growth.`;
+  if (taxable <= regime.rebate87A) tax = 0;
+  let surchargeRate = 0;
+  for (const [ceiling, sr] of [...regime.surcharge].reverse()) {
+    if (gross > ceiling) { surchargeRate = sr; break; }
   }
-  return null;
+  return (tax + tax * surchargeRate) * (1 + cess);
 }
 
-// ================================================================
-// ISS-01 — HOLIDAY-AWARE isMarketOpen() WITH NSE CALENDAR
-// ================================================================
+// ── REGIONS config (server-only) ─────────────────────────────
+const REGIONS = {
+  india: {
+    currency:'₹', sipTaxCalc:(p)=>Math.min(p*12,150000)*0.30,
+    emiTaxCalc:(totalInt,t)=>Math.min(totalInt/t,200000)*0.30,
+    fireLeanMax:40000, fireFatMin:150000,
+    roiAssets:[
+      {name:'Savings A/C',rate:3.5,color:'#64748b'},{name:'FD (5yr)',rate:7.0,color:'#0ea5e9'},
+      {name:'PPF (15yr)',rate:7.1,color:'#6366f1'},{name:'Gold (hist.)',rate:9.5,color:'#f59e0b'},
+      {name:'Nifty 50',rate:13.0,color:'#C9A84C'},{name:'Equity MF',rate:14.0,color:'#4ade80'},
+      {name:'Real Estate',rate:9.0,color:'#ec4899'},
+    ],
+    roiBase:100000,
+    insPremiumRate:(age)=>age<35?0.0012:age<45?0.002:0.004,
+  },
+  usa: {
+    currency:'$', sipTaxCalc:(p)=>Math.min(p*12,23500)*0.22,
+    emiTaxCalc:(totalInt,t)=>Math.min(totalInt/t,25000)*0.22,
+    fireLeanMax:2500, fireFatMin:8000,
+    roiAssets:[
+      {name:'HYSA',rate:4.5,color:'#64748b'},{name:'US Treasury (10yr)',rate:4.3,color:'#0ea5e9'},
+      {name:'S&P 500 Index',rate:10.5,color:'#6366f1'},{name:'Gold (hist.)',rate:8.5,color:'#f59e0b'},
+      {name:'NASDAQ 100',rate:12.0,color:'#C9A84C'},{name:'Real Estate (REIT)',rate:8.0,color:'#4ade80'},
+      {name:'Total Bond Market',rate:4.0,color:'#ec4899'},
+    ],
+    roiBase:10000,
+    insPremiumRate:(age)=>age<35?0.0012:age<45?0.002:0.004,
+  },
+  europe: {
+    currency:'€', sipTaxCalc:(p)=>p*12*0.15*0.25,
+    emiTaxCalc:(totalInt,t)=>(totalInt/t)*0.15,
+    fireLeanMax:1500, fireFatMin:5000,
+    roiAssets:[
+      {name:'Savings Account',rate:3.0,color:'#64748b'},{name:'German Bunds (10yr)',rate:2.8,color:'#0ea5e9'},
+      {name:'Euro Stoxx 50',rate:8.5,color:'#6366f1'},{name:'Gold (hist.)',rate:8.5,color:'#f59e0b'},
+      {name:'MSCI World ETF',rate:9.5,color:'#C9A84C'},{name:'European REIT',rate:6.5,color:'#4ade80'},
+      {name:'Pan-EU Bond Fund',rate:3.5,color:'#ec4899'},
+    ],
+    roiBase:10000,
+    insPremiumRate:(age)=>age<35?0.0010:age<45?0.0018:0.0035,
+  },
+  world: {
+    currency:'$', sipTaxCalc:(p)=>p*12*0.20*0.15,
+    emiTaxCalc:(totalInt,t)=>(totalInt/t)*0.20,
+    fireLeanMax:2000, fireFatMin:7000,
+    roiAssets:[
+      {name:'Cash/T-Bills',rate:4.0,color:'#64748b'},{name:'Global Bonds',rate:4.5,color:'#0ea5e9'},
+      {name:'MSCI World',rate:10.0,color:'#6366f1'},{name:'Gold',rate:8.5,color:'#f59e0b'},
+      {name:'MSCI EM',rate:9.0,color:'#C9A84C'},{name:'Global REITs',rate:7.5,color:'#4ade80'},
+      {name:'Commodities',rate:5.5,color:'#ec4899'},
+    ],
+    roiBase:10000,
+    insPremiumRate:(age)=>age<35?0.0012:age<45?0.002:0.004,
+  },
+};
 
-let _holidaySet       = new Set();
-let _holidayYear      = null;
-let _holidayFetchedAt = 0;
-const HOLIDAY_TTL_MS  = 24 * 60 * 60 * 1000;
-
-function toISTDateString(date) {
-  const ist = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-  const y   = ist.getFullYear();
-  const m   = String(ist.getMonth() + 1).padStart(2, '0');
-  const d   = String(ist.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-async function refreshHolidayCalendar(year) {
-  try {
-    const res = await fetchWithRetry(
-      'https://www.nseindia.com/api/holiday-master?type=trading',
-      3, 300,
-      {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept':     'application/json',
-        'Referer':    'https://www.nseindia.com/',
-      }
-    );
-    const data   = await res.json();
-    const cmList = data?.CM ?? [];
-    const newSet = new Set();
-    for (const entry of cmList) {
-      const parsed = new Date(entry.tradingDate);
-      if (!isNaN(parsed)) newSet.add(toISTDateString(parsed));
-    }
-    _holidaySet       = newSet;
-    _holidayYear      = year;
-    _holidayFetchedAt = Date.now();
-  } catch {
-    // Non-fatal: fall back to weekday-only logic
-  }
-}
-
-async function isMarketOpen() {
-  const now    = new Date();
-  const ist    = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-  const day    = ist.getDay();
-  if (day === 0 || day === 6) return false;  // weekend
-
-  const istDateStr = toISTDateString(now);
-  const year       = parseInt(istDateStr.slice(0, 4), 10);
-
-  // Muhurat session override (set MUHURAT_DATE="YYYY-MM-DD" in env)
-  const muhuratDate = (typeof process !== 'undefined' && process.env?.MUHURAT_DATE) ?? null;
-  if (muhuratDate) {
-    const totalMins = ist.getHours() * 60 + ist.getMinutes();
-    if (istDateStr === muhuratDate && totalMins >= 18 * 60 && totalMins <= 19 * 60) {
-      return true;  // Muhurat trading session active
-    }
-  }
-
-  // Refresh holiday calendar if needed
-  const needsRefresh = (_holidayYear !== year)
-    || (Date.now() - _holidayFetchedAt > HOLIDAY_TTL_MS);
-  if (needsRefresh) await refreshHolidayCalendar(year);
-
-  // ISS-01 FIX: Reject if today is an NSE trading holiday
-  if (_holidaySet.has(istDateStr)) return false;
-
-  // Check IST trading window: 9:15 AM – 4:00 PM
-  const totalMins = ist.getHours() * 60 + ist.getMinutes();
-  return totalMins >= 555 && totalMins <= 960;
-}
-
-// ================================================================
-// EXPONENTIAL BACKOFF FETCH WITH RETRY (extended to accept headers)
-// ================================================================
-async function fetchWithRetry(url, retries = 3, delayMs = 300, extraHeaders = {}) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const res = await fetch(url, {
-        headers: extraHeaders,
-        signal:  AbortSignal.timeout(5000),
-      });
-      if (res.ok) return res;
-    } catch (e) {
-      if (i < retries - 1) await new Promise(r => setTimeout(r, delayMs * Math.pow(3, i)));
-    }
-  }
-  throw new Error('All retries exhausted');
-}
-
-// ================================================================
-// MAIN HANDLER
-// ================================================================
 export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cache-Control', 'no-store');
+  if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { type } = req.body;
+  const b    = req.body;
+  const type = b.type;
+  const mode = (b.mode && REGIONS[b.mode]) ? b.mode : 'india';
+  const RC   = REGIONS[mode];
 
-  // ---- Validated base inputs ----
-  const amount       = validateNumeric(req.body.p, 0, 1e9, 0);
-  const rate         = validateNumeric(req.body.r, 0.01, 50, 12);
-  const monthly_rate = rate / 12 / 100;
-
-  // ================================================================
-  // SIP — FIX B-02 (retained) + ISS-08 warnings
-  // ================================================================
+  // ── SIP ──────────────────────────────────────────────────────
   if (type === 'sip') {
-    const warnings   = [];
-    const months     = validateNumeric(req.body.t, 1, 50, 10) * 12;
-    const taxSlab    = validateNumeric(req.body.tax_slab, 0, 42.744, 30) / 100;
-
-    // ISS-08: Warn on implausibly high expected return
-    validateWithWarning(rate, 0.01, 50, 12, warnings, [
-      { condition: v => v > 20, message: `Expected return of ${rate.toFixed(1)}% is very high for a conventional SIP instrument. Consider using a realistic long-term equity CAGR (12–15%).` },
-    ]);
-
-    const invested   = amount * months;
-    const totalValue = amount * (((Math.pow(1 + monthly_rate, months) - 1) / monthly_rate) * (1 + monthly_rate));
-    const earnings   = totalValue - invested;
-    const multiplier = totalValue / invested;
-
-    const annualInvestment = amount * 12;
-    const taxSaved         = Math.min(annualInvestment, TAX_CONFIG[ACTIVE_AY].old.deductionLimits.sec80c) * taxSlab;
-
-    const annualGains    = earnings / (months / 12);
-    const ltcgLiability  = Math.max(annualGains - 100_000, 0) * 0.10;
-
+    const p  = clamp(b.p, 100, 10000000, 25000);
+    const r  = clamp(b.r, 0.1, 50, 12);
+    const t  = clamp(b.t, 1, 50, 15);
+    const mr = r / 12 / 100;
+    const months   = t * 12;
+    const invested = p * months;
+    const total    = p * (((Math.pow(1+mr,months)-1)/mr) * (1+mr));
+    const earnings = total - invested;
+    const mult     = total / invested;
+    const tax      = RC.sipTaxCalc(p, r, t);
     const yearlyData = [];
-    for (let y = 1; y <= months / 12; y++) {
-      const m     = y * 12;
-      const inv_y = amount * m;
-      const val_y = amount * (((Math.pow(1 + monthly_rate, m) - 1) / monthly_rate) * (1 + monthly_rate));
-      yearlyData.push({
-        year:     y,
-        invested: Math.round(inv_y),
-        value:    Math.round(val_y),
-        gains:    Math.round(val_y - inv_y),
-      });
+    for (let y = 1; y <= t; y++) {
+      const m = y * 12;
+      const iv = p * m;
+      const vv = p * (((Math.pow(1+mr,m)-1)/mr) * (1+mr));
+      yearlyData.push({ year:y, invested:Math.round(iv), value:Math.round(vv), gains:Math.round(vv-iv), gainPct:((vv-iv)/iv*100) });
     }
-
+    // Milestone targets per mode
+    const milestoneTargets = mode==='india'
+      ? [200000,500000,1000000,5000000,10000000,50000000]
+      : [5000,10000,50000,100000,500000,1000000];
+    const milestones = milestoneTargets
+      .filter(tgt => tgt <= total)
+      .map(tgt => {
+        for (let m=1; m<=months; m++) {
+          const v = p*(((Math.pow(1+mr,m)-1)/mr)*(1+mr));
+          if (v >= tgt) return { target:tgt, year:Math.ceil(m/12) };
+        }
+        return null;
+      }).filter(Boolean);
     return res.json({
-      value:          Math.round(totalValue),
-      invested:       Math.round(invested),
-      earnings:       Math.round(earnings),
-      multiplier:     multiplier.toFixed(2),
-      taxSaved:       Math.round(taxSaved),
-      ltcgLiability:  Math.round(ltcgLiability),
-      yearlyData,
-      warnings,
-      taxNote:        `80C deduction limit sourced from ${ACTIVE_AY} config (₹${TAX_CONFIG[ACTIVE_AY].old.deductionLimits.sec80c.toLocaleString('en-IN')}).`,
+      total:Math.round(total), invested:Math.round(invested), earnings:Math.round(earnings),
+      mult:mult.toFixed(1), gainPct:((earnings/invested)*100).toFixed(0),
+      returnPct:((earnings/total)*100).toFixed(0),
+      months, tax:Math.round(tax), yearlyData, milestones,
     });
   }
 
-  // ================================================================
-  // EMI — FIX B-03 (retained), no new audit items
-  // ================================================================
+  // ── EMI ──────────────────────────────────────────────────────
   if (type === 'emi') {
-    const months    = validateNumeric(req.body.t, 1, 360, 240);
-    const taxSlab   = validateNumeric(req.body.tax_slab, 0, 42.744, 30) / 100;
-    const sec24bCap = TAX_CONFIG[ACTIVE_AY].old.deductionLimits.sec24b; // ISS-02: from config
-
-    const emi            = (amount * monthly_rate * Math.pow(1 + monthly_rate, months))
-                         / (Math.pow(1 + monthly_rate, months) - 1);
-    const totalPaid      = emi * months;
-    const totalInterest  = totalPaid - amount;
-
+    const p      = clamp(b.p, 1000, 500000000, 5000000);
+    const r      = clamp(b.r, 0.1, 30, 8.5);
+    const t      = clamp(b.t, 1, 30, 20);
+    const mr     = r / 12 / 100;
+    const months = t * 12;
+    const emi    = (p * mr * Math.pow(1+mr,months)) / (Math.pow(1+mr,months) - 1);
+    const totalPaid = emi * months;
+    const totalInt  = totalPaid - p;
+    const taxSaved  = RC.emiTaxCalc(totalInt, t);
+    const pp = (p/totalPaid)*100, ip = (totalInt/totalPaid)*100;
     const schedule = [];
-    let balance      = amount;
-    let year1Interest = 0;
-
-    for (let y = 1; y <= months / 12; y++) {
-      let openBal = balance, yearPrincipal = 0, yearInterest = 0;
-      for (let m = 0; m < 12 && balance > 0.01; m++) {
-        const interestM  = balance * monthly_rate;
-        const principalM = Math.min(emi - interestM, balance);
-        yearPrincipal   += principalM;
-        yearInterest    += interestM;
-        balance         -= principalM;
+    let bal = p;
+    for (let y = 1; y <= t; y++) {
+      const ob = bal; let yP=0, yI=0;
+      for (let m=0; m<12 && bal>0; m++) {
+        const i = bal*mr, pr = Math.min(emi-i, bal);
+        yP+=pr; yI+=i; bal-=pr;
       }
-      if (y === 1) year1Interest = yearInterest;
-      schedule.push({
-        year:         y,
-        openBalance:  Math.round(openBal),
-        principal:    Math.round(yearPrincipal),
-        interest:     Math.round(yearInterest),
-        closeBalance: Math.round(Math.max(balance, 0)),
+      schedule.push({ year:y, open:Math.round(ob), principal:Math.round(yP), interest:Math.round(yI), close:Math.round(Math.max(bal,0)) });
+    }
+    return res.json({
+      emi:Math.round(emi), totalPaid:Math.round(totalPaid), totalInt:Math.round(totalInt),
+      taxSaved:Math.round(taxSaved), incomeReq:Math.round(emi/0.4),
+      ppPct:pp.toFixed(1), ipPct:ip.toFixed(1), schedule,
+    });
+  }
+
+  // ── FIRE ─────────────────────────────────────────────────────
+  if (type === 'fire') {
+    const age   = clamp(b.age,  18, 55,  30);
+    const exp   = clamp(b.exp,  100, 10000000, 75000);
+    const saved = clamp(b.saved,0,   1e9, 0);
+    const inv   = clamp(b.inv,  100, 1e7, 50000);
+    const ret   = clamp(b.ret,  1,   30,  10) / 100;
+    const inf   = clamp(b.inf,  1,   15,  6)  / 100;
+    const mr    = ret / 12;
+    const fireCorpus = exp * 12 * 25;
+    const swr        = fireCorpus * 0.04 / 12;
+    let corpus = saved, years = 0;
+    for (let m=0; m<600; m++) {
+      corpus = corpus*(1+mr) + inv;
+      if (corpus >= fireCorpus) { years = Math.ceil(m/12); break; }
+    }
+    const prog = Math.min((saved/fireCorpus)*100, 100);
+    const tL = RC.fireLeanMax, tH = RC.fireFatMin;
+    const fireType = exp<tL ? '🌿 Lean FIRE' : exp>tH ? '🏆 Fat FIRE' : '⚖️ Regular FIRE';
+    const fireTypeDesc = exp<tL ? 'Minimal lifestyle, maximum speed to independence.'
+      : exp>tH ? 'Luxury retirement — needs a large corpus.'
+      : 'Balanced approach — part-time optional.';
+    const milestones = [25,50,75,100].map(pc => {
+      const tgt = fireCorpus*pc/100;
+      let yr=0, c=saved;
+      for (let m=0; m<600; m++) { c=c*(1+mr)+inv; if(c>=tgt){yr=Math.ceil(m/12);break;} }
+      return { pc, target:Math.round(tgt), year:yr, reached:saved>=tgt };
+    });
+    return res.json({
+      fireCorpus:Math.round(fireCorpus), swr:Math.round(swr),
+      years: years>0?years:null, retireAge:years>0?age+years:null,
+      prog:prog.toFixed(1), fireType, fireTypeDesc, milestones,
+    });
+  }
+
+  // ── ROI ──────────────────────────────────────────────────────
+  if (type === 'roi') {
+    const p = clamp(b.p, 100, 1e9, 100000);
+    const r = clamp(b.r, 0.1, 50, 12);
+    const t = clamp(b.t, 1, 50, 20);
+    const final   = p * Math.pow(1+r/100, t);
+    const returns = final - p;
+    const curve   = [];
+    for (let y=0; y<=t; y++) curve.push({ year:y, value:Math.round(p*Math.pow(1+r/100,y)) });
+    const base   = RC.roiBase;
+    const assets = RC.roiAssets;
+    const maxV   = Math.max(...assets.map(a => base*Math.pow(1+a.rate/100,20)));
+    const assetCompare = assets.map(a => {
+      const v = base*Math.pow(1+a.rate/100,20);
+      return { name:a.name, rate:a.rate, color:a.color, value:Math.round(v), widthPct:((v/maxV)*100).toFixed(1) };
+    });
+    return res.json({
+      final:Math.round(final), returns:Math.round(returns),
+      mult:(final/p).toFixed(1), curve, assetCompare, roiBase:base,
+    });
+  }
+
+  // ── INSURANCE ────────────────────────────────────────────────
+  if (type === 'insurance') {
+    const inc    = clamp(b.inc,   1000,  1e8, 1800000);
+    const age    = clamp(b.age,   18,    60,  30);
+    const ret    = clamp(b.ret,   45,    75,  60);
+    const liab   = clamp(b.liab,  0,     1e9, 0);
+    const exist  = clamp(b.exist, 0,     1e9, 0);
+    const hlv    = (inc*(ret-age)) + liab;
+    const gap    = Math.max(hlv - exist, 0);
+    const pr     = RC.insPremiumRate(age);
+    return res.json({
+      cover:Math.round(hlv), gap:Math.round(gap), premium:Math.round(gap*pr),
+    });
+  }
+
+  // ── TAX (India) ───────────────────────────────────────────────
+  if (type === 'tax') {
+    const cfg = TAX_CONFIG[ACTIVE_AY];
+    const inc  = clamp(b.inc,  0, 1e8, 1800000);
+    const c80  = clamp(b.c80,  0, cfg.old.deductionLimits.sec80c,    0);
+    const c80d = clamp(b.c80d, 0, cfg.old.deductionLimits.sec80d,    0);
+    const hl   = clamp(b.hl,   0, cfg.old.deductionLimits.sec24b,    0);
+    const nps  = clamp(b.nps,  0, cfg.old.deductionLimits.nps80ccd1b,0);
+    const oldTaxable = Math.max(
+      inc - cfg.old.standardDeduction
+        - Math.min(c80,cfg.old.deductionLimits.sec80c)
+        - Math.min(c80d,cfg.old.deductionLimits.sec80d)
+        - Math.min(hl,cfg.old.deductionLimits.sec24b)
+        - Math.min(nps,cfg.old.deductionLimits.nps80ccd1b),
+      0);
+    const newTaxable = Math.max(inc - cfg.new.standardDeduction, 0);
+    const oldTax = calcRegimeTax(oldTaxable, inc, cfg.old, cfg.cess);
+    const newTax = calcRegimeTax(newTaxable, inc, cfg.new, cfg.cess);
+    return res.json({
+      oldTax:Math.round(oldTax), newTax:Math.round(newTax),
+      oldEff:(oldTax/inc*100).toFixed(1), newEff:(newTax/inc*100).toFixed(1),
+      better:oldTax<=newTax?'Old Regime':'New Regime',
+      saving:Math.round(Math.abs(oldTax-newTax)),
+    });
+  }
+
+  // ── PPF ──────────────────────────────────────────────────────
+  if (type === 'ppf') {
+    const y = clamp(b.y, 500, 150000, 150000);
+    const t = clamp(b.t, 15, 50, 15);
+    const rate = 0.071;
+    let balance=0, totalInv=0;
+    const rows = [];
+    for (let yr=1; yr<=t; yr++) {
+      const interest = Math.round((balance+y)*rate);
+      balance = balance+y+interest; totalInv += y;
+      rows.push({ year:yr, deposit:Math.round(y), interest, balance:Math.round(balance) });
+    }
+    return res.json({
+      maturity:Math.round(balance), invested:Math.round(totalInv),
+      interestEarned:Math.round(balance-totalInv),
+      taxSaved:Math.round(Math.min(y,150000)*0.30), rows,
+    });
+  }
+
+  // ── EPF ──────────────────────────────────────────────────────
+  if (type === 'epf') {
+    const sal  = clamp(b.sal,  1000, 500000, 50000);
+    const age  = clamp(b.age,  18,   55,     28);
+    const grow = clamp(b.grow, 0,    20,     8) / 100;
+    const rate = 0.0825, years = 58-age;
+    let empTotal=0, erTotal=0, balance=0, curSal=sal;
+    for (let yr=1; yr<=years; yr++) {
+      const ec = curSal*12*0.12, er = curSal*12*0.0367;
+      const contrib = ec+er;
+      balance += contrib + (balance+contrib)*rate;
+      empTotal += ec; erTotal += er; curSal *= (1+grow);
+    }
+    return res.json({
+      corpus:Math.round(balance), empContrib:Math.round(empTotal),
+      erContrib:Math.round(erTotal), years,
+      monthlyDeduction:Math.round(sal*0.12),
+    });
+  }
+
+  // ── NPS ──────────────────────────────────────────────────────
+  if (type === 'nps') {
+    const p   = clamp(b.p,   500, 100000, 5000);
+    const age = clamp(b.age, 18,  55,     30);
+    const eq  = clamp(b.eq,  0,   75,     75) / 100;
+    const debt = 0.75-eq;
+    const ret  = eq*0.11 + debt*0.07 + (0.25-debt)*0.09;
+    const years  = 60-age, months = years*12, mr = ret/12;
+    const corpus  = p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
+    const lumpsum = corpus*0.60;
+    const pension = corpus*0.40*0.06/12;
+    const taxSaved = Math.round(Math.min(p*12,50000)*0.30);
+    return res.json({
+      corpus:Math.round(corpus), lumpsum:Math.round(lumpsum),
+      pension:Math.round(pension), taxSaved,
+      equityPct:Math.round(eq*100), debtPct:Math.round((1-eq)*100),
+      blendedReturn:(ret*100).toFixed(2), years,
+    });
+  }
+
+  // ── STEP-UP SIP ───────────────────────────────────────────────
+  if (type === 'stepsip') {
+    const p    = clamp(b.p,    500, 1000000, 10000);
+    const step = clamp(b.step, 0,   30,      10) / 100;
+    const r    = clamp(b.r,    1,   30,      12);
+    const t    = clamp(b.t,    1,   40,      20);
+    const mr   = r/12/100;
+    let stepCorpus=0, flatCorpus=0, cur=p;
+    const rows = [];
+    for (let y=1; y<=t; y++) {
+      for (let m=0; m<12; m++) {
+        stepCorpus = stepCorpus*(1+mr)+cur;
+        flatCorpus = flatCorpus*(1+mr)+p;
+      }
+      rows.push({ year:y, monthlySip:Math.round(cur), stepValue:Math.round(stepCorpus), flatValue:Math.round(flatCorpus), advantage:Math.round(stepCorpus-flatCorpus) });
+      cur = cur*(1+step);
+    }
+    return res.json({
+      stepCorpus:Math.round(stepCorpus), flatCorpus:Math.round(flatCorpus),
+      extra:Math.round(stepCorpus-flatCorpus), rows,
+    });
+  }
+
+  // ── SSA (Sukanya Samriddhi) ───────────────────────────────────
+  if (type === 'ssa') {
+    const age = clamp(b.age, 0,  10,     3);
+    const dep = clamp(b.dep, 250,150000, 150000);
+    const rate=0.082, totalYears=21-age, depositYears=15;
+    let balance=0, totalInv=0;
+    const rows = [];
+    for (let yr=1; yr<=totalYears; yr++) {
+      const depositing = yr<=depositYears;
+      const deposit    = depositing ? dep : 0;
+      const interest   = Math.round((balance+deposit)*rate);
+      balance += deposit+interest;
+      if (depositing) totalInv += dep;
+      rows.push({ year:yr, deposit:depositing?Math.round(dep):0, interest, balance:Math.round(balance) });
+    }
+    return res.json({
+      maturity:Math.round(balance), invested:Math.round(totalInv),
+      interestEarned:Math.round(balance-totalInv), rows,
+    });
+  }
+
+  // ── CROREPATI / MILLIONAIRE ───────────────────────────────────
+  if (type === 'crorepati') {
+    const target = clamp(b.target, 100000, 5e9, 10000000);
+    const t      = clamp(b.t,      1,      40,  15);
+    const r      = clamp(b.r,      1,      30,  12);
+    const mr     = r/12/100, months = t*12;
+    const monthly = target * mr / (((Math.pow(1+mr,months)-1)) * (1+mr));
+    return res.json({
+      monthly:Math.round(monthly), target, years:t, rate:r,
+      perDay:Math.round(monthly/30),
+    });
+  }
+
+  // ── HABIT VS INVEST ───────────────────────────────────────────
+  if (type === 'habit') {
+    const p      = clamp(b.p, 100, 500000, 4500);
+    const t      = clamp(b.t, 1,   40,     20);
+    const r      = clamp(b.r, 1,   30,     12);
+    const mr     = r/12/100, months = t*12;
+    const spent  = p*12*t;
+    const corpus = p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
+    return res.json({
+      spent:Math.round(spent), corpus:Math.round(corpus),
+      gains:Math.round(corpus-spent), mult:((corpus/spent).toFixed(1)),
+      years:t, monthly:p,
+    });
+  }
+
+  // ── SIP vs LUMP SUM COMPARE ───────────────────────────────────
+  if (type === 'compare') {
+    const p      = clamp(b.p, 100, 10000000, 25000);
+    const r      = clamp(b.r, 0.1, 30,       12);
+    const t      = clamp(b.t, 1,   40,       15);
+    const mr     = r/12/100, months = t*12;
+    const lumpTotal  = p * months;
+    const sipFinal   = p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
+    const lsFinal    = lumpTotal * Math.pow(1+r/100, t);
+    const sipWins    = sipFinal >= lsFinal;
+    const curve = [];
+    for (let y=1; y<=t; y++) {
+      const m2 = y*12;
+      curve.push({
+        year:y,
+        sip:Math.round(p*(((Math.pow(1+mr,m2)-1)/mr)*(1+mr))),
+        ls:Math.round(lumpTotal*Math.pow(1+r/100,y)),
       });
     }
-
-    const taxSaved = Math.min(year1Interest, sec24bCap) * taxSlab;
-
     return res.json({
-      emi:           Math.round(emi),
-      totalPaid:     Math.round(totalPaid),
-      totalInterest: Math.round(totalInterest),
-      taxSaved:      Math.round(taxSaved),
-      taxNote:       `Section 24(b) deduction based on Year 1 interest (${ACTIVE_AY} cap ₹${sec24bCap.toLocaleString('en-IN')}). Benefit reduces each year as interest portion falls.`,
-      schedule,
+      sipFinal:Math.round(sipFinal), lsFinal:Math.round(lsFinal),
+      sipGains:Math.round(sipFinal-lumpTotal), lsGains:Math.round(lsFinal-lumpTotal),
+      lumpTotal:Math.round(lumpTotal), sipWins, diff:Math.round(Math.abs(sipFinal-lsFinal)),
+      winner:sipWins?'SIP':'Lump Sum', loser:sipWins?'Lump Sum':'SIP',
+      curve,
     });
   }
 
-  // ================================================================
-  // FIRE — FIX B-01 (retained) + ISS-03 dual-rate inflation model
-  // ================================================================
-  if (type === 'fire') {
-    const warnings = [];
-
-    const currentAge  = validateNumeric(req.body.age,         18, 55,  30);
-    const monthlyExp  = validateNumeric(req.body.expenses,    100, 1e7, 75_000);
-    const currentSaved= validateNumeric(req.body.saved,       0,   1e9, 0);
-    const monthlyInv  = validateNumeric(req.body.monthly_inv, 100, 1e7, 50_000);
-    const nominalRate = validateNumeric(req.body.r,           1,   30,  10) / 100;
-    const inflation   = validateNumeric(req.body.inflation,   1,   15,  6)  / 100;
-
-    // ISS-03: Dual-rate inflation inputs (new params with safe defaults)
-    // healthcare_inflation defaults to inflation + 3% (historically ~8-12% India)
-    const healthcareInflation = validateNumeric(
-      req.body.healthcare_inflation,
-      1, 20,
-      parseFloat(((inflation * 100) + 3).toFixed(2))   // default = general + 3%
-    ) / 100;
-
-    // healthcare_pct: fraction of monthly expenses that are healthcare-related
-    // Default 15% — appropriate for pre-retirement, rises in post-retirement
-    const healthcarePct = validateNumeric(req.body.healthcare_pct, 0, 60, 15) / 100;
-
-    // lifestyle_creep: real annual expense growth (0 = no creep)
-    const lifestyleCreep = validateNumeric(req.body.lifestyle_creep, 0, 5, 0) / 100;
-
-    // ISS-08: Warn if lifestyle_creep seems high
-    if (lifestyleCreep > 0.02) {
-      warnings.push(`Lifestyle creep of ${(lifestyleCreep * 100).toFixed(1)}%/yr will significantly increase your required corpus. Verify this is intentional.`);
-    }
-
-    // ISS-03: Blended effective inflation
-    // Computed once for the accumulation phase (conservative — real blending happens post-FIRE)
-    const effectiveInflation = inflation * (1 - healthcarePct) + healthcareInflation * healthcarePct;
-
-    // Real return using blended effective inflation
-    const realReturn  = (1 + nominalRate) / (1 + effectiveInflation) - 1;
-    const realMonthly = Math.pow(1 + realReturn, 1 / 12) - 1;
-
-    // FIRE corpus in today's money (real terms)
-    const annualExpReal  = monthlyExp * 12;
-    const fireCorpusReal = annualExpReal * 25;  // 4% SWR
-
-    // ISS-03: Accumulation loop with lifestyle creep
-    // lifestyleCreep increases the real monthly expenses target each year
-    let corpusTarget = fireCorpusReal;
-    let corpusAccum  = currentSaved;
-    let months       = 0;
-    let yearlyCreepMultiplier = 1;
-
-    for (let m = 0; m < 600; m++) {
-      // Apply lifestyle creep once per year to the corpus target
-      if (m > 0 && m % 12 === 0) {
-        yearlyCreepMultiplier *= (1 + lifestyleCreep);
-        corpusTarget = fireCorpusReal * yearlyCreepMultiplier;
-      }
-      corpusAccum = corpusAccum * (1 + realMonthly) + monthlyInv;
-      if (corpusAccum >= corpusTarget) { months = m + 1; break; }
-    }
-
-    const yearsToFIRE = months > 0 ? Math.ceil(months / 12) : null;
-    const fireAge     = yearsToFIRE ? currentAge + yearsToFIRE : null;
-
-    const nominalCorpus = yearsToFIRE
-      ? corpusTarget * Math.pow(1 + effectiveInflation, yearsToFIRE)
-      : null;
-
-    // Future monthly expenses at retirement — split between general and healthcare
-    const futureGeneralExp    = yearsToFIRE
-      ? monthlyExp * (1 - healthcarePct) * Math.pow(1 + inflation, yearsToFIRE)
-      : monthlyExp * (1 - healthcarePct);
-    const futureHealthcareExp = yearsToFIRE
-      ? monthlyExp * healthcarePct * Math.pow(1 + healthcareInflation, yearsToFIRE)
-      : monthlyExp * healthcarePct;
-    const futureMonthlyExp    = futureGeneralExp + futureHealthcareExp;
-
-    const swr_monthly = (corpusTarget * 0.04) / 12;
-
-    return res.json({
-      fireCorpus:           Math.round(corpusTarget),           // real terms, incl. creep
-      nominalCorpus:        nominalCorpus ? Math.round(nominalCorpus) : null,
-      futureMonthlyExp:     Math.round(futureMonthlyExp),
-      futureGeneralExp:     Math.round(futureGeneralExp),
-      futureHealthcareExp:  Math.round(futureHealthcareExp),
-      yearsToFIRE,
-      fireAge,
-      swr_monthly:          Math.round(swr_monthly),
-      progressPct:          Math.min((currentSaved / corpusTarget) * 100, 100).toFixed(1),
-      realReturn:           (realReturn * 100).toFixed(2),
-      effectiveInflation:   (effectiveInflation * 100).toFixed(2),
-      lifestyleCreepApplied: lifestyleCreep > 0,
-      warnings,
-      note: `Corpus in today's purchasing power. Healthcare inflation (${(healthcareInflation * 100).toFixed(1)}%) applied to ${(healthcarePct * 100).toFixed(0)}% of expenses. Nominal corpus is actual future value.`,
-    });
-  }
-
-  // ================================================================
-  // ROI — unchanged, no new audit items
-  // ================================================================
-  if (type === 'roi') {
-    const years      = validateNumeric(req.body.t, 1, 50, 10);
-    const principal  = amount;
-    const finalValue = principal * Math.pow(1 + rate / 100, years);
-    const returns    = finalValue - principal;
-    const multiplier = finalValue / principal;
-
-    return res.json({
-      finalValue: Math.round(finalValue),
-      returns:    Math.round(returns),
-      multiplier: multiplier.toFixed(2),
-      cagr:       rate.toFixed(2),
-    });
-  }
-
-  // ================================================================
-  // INSURANCE — FIX B-04 (retained) + ISS-08 cross-field guard
-  // ================================================================
-  if (type === 'insurance') {
-    const warnings = [];
-
-    const annualIncome  = validateNumeric(req.body.income,        10_000, 1e8, 1_800_000);
-    const currentAge    = validateNumeric(req.body.age,           18, 60,  30);
-    const retirementAge = validateNumeric(req.body.ret_age,       45, 75,  60);
-    const liab          = validateNumeric(req.body.liabilities,   0,  1e9, 0);
-    const existingCover = validateNumeric(req.body.existing,      0,  1e9, 0);
-    const incomeGrowth  = validateNumeric(req.body.income_growth, 0,  20,  6) / 100;
-    const discountRate  = validateNumeric(req.body.discount_rate, 1,  15,  8) / 100;
-
-    // ISS-08: Cross-field guard — income growth vs discount rate
-    const crossFieldWarning = guardDiscountVsGrowth(discountRate, incomeGrowth);
-    if (crossFieldWarning) warnings.push(crossFieldWarning);
-
-    const yearsLeft = retirementAge - currentAge;
-
-    // B-04 FIX: NPV of growing income stream (growing annuity PV formula)
-    let hlv;
-    if (Math.abs(discountRate - incomeGrowth) < 0.0001) {
-      hlv = annualIncome * yearsLeft;
-    } else {
-      hlv = annualIncome
-        * (1 - Math.pow((1 + incomeGrowth) / (1 + discountRate), yearsLeft))
-        / (discountRate - incomeGrowth);
-    }
-
-    // Guard against negative HLV from bad inputs (income_growth > discount_rate edge case)
-    if (hlv < 0) {
-      hlv = annualIncome * yearsLeft; // safe fallback: simple sum
-      warnings.push('Income growth exceeded discount rate — HLV capped at simple income sum. Please review inputs.');
-    }
-
-    hlv += liab;
-    const gap = Math.max(hlv - existingCover, 0);
-
-    const insPremiumRate   = currentAge < 35 ? 0.0012 : currentAge < 45 ? 0.002 : 0.004;
-    const estimatedPremium = gap * insPremiumRate;
-
-    return res.json({
-      recommendedCover:  Math.round(hlv),
-      gap:               Math.round(gap),
-      estimatedPremium:  Math.round(estimatedPremium),
-      warnings,
-      note: `HLV uses NPV of income growing at ${(incomeGrowth * 100).toFixed(1)}%/yr discounted at ${(discountRate * 100).toFixed(1)}%/yr over ${yearsLeft} years.`,
-    });
-  }
-
-  // ================================================================
-  // TAX — ISS-02: all values sourced from TAX_CONFIG[ACTIVE_AY]
-  // ================================================================
-  if (type === 'tax') {
-    const cfg         = TAX_CONFIG[ACTIVE_AY];
-    const grossIncome = amount;
-
-    const sec80c    = validateNumeric(req.body.sec80c, 0, cfg.old.deductionLimits.sec80c,    0);
-    const sec80d    = validateNumeric(req.body.sec80d, 0, cfg.old.deductionLimits.sec80d,    0);
-    const sec24b    = validateNumeric(req.body.sec24b, 0, cfg.old.deductionLimits.sec24b,    0);
-    const npsExtra  = validateNumeric(req.body.nps,    0, cfg.old.deductionLimits.nps80ccd1b, 0);
-    const nps80ccd2 = validateNumeric(req.body.nps_employer, 0, 800_000, 0);
-
-    // Old Regime
-    const totalDed = cfg.old.standardDeduction
-      + Math.min(sec80c,    cfg.old.deductionLimits.sec80c)
-      + Math.min(sec80d,    cfg.old.deductionLimits.sec80d)
-      + Math.min(sec24b,    cfg.old.deductionLimits.sec24b)
-      + Math.min(npsExtra,  cfg.old.deductionLimits.nps80ccd1b)
-      + Math.min(nps80ccd2, grossIncome * cfg.old.deductionLimits.nps80ccd2pct);
-
-    const oldTaxable = Math.max(grossIncome - totalDed, 0);
-    const oldTax     = calcRegimeTax(oldTaxable, grossIncome, cfg.old, cfg.cess);
-
-    // New Regime
-    const newTaxable = Math.max(
-      grossIncome
-      - cfg.new.standardDeduction
-      - Math.min(nps80ccd2, grossIncome * cfg.new.deductionLimits.nps80ccd2pct),
-      0
-    );
-    const newTax = calcRegimeTax(newTaxable, grossIncome, cfg.new, cfg.cess);
-
-    return res.json({
-      oldRegimeTax:    Math.round(oldTax),
-      newRegimeTax:    Math.round(newTax),
-      betterRegime:    oldTax <= newTax ? 'old' : 'new',
-      saving:          Math.round(Math.abs(oldTax - newTax)),
-      oldTaxable:      Math.round(oldTaxable),
-      newTaxable:      Math.round(newTaxable),
-      totalDeductions: Math.round(totalDed),
-      assessmentYear:  ACTIVE_AY,
-      taxNote:         `Slabs and rebate limits sourced from ${ACTIVE_AY} configuration. Update ACTIVE_AY after each Budget.`,
-    });
-  }
-
-  res.status(400).json({ error: 'Invalid calculation type' });
-}
-
-// ================================================================
-// ISS-02: UNIFIED TAX HELPER — accepts regime config from TAX_CONFIG
-// Replaces calcOldRegimeTax() and calcNewRegimeTax() with a single
-// config-driven function. Adding a new AY or changing slabs requires
-// only editing TAX_CONFIG — no code changes here.
-// ================================================================
-
-/**
- * Computes total tax (including surcharge and cess) for a given regime.
- *
- * @param {number} taxable   - Taxable income after deductions
- * @param {number} gross     - Gross income (used for surcharge bracket)
- * @param {object} regimeCfg - TAX_CONFIG[AY].old or .new
- * @param {number} cess      - Cess rate (e.g. 0.04 for 4%)
- */
-function calcRegimeTax(taxable, gross, regimeCfg, cess) {
-  // Step 1: Compute base tax from slabs
-  let tax  = 0;
-  let prev = 0;
-  for (const [upperBound, rate] of regimeCfg.slabs) {
-    if (taxable > prev) {
-      tax += Math.min(taxable - prev, upperBound - prev) * rate;
-      prev = upperBound;
-    }
-  }
-
-  // Step 2: 87A rebate — zero out tax if taxable income ≤ rebate ceiling
-  if (taxable <= regimeCfg.rebate87A) tax = 0;
-
-  // Step 3: Surcharge on pre-cess tax, based on gross income
-  // Surcharge array is checked from lowest gross threshold upward;
-  // the last matching entry (highest gross) wins.
-  let surchargeRate = 0;
-  for (const [ceiling, sRate] of [...regimeCfg.surcharge].reverse()) {
-    if (gross > ceiling) { surchargeRate = sRate; break; }
-  }
-  const surcharge = tax * surchargeRate;
-
-  // Step 4: Apply cess on (tax + surcharge)
-  return (tax + surcharge) * (1 + cess);
+  return res.status(400).json({ error: 'Invalid type' });
 }
