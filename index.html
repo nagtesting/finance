@@ -2480,16 +2480,19 @@ var _newsExpanded = false;
 
 // handleNewsClick: tab resolved server-side, passed as data attribute
 // No routing logic or keyword tables in client
-function handleNewsClick(event, tab, externalLink) {
+function handleNewsClick(event, key) {
   event.preventDefault();
   event.stopPropagation();
-  if (tab) {
+  // key is 'n0','n1' etc — resolved from window._newsArticles to avoid quoting issues
+  var art = window._newsArticles && window._newsArticles[key];
+  if (!art) return false;
+  if (art.tab) {
     var strip = document.getElementById('news-strip');
     if (strip && strip.classList.contains('news-expanded')) toggleNewsExpand();
-    navTo(tab);
+    navTo(art.tab);
     showNewsToast('📰 Opened calculator for you');
   } else {
-    window.open(externalLink, '_blank', 'noopener,noreferrer');
+    window.open(art.link, '_blank', 'noopener,noreferrer');
   }
   return false;
 }
@@ -2505,26 +2508,26 @@ function showNewsToast(msg) {
 function renderNews(articles) {
   if (!articles || !articles.length) { renderNewsError(); return; }
 
+  // Store articles in window lookup — avoids ALL quoting/escaping issues in onclick
+  window._newsArticles = {};
+  articles.slice(0, 8).forEach(function(a, idx) {
+    window._newsArticles['n' + idx] = { tab: a.tab || null, link: a.link };
+  });
+
   // ── Ticker (collapsed) ────────────────────────────────────
   var ticker = document.getElementById('news-ticker-inner');
   if (ticker) {
-    window._newsArticles = window._newsArticles || {};
     var pills = articles.slice(0, 8).map(function(a, idx) {
       var bStyle = 'background:' + (a.color||'#C9A84C') + '22;color:' + (a.color||'#C9A84C') + ';border:1px solid ' + (a.color||'#C9A84C') + '44;';
-      var title  = a.title.length > 90 ? a.title.slice(0,87)+'…' : a.title;
-      window._newsArticles['n'+idx] = { tab: a.tab || null, link: a.link };
-      if (a.tab) {
-        return '<a href="javascript:void(0);" onclick="handleNewsClick(event,'' + a.tab + '','' + a.link.replace(/'/g,"\'") + '');return false;" class="news-pill">' +
-          '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'') + '</span>' +
-          '<span style="color:var(--gold);font-size:8px;margin-right:2px;">&#8599;</span>' + title +
-        '</a><span class="news-pill-sep">&#9670;</span>';
-      } else {
-        return '<a href="' + a.link + '" target="_blank" rel="noopener noreferrer" class="news-pill">' +
-          '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'') + '</span>' + title +
-        '</a><span class="news-pill-sep">&#9670;</span>';
-      }
+      var title  = a.title.length > 90 ? a.title.slice(0,87)+'\u2026' : a.title;
+      // Use index-based lookup — no quoting of tab or URL needed at all
+      var onclick = 'handleNewsClick(event,\'n' + idx + '\');return false;';
+      return '<a href="javascript:void(0);" onclick="' + onclick + '" class="news-pill">' +
+        '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'') + '</span>' +
+        (a.tab ? '<span style="color:var(--gold);font-size:8px;margin-right:2px;">&#8599;</span>' : '') +
+        title + '</a><span class="news-pill-sep">&#9670;</span>';
     }).join('');
-    ticker.innerHTML = pills + pills;
+    ticker.innerHTML = pills + pills; // doubled for seamless scroll loop
   }
 
   // ── Expanded grid ─────────────────────────────────────────
@@ -2532,19 +2535,13 @@ function renderNews(articles) {
   if (grid) {
     grid.innerHTML = articles.slice(0, 8).map(function(a, idx) {
       var bStyle = 'background:' + (a.color||'#C9A84C') + '22;color:' + (a.color||'#C9A84C') + ';';
-      var title  = a.title.length > 100 ? a.title.slice(0,97)+'…' : a.title;
+      var title  = a.title.length > 100 ? a.title.slice(0,97)+'\u2026' : a.title;
       var badge  = a.tab ? '<span style="display:inline-block;margin-bottom:4px;font-size:8px;background:rgba(201,168,76,.12);color:var(--gold-light);border:1px solid rgba(201,168,76,.25);border-radius:100px;padding:1px 7px;">&#8599; Opens calculator</span><br>' : '';
-      if (a.tab) {
-        return '<a href="javascript:void(0);" onclick="handleNewsClick(event,'' + a.tab + '','' + a.link.replace(/'/g,"\'") + '');return false;" class="news-card">' +
-          '<span class="news-card-src" style="' + bStyle + '">' + (a.emoji||'📰') + ' ' + (a.source||'') + '</span>' +
-          badge + '<div class="news-card-title">' + title + '</div>' +
-          '<div class="news-card-time">' + (a.timeLabel||'') + '</div></a>';
-      } else {
-        return '<a href="' + a.link + '" target="_blank" rel="noopener noreferrer" class="news-card">' +
-          '<span class="news-card-src" style="' + bStyle + '">' + (a.emoji||'📰') + ' ' + (a.source||'') + '</span>' +
-          '<div class="news-card-title">' + title + '</div>' +
-          '<div class="news-card-time">' + (a.timeLabel||'') + '</div></a>';
-      }
+      var onclick = 'handleNewsClick(event,\'n' + idx + '\');return false;';
+      return '<a href="javascript:void(0);" onclick="' + onclick + '" class="news-card">' +
+        '<span class="news-card-src" style="' + bStyle + '">' + (a.emoji||'📰') + ' ' + (a.source||'') + '</span>' +
+        badge + '<div class="news-card-title">' + title + '</div>' +
+        '<div class="news-card-time">' + (a.timeLabel||'') + '</div></a>';
     }).join('');
   }
   var dot = document.getElementById('news-live-dot');
