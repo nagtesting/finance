@@ -1090,7 +1090,6 @@ const REGIONS = {
     sipRateHint:'Nifty 50 hist. avg ~13%',
     sipTaxLabel:'Tax Saved (80C/ELSS)',
     sipTaxNote:'Up to ₹1.5L/yr deduction',
-    sipTaxCalc:(p,r,t)=>Math.min(p*12,150000)*0.30,
     sipDesc:"Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.",
     sipEdu1:'₹5,000/month at 25 = ₹3.5 Cr by 60. At 35, same SIP = only ₹1.2 Cr. Start early.',
     sipEdu3:'Rupee Cost Averaging',
@@ -1101,7 +1100,6 @@ const REGIONS = {
     emiRateDefault:8.5, emiRateHint:'SBI Home Loan ~8.25% (2026)',
     emiTaxLabel:'Tax Benefit Sec 24(b)',
     emiTaxNote:'Up to ₹2L deduction/yr',
-    emiTaxCalc:(totalInt,t)=>Math.min(totalInt/t,200000)*0.30,
     emiDtiLabel:'EMI <40% of gross income',
     emiMonthlyLabel:'Monthly EMI',
     emiDesc:'Calculate EMI, total interest and Section 24(b) tax benefits on your home loan.',
@@ -1148,7 +1146,6 @@ const REGIONS = {
     sipRateHint:'S&P 500 hist. avg ~10.5%',
     sipTaxLabel:'401(k) Tax Saving (est.)',
     sipTaxNote:'22% bracket, $23,500 limit/yr',
-    sipTaxCalc:(p,r,t)=>Math.min(p*12,23500)*0.22,
     sipDesc:'Build long-term wealth through consistent 401(k) and index fund investing — the American way.',
     sipEdu1:'$500/month at 25 in S&P 500 index = ~$1.9M by 65 at 10.5%. Start in your employer 401(k) first for the match.',
     sipEdu3:'Dollar-Cost Averaging',
@@ -1158,7 +1155,6 @@ const REGIONS = {
     emiRateDefault:6.75, emiRateHint:'30yr Fixed Mortgage ~6.75% (2026)',
     emiTaxLabel:'Mortgage Interest Deduction',
     emiTaxNote:'Up to $750K principal deductible',
-    emiTaxCalc:(totalInt,t)=>Math.min(totalInt/t,25000)*0.22,
     emiDtiLabel:'DTI ratio should stay below 43%',
     emiMonthlyLabel:'Monthly Payment',
     emiDesc:'Calculate monthly payments, total interest and mortgage interest deduction on your home loan.',
@@ -1201,7 +1197,6 @@ const REGIONS = {
     sipRateHint:'Euro Stoxx 50 hist. avg ~8.5%',
     sipTaxLabel:'Tax-Advantaged Saving (est.)',
     sipTaxNote:'Varies by country',
-    sipTaxCalc:(p,r,t)=>p*12*0.15*0.25,
     sipDesc:'Build wealth through diversified Euro-denominated ETFs and tax-advantaged European savings vehicles.',
     sipEdu1:'€300/month at 25 invested in a pan-European ETF = ~€830K at 60 at 8.5% avg. Use your country\'s ISA equivalent first.',
     sipEdu3:'Euro Cost Averaging',
@@ -1211,7 +1206,6 @@ const REGIONS = {
     emiRateDefault:4.5, emiRateHint:'ECB rate ~3.65% · avg mortgage ~4.5% (2026)',
     emiTaxLabel:'Mortgage Interest Relief',
     emiTaxNote:'Varies by EU country',
-    emiTaxCalc:(totalInt,t)=>(totalInt/t)*0.15,
     emiDtiLabel:'DTI ratio below 40% recommended',
     emiMonthlyLabel:'Monthly Payment',
     emiDesc:'Calculate monthly repayments and total interest on your European mortgage.',
@@ -1254,7 +1248,6 @@ const REGIONS = {
     sipRateHint:'MSCI World hist. avg ~10%',
     sipTaxLabel:'Tax-Deferred Estimate',
     sipTaxNote:'Varies by jurisdiction',
-    sipTaxCalc:(p,r,t)=>p*12*0.20*0.15,
     sipDesc:'Build a globally diversified portfolio across world-class markets and asset classes.',
     sipEdu1:'Consistent global investing over 30+ years in low-cost MSCI World ETFs has historically outperformed most active strategies.',
     sipEdu3:'Global Diversification',
@@ -1264,7 +1257,6 @@ const REGIONS = {
     emiRateDefault:6.0, emiRateHint:'Global avg mortgage ~5–7% (2026)',
     emiTaxLabel:'Interest Deduction (est.)',
     emiTaxNote:'Varies by jurisdiction',
-    emiTaxCalc:(totalInt,t)=>(totalInt/t)*0.20,
     emiDtiLabel:'DTI ratio below 43% recommended',
     emiMonthlyLabel:'Monthly Payment',
     emiDesc:'Calculate loan repayments for any currency and region.',
@@ -1525,413 +1517,374 @@ function updateStaticLabels(){
 }
 
 // ================================================================
-// SIP CALCULATOR
+// API HELPER — all calc logic lives in /api/calculate
+// Without internet connection, results show "—" (by design)
 // ================================================================
+async function apiCalc(payload, onSuccess) {
+  try {
+    const res = await fetch('/api/calculate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({...payload, mode: currentMode}),
+    });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const d = await res.json();
+    if (d.error) throw new Error(d.error);
+    onSuccess(d);
+  } catch(e) {
+    console.warn('Calc offline:', e.message);
+    _showOfflineBanner();
+  }
+}
+let _offlineBannerShown = false;
+function _showOfflineBanner() {
+  if (_offlineBannerShown) return; _offlineBannerShown = true;
+  const t = document.createElement('div');
+  t.textContent = '⚠️ Calculations require an internet connection.';
+  t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#18181F;color:#f87171;border:1px solid rgba(239,68,68,.4);padding:10px 22px;border-radius:100px;font-size:12px;z-index:3000;font-family:DM Sans,sans-serif;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.6);';
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.transition='opacity .5s'; t.style.opacity='0'; setTimeout(()=>t.remove(),500); _offlineBannerShown=false; }, 4000);
+}
+
+// ── SIP ──────────────────────────────────────────────────────
 function calcSIP(){
-  const p=+document.getElementById('sip_p').value;
-  const r=+document.getElementById('sip_r').value;
-  const t=+document.getElementById('sip_t').value;
+  const p=+document.getElementById('sip_p').value, r=+document.getElementById('sip_r').value, t=+document.getElementById('sip_t').value;
   document.getElementById('v_sip_p').textContent=fmtSym(p);
   document.getElementById('v_sip_r').textContent=r.toFixed(1);
   document.getElementById('v_sip_t').textContent=t;
-  const months=t*12,mr=r/12/100;
-  const invested=p*months;
-  const total=p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
-  const earnings=total-invested,mult=total/invested,gainPct=(earnings/invested)*100;
-  const tax=R().sipTaxCalc(p,r,t);
-  document.getElementById('sip_total').textContent=fmtSym(total);
-  document.getElementById('sip_invested').textContent=fmtSym(invested);
-  document.getElementById('sip_gains').textContent=fmtSym(earnings);
-  document.getElementById('sip_xbadge').textContent=mult.toFixed(1)+'x';
-  document.getElementById('sip_gain_pct').textContent=gainPct.toFixed(0)+'% gains';
-  document.getElementById('sip_inv_note').textContent=months+' months';
-  document.getElementById('sip_tax').textContent=fmtSym(tax)+'/yr';
-  document.getElementById('sip_return_pct_center').textContent=((earnings/total)*100).toFixed(0)+'%';
-  destroyChart(sipChart);
-  sipChart=new Chart(document.getElementById('sipChart').getContext('2d'),{
-    type:'doughnut',data:{labels:['Invested','Earnings'],datasets:[{data:[Math.round(invested),Math.round(earnings)],backgroundColor:['#334155','#C9A84C'],borderWidth:0,hoverOffset:4}]},
-    options:{cutout:'72%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtSym(c.raw)}}}}
+  apiCalc({type:'sip',p,r,t}, d=>{
+    document.getElementById('sip_total').textContent=fmtSym(d.total);
+    document.getElementById('sip_invested').textContent=fmtSym(d.invested);
+    document.getElementById('sip_gains').textContent=fmtSym(d.earnings);
+    document.getElementById('sip_xbadge').textContent=d.mult+'x';
+    document.getElementById('sip_gain_pct').textContent=d.gainPct+'% gains';
+    document.getElementById('sip_inv_note').textContent=d.months+' months';
+    document.getElementById('sip_tax').textContent=fmtSym(d.tax)+'/yr';
+    document.getElementById('sip_return_pct_center').textContent=d.returnPct+'%';
+    destroyChart(sipChart);
+    sipChart=new Chart(document.getElementById('sipChart').getContext('2d'),{
+      type:'doughnut',data:{labels:['Invested','Earnings'],datasets:[{data:[d.invested,d.earnings],backgroundColor:['#334155','#C9A84C'],borderWidth:0,hoverOffset:4}]},
+      options:{cutout:'72%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtSym(c.raw)}}}}
+    });
+    let rows='';
+    d.yearlyData.forEach(y=>{
+      const prog=(y.value/d.total)*100;
+      rows+=`<tr><td><span class="badge-gold">${y.year}</span></td><td class="mono">${fmtSym(y.invested)}</td><td class="mono" style="color:var(--gold-light);">${fmtSym(y.value)}</td><td class="mono" style="color:#4ade80;">${fmtSym(y.gains)}</td><td><span class="badge-${parseFloat(y.gainPct)>0?'green':'red'}">${parseFloat(y.gainPct).toFixed(1)}%</span></td><td style="min-width:80px;"><div class="progress-bar"><div class="progress-fill" style="width:${prog}%;"></div></div></td></tr>`;
+    });
+    document.getElementById('sip_tbody').innerHTML=rows;
+    const lbls=currentMode==='india'?['₹2L','₹5L','₹10L','₹50L','₹1Cr','₹5Cr']:['5K','10K','50K','100K','500K','1M'].map(l=>sym()+l);
+    let mhtml='';
+    (d.milestones||[]).forEach((m,i)=>{
+      mhtml+=`<div class="milestone"><div class="milestone-dot"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${lbls[i]||fmtSym(m.target)}</div><div style="color:var(--muted);font-size:10px;">Year ${m.year}</div></div></div>`;
+    });
+    document.getElementById('sip_milestones').innerHTML=mhtml||'<div style="color:var(--muted);font-size:10px;">Increase tenure to see milestones.</div>';
   });
-  const mr2=mr;
-  let rows='';
-  for(let y=1;y<=t;y++){
-    const m=y*12,iy=p*m;
-    const vy=p*(((Math.pow(1+mr2,m)-1)/mr2)*(1+mr2));
-    const gy=vy-iy,gp=gy/iy*100,prog=(vy/total)*100;
-    rows+=`<tr><td><span class="badge-gold">${y}</span></td><td class="mono">${fmtSym(iy)}</td><td class="mono" style="color:var(--gold-light);">${fmtSym(vy)}</td><td class="mono" style="color:#4ade80;">${fmtSym(gy)}</td><td><span class="badge-${gp>0?'green':'red'}">${gp.toFixed(1)}%</span></td><td style="min-width:80px;"><div class="progress-bar"><div class="progress-fill" style="width:${prog}%;"></div></div></td></tr>`;
-  }
-  document.getElementById('sip_tbody').innerHTML=rows;
-  // Milestones — region-aware
-  const targets=currentMode==='india'
-    ?[200000,500000,1000000,5000000,10000000,50000000]
-    :[5000,10000,50000,100000,500000,1000000];
-  const lbls=currentMode==='india'
-    ?['₹2L','₹5L','₹10L','₹50L','₹1Cr','₹5Cr']
-    :['5K','10K','50K','100K','500K','1M'].map(l=>sym()+l);
-  let mhtml='';
-  targets.forEach((tgt,i)=>{
-    if(tgt>total) return;
-    let yr=0;
-    for(let m=1;m<=t*12;m++){const v=p*(((Math.pow(1+mr2,m)-1)/mr2)*(1+mr2));if(v>=tgt){yr=Math.ceil(m/12);break;}}
-    if(yr>0) mhtml+=`<div class="milestone"><div class="milestone-dot"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${lbls[i]}</div><div style="color:var(--muted);font-size:10px;">Year ${yr}</div></div></div>`;
-  });
-  document.getElementById('sip_milestones').innerHTML=mhtml||'<div style="color:var(--muted);font-size:10px;">Increase tenure to see milestones.</div>';
 }
 
-// ================================================================
-// EMI CALCULATOR
-// ================================================================
+// ── EMI ──────────────────────────────────────────────────────
 function calcEMI(){
-  const p=+document.getElementById('emi_p').value;
-  const r=+document.getElementById('emi_r').value;
-  const t=+document.getElementById('emi_t').value;
+  const p=+document.getElementById('emi_p').value, r=+document.getElementById('emi_r').value, t=+document.getElementById('emi_t').value;
   document.getElementById('v_emi_p').textContent=fmtSym(p);
   document.getElementById('v_emi_r').textContent=r.toFixed(2);
   document.getElementById('v_emi_t').textContent=t;
-  const mr=r/12/100,months=t*12;
-  const emi=(p*mr*Math.pow(1+mr,months))/(Math.pow(1+mr,months)-1);
-  const totalPaid=emi*months,totalInt=totalPaid-p;
-  const taxSaved=R().emiTaxCalc(totalInt,t);
-  document.getElementById('emi_monthly').textContent=fmtSym(emi);
-  document.getElementById('emi_interest').textContent=fmtSym(totalInt);
-  document.getElementById('emi_total').textContent=fmtSym(totalPaid);
-  document.getElementById('emi_tax_saved').textContent=fmtSym(taxSaved)+'/yr';
-  document.getElementById('emi_income_req').textContent=fmtSym(emi/0.4)+'/mo';
-  const pp=(p/totalPaid)*100,ip=(totalInt/totalPaid)*100;
-  document.getElementById('emi_bar_p').style.width=pp+'%';
-  document.getElementById('emi_bar_i').style.width=ip+'%';
-  document.getElementById('emi_pct_p').textContent=pp.toFixed(1)+'%';
-  document.getElementById('emi_pct_i').textContent=ip.toFixed(1)+'%';
-  document.getElementById('emi_interest_pct_center').textContent=ip.toFixed(0)+'%';
-  destroyChart(emiChart);
-  emiChart=new Chart(document.getElementById('emiChart').getContext('2d'),{
-    type:'doughnut',data:{labels:['Principal','Interest'],datasets:[{data:[Math.round(p),Math.round(totalInt)],backgroundColor:['#4f46e5','#ef4444'],borderWidth:0}]},
-    options:{cutout:'72%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtSym(c.raw)}}}}
+  apiCalc({type:'emi',p,r,t}, d=>{
+    document.getElementById('emi_monthly').textContent=fmtSym(d.emi);
+    document.getElementById('emi_interest').textContent=fmtSym(d.totalInt);
+    document.getElementById('emi_total').textContent=fmtSym(d.totalPaid);
+    document.getElementById('emi_tax_saved').textContent=fmtSym(d.taxSaved)+'/yr';
+    document.getElementById('emi_income_req').textContent=fmtSym(d.incomeReq)+'/mo';
+    document.getElementById('emi_bar_p').style.width=d.ppPct+'%';
+    document.getElementById('emi_bar_i').style.width=d.ipPct+'%';
+    document.getElementById('emi_pct_p').textContent=d.ppPct+'%';
+    document.getElementById('emi_pct_i').textContent=d.ipPct+'%';
+    document.getElementById('emi_interest_pct_center').textContent=Math.round(parseFloat(d.ipPct))+'%';
+    destroyChart(emiChart);
+    emiChart=new Chart(document.getElementById('emiChart').getContext('2d'),{
+      type:'doughnut',data:{labels:['Principal','Interest'],datasets:[{data:[Math.round(p),d.totalInt],backgroundColor:['#4f46e5','#ef4444'],borderWidth:0}]},
+      options:{cutout:'72%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtSym(c.raw)}}}}
+    });
+    let rows='';
+    d.schedule.forEach(y=>{
+      rows+=`<tr><td><span class="badge-gold">${y.year}</span></td><td class="mono">${fmtSym(y.open)}</td><td class="mono" style="color:#818cf8;">${fmtSym(y.principal)}</td><td class="mono" style="color:#f87171;">${fmtSym(y.interest)}</td><td class="mono" style="color:var(--muted);">${fmtSym(y.close)}</td></tr>`;
+    });
+    document.getElementById('emi_tbody').innerHTML=rows;
   });
-  let rows='',balance=p;
-  for(let y=1;y<=t;y++){
-    const ob=balance;let yP=0,yI=0;
-    for(let m=0;m<12&&balance>0;m++){const i=balance*mr,pr=Math.min(emi-i,balance);yP+=pr;yI+=i;balance-=pr;}
-    const cb=Math.max(balance,0);
-    rows+=`<tr><td><span class="badge-gold">${y}</span></td><td class="mono">${fmtSym(ob)}</td><td class="mono" style="color:#818cf8;">${fmtSym(yP)}</td><td class="mono" style="color:#f87171;">${fmtSym(yI)}</td><td class="mono" style="color:var(--muted);">${fmtSym(cb)}</td></tr>`;
-  }
-  document.getElementById('emi_tbody').innerHTML=rows;
 }
 
-// ================================================================
-// FIRE CALCULATOR
-// ================================================================
+// ── FIRE ─────────────────────────────────────────────────────
 function calcFIRE(){
-  const age=+document.getElementById('fire_age').value;
-  const exp=+document.getElementById('fire_exp').value;
-  const saved=+document.getElementById('fire_saved').value;
-  const inv=+document.getElementById('fire_inv').value;
-  const ret=+document.getElementById('fire_ret').value/100;
-  const inf=+document.getElementById('fire_inf').value/100;
+  const age=+document.getElementById('fire_age').value, exp=+document.getElementById('fire_exp').value,
+        saved=+document.getElementById('fire_saved').value, inv=+document.getElementById('fire_inv').value,
+        ret=+document.getElementById('fire_ret').value, inf=+document.getElementById('fire_inf').value;
   document.getElementById('v_fire_age').textContent=age;
   document.getElementById('v_fire_exp').textContent=fmtSym(exp);
   document.getElementById('v_fire_saved').textContent=fmtSym(saved);
   document.getElementById('v_fire_inv').textContent=fmtSym(inv);
-  document.getElementById('v_fire_ret').textContent=(ret*100).toFixed(1);
-  document.getElementById('v_fire_inf').textContent=(inf*100).toFixed(1);
-  const fireCorpus=exp*12*25,swr=fireCorpus*0.04/12;
-  document.getElementById('fire_corpus').textContent=fmtSym(fireCorpus);
-  document.getElementById('fire_swr').textContent=fmtSym(swr);
-  const mr=ret/12;let corpus=saved,years=0;
-  for(let m=0;m<600;m++){corpus=corpus*(1+mr)+inv;if(corpus>=fireCorpus){years=Math.ceil(m/12);break;}}
-  document.getElementById('fire_years').textContent=years>0?years+' yrs':'Already FIRE! 🎉';
-  document.getElementById('fire_year_label').textContent=years>0?'Retire at age '+(age+years):'Congrats!';
-  const prog=Math.min((saved/fireCorpus)*100,100);
-  document.getElementById('fire_progress_pct').textContent=prog.toFixed(1)+'%';
-  document.getElementById('fire_progress_bar').style.width=prog+'%';
-  const tL=R().fireLeanMax,tH=R().fireFatMin;
-  const [ft,fd]=exp<tL?['🌿 Lean FIRE','Minimal lifestyle, maximum speed to independence.']:exp>tH?['🏆 Fat FIRE','Luxury retirement — needs a large corpus.']:['⚖️ Regular FIRE','Balanced approach — part-time optional.'];
-  document.getElementById('fire_type').textContent=ft;
-  document.getElementById('fire_type_desc').textContent=fd;
-  let mhtml='';
-  [25,50,75,100].forEach(pc=>{
-    const tgt=fireCorpus*pc/100;
-    let yr=0,c=saved;
-    for(let m=0;m<600;m++){c=c*(1+mr)+inv;if(c>=tgt){yr=Math.ceil(m/12);break;}}
-    const reached=saved>=tgt;
-    mhtml+=`<div class="milestone"><div class="milestone-dot" style="background:${reached?'#4ade80':'var(--gold)'};box-shadow:0 0 7px ${reached?'rgba(34,197,94,.5)':'rgba(201,168,76,.4)'};"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${pc}% — ${fmtSym(tgt)}</div><div style="color:var(--muted);font-size:10px;">${yr>0?'Year '+yr+' (Age '+(age+yr)+')':(reached?'✅ Done':'—')}</div></div></div>`;
+  document.getElementById('v_fire_ret').textContent=ret;
+  document.getElementById('v_fire_inf').textContent=inf;
+  apiCalc({type:'fire',age,exp,saved,inv,ret,inf}, d=>{
+    document.getElementById('fire_corpus').textContent=fmtSym(d.fireCorpus);
+    document.getElementById('fire_swr').textContent=fmtSym(d.swr);
+    document.getElementById('fire_years').textContent=d.years?d.years+' yrs':'Already FIRE! 🎉';
+    document.getElementById('fire_year_label').textContent=d.years?'Retire at age '+d.retireAge:'Congrats!';
+    document.getElementById('fire_progress_pct').textContent=d.prog+'%';
+    document.getElementById('fire_progress_bar').style.width=d.prog+'%';
+    document.getElementById('fire_type').textContent=d.fireType;
+    document.getElementById('fire_type_desc').textContent=d.fireTypeDesc;
+    let mhtml='';
+    d.milestones.forEach(m=>{
+      mhtml+=`<div class="milestone"><div class="milestone-dot" style="background:${m.reached?'#4ade80':'var(--gold)'};box-shadow:0 0 7px ${m.reached?'rgba(34,197,94,.5)':'rgba(201,168,76,.4)'};"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${m.pc}% — ${fmtSym(m.target)}</div><div style="color:var(--muted);font-size:10px;">${m.year>0?'Year '+m.year+' (Age '+(age+m.year)+')':(m.reached?'✅ Done':'—')}</div></div></div>`;
+    });
+    document.getElementById('fire_milestones').innerHTML=mhtml;
   });
-  document.getElementById('fire_milestones').innerHTML=mhtml;
 }
 
-// ================================================================
-// ROI CALCULATOR
-// ================================================================
+// ── ROI ──────────────────────────────────────────────────────
 function calcROI(){
-  const p=+document.getElementById('roi_p').value;
-  const r=+document.getElementById('roi_r').value;
-  const t=+document.getElementById('roi_t').value;
+  const p=+document.getElementById('roi_p').value, r=+document.getElementById('roi_r').value, t=+document.getElementById('roi_t').value;
   document.getElementById('v_roi_p').textContent=fmtSym(p);
   document.getElementById('v_roi_r').textContent=r.toFixed(1);
   document.getElementById('v_roi_t').textContent=t;
-  const final=p*Math.pow(1+r/100,t),returns=final-p;
-  document.getElementById('roi_final').textContent=fmtSym(final);
-  document.getElementById('roi_returns').textContent=fmtSym(returns);
-  document.getElementById('roi_mult').textContent=(final/p).toFixed(1)+'x';
-  destroyChart(roiChart);
-  const labels=[],vals=[];
-  for(let y=0;y<=t;y++){labels.push('Y'+y);vals.push(p*Math.pow(1+r/100,y));}
-  roiChart=new Chart(document.getElementById('roiChart').getContext('2d'),{
-    type:'line',data:{labels,datasets:[{data:vals,borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,.08)',fill:true,tension:.4,borderWidth:2,pointRadius:0,pointHoverRadius:4}]},
-    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtSym(c.raw)}}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9090A8',font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9090A8',font:{size:9},callback:v=>fmtSym(v)}}}}
+  apiCalc({type:'roi',p,r,t}, d=>{
+    document.getElementById('roi_final').textContent=fmtSym(d.final);
+    document.getElementById('roi_returns').textContent=fmtSym(d.returns);
+    document.getElementById('roi_mult').textContent=d.mult+'x';
+    destroyChart(roiChart);
+    roiChart=new Chart(document.getElementById('roiChart').getContext('2d'),{
+      type:'line',data:{labels:d.curve.map(c=>'Y'+c.year),datasets:[{data:d.curve.map(c=>c.value),borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,.08)',fill:true,tension:.4,borderWidth:2,pointRadius:0,pointHoverRadius:4}]},
+      options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fmtSym(c.raw)}}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9090A8',font:{size:9}}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9090A8',font:{size:9},callback:v=>fmtSym(v)}}}}
+    });
+    document.getElementById('asset_compare').innerHTML=d.assetCompare.map(a=>
+      `<div class="compare-row"><span class="compare-label">${a.name}</span><div class="compare-bar"><div class="compare-fill" style="width:${a.widthPct}%;background:${a.color};"></div></div><span class="compare-val">${fmtSym(a.value)}</span><span style="width:36px;text-align:right;font-size:10px;color:${a.color};">${a.rate}%</span></div>`
+    ).join('');
   });
-  const assets=R().roiAssets;
-  const base=R().roiBase,yrs=20;
-  const maxV=Math.max(...assets.map(a=>base*Math.pow(1+a.rate/100,yrs)));
-  document.getElementById('asset_compare').innerHTML=assets.map(a=>{
-    const v=base*Math.pow(1+a.rate/100,yrs),w=(v/maxV)*100;
-    return`<div class="compare-row"><span class="compare-label">${a.name}</span><div class="compare-bar"><div class="compare-fill" style="width:${w}%;background:${a.color};"></div></div><span class="compare-val">${fmtSym(v)}</span><span style="width:36px;text-align:right;font-size:10px;color:${a.color};">${a.rate}%</span></div>`;
-  }).join('');
 }
 
-// ================================================================
-// INSURANCE CALCULATOR
-// ================================================================
+// ── INSURANCE ─────────────────────────────────────────────────
 function calcInsurance(){
-  const inc=+document.getElementById('ins_inc').value;
-  const age=+document.getElementById('ins_age').value;
-  const ret=+document.getElementById('ins_ret').value;
-  const liab=+document.getElementById('ins_liab').value;
-  const exist=+document.getElementById('ins_exist').value;
+  const inc=+document.getElementById('ins_inc').value, age=+document.getElementById('ins_age').value,
+        ret=+document.getElementById('ins_ret').value, liab=+document.getElementById('ins_liab').value,
+        exist=+document.getElementById('ins_exist').value;
   document.getElementById('v_ins_inc').textContent=fmtSym(inc);
   document.getElementById('v_ins_age').textContent=age;
   document.getElementById('v_ins_ret').textContent=ret;
   document.getElementById('v_ins_liab').textContent=fmtSym(liab);
   document.getElementById('v_ins_exist').textContent=fmtSym(exist);
-  const hlv=(inc*(ret-age))+liab,gap=Math.max(hlv-exist,0);
-  const pr=R().insPremiumRate(age);
-  document.getElementById('ins_cover').textContent=fmtSym(hlv);
-  document.getElementById('ins_gap').textContent=fmtSym(gap);
-  document.getElementById('ins_premium').textContent=fmtSym(gap*pr)+'/yr approx';
+  apiCalc({type:'insurance',inc,age,ret,liab,exist}, d=>{
+    document.getElementById('ins_cover').textContent=fmtSym(d.cover);
+    document.getElementById('ins_gap').textContent=fmtSym(d.gap);
+    document.getElementById('ins_premium').textContent=fmtSym(d.premium)+'/yr approx';
+  });
 }
 
-// ================================================================
-// TAX — fully localized per region
-// ================================================================
+// ── TAX ───────────────────────────────────────────────────────
 function renderTax(){
   const c=document.getElementById('tax-content');
-  if(currentMode==='india') c.innerHTML=buildIndiaTax();
+  if(currentMode==='india'){c.innerHTML=buildIndiaTax();wireIndiaTax();}
   else if(currentMode==='usa') c.innerHTML=buildUSATax();
   else if(currentMode==='europe') c.innerHTML=buildEuropeTax();
   else c.innerHTML=buildWorldTax();
-  if(currentMode==='india') wireIndiaTax();
 }
 
 function buildIndiaTax(){
-  return`
-  <div class="grid-2-1" style="margin-bottom:20px;">
-    <div class="card">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">INCOME & DEDUCTIONS (FY2025-26)</div>
-      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Gross Annual Income (CTC)</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_inc">₹18L</span></div><input type="range" id="tax_inc" min="500000" max="10000000" step="50000" value="1800000"></div>
-      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80C (ELSS, PPF, LIC…)</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_80c">₹1.5L</span></div><input type="range" id="tax_80c" min="0" max="150000" step="5000" value="150000"></div>
-      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80D Health Insurance</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_80d">₹25K</span></div><input type="range" id="tax_80d" min="0" max="75000" step="5000" value="25000"></div>
-      <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">24(b) Home Loan Interest</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_hl">₹0</span></div><input type="range" id="tax_hl" min="0" max="200000" step="5000" value="0"></div>
-      <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80CCD(1B) NPS Extra</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_nps">₹50K</span></div><input type="range" id="tax_nps" min="0" max="50000" step="5000" value="50000"></div>
+  return`<div class="grid-2-1" style="margin-bottom:20px;"><div class="card">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">INCOME &amp; DEDUCTIONS (FY2025-26)</div>
+    <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Gross Annual Income (CTC)</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_inc">₹18L</span></div><input type="range" id="tax_inc" min="500000" max="10000000" step="50000" value="1800000"></div>
+    <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80C (ELSS, PPF, LIC…)</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_80c">₹1.5L</span></div><input type="range" id="tax_80c" min="0" max="150000" step="5000" value="150000"></div>
+    <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80D Health Insurance</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_80d">₹25K</span></div><input type="range" id="tax_80d" min="0" max="75000" step="5000" value="25000"></div>
+    <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">24(b) Home Loan Interest</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_hl">₹0</span></div><input type="range" id="tax_hl" min="0" max="200000" step="5000" value="0"></div>
+    <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">80CCD(1B) NPS Extra</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_tax_nps">₹50K</span></div><input type="range" id="tax_nps" min="0" max="50000" step="5000" value="50000"></div>
+  </div>
+  <div class="card"><div class="section-eyebrow" style="margin-bottom:14px;">Regime Comparison</div>
+    <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">Old Regime Tax</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;color:var(--gold-light);" id="tax_old">—</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_old_eff">Eff: —</div></div>
+    <div class="gold-line" style="margin:12px 0;"></div>
+    <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">New Regime Tax</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;" id="tax_new">—</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_new_eff">Eff: —</div></div>
+    <div class="gold-line" style="margin:12px 0;"></div>
+    <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:12px;">
+      <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Best Regime</div>
+      <div style="font-size:1rem;font-weight:800;color:#4ade80;" id="tax_rec">—</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_saving">—</div>
     </div>
-    <div class="card">
-      <div class="section-eyebrow" style="margin-bottom:14px;">Regime Comparison</div>
-      <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">Old Regime Tax</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;color:var(--gold-light);" id="tax_old">₹0</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_old_eff">Eff: 0%</div></div>
-      <div class="gold-line" style="margin:12px 0;"></div>
-      <div style="margin-bottom:16px;"><div style="font-size:11px;color:var(--muted);margin-bottom:5px;">New Regime Tax</div><div style="font-size:1.8rem;font-weight:800;font-family:'Playfair Display',serif;" id="tax_new">₹0</div><div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_new_eff">Eff: 0%</div></div>
-      <div class="gold-line" style="margin:12px 0;"></div>
-      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:12px;">
-        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Best Regime</div>
-        <div style="font-size:1rem;font-weight:800;color:#4ade80;" id="tax_rec">—</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px;" id="tax_saving">You save ₹0</div>
-      </div>
-    </div>
-  </div>`;
+  </div></div>`;
 }
 function wireIndiaTax(){
   ['tax_inc','tax_80c','tax_80d','tax_hl','tax_nps'].forEach(id=>{
     const el=document.getElementById(id);
-    if(el){el.removeEventListener('input',calcIndiaTax);el.addEventListener('input',calcIndiaTax);}
+    if(el){el.removeEventListener('input',_calcIndiaTax);el.addEventListener('input',_calcIndiaTax);}
   });
-  calcIndiaTax();
+  _calcIndiaTax();
 }
-function calcIndiaTax(){
-  const inc=+document.getElementById('tax_inc').value;
-  const c80=+document.getElementById('tax_80c').value;
-  const c80d=+document.getElementById('tax_80d').value;
-  const hl=+document.getElementById('tax_hl').value;
-  const nps=+document.getElementById('tax_nps').value;
+function _calcIndiaTax(){
+  const inc=+document.getElementById('tax_inc').value, c80=+document.getElementById('tax_80c').value,
+        c80d=+document.getElementById('tax_80d').value, hl=+document.getElementById('tax_hl').value,
+        nps=+document.getElementById('tax_nps').value;
   document.getElementById('v_tax_inc').textContent=fmtK(inc,'₹');
   document.getElementById('v_tax_80c').textContent=fmtK(c80,'₹');
   document.getElementById('v_tax_80d').textContent=fmtK(c80d,'₹');
   document.getElementById('v_tax_hl').textContent=fmtK(hl,'₹');
   document.getElementById('v_tax_nps').textContent=fmtK(nps,'₹');
-  const oldTaxable=Math.max(inc-50000-Math.min(c80,150000)-Math.min(c80d,75000)-Math.min(hl,200000)-Math.min(nps,50000),0);
-  const oldTax=calcOldTax(oldTaxable);
-  const newTax=calcNewTax(Math.max(inc-75000,0));
-  document.getElementById('tax_old').textContent=fmtK(oldTax,'₹');
-  document.getElementById('tax_old_eff').textContent='Eff: '+(oldTax/inc*100).toFixed(1)+'%';
-  document.getElementById('tax_new').textContent=fmtK(newTax,'₹');
-  document.getElementById('tax_new_eff').textContent='Eff: '+(newTax/inc*100).toFixed(1)+'%';
-  const better=oldTax<=newTax?'Old Regime':'New Regime';
-  document.getElementById('tax_rec').textContent='✅ '+better+' saves more';
-  document.getElementById('tax_saving').textContent='Annual saving: '+fmtK(Math.abs(oldTax-newTax),'₹');
-}
-function calcOldTax(i){let t=0;if(i>1000000)t=112500+(i-1000000)*0.30;else if(i>500000)t=12500+(i-500000)*0.20;else if(i>250000)t=(i-250000)*0.05;if(i<=500000)t=0;return t*1.04;}
-function calcNewTax(i){let t=0,p=0;for(const[l,r]of[[300000,0],[600000,.05],[900000,.10],[1200000,.15],[1500000,.20],[Infinity,.30]]){if(i>p){t+=Math.min(i-p,l-p)*r;p=l;}}if(i<=700000)t=0;return t*1.04;}
-
-function buildUSATax(){
-  return`
-  <div class="grid-2" style="margin-bottom:20px;">
-    <div class="card">
-      <div style="font-size:22px;margin-bottom:10px;">📊</div>
-      <h4 style="font-weight:700;margin-bottom:10px;font-size:14px;">Federal Tax Brackets 2026</h4>
-      <table><thead><tr><th>Rate</th><th>Single</th><th>Married Filing Jointly</th></tr></thead>
-      <tbody>
-        <tr><td><span class="badge-gold">10%</span></td><td>$0 – $11,925</td><td>$0 – $23,850</td></tr>
-        <tr><td><span class="badge-gold">12%</span></td><td>$11,925 – $48,475</td><td>$23,850 – $96,950</td></tr>
-        <tr><td><span class="badge-gold">22%</span></td><td>$48,475 – $103,350</td><td>$96,950 – $206,700</td></tr>
-        <tr><td><span class="badge-gold">24%</span></td><td>$103,350 – $197,300</td><td>$206,700 – $394,600</td></tr>
-        <tr><td><span class="badge-gold">32%</span></td><td>$197,300 – $250,525</td><td>$394,600 – $501,050</td></tr>
-        <tr><td><span class="badge-gold">35%</span></td><td>$250,525 – $626,350</td><td>$501,050 – $751,600</td></tr>
-        <tr><td><span class="badge-red">37%</span></td><td>$626,350+</td><td>$751,600+</td></tr>
-      </tbody></table>
-    </div>
-    <div class="card">
-      <div style="font-size:22px;margin-bottom:10px;">🏦</div>
-      <h4 style="font-weight:700;margin-bottom:10px;font-size:14px;">Key Deductions & Limits (2026)</h4>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">Standard Deduction (Single)</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$15,000</span></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">Standard Deduction (MFJ)</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$30,000</span></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">401(k) Contribution Limit</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$23,500</span></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">IRA Contribution Limit</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$7,000</span></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">HSA Limit (Self)</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$4,300</span></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">LTCG Rate (income dependent)</span><span class="mono" style="font-size:12px;color:var(--gold-light);">0% / 15% / 20%</span></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="font-size:12px;color:var(--muted);">Estate Tax Exemption</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$13.99M</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="grid-2">
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">💼</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Retirement Accounts</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">401(k): pre-tax contributions reduce taxable income. Employer match = free money — always contribute enough to get the full match first. Roth IRA: after-tax but grows and withdraws tax-free. Mega Backdoor Roth available at some employers up to $69,000 total.</p></div>
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">📈</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">SALT & Itemized Deductions</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">State And Local Tax (SALT) deduction capped at $10,000. Mortgage interest deductible on up to $750K of principal. Medical expenses >7.5% of AGI deductible. Consider whether itemizing beats the standard deduction for your situation.</p></div>
-  </div>`;
-}
-
-function buildEuropeTax(){
-  return`
-  <div class="grid-2" style="margin-bottom:20px;">
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇩🇪</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Germany</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 0%–45%. Basic allowance: €11,784. Solidarity surcharge 5.5% on high earners. Capital gains: 25% flat (Abgeltungsteuer) + solidarity. Church tax optional 8–9%. Sparerpauschbetrag: €1,000 capital gains allowance.</p></div>
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇫🇷</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">France</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">11%–45% income tax + social charges (17.2% on investment income). PFU (Prélèvement Forfaitaire Unique): 30% flat tax on investments. Assurance Vie: tax advantages after 8 years. PEA: tax-free EU equity gains after 5 years (€150K limit).</p></div>
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇬🇧</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">United Kingdom</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Personal allowance £12,570 (2025/26). Basic 20% (£12,570–£50,270). Higher 40% (£50,270–£125,140). Additional 45% (£125,140+). CGT: 18%/24% (residential), 10%/20% (other assets). ISA: £20,000/yr tax-free. SIPP pension: 25% tax-free lump sum.</p></div>
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇳🇱</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Netherlands</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Box 1 (income): up to 49.5%. Box 2 (substantial interest): 24.5%/33%. Box 3 (savings/investments): notional yield tax — currently under reform. Hypotheekrenteaftrek: mortgage interest deductible at max 36.97%. No wealth tax on pension assets.</p></div>
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇪🇸</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Spain</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Income tax 19%–47% (varies by region). Savings income: 19%–28% flat. Plan de Pensiones: deductible up to €1,500 individual + €8,500 employer. Beckham Law: 24% flat rate for qualifying expats. Non-resident: 19% (EU) or 24% (non-EU).</p></div>
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇮🇹</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Italy</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">IRPEF: 23%–43% on income. Capital gains: 26% flat. PIR (Piano Individuale di Risparmio): tax-free gains after 5yr if 70% in Italian assets. Flat tax for new residents: €100K/yr on foreign income. Regional/municipal surtaxes apply.</p></div>
-  </div>`;
-}
-
-function buildWorldTax(){
-  return`
-  <div class="grid-2" style="margin-bottom:20px;">
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇸🇬</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Singapore — Low-Tax Hub</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 0%–24%. No capital gains tax. No dividend tax. CPF: 20% employee + 17% employer (up to age 55). SRS: Supplementary Retirement Scheme for tax deferral. Very favourable for global wealth accumulation.</p></div>
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇦🇺</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Australia</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 19%–45% + 2% Medicare levy. Super: 11.5% employer contributions (rising to 12%). Concessional cap: A$30K/yr. Non-concessional: A$120K/yr. CGT discount: 50% for assets held >12 months. HECS-HELP repayments income-contingent.</p></div>
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇨🇦</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Canada</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Federal 15%–33% + provincial tax (5%–25%). RRSP: deductible contributions, tax-deferred growth (18% of income, max C$31,560). TFSA: C$7,000/yr completely tax-free. Capital gains inclusion rate raised to 2/3 in 2024 for gains over C$250K.</p></div>
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇦🇪</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">UAE — Zero Tax</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">No personal income tax. No capital gains tax. Corporate tax: 9% above AED 375K profit (from 2023). VAT: 5%. No withholding tax on dividends. Popular for global entrepreneurs — requires genuine residency and economic substance.</p></div>
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇯🇵</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Japan</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Income tax 5%–45% + 10% inhabitant tax. NISA: ¥3.6M/yr tax-free growth (lifetime ¥18M). iDeCo: pension with deductible contributions. Exit tax on assets >¥100M when leaving Japan. Complex for foreigners.</p></div>
-    <div class="card"><div style="font-size:22px;margin-bottom:10px;">🇧🇷</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Brazil</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">IRPF: 7.5%–27.5% on income. Dividends currently exempt (reform pending). Capital gains: 15%–22.5%. PGBL/VGBL: pension products with deduction up to 12% of gross income. High social security contributions (INSS up to 14%).</p></div>
-  </div>`;
-}
-
-// ================================================================
-// EDUCATION & GLOSSARY
-// ================================================================
-const concepts=[
-  {title:'What is Compound Interest and why it matters',body:'Compound interest is earned on both principal and previously earned interest. At 10% returns, $10,000 becomes $27,000 in 10 years, $67,000 in 20 years, and $174,000 in 30 years — purely through reinvesting returns. Starting 5 years earlier can double your final corpus.'},
-  {title:'How to build an Emergency Fund',body:'An emergency fund is 3–6 months of expenses in liquid instruments. It protects you from derailing long-term investments during unexpected expenses — job loss, medical emergencies. Rule: Build emergency fund FIRST before any equity investment.'},
-  {title:'Asset Allocation — Balancing Equity vs Debt',body:'Classic rule: Equity % = 110 minus your age. At 30 → 80% equity. At 50 → 60% equity. Equity gives higher returns with volatility; bonds/debt give stability. Rebalance annually. Match allocation to goal time horizon.'},
-  {title:'What is XIRR and how to measure fund returns',body:'XIRR accounts for the timing of cash flows — essential for regular investment plans. A fund showing 15% absolute return over 3 years is only ~4.8% CAGR. Always compare trailing 3yr, 5yr, and 10yr returns across funds.'},
-  {title:'Low-Cost Index Funds vs Active Management',body:'Decades of data show 90%+ of active funds underperform their benchmark index over 15+ years. A low-cost S&P 500 or MSCI World index fund with 0.05–0.20% expense ratio beats most actively managed funds charging 1–2% annually.'},
-  {title:'Inflation — The Silent Wealth Destroyer',body:'At 5% inflation, purchasing power halves every 14 years. Your investments must beat inflation meaningfully. Equity has historically returned 8–14% vs 3–7% inflation globally — a positive real return of 5–8%.'},
-];
-const milestones=[
-  {age:'22–25',title:'Foundation',items:['Emergency fund (3–6mo)','Term + Health insurance','First investment','Credit history']},
-  {age:'25–30',title:'Accelerate',items:['Save 20–30% of income','Max tax-advantaged accounts','No consumer debt','Clear student loans']},
-  {age:'30–40',title:'Asset Building',items:['Real estate (goal-aligned)','Increase contributions','Review insurance','Global diversification']},
-  {age:'40–50',title:'Consolidation',items:['Shift to balanced portfolio','Children education corpus','50% of FIRE target','Estate planning']},
-  {age:'50–60',title:'Pre-Retirement',items:['Reduce equity gradually','Clear all major loans','Max pension contributions','Withdrawal strategy']},
-  {age:'60+',title:'Freedom Phase',items:['4% SWR activated','Low-risk instruments','Health top-up cover','Will & legacy']},
-];
-function buildEdu(){
-  const ac=document.getElementById('accordion_container');ac.innerHTML='';
-  concepts.forEach(c=>{
-    const d=document.createElement('div');d.className='card';d.style.cssText='padding:0;overflow:hidden;';
-    d.innerHTML=`<div onclick="toggleAcc(this)" style="padding:14px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;"><span style="font-size:12px;font-weight:600;">${c.title}</span><span class="aic" style="font-size:16px;color:var(--gold);transition:transform .3s;flex-shrink:0;margin-left:8px;">+</span></div><div class="accordion-content"><div style="padding:0 18px 16px;font-size:12px;color:var(--muted);line-height:1.7;border-top:1px solid rgba(255,255,255,.05);">${c.body}</div></div>`;
-    ac.appendChild(d);
-  });
-  document.getElementById('timeline_content').innerHTML=milestones.map((m,i)=>`<div style="display:grid;grid-template-columns:80px 1fr;gap:14px;padding:12px 0;border-bottom:${i===milestones.length-1?'none':'1px solid rgba(255,255,255,.05)'};"><div><div style="font-size:10px;font-weight:700;color:var(--gold-light);">${m.age}</div><div style="font-size:11px;font-weight:600;margin-top:2px;">${m.title}</div></div><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">${m.items.map(it=>`<span style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:2px 10px;font-size:10px;color:var(--muted);">${it}</span>`).join('')}</div></div>`).join('');
-}
-function toggleAcc(h){
-  const c=h.nextElementSibling,i=h.querySelector('.aic'),open=c.classList.contains('open');
-  document.querySelectorAll('.accordion-content').forEach(x=>x.classList.remove('open'));
-  document.querySelectorAll('.aic').forEach(x=>x.textContent='+');
-  if(!open){c.classList.add('open');i.textContent='−';}
-}
-const glossaryData=[
-  {term:'SIP',def:'Systematic Investment Plan. Fixed amount invested regularly in a mutual fund, enabling rupee/dollar cost averaging.'},
-  {term:'CAGR',def:'Compound Annual Growth Rate. Annualised growth rate accounting for compounding.'},
-  {term:'NAV',def:'Net Asset Value. Per-unit price of a mutual fund: (Total Assets − Liabilities) ÷ Units.'},
-  {term:'ELSS',def:'Equity Linked Savings Scheme (India). Mutual fund qualifying under Section 80C, 3-year lock-in.'},
-  {term:'PPF',def:'Public Provident Fund (India). Government savings at 7.1% tax-free, 15-year lock-in.'},
-  {term:'NPS',def:'National Pension System (India). Market-linked retirement scheme with extra ₹50K deduction under 80CCD(1B).'},
-  {term:'401(k)',def:'US employer-sponsored retirement plan with pre-tax contributions reducing taxable income. 2026 limit: $23,500.'},
-  {term:'Roth IRA',def:'US after-tax retirement account. Contributions non-deductible but growth and qualified withdrawals tax-free.'},
-  {term:'ISA',def:'Individual Savings Account (UK). Tax-free investment wrapper — £20,000/yr allowance. Stocks & Shares or Cash.'},
-  {term:'ETF',def:'Exchange-Traded Fund. Basket of securities trading on exchange like a stock. Typically low cost.'},
-  {term:'EMI',def:'Equated Monthly Instalment. Fixed monthly repayment of principal + interest on loans.'},
-  {term:'FIRE',def:'Financial Independence, Retire Early. Corpus = 25× annual expenses so investments sustain lifestyle forever.'},
-  {term:'HLV',def:'Human Life Value. Life insurance need = PV of future income until retirement.'},
-  {term:'XIRR',def:'Extended Internal Rate of Return. Standard metric for periodic investment returns accounting for cash flow timing.'},
-  {term:'4% Rule',def:'Withdrawing 4% of corpus annually sustains a portfolio for 30+ years (Trinity Study, 1998). Conservative: 3.5%.'},
-  {term:'Expense Ratio',def:'Annual fee charged by a mutual fund as % of AUM. Index funds typically 0.03–0.20%; active funds 0.5–2%.'},
-  {term:'Alpha',def:'Excess return above benchmark. A fund at 15% vs index at 12% has alpha of 3%.'},
-  {term:'Beta',def:'Volatility vs market. Beta >1 = more volatile than market; <1 = less volatile.'},
-  {term:'AUM',def:'Assets Under Management. Total market value of investments a fund house manages.'},
-  {term:'Rebalancing',def:'Realigning portfolio back to target allocation annually by selling overperformers and buying underperformers.'},
-  {term:'Corpus',def:'Total accumulated investment portfolio value, often referenced as retirement or goal corpus.'},
-  {term:'SWR',def:'Safe Withdrawal Rate. Percentage of portfolio withdrawn annually without depleting it. Standard: 4%.'},
-  {term:'Dollar-Cost Averaging',def:'Investing a fixed amount at regular intervals regardless of price — reduces timing risk.'},
-  {term:'Diversification',def:'Spreading investments across assets, geographies, and sectors to reduce risk without proportionally reducing returns.'},
-  {term:'S&P 500',def:'US index tracking 500 large-cap companies. Global benchmark for equity performance (~10.5% hist. annual return).'},
-  {term:'Nifty 50',def:"India's benchmark index of 50 largest companies on NSE (~13% hist. annual return)."},
-  {term:'MSCI World',def:'Index tracking ~1,500 large/mid-cap stocks across 23 developed markets. Core holding in global portfolios.'},
-  {term:'Assurance Vie',def:'French tax-advantaged investment wrapper. Major tax benefits after 8 years of holding.'},
-  {term:'Super (Superannuation)',def:'Australian mandatory retirement savings — currently 11.5% of salary contributed by employer.'},
-  {term:'CPF',def:'Central Provident Fund (Singapore). Mandatory social security savings: 20% employee + 17% employer.'},
-];
-function buildGlossary(){
-  renderGlossary(glossaryData);
-  document.getElementById('gloss_search').oninput=function(){
-    const q=this.value.toLowerCase();
-    renderGlossary(glossaryData.filter(g=>g.term.toLowerCase().includes(q)||g.def.toLowerCase().includes(q)));
-  };
-}
-function renderGlossary(data){
-  const c=document.getElementById('glossary_list');c.innerHTML='';
-  const grp={};data.forEach(g=>{const l=g.term[0].toUpperCase();if(!grp[l])grp[l]=[];grp[l].push(g);});
-  Object.keys(grp).sort().forEach(letter=>{
-    let html=`<div style="font-size:10px;font-weight:800;letter-spacing:3px;color:var(--gold);margin:20px 0 8px;text-transform:uppercase;">${letter}</div>`;
-    grp[letter].forEach(g=>{html+=`<div style="display:grid;grid-template-columns:130px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04);"><div style="font-size:12px;font-weight:700;color:var(--cream);">${g.term}</div><div style="font-size:11px;color:var(--muted);line-height:1.7;">${g.def}</div></div>`;});
-    const s=document.createElement('div');s.innerHTML=html;c.appendChild(s);
+  apiCalc({type:'tax',inc,c80,c80d,hl,nps}, d=>{
+    document.getElementById('tax_old').textContent=fmtK(d.oldTax,'₹');
+    document.getElementById('tax_old_eff').textContent='Eff: '+d.oldEff+'%';
+    document.getElementById('tax_new').textContent=fmtK(d.newTax,'₹');
+    document.getElementById('tax_new_eff').textContent='Eff: '+d.newEff+'%';
+    document.getElementById('tax_rec').textContent='✅ '+d.better+' saves more';
+    document.getElementById('tax_saving').textContent='Annual saving: '+fmtK(d.saving,'₹');
   });
 }
 
-// ================================================================
-// CSV EXPORT
-// ================================================================
-function downloadSIPCSV(){
-  const rows=document.querySelectorAll('#sip_tbody tr');
-  let csv='Year,Invested,Portfolio Value,Gains,Returns %\n';
-  rows.forEach(r=>{const c=r.querySelectorAll('td');csv+=[c[0].textContent,c[1].textContent,c[2].textContent,c[3].textContent,c[4].textContent].join(',')+'\n';});
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='MoneyVeda_SIP.csv';a.click();
+function buildUSATax(){return`<div class="grid-2" style="margin-bottom:20px;"><div class="card"><div style="font-size:22px;margin-bottom:10px;">📊</div><h4 style="font-weight:700;margin-bottom:10px;font-size:14px;">Federal Tax Brackets 2026</h4><table><thead><tr><th>Rate</th><th>Single</th><th>Married Filing Jointly</th></tr></thead><tbody><tr><td><span class="badge-gold">10%</span></td><td>$0 – $11,925</td><td>$0 – $23,850</td></tr><tr><td><span class="badge-gold">12%</span></td><td>$11,925 – $48,475</td><td>$23,850 – $96,950</td></tr><tr><td><span class="badge-gold">22%</span></td><td>$48,475 – $103,350</td><td>$96,950 – $206,700</td></tr><tr><td><span class="badge-gold">24%</span></td><td>$103,350 – $197,300</td><td>$206,700 – $394,600</td></tr><tr><td><span class="badge-gold">32%</span></td><td>$197,300 – $250,525</td><td>$394,600 – $501,050</td></tr><tr><td><span class="badge-gold">35%</span></td><td>$250,525 – $626,350</td><td>$501,050 – $751,600</td></tr><tr><td><span class="badge-red">37%</span></td><td>$626,350+</td><td>$751,600+</td></tr></tbody></table></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🏦</div><h4 style="font-weight:700;margin-bottom:10px;font-size:14px;">Key Limits (2026)</h4><div style="display:flex;flex-direction:column;gap:10px;"><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">Standard Deduction (Single)</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$15,000</span></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">401(k) Contribution Limit</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$23,500</span></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">IRA Contribution Limit</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$7,000</span></div><div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="font-size:12px;color:var(--muted);">LTCG Rate</span><span class="mono" style="font-size:12px;color:var(--gold-light);">0% / 15% / 20%</span></div></div></div></div>`;}
+function buildEuropeTax(){return`<div class="grid-2" style="margin-bottom:20px;"><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇩🇪</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Germany</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 0%–45%. Basic allowance: €11,784. Capital gains: 25% flat. Sparerpauschbetrag: €1,000 allowance.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇫🇷</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">France</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">11%–45% + social charges 17.2%. PFU: 30% flat on investments. PEA: tax-free EU gains after 5 years.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇬🇧</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">United Kingdom</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Personal allowance £12,570. Basic 20%, Higher 40%, Additional 45%. ISA: £20,000/yr tax-free.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇳🇱</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Netherlands</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Box 1 up to 49.5%. Box 3 notional yield tax under reform. Mortgage interest deductible at 36.97%.</p></div></div>`;}
+function buildWorldTax(){return`<div class="grid-2" style="margin-bottom:20px;"><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇸🇬</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Singapore</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 0%–24%. No capital gains tax. No dividend tax. CPF: 20% employee + 17% employer.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇦🇺</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Australia</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">19%–45% + 2% Medicare levy. Super: 11.5% employer. 50% CGT discount for assets held 12+ months.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇦🇪</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">UAE</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">No personal income tax. No capital gains tax. Corporate tax: 9% above AED 375K. VAT: 5%.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇨🇦</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Canada</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Federal 15%–33% + provincial. RRSP deductible. TFSA: C$7,000/yr completely tax-free.</p></div></div>`;}
+
+// ── PPF ──────────────────────────────────────────────────────
+function calcPPF(){
+  const y=+document.getElementById('ppf_y').value, t=+document.getElementById('ppf_t').value;
+  document.getElementById('v_ppf_y').textContent=fmtSym(y);
+  document.getElementById('v_ppf_t').textContent=t;
+  apiCalc({type:'ppf',y,t}, d=>{
+    document.getElementById('ppf_maturity').textContent=fmtSym(d.maturity);
+    document.getElementById('ppf_invested').textContent=fmtSym(d.invested);
+    document.getElementById('ppf_interest').textContent=fmtSym(d.interestEarned);
+    document.getElementById('ppf_tax').textContent=fmtSym(d.taxSaved)+'/yr saved';
+    let rows='';
+    d.rows.forEach(r=>{ rows+=`<tr><td><span class="badge-gold">${r.year}</span></td><td class="mono">${fmtSym(r.deposit)}</td><td class="mono" style="color:#4ade80;">${fmtSym(r.interest)}</td><td class="mono" style="color:var(--gold-light);">${fmtSym(r.balance)}</td></tr>`; });
+    document.getElementById('ppf_tbody').innerHTML=rows;
+  });
 }
+
+// ── EPF ──────────────────────────────────────────────────────
+function calcEPF(){
+  const sal=+document.getElementById('epf_sal').value, age=+document.getElementById('epf_age').value, grow=+document.getElementById('epf_grow').value;
+  document.getElementById('v_epf_sal').textContent=fmtSym(sal);
+  document.getElementById('v_epf_age').textContent=age;
+  document.getElementById('v_epf_grow').textContent=grow;
+  apiCalc({type:'epf',sal,age,grow}, d=>{
+    document.getElementById('epf_corpus').textContent=fmtSym(d.corpus);
+    document.getElementById('epf_employee').textContent=fmtSym(d.empContrib);
+    document.getElementById('epf_employer').textContent=fmtSym(d.erContrib);
+    const rc=document.getElementById('epf_result_card');
+    if(rc) rc.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"><div style="text-align:center;padding:16px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:12px;"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Years to Retire</div><div style="font-size:1.8rem;font-weight:800;color:var(--gold-light);font-family:Playfair Display,serif;">${d.years}</div></div><div style="text-align:center;padding:16px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15);border-radius:12px;"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Monthly Deduction</div><div style="font-size:1.8rem;font-weight:800;color:#4ade80;font-family:Playfair Display,serif;">${fmtSym(d.monthlyDeduction)}</div></div></div>`;
+  });
+}
+
+// ── NPS ──────────────────────────────────────────────────────
+function calcNPS(){
+  const p=+document.getElementById('nps_p').value, age=+document.getElementById('nps_age').value, eq=+document.getElementById('nps_eq').value;
+  document.getElementById('v_nps_p').textContent=fmtSym(p);
+  document.getElementById('v_nps_age').textContent=age;
+  document.getElementById('v_nps_eq').textContent=eq;
+  apiCalc({type:'nps',p,age,eq}, d=>{
+    document.getElementById('nps_corpus').textContent=fmtSym(d.corpus);
+    document.getElementById('nps_lumpsum').textContent=fmtSym(d.lumpsum);
+    document.getElementById('nps_pension').textContent=fmtSym(d.pension)+'/mo';
+    document.getElementById('nps_tax').textContent=fmtSym(d.taxSaved)+'/yr';
+    const alloc=document.getElementById('nps_alloc');
+    if(alloc) alloc.innerHTML=`<div style="margin-bottom:8px;font-size:11px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="width:70px;color:var(--muted);font-size:11px;">Equity</span><div style="flex:1;height:7px;background:var(--dark4);border-radius:4px;overflow:hidden;"><div style="width:${d.equityPct}%;height:100%;background:var(--gold);border-radius:4px;"></div></div><span style="width:36px;color:var(--gold-light);font-size:11px;">${d.equityPct}%</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="width:70px;color:var(--muted);font-size:11px;">Debt</span><div style="flex:1;height:7px;background:var(--dark4);border-radius:4px;overflow:hidden;"><div style="width:${d.debtPct}%;height:100%;background:#6366f1;border-radius:4px;"></div></div><span style="width:36px;color:#a5b4fc;font-size:11px;">${d.debtPct}%</span></div></div><div style="font-size:11px;color:var(--muted);">Blended return: <strong style="color:var(--gold-light);">${d.blendedReturn}%</strong> · ${d.years} years to age 60</div>`;
+  });
+}
+
+// ── STEP-UP SIP ───────────────────────────────────────────────
+function calcStepSIP(){
+  const p=+document.getElementById('ss_p').value, step=+document.getElementById('ss_step').value,
+        r=+document.getElementById('ss_r').value, t=+document.getElementById('ss_t').value;
+  document.getElementById('v_ss_p').textContent=fmtSym(p);
+  document.getElementById('v_ss_step').textContent=step;
+  document.getElementById('v_ss_r').textContent=r.toFixed(1);
+  document.getElementById('v_ss_t').textContent=t;
+  apiCalc({type:'stepsip',p,step,r,t}, d=>{
+    document.getElementById('ss_corpus').textContent=fmtSym(d.stepCorpus);
+    document.getElementById('ss_flat').textContent=fmtSym(d.flatCorpus);
+    document.getElementById('ss_extra').textContent='+'+fmtSym(d.extra);
+    let rows='';
+    d.rows.forEach(y=>{ rows+=`<tr><td><span class="badge-gold">${y.year}</span></td><td class="mono">${fmtSym(y.monthlySip)}</td><td class="mono" style="color:var(--gold-light);">${fmtSym(y.stepValue)}</td><td class="mono" style="color:var(--muted);">${fmtSym(y.flatValue)}</td><td class="mono" style="color:#4ade80;">+${fmtSym(y.advantage)}</td></tr>`; });
+    document.getElementById('ss_tbody').innerHTML=rows;
+  });
+}
+
+// ── SSA ───────────────────────────────────────────────────────
+function calcSSA(){
+  const age=+document.getElementById('ssa_age').value, dep=+document.getElementById('ssa_dep').value;
+  document.getElementById('v_ssa_age').textContent=age;
+  document.getElementById('v_ssa_dep').textContent=fmtSym(dep);
+  apiCalc({type:'ssa',age,dep}, d=>{
+    document.getElementById('ssa_maturity').textContent=fmtSym(d.maturity);
+    document.getElementById('ssa_invested').textContent=fmtSym(d.invested);
+    document.getElementById('ssa_interest').textContent=fmtSym(d.interestEarned);
+    let rows='';
+    d.rows.forEach(r=>{ rows+=`<tr><td><span class="badge-gold">${r.year}</span></td><td class="mono">${r.deposit?fmtSym(r.deposit):'—'}</td><td class="mono" style="color:#f472b6;">${fmtSym(r.interest)}</td><td class="mono" style="color:var(--gold-light);">${fmtSym(r.balance)}</td></tr>`; });
+    document.getElementById('ssa_tbody').innerHTML=rows;
+  });
+}
+
+// ── CROREPATI ─────────────────────────────────────────────────
+function calcCrorepati(){
+  const target=+document.getElementById('cr_target').value, t=+document.getElementById('cr_t').value, r=+document.getElementById('cr_r').value;
+  document.getElementById('v_cr_target').textContent=fmtSym(target);
+  document.getElementById('v_cr_t').textContent=t;
+  document.getElementById('v_cr_r').textContent=r.toFixed(1);
+  document.getElementById('cr_target_label').textContent=fmtSym(target);
+  document.getElementById('cr_t_label').textContent=t+' years';
+  apiCalc({type:'crorepati',target,t,r}, d=>{
+    document.getElementById('cr_monthly').textContent=fmtSym(d.monthly);
+    document.getElementById('cr_verdict').innerHTML='<b>'+fmtSym(d.target)+'</b> in <b>'+d.years+' yrs</b> at '+d.rate+'% → invest <b>'+fmtSym(d.monthly)+'/mo</b> ('+fmtSym(d.perDay)+'/day). Start earlier = invest less.';
+  });
+}
+function setCrorepatiTarget(val){const el=document.getElementById('cr_target');if(el){el.value=val;calcCrorepati();}}
+
+// ── HABIT ─────────────────────────────────────────────────────
+var _currentHabit='coffee';
+function setHabit(type,monthly){
+  _currentHabit=type;
+  ['coffee','swiggy','cigarette','ott','custom'].forEach(h=>{
+    const el=document.getElementById('hp-'+h);
+    if(el){el.style.background='transparent';el.style.borderColor='rgba(255,255,255,.1)';el.style.color='var(--muted)';}
+  });
+  const active=document.getElementById('hp-'+type);
+  if(active){active.style.background='rgba(201,168,76,.12)';active.style.borderColor='rgba(201,168,76,.4)';active.style.color='var(--gold-light)';}
+  if(monthly>0){const el=document.getElementById('hab_p');if(el)el.value=monthly;}
+  calcHabit();
+}
+function calcHabit(){
+  const p=+document.getElementById('hab_p').value, t=+document.getElementById('hab_t').value, r=+document.getElementById('hab_r').value;
+  const names={coffee:'Daily Coffee',swiggy:'Food Delivery',cigarette:'Cigarettes',ott:'OTT Subscriptions',custom:'This Habit'};
+  const name=names[_currentHabit]||'This Habit';
+  document.getElementById('v_hab_p').textContent=fmtSym(p);
+  document.getElementById('v_hab_t').textContent=t;
+  document.getElementById('v_hab_r').textContent=r.toFixed(1);
+  apiCalc({type:'habit',p,t,r}, d=>{
+    document.getElementById('hab_spent').textContent=fmtSym(d.spent);
+    document.getElementById('hab_spent_sub').textContent='Spent on '+name+' over '+d.years+' years';
+    document.getElementById('hab_corpus').textContent=fmtSym(d.corpus);
+    document.getElementById('hab_corpus_sub').textContent='At '+r+'% SIP returns · Gains: '+fmtSym(d.gains);
+    document.getElementById('hab_verdict').innerHTML='Your '+name+' habit costs '+fmtSym(d.monthly)+'/month. Over '+d.years+' years you spend '+fmtSym(d.spent)+' — gone forever. Invest that same '+fmtSym(d.monthly)+'/month at '+r+'% returns and you would have '+fmtSym(d.corpus)+' — a '+d.mult+'x multiplier.';
+  });
+}
+
+// ── COMPARE ───────────────────────────────────────────────────
+var cmpChart=null;
+function buildCompare(){
+  const p=+document.getElementById('cmp_p').value, r=+document.getElementById('cmp_r').value, t=+document.getElementById('cmp_t').value;
+  document.getElementById('cmp_p_val').textContent=fmtSym(p);
+  document.getElementById('cmp_r_val').textContent=r.toFixed(1)+'%';
+  document.getElementById('cmp_t_val').textContent=t+' yrs';
+  apiCalc({type:'compare',p,r,t}, d=>{
+    document.getElementById('cmp_sip_corpus').textContent=fmtSym(d.sipFinal);
+    document.getElementById('cmp_sip_detail').textContent='Invested '+fmtSym(d.lumpTotal)+' · Gains '+fmtSym(d.sipGains);
+    document.getElementById('cmp_ls_corpus').textContent=fmtSym(d.lsFinal);
+    document.getElementById('cmp_ls_detail').textContent='Invested '+fmtSym(d.lumpTotal)+' · Gains '+fmtSym(d.lsGains);
+    document.getElementById('cmp_sip_winner').textContent=d.sipWins?'🏆 WINNER':'';
+    document.getElementById('cmp_ls_winner').textContent=!d.sipWins?'🏆 WINNER':'';
+    document.getElementById('cmp_sip_box').style.borderColor=d.sipWins?'rgba(201,168,76,.6)':'rgba(201,168,76,.25)';
+    document.getElementById('cmp_ls_box').style.borderColor=!d.sipWins?'rgba(201,168,76,.6)':'rgba(201,168,76,.25)';
+    document.getElementById('cmp_verdict').innerHTML='<strong style="color:var(--gold-light)">'+d.winner+' wins</strong> by <strong style="color:#4ade80">'+fmtSym(d.diff)+'</strong> over '+t+' years.<br><br>With the same total capital of <strong>'+fmtSym(d.lumpTotal)+'</strong>, '+d.winner.toLowerCase()+' delivers '+fmtSym(d.sipWins?d.sipFinal:d.lsFinal)+' vs '+d.loser.toLowerCase()+"'s "+fmtSym(d.sipWins?d.lsFinal:d.sipFinal)+'.';
+    if(cmpChart){try{cmpChart.destroy();}catch(e){}}
+    const ctx=document.getElementById('cmpChart').getContext('2d');
+    cmpChart=new Chart(ctx,{type:'line',data:{labels:d.curve.map(c=>'Yr '+c.year),datasets:[{label:'SIP',data:d.curve.map(c=>c.sip),borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,.1)',borderWidth:2,pointRadius:0,fill:true,tension:.4},{label:'Lump Sum',data:d.curve.map(c=>c.ls),borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,.08)',borderWidth:2,pointRadius:0,fill:true,tension:.4}]},options:{responsive:true,plugins:{legend:{labels:{color:'#9090A8',font:{size:11}}},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+fmtSym(c.raw)}}},scales:{x:{ticks:{color:'#9090A8',font:{size:9}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#9090A8',font:{size:9},callback:v=>fmtSym(v)},grid:{color:'rgba(255,255,255,.04)'}}}}}); 
+  });
+}
+
+function renderContact(){}
 
 // ================================================================
 // EVENT WIRING
@@ -1953,133 +1906,66 @@ window.onload=function(){
 // ================================================================
 // LIVE SIDEBAR & TICKER
 // ================================================================
-const STATIC_FALLBACK={
-  india:[
-    {label:'SENSEX',value:'74,532',pct:'+0.44',up:true},{label:'NIFTY 50',value:'23,114',pct:'+0.49',up:true},
-    {label:'NIFTY BANK',value:'54,018',pct:'-2.36',up:false},{label:'GOLD',value:'₹6,842',pct:'+0.43',up:true},
-    {label:'USD/INR',value:'93.75',pct:'-0.12',up:false},
-  ],
-  // Sidebar-only fallbacks (first 2 items shown in sidebar, rest in ticker only)
-  india_sidebar:[
-    {label:'SENSEX',value:'74,532',pct:'+0.44',up:true},
-    {label:'NIFTY 50',value:'23,114',pct:'+0.49',up:true},
-  ],
-  usa:[
-    {label:'S&P 500',value:'6,606',pct:'-0.27',up:false},{label:'NASDAQ',value:'22,090',pct:'-0.28',up:false},
-    {label:'DOW',value:'43,215',pct:'-0.15',up:false},{label:'GOLD',value:'$4,617',pct:'+0.31',up:true},
-    {label:'USD/EUR',value:'0.9241',pct:'+0.12',up:true},
-  ],
-  usa_sidebar:[
-    {label:'S&P 500',value:'6,606',pct:'-0.27',up:false},
-    {label:'NASDAQ',value:'22,090',pct:'-0.28',up:false},
-  ],
-  europe:[
-    {label:'EURO STOXX 50',value:'5,372',pct:'-1.62',up:false},{label:'DAX',value:'22,391',pct:'-1.45',up:false},
-    {label:'FTSE 100',value:'8,673',pct:'-2.35',up:false},{label:'GOLD',value:'€4,263',pct:'+0.21',up:true},
-    {label:'EUR/USD',value:'1.0823',pct:'-0.12',up:false},
-  ],
-  europe_sidebar:[
-    {label:'EURO STOXX 50',value:'5,372',pct:'-1.62',up:false},
-    {label:'DAX',value:'22,391',pct:'-1.45',up:false},
-  ],
-  world:[
-    {label:'S&P 500',value:'6,606',pct:'-0.27',up:false},{label:'MSCI WORLD',value:'3,841',pct:'-0.31',up:false},
-    {label:'BITCOIN',value:'$84,200',pct:'-1.80',up:false},{label:'GOLD',value:'$4,617',pct:'+0.31',up:true},
-    {label:'OIL (WTI)',value:'$68.40',pct:'-0.90',up:false},
-  ],
-  world_sidebar:[
-    {label:'S&P 500',value:'6,606',pct:'-0.27',up:false},
-    {label:'MSCI WORLD',value:'3,841',pct:'-0.31',up:false},
-  ]
-};
-let sidebarTimer=null;
-async function loadSidebarLive(){
-  try{
-    const res=await fetch('/api/market?mode='+currentMode,{signal:AbortSignal.timeout(5000)});
-    if(!res.ok) throw new Error('non-200');
-    const data=await res.json();
-    if(data.fallback) throw new Error('fallback');
-    const fb=STATIC_FALLBACK[currentMode]||STATIC_FALLBACK.india;
-    // Only show top 2 items in sidebar (Sensex+Nifty for India, etc.)
-    const items=data.tickers.map((t,i)=>
-      t.ok?{label:t.label,value:String(t.value),pct:(t.pct>=0?'+':'')+t.pct,up:t.pct>=0}:(fb[i]||{label:t.label,value:'—',pct:'—',up:null})
-    ).slice(0,2);
-    renderSidebar(items,true);
-  }catch{
-    const fbKey=currentMode+'_sidebar';
-    renderSidebar(STATIC_FALLBACK[fbKey]||STATIC_FALLBACK[currentMode].slice(0,2),false);
+// ── LIVE TICKER & SIDEBAR — thin client wrappers ─────────────
+// All symbol lists, modeColors, modeFlags, fallback data, and
+// HTML assembly have moved to /api/market. Client only injects
+// the pre-built HTML strings returned by the server.
+
+let sidebarTimer   = null;
+let tickerAnimation = null;
+
+async function loadSidebarLive() {
+  try {
+    const res  = await fetch('/api/market?mode=' + currentMode + '&view=sidebar', { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) throw new Error('non-200');
+    const data = await res.json();
+    const el   = document.getElementById('sidebar-market');
+    if (!el) return;
+    el.innerHTML = data.sidebarHtml;
+    document.getElementById('sidebar-live-dot').style.background = data.live ? '#4ade80' : '#9090A8';
+    document.getElementById('sidebar-updated').textContent = data.updatedTime;
+  } catch(e) {
+    // On error, sidebar shows last-known content — no action needed
   }
 }
-function renderSidebar(items,live){
-  const el=document.getElementById('sidebar-market');
-  if(!el) return;
-  document.getElementById('sidebar-live-dot').style.background=live?'#4ade80':'#9090A8';
-  document.getElementById('sidebar-updated').textContent=live?new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'Snapshot';
-  el.innerHTML=items.map(t=>{
-    const c=t.up===true?'#4ade80':t.up===false?'#f87171':'var(--muted)';
-    const arrow=t.up===true?'▲':t.up===false?'▼':'';
-    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);">
-      <span style="font-size:10px;color:var(--muted);">${t.label}</span>
-      <div style="text-align:right;">
-        <span style="font-size:12px;font-family:'DM Mono',monospace;font-weight:600;color:var(--cream);display:block;">${t.value}</span>
-        <span style="font-size:9px;color:${c};">${arrow} ${t.pct}%</span>
-      </div>
-    </div>`;
-  }).join('');
-}
-function startSidebarRefresh(){
-  if(sidebarTimer)clearInterval(sidebarTimer);
+
+function startSidebarRefresh() {
+  if (sidebarTimer) clearInterval(sidebarTimer);
   loadSidebarLive();
-  sidebarTimer=setInterval(loadSidebarLive,30000); // 30s — safe for Vercel free tier
+  sidebarTimer = setInterval(loadSidebarLive, 30000);
 }
 
-let tickerAnimation=null;
-async function loadTickerData(mode){
-  try{const res=await fetch('/api/market?mode='+mode);const data=await res.json();if(data.tickers)renderTicker(mode,data.tickers);}
-  catch(e){renderTickerFallback(mode);}
+async function loadTickerData(mode) {
+  try {
+    const res  = await fetch('/api/market?mode=' + mode + '&view=ticker');
+    const data = await res.json();
+    const track = document.getElementById('ticker-track');
+    if (track && data.tickerHtml) {
+      track.innerHTML = data.tickerHtml;
+      startTickerScroll(track);
+    }
+  } catch(e) { /* ticker stays blank until next retry */ }
 }
-function renderTickerFallback(mode){
-  const fb=STATIC_FALLBACK[mode]||STATIC_FALLBACK.india;
-  renderTickerItems(mode,fb.map(t=>({...t,ok:true,value:parseFloat(String(t.value).replace(/[^0-9.]/g,''))||0,pct:parseFloat(t.pct)||0,up:t.up})));
+
+function startTickerScroll(track) {
+  if (tickerAnimation) cancelAnimationFrame(tickerAnimation);
+  let pos = 0;
+  function step() {
+    const half = track.scrollWidth / 2;
+    pos += 0.45;
+    if (pos >= half) pos = 0;
+    track.style.transform = 'translateX(' + (-pos) + 'px)';
+    tickerAnimation = requestAnimationFrame(step);
+  }
+  tickerAnimation = requestAnimationFrame(step);
 }
-function renderTicker(mode,tickers){
-  const live=tickers.filter(t=>t.ok);
-  if(!live.length){renderTickerFallback(mode);return;}
-  renderTickerItems(mode,live);
+
+const lt = document.getElementById('live-ticker');
+if (lt) {
+  lt.addEventListener('mouseenter', function() { if (tickerAnimation) cancelAnimationFrame(tickerAnimation); });
+  lt.addEventListener('mouseleave', function() { const t = document.getElementById('ticker-track'); if (t && t.innerHTML) startTickerScroll(t); });
 }
-function renderTickerItems(mode,items){
-  const track=document.getElementById('ticker-track');if(!track)return;
-  const modeColors={india:'#C9A84C',usa:'#60a5fa',europe:'#a5b4fc',world:'#4ade80'};
-  const modeFlags={india:'🇮🇳',usa:'🇺🇸',europe:'🇪🇺',world:'🌍'};
-  const html=items.map(t=>{
-    const up=t.up;const color=up?'#22C55E':'#EF4444';
-    const arrow=up?'▲':'▼';
-    const val=typeof t.value==='number'?t.value.toLocaleString('en-US',{maximumFractionDigits:2}):t.value;
-    const pct=(up?'+':'')+t.pct+'%';
-    return`<div style="display:inline-flex;align-items:center;padding:0 18px 0 16px;border-right:1px solid rgba(255,255,255,.05);height:44px;">
-      <span style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6b7280;margin-right:9px;">${t.label}</span>
-      <span style="font-size:13px;font-weight:600;color:#F0EDE6;font-family:'DM Mono',monospace;margin-right:7px;">${val}</span>
-      <span style="display:inline-flex;align-items:center;gap:2px;background:${up?'rgba(34,197,94,.1)':'rgba(239,68,68,.1)'};border:1px solid ${up?'rgba(34,197,94,.25)':'rgba(239,68,68,.25)'};border-radius:4px;padding:2px 7px;">
-        <span style="font-size:7px;color:${color};">${arrow}</span>
-        <span style="font-size:10px;font-weight:700;color:${color};font-family:'DM Mono',monospace;">${pct}</span>
-      </span></div>`;
-  }).join('');
-  const badge=`<div style="display:inline-flex;align-items:center;padding:0 16px;height:44px;border-right:1px solid rgba(201,168,76,.2);flex-shrink:0;"><span style="font-size:9px;font-weight:800;letter-spacing:2px;color:${modeColors[mode]};font-family:'DM Sans',sans-serif;">${modeFlags[mode]} LIVE</span></div>`;
-  track.innerHTML=badge+html+badge+html;
-  startTickerScroll(track);
-}
-function startTickerScroll(track){
-  if(tickerAnimation)cancelAnimationFrame(tickerAnimation);
-  let pos=0;
-  function step(){const half=track.scrollWidth/2;pos+=0.45;if(pos>=half)pos=0;track.style.transform='translateX('+(-pos)+'px)';tickerAnimation=requestAnimationFrame(step);}
-  tickerAnimation=requestAnimationFrame(step);
-}
-const lt=document.getElementById('live-ticker');
-if(lt){
-  lt.addEventListener('mouseenter',function(){if(tickerAnimation)cancelAnimationFrame(tickerAnimation);});
-  lt.addEventListener('mouseleave',function(){const t=document.getElementById('ticker-track');if(t&&t.innerHTML)startTickerScroll(t);});
-}
-setInterval(function(){loadTickerData(currentMode);},30000);
+setInterval(function() { loadTickerData(currentMode); }, 30000);
 </script>
 
 <!-- ============================================================ -->
@@ -2498,299 +2384,11 @@ function showToast(msg) {
 // ============================================================
 // COMPARE CALCULATOR
 // ============================================================
-var cmpChart = null;
-function buildCompare() {
-  var pEl = document.getElementById("cmp_p"); if (!pEl) return;
-  var p = +pEl.value;
-  var r = +document.getElementById("cmp_r").value;
-  var t = +document.getElementById("cmp_t").value;
-  var s = fmtSym(p);
-  document.getElementById("cmp_p_val").textContent = s;
-  document.getElementById("cmp_r_val").textContent = r.toFixed(1) + "%";
-  document.getElementById("cmp_t_val").textContent = t + " yrs";
-
-  var months = t * 12;
-  var mr = r / 12 / 100;
-  var lumpsum = p * months; // same total money
-
-  // SIP final value
-  var sipFinal = p * (((Math.pow(1+mr, months)-1)/mr)*(1+mr));
-  var sipGains = sipFinal - lumpsum;
-
-  // Lump sum final value (invest total upfront)
-  var lsFinal = lumpsum * Math.pow(1 + r/100, t);
-  var lsGains = lsFinal - lumpsum;
-
-  document.getElementById("cmp_sip_corpus").textContent = fmtSym(sipFinal);
-  document.getElementById("cmp_sip_detail").textContent = "Invested " + fmtSym(lumpsum) + " · Gains " + fmtSym(sipGains);
-  document.getElementById("cmp_ls_corpus").textContent = fmtSym(lsFinal);
-  document.getElementById("cmp_ls_detail").textContent = "Invested " + fmtSym(lumpsum) + " · Gains " + fmtSym(lsGains);
-
-  // Winner badges
-  var sipWins = sipFinal >= lsFinal;
-  document.getElementById("cmp_sip_winner").textContent = sipWins ? "🏆 WINNER" : "";
-  document.getElementById("cmp_ls_winner").textContent = !sipWins ? "🏆 WINNER" : "";
-  document.getElementById("cmp_sip_box").style.borderColor = sipWins ? "rgba(201,168,76,.6)" : "rgba(201,168,76,.25)";
-  document.getElementById("cmp_ls_box").style.borderColor = !sipWins ? "rgba(201,168,76,.6)" : "rgba(201,168,76,.25)";
-
-  // Verdict
-  var diff = Math.abs(sipFinal - lsFinal);
-  var winner = sipWins ? "SIP" : "Lump Sum";
-  var loser = sipWins ? "Lump Sum" : "SIP";
-  document.getElementById("cmp_verdict").innerHTML =
-    "<strong style='color:var(--gold-light)'>" + winner + " wins</strong> by <strong style='color:#4ade80'>" + fmtSym(diff) + "</strong> over " + t + " years.<br><br>" +
-    "With the same total capital of <strong>" + fmtSym(lumpsum) + "</strong>, " + winner.toLowerCase() + " delivers " + fmtSym(sipWins ? sipFinal : lsFinal) + " vs " + loser.toLowerCase() + "'s " + fmtSym(sipWins ? lsFinal : sipFinal) + ".<br><br>" +
-    (sipWins
-      ? "SIP wins here because spreading investments over " + t + " years means early months benefit from compounding AND you reduce timing risk. The monthly compounding frequency of SIP also adds up significantly over long periods."
-      : "Lump sum wins here because investing the full capital upfront means every rupee compounds for the entire " + t + " years. In steadily rising markets, more time in the market always wins.");
-
-  // Chart
-  var labels = [], sipData = [], lsData = [];
-  for (var y = 1; y <= t; y++) {
-    labels.push("Yr " + y);
-    var m2 = y * 12;
-    var mr2 = r / 12 / 100;
-    var sipY = p * (((Math.pow(1+mr2,m2)-1)/mr2)*(1+mr2));
-    var lsY = lumpsum * Math.pow(1+r/100, y);
-    sipData.push(Math.round(sipY));
-    lsData.push(Math.round(lsY));
-  }
-
-  if (cmpChart) { try { cmpChart.destroy(); } catch(e) {} }
-  var ctx = document.getElementById("cmpChart").getContext("2d");
-  cmpChart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: labels,
-      datasets: [
-        { label: "SIP", data: sipData, borderColor: "#C9A84C", backgroundColor: "rgba(201,168,76,.1)", borderWidth: 2, pointRadius: 0, fill: true, tension: 0.4 },
-        { label: "Lump Sum", data: lsData, borderColor: "#6366f1", backgroundColor: "rgba(99,102,241,.08)", borderWidth: 2, pointRadius: 0, fill: true, tension: 0.4 }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { labels: { color: "#9090A8", font: { size: 11 } } },
-        tooltip: { callbacks: { label: function(c){ return " " + c.dataset.label + ": " + fmtSym(c.raw); } } }
-      },
-      scales: {
-        x: { ticks: { color: "#9090A8", font: { size: 9 } }, grid: { color: "rgba(255,255,255,.04)" } },
-        y: { ticks: { color: "#9090A8", font: { size: 9 }, callback: function(v){ return fmtSym(v); } }, grid: { color: "rgba(255,255,255,.04)" } }
-      }
-    }
-  });
-}
 </script>
 
 
+
 <script>
-// ============================================================
-// NEW CALCULATORS — MoneyVeda additions (safe, isolated block)
-// ============================================================
-
-function calcPPF(){
-  var y=+document.getElementById('ppf_y').value;
-  var t=+document.getElementById('ppf_t').value;
-  document.getElementById('v_ppf_y').textContent=fmtSym(y);
-  document.getElementById('v_ppf_t').textContent=t;
-  var rate=0.071,balance=0,totalInv=0,rows='';
-  for(var yr=1;yr<=t;yr++){
-    var interest=Math.round((balance+y)*rate);
-    balance=balance+y+interest; totalInv+=y;
-    rows+='<tr><td><span class="badge-gold">'+yr+'</span></td><td class="mono">'+fmtSym(y)+'</td><td class="mono" style="color:#4ade80;">'+fmtSym(interest)+'</td><td class="mono" style="color:var(--gold-light);">'+fmtSym(balance)+'</td></tr>';
-  }
-  document.getElementById('ppf_maturity').textContent=fmtSym(balance);
-  document.getElementById('ppf_invested').textContent=fmtSym(totalInv);
-  document.getElementById('ppf_interest').textContent=fmtSym(balance-totalInv);
-  document.getElementById('ppf_tbody').innerHTML=rows;
-  document.getElementById('ppf_tax').textContent=fmtSym(Math.min(y,150000)*0.30)+'/yr saved';
-}
-
-function calcEPF(){
-  var sal=+document.getElementById('epf_sal').value;
-  var age=+document.getElementById('epf_age').value;
-  var grow=+document.getElementById('epf_grow').value/100;
-  document.getElementById('v_epf_sal').textContent=fmtSym(sal);
-  document.getElementById('v_epf_age').textContent=age;
-  document.getElementById('v_epf_grow').textContent=Math.round(grow*100);
-  var rate=0.0825,years=58-age,empTotal=0,erTotal=0,balance=0,curSal=sal;
-  for(var yr=1;yr<=years;yr++){
-    var ec=curSal*12*0.12, er=curSal*12*0.0367;
-    var contrib=ec+er, int=(balance+contrib)*rate;
-    balance+=contrib+int; empTotal+=ec; erTotal+=er; curSal*=(1+grow);
-  }
-  document.getElementById('epf_corpus').textContent=fmtSym(balance);
-  document.getElementById('epf_employee').textContent=fmtSym(empTotal);
-  document.getElementById('epf_employer').textContent=fmtSym(erTotal);
-  var rc=document.getElementById('epf_result_card');
-  if(rc) rc.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"><div style="text-align:center;padding:16px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:12px;"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Years to Retire</div><div style="font-size:1.8rem;font-weight:800;color:var(--gold-light);font-family:Playfair Display,serif;">'+years+'</div></div><div style="text-align:center;padding:16px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15);border-radius:12px;"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Monthly Deduction Now</div><div style="font-size:1.8rem;font-weight:800;color:#4ade80;font-family:Playfair Display,serif;">'+fmtSym(sal*0.12)+'</div></div></div><div style="margin-top:12px;font-size:11px;color:var(--muted);padding:10px;background:rgba(255,255,255,.03);border-radius:8px;">💡 Consider VPF to invest more at the same guaranteed 8.25% rate. EPF interest is tax-free up to ₹2.5L/yr contribution.</div>';
-}
-
-function calcNPS(){
-  var p=+document.getElementById('nps_p').value;
-  var age=+document.getElementById('nps_age').value;
-  var eq=+document.getElementById('nps_eq').value/100;
-  document.getElementById('v_nps_p').textContent=fmtSym(p);
-  document.getElementById('v_nps_age').textContent=age;
-  document.getElementById('v_nps_eq').textContent=Math.round(eq*100);
-  var debt=0.75-eq, ret=eq*0.11+debt*0.07+(0.25-debt)*0.09;
-  var years=60-age, months=years*12, mr=ret/12;
-  var corpus=p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
-  var lumpsum=corpus*0.60, pension=corpus*0.40*0.06/12;
-  document.getElementById('nps_corpus').textContent=fmtSym(corpus);
-  document.getElementById('nps_lumpsum').textContent=fmtSym(lumpsum);
-  document.getElementById('nps_pension').textContent=fmtSym(pension)+'/mo';
-  document.getElementById('nps_tax').textContent=fmtSym(Math.min(p*12,50000)*0.30)+'/yr';
-  var alloc=document.getElementById('nps_alloc');
-  if(alloc) alloc.innerHTML='<div style="margin-bottom:8px;font-size:11px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="width:70px;color:var(--muted);font-size:11px;">Equity</span><div style="flex:1;height:7px;background:var(--dark4);border-radius:4px;overflow:hidden;"><div style="width:'+Math.round(eq*100)+'%;height:100%;background:var(--gold);border-radius:4px;"></div></div><span style="width:36px;color:var(--gold-light);font-size:11px;">'+Math.round(eq*100)+'%</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="width:70px;color:var(--muted);font-size:11px;">Debt</span><div style="flex:1;height:7px;background:var(--dark4);border-radius:4px;overflow:hidden;"><div style="width:'+Math.round((1-eq)*100)+'%;height:100%;background:#6366f1;border-radius:4px;"></div></div><span style="width:36px;color:#a5b4fc;font-size:11px;">'+Math.round((1-eq)*100)+'%</span></div></div><div style="font-size:11px;color:var(--muted);">Blended return: <strong style="color:var(--gold-light);">'+(ret*100).toFixed(2)+'%</strong> · '+(years)+' years to age 60</div>';
-}
-
-function calcStepSIP(){
-  var p=+document.getElementById('ss_p').value;
-  var step=+document.getElementById('ss_step').value/100;
-  var r=+document.getElementById('ss_r').value;
-  var t=+document.getElementById('ss_t').value;
-  document.getElementById('v_ss_p').textContent=fmtSym(p);
-  document.getElementById('v_ss_step').textContent=Math.round(step*100);
-  document.getElementById('v_ss_r').textContent=r.toFixed(1);
-  document.getElementById('v_ss_t').textContent=t;
-  var mr=r/12/100, stepCorpus=0, flatCorpus=0, cur=p, rows='';
-  for(var y=1;y<=t;y++){
-    for(var m=0;m<12;m++){
-      stepCorpus=stepCorpus*(1+mr)+cur;
-      flatCorpus=flatCorpus*(1+mr)+p;
-    }
-    rows+='<tr><td><span class="badge-gold">'+y+'</span></td><td class="mono">'+fmtSym(cur)+'</td><td class="mono" style="color:var(--gold-light);">'+fmtSym(stepCorpus)+'</td><td class="mono" style="color:var(--muted);">'+fmtSym(flatCorpus)+'</td><td class="mono" style="color:#4ade80;">+'+fmtSym(stepCorpus-flatCorpus)+'</td></tr>';
-    cur=cur*(1+step);
-  }
-  document.getElementById('ss_corpus').textContent=fmtSym(stepCorpus);
-  document.getElementById('ss_flat').textContent=fmtSym(flatCorpus);
-  document.getElementById('ss_extra').textContent='+'+fmtSym(stepCorpus-flatCorpus);
-  document.getElementById('ss_tbody').innerHTML=rows;
-}
-
-function calcSSA(){
-  var age=+document.getElementById('ssa_age').value;
-  var dep=+document.getElementById('ssa_dep').value;
-  document.getElementById('v_ssa_age').textContent=age;
-  document.getElementById('v_ssa_dep').textContent=fmtSym(dep);
-  var rate=0.082, totalYears=21-age, depositYears=15, balance=0, totalInv=0, rows='';
-  for(var yr=1;yr<=totalYears;yr++){
-    var depositing=(yr<=depositYears), deposit=depositing?dep:0;
-    var interest=Math.round((balance+deposit)*rate);
-    balance+=deposit+interest; if(depositing) totalInv+=dep;
-    rows+='<tr><td><span class="badge-gold">'+yr+'</span></td><td class="mono">'+(depositing?fmtSym(dep):'—')+'</td><td class="mono" style="color:#f472b6;">'+fmtSym(interest)+'</td><td class="mono" style="color:var(--gold-light);">'+fmtSym(balance)+'</td></tr>';
-  }
-  document.getElementById('ssa_maturity').textContent=fmtSym(balance);
-  document.getElementById('ssa_invested').textContent=fmtSym(totalInv);
-  document.getElementById('ssa_interest').textContent=fmtSym(balance-totalInv);
-  document.getElementById('ssa_tbody').innerHTML=rows;
-}
-
-function calcCrorepati(){
-  var target=+document.getElementById('cr_target').value;
-  var t=+document.getElementById('cr_t').value;
-  var r=+document.getElementById('cr_r').value;
-  document.getElementById('v_cr_target').textContent=fmtSym(target);
-  document.getElementById('v_cr_t').textContent=t;
-  document.getElementById('v_cr_r').textContent=r.toFixed(1);
-  document.getElementById('cr_target_label').textContent=fmtSym(target);
-  document.getElementById('cr_t_label').textContent=t+' years';
-  var mr=r/12/100, months=t*12;
-  var monthly=target*mr/(((Math.pow(1+mr,months)-1))*(1+mr));
-  document.getElementById('cr_monthly').textContent=fmtSym(monthly);
-  document.getElementById('cr_verdict').innerHTML='<b>'+fmtSym(target)+'</b> in <b>'+t+' yrs</b> at '+r+'% → invest <b>'+fmtSym(monthly)+'/mo</b> ('+fmtSym(monthly/30)+'/day). Start earlier = invest less.';
-}
-
-function setCrorepatiTarget(val){
-  var el=document.getElementById('cr_target');
-  if(el){el.value=val; calcCrorepati();}
-}
-
-var _currentHabit='coffee';
-function setHabit(type, monthly){
-  _currentHabit=type;
-  ['coffee','swiggy','cigarette','ott','custom'].forEach(function(h){
-    var el=document.getElementById('hp-'+h);
-    if(el){el.style.background='transparent';el.style.borderColor='rgba(255,255,255,.1)';el.style.color='var(--muted)';}
-  });
-  var active=document.getElementById('hp-'+type);
-  if(active){active.style.background='rgba(201,168,76,.12)';active.style.borderColor='rgba(201,168,76,.4)';active.style.color='var(--gold-light)';}
-  if(monthly>0){var el=document.getElementById('hab_p');if(el)el.value=monthly;}
-  calcHabit();
-}
-
-function calcHabit(){
-  var p=+document.getElementById('hab_p').value;
-  var t=+document.getElementById('hab_t').value;
-  var r=+document.getElementById('hab_r').value;
-  document.getElementById('v_hab_p').textContent=fmtSym(p);
-  document.getElementById('v_hab_t').textContent=t;
-  document.getElementById('v_hab_r').textContent=r.toFixed(1);
-  var spent=p*12*t, mr=r/12/100, months=t*12;
-  var corpus=p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
-  var names={coffee:'Daily Coffee',swiggy:'Food Delivery',cigarette:'Cigarettes',ott:'OTT Subscriptions',custom:'This Habit'};
-  var name=names[_currentHabit]||'This Habit';
-  document.getElementById('hab_spent').textContent=fmtSym(spent);
-  document.getElementById('hab_spent_sub').textContent='Spent on '+name+' over '+t+' years';
-  document.getElementById('hab_corpus').textContent=fmtSym(corpus);
-  document.getElementById('hab_corpus_sub').textContent='At '+r+'% SIP returns · Gains: '+fmtSym(corpus-spent);
-  document.getElementById('hab_verdict').innerHTML='Your '+name+' habit costs '+fmtSym(p)+'/month. Over '+t+' years you spend '+fmtSym(spent)+' — gone forever. Invest that same '+fmtSym(p)+'/month at '+r+'% returns and you would have '+fmtSym(corpus)+' — a '+((corpus/spent).toFixed(1))+'x multiplier.';
-}
-
-function renderContact(){
-  // Contact page is static HTML — nothing dynamic needed
-}
-
-function submitContact(){
-  var name    = document.getElementById('ct_name').value.trim();
-  var email   = document.getElementById('ct_email').value.trim();
-  var topic   = document.getElementById('ct_topic').value;
-  var msg     = document.getElementById('ct_message').value.trim();
-  var errEl   = document.getElementById('ct_error');
-  var sucEl   = document.getElementById('ct_success');
-  var btn     = document.querySelector('[onclick="submitContact()"]');
-  errEl.style.display='none';
-  sucEl.style.display='none';
-
-  // Validation
-  if(!name)  { errEl.textContent='Please enter your name.'; errEl.style.display='block'; document.getElementById('ct_name').focus(); return; }
-  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errEl.textContent='Please enter a valid email address.'; errEl.style.display='block'; document.getElementById('ct_email').focus(); return; }
-  if(!topic) { errEl.textContent='Please select a topic.'; errEl.style.display='block'; return; }
-  if(msg.length < 10) { errEl.textContent='Message too short — please add more detail (min 10 characters).'; errEl.style.display='block'; document.getElementById('ct_message').focus(); return; }
-
-  // Show loading state on button
-  if(btn){ btn.textContent='Sending…'; btn.disabled=true; btn.style.opacity='0.7'; }
-
-  // Submit to Formspree
-  fetch('https://formspree.io/f/xdawvrlp', {
-    method: 'POST',
-    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: name, email: email, topic: topic, message: msg })
-  })
-  .then(function(res){ return res.json().then(function(data){ return { ok: res.ok, data: data }; }); })
-  .then(function(result){
-    if(btn){ btn.textContent='Send Message →'; btn.disabled=false; btn.style.opacity='1'; }
-    if(result.ok){
-      sucEl.textContent = '✅ Thank you, ' + name + '! Your message has been received. We\'ll get back to you within 24–48 hours.';
-      sucEl.style.display = 'block';
-      document.getElementById('ct_name').value    = '';
-      document.getElementById('ct_email').value   = '';
-      document.getElementById('ct_topic').value   = '';
-      document.getElementById('ct_message').value = '';
-    } else {
-      var errors = result.data && result.data.errors ? result.data.errors.map(function(e){ return e.message; }).join(', ') : 'Something went wrong. Please try again.';
-      errEl.textContent = '❌ ' + errors;
-      errEl.style.display = 'block';
-    }
-  })
-  .catch(function(){
-    if(btn){ btn.textContent='Send Message →'; btn.disabled=false; btn.style.opacity='1'; }
-    errEl.textContent = '❌ Network error — please check your connection and try again.';
-    errEl.style.display = 'block';
-  });
-}
-
 // Extend shareResult for new tabs
 var _origShareResult = shareResult;
 function shareResult(tab){
@@ -2821,70 +2419,57 @@ function shareResult(tab){
 // ============================================================
 // MARKET PULSE — Region-aware RSS News via /api/news
 // ============================================================
-var _newsCache = {};        // keyed by region: _newsCache['india'], ['usa'] etc
-var _newsCacheTime = {};    // keyed by region
-var _newsFetching = false;
+// ── NEWS PULSE — thin client wrapper ────────────────────────
+// NEWS_ROUTES, getNewsRoute(), handleNewsClick(), renderNews(),
+// FALLBACK data, feed URL lists — all moved to /api/news.
+// The server now resolves `tab` per article. Client only:
+//   • Calls /api/news?region=X
+//   • Injects returned HTML (pills + cards)
+//   • On click: if(a.tab) navTo(a.tab) else window.open(a.link)
+
+var _newsCache        = {};
+var _newsCacheTime    = {};
+var _newsFetching     = false;
 var _newsFetchingRegion = null;
-var NEWS_CACHE_MS = 30 * 60 * 1000; // 30 min client-side cache
+var NEWS_CACHE_MS     = 30 * 60 * 1000;
 
 function fetchNews(forceRefresh) {
-  var strip = document.getElementById('news-strip');
+  var strip  = document.getElementById('news-strip');
   if (!strip) return;
   strip.style.display = 'block';
-
   var region = (typeof currentMode !== 'undefined') ? currentMode : 'india';
 
-  // Cache valid only if: not forced, has data for THIS region, and not stale
   var cacheValid = !forceRefresh
     && _newsCache[region]
-    && (Date.now() - (_newsCacheTime[region]||0)) < NEWS_CACHE_MS;
-
-  if (cacheValid) {
-    renderNews(_newsCache[region]);
-    return;
-  }
-
-  // Don't duplicate fetches for same region
+    && (Date.now() - (_newsCacheTime[region] || 0)) < NEWS_CACHE_MS;
+  if (cacheValid) { renderNews(_newsCache[region]); return; }
   if (_newsFetching && _newsFetchingRegion === region) return;
 
-  _newsFetching = true;
-  _newsFetchingRegion = region;
-
-  // Set live dot to pulsing orange (fetching)
+  _newsFetching        = true;
+  _newsFetchingRegion  = region;
   var dot = document.getElementById('news-live-dot');
-  if (dot) { dot.style.background = '#f59e0b'; }
-
-  var fetchRegion = region; // capture at fetch time
+  if (dot) dot.style.background = '#f59e0b';
+  var fetchRegion = region;
 
   fetch('/api/news?region=' + fetchRegion)
     .then(function(res) {
       var ct = res.headers.get('content-type') || '';
-      if (!ct.includes('application/json')) {
-        throw new Error('Non-JSON response (HTTP ' + res.status + ')');
-      }
+      if (!ct.includes('application/json')) throw new Error('Non-JSON');
       return res.json();
     })
     .then(function(data) {
-      _newsFetching = false;
-      _newsFetchingRegion = null;
+      _newsFetching = false; _newsFetchingRegion = null;
       if (data && data.articles && data.articles.length > 0) {
-        // Store in per-region cache
-        _newsCache[fetchRegion] = data.articles;
+        _newsCache[fetchRegion]     = data.articles;
         _newsCacheTime[fetchRegion] = Date.now();
-        // Only render if user is still on same region
         if ((typeof currentMode !== 'undefined' ? currentMode : 'india') === fetchRegion) {
           renderNews(data.articles);
           if (dot) dot.style.background = '#4ade80';
-          var upd = document.getElementById('news-updated');
-          if (upd) upd.textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
         }
-      } else {
-        renderNewsError();
-      }
+      } else { renderNewsError(); }
     })
     .catch(function(err) {
-      _newsFetching = false;
-      _newsFetchingRegion = null;
+      _newsFetching = false; _newsFetchingRegion = null;
       console.warn('News fetch failed:', err.message);
       renderNewsError();
       if (dot) dot.style.background = '#ef4444';
@@ -2893,84 +2478,17 @@ function fetchNews(forceRefresh) {
 
 var _newsExpanded = false;
 
-// ============================================================
-// SMART NEWS ROUTING — maps headline keywords → internal tabs
-// Instead of opening external links, relevant headlines open
-// the matching MoneyVeda calculator directly
-// ============================================================
-var NEWS_ROUTES = [
-  // ── India ──────────────────────────────────────────────────
-  { keywords: ['nps','national pension','pfrda','pension corpus','pension fund'], tab: 'nps' },
-  { keywords: ['sip','mutual fund','amfi','elss','equity fund','nfo','nav','systematic investment'], tab: 'sip' },
-  { keywords: ['ppf','public provident fund','small savings'], tab: 'ppf' },
-  { keywords: ['epf','provident fund','pf withdrawal','pf balance','employees provident'], tab: 'epf' },
-  { keywords: ['home loan','repo rate','emi','housing loan','rbi rate'], tab: 'emi' },
-  { keywords: ['income tax','tax slab','80c','section 80','itr','deduction','new regime','old regime','budget tax'], tab: 'tax' },
-  { keywords: ['insurance','term plan','life cover','health insurance'], tab: 'insurance' },
-  { keywords: ['sukanya','girl child','ssa','samriddhi'], tab: 'ssa' },
-  { keywords: ['step.up sip','step up sip','increase sip','sip increment'], tab: 'stepsip' },
-  // ── USA ────────────────────────────────────────────────────
-  { keywords: ['federal reserve','fed rate','fomc','interest rate','fed hike','fed cut','rate decision'], tab: 'emi' },
-  { keywords: ['401k','roth ira','ira contribution','retirement savings','social security'], tab: 'fire' },
-  { keywords: ['mortgage rate','home purchase','housing market','refinance'], tab: 'emi' },
-  { keywords: ['s&p 500','nasdaq','stock market','equity market','bull market','bear market'], tab: 'sip' },
-  { keywords: ['sec regulation','investor protection','securities'], tab: 'insurance' },
-  { keywords: ['capital gains tax','tax bracket','irs','federal tax','tax return'], tab: 'tax' },
-  // ── Europe ─────────────────────────────────────────────────
-  { keywords: ['ecb','european central bank','euro rate','eurozone inflation'], tab: 'emi' },
-  { keywords: ['esma','mifid','ucits','european fund'], tab: 'sip' },
-  { keywords: ['pension reform','occupational pension','retirement europe'], tab: 'fire' },
-  { keywords: ['euro mortgage','housing europe','property market europe'], tab: 'emi' },
-  // ── World / Global ─────────────────────────────────────────
-  { keywords: ['imf','world bank','global growth','gdp forecast','bis','central bank'], tab: 'fire' },
-  { keywords: ['inflation','cpi','price index','deflation'], tab: 'emi' },
-  { keywords: ['cryptocurrency','bitcoin','ethereum','crypto regulation'], tab: 'roi' },
-  { keywords: ['global trade','tariff','trade war','sanctions'], tab: 'fire' },
-  // ── Universal ──────────────────────────────────────────────
-  { keywords: ['retirement','retire early','financial independence'], tab: 'fire' },
-  { keywords: ['mortgage','interest rate','basis point','rate hike','rate cut'], tab: 'emi' },
-  { keywords: ['investment','wealth','portfolio','compounding','returns'], tab: 'sip' },
-  { keywords: ['tax','taxation','fiscal','budget'], tab: 'tax' },
-  { keywords: ['life insurance','term insurance','coverage','premium'], tab: 'insurance' },
-];
-
-function getNewsRoute(title) {
-  if (!title) return null;
-  var lower = title.toLowerCase();
-  for (var i = 0; i < NEWS_ROUTES.length; i++) {
-    var route = NEWS_ROUTES[i];
-    for (var j = 0; j < route.keywords.length; j++) {
-      if (lower.indexOf(route.keywords[j]) > -1) {
-        return route.tab;
-      }
-    }
-  }
-  return null; // no match — open external link
-}
-
-function handleNewsClick(event, title, externalLink) {
+// handleNewsClick: tab resolved server-side, passed as data attribute
+// No routing logic or keyword tables in client
+function handleNewsClick(event, tab, externalLink) {
   event.preventDefault();
   event.stopPropagation();
-  var tab = getNewsRoute(title);
   if (tab) {
-    // Collapse news strip if expanded
     var strip = document.getElementById('news-strip');
-    if (strip && strip.classList.contains('news-expanded')) {
-      toggleNewsExpand();
-    }
-    // Navigate to the matching calculator
+    if (strip && strip.classList.contains('news-expanded')) toggleNewsExpand();
     navTo(tab);
-    // Toast notification
-    var tabNames = {
-      sip:'Investment Planner', emi:'Loan & EMI Calculator',
-      nps:'NPS Calculator',     ppf:'PPF Calculator',
-      epf:'EPF Calculator',     tax:'Tax Optimizer',
-      fire:'FIRE Calculator',   insurance:'Insurance Planner',
-      ssa:'Sukanya Samriddhi',  stepsip:'Step-Up SIP Calculator'
-    };
-    showNewsToast('📰 Opened ' + (tabNames[tab] || tab) + ' for you');
+    showNewsToast('📰 Opened calculator for you');
   } else {
-    // No internal route — open external link
     window.open(externalLink, '_blank', 'noopener,noreferrer');
   }
   return false;
@@ -2986,66 +2504,49 @@ function showNewsToast(msg) {
 
 function renderNews(articles) {
   if (!articles || !articles.length) { renderNewsError(); return; }
-  _newsCache = articles;
 
-  // ── TICKER (collapsed default) ──────────────────────────────
+  // ── Ticker (collapsed) ────────────────────────────────────
   var ticker = document.getElementById('news-ticker-inner');
   if (ticker) {
+    window._newsArticles = window._newsArticles || {};
     var pills = articles.slice(0, 8).map(function(a, idx) {
-      var title = a.title.length > 90 ? a.title.slice(0, 87) + '…' : a.title;
       var bStyle = 'background:' + (a.color||'#C9A84C') + '22;color:' + (a.color||'#C9A84C') + ';border:1px solid ' + (a.color||'#C9A84C') + '44;';
-      var tab = getNewsRoute(a.title);
-      var isInternal = !!tab;
-      // Store article data on window object to avoid HTML quoting issues
-      window._newsArticles = window._newsArticles || {};
-      window._newsArticles['n'+idx] = { title: a.title, link: a.link };
-      if (isInternal) {
-        return '<a href="javascript:void(0);" onclick="handleNewsClick(event,window._newsArticles[\'n'+idx+'\'].title,window._newsArticles[\'n'+idx+'\'].link);return false;" class="news-pill">' +
-          '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'RBI') + '</span>' +
-          '<span style="color:var(--gold);font-size:8px;margin-right:2px;">↗</span>' +
-          title +
-        '</a><span class="news-pill-sep">◆</span>';
+      var title  = a.title.length > 90 ? a.title.slice(0,87)+'…' : a.title;
+      window._newsArticles['n'+idx] = { tab: a.tab || null, link: a.link };
+      if (a.tab) {
+        return '<a href="javascript:void(0);" onclick="handleNewsClick(event,'' + a.tab + '','' + a.link.replace(/'/g,"\'") + '');return false;" class="news-pill">' +
+          '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'') + '</span>' +
+          '<span style="color:var(--gold);font-size:8px;margin-right:2px;">&#8599;</span>' + title +
+        '</a><span class="news-pill-sep">&#9670;</span>';
       } else {
         return '<a href="' + a.link + '" target="_blank" rel="noopener noreferrer" class="news-pill">' +
-          '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'RBI') + '</span>' +
-          title +
-        '</a><span class="news-pill-sep">◆</span>';
+          '<span class="news-pill-badge" style="' + bStyle + '">' + (a.source||'') + '</span>' + title +
+        '</a><span class="news-pill-sep">&#9670;</span>';
       }
     }).join('');
-    ticker.innerHTML = pills + pills; // duplicate for seamless loop
+    ticker.innerHTML = pills + pills;
   }
 
-  // ── EXPANDED GRID ───────────────────────────────────────────
+  // ── Expanded grid ─────────────────────────────────────────
   var grid = document.getElementById('news-expanded-grid');
   if (grid) {
     grid.innerHTML = articles.slice(0, 8).map(function(a, idx) {
       var bStyle = 'background:' + (a.color||'#C9A84C') + '22;color:' + (a.color||'#C9A84C') + ';';
-      var title = a.title.length > 100 ? a.title.slice(0,97)+'…' : a.title;
-      var tab = getNewsRoute(a.title);
-      var isInternal = !!tab;
-      var internalBadge = isInternal
-        ? '<span style="display:inline-block;margin-bottom:4px;font-size:8px;background:rgba(201,168,76,.12);color:var(--gold-light);border:1px solid rgba(201,168,76,.25);border-radius:100px;padding:1px 7px;">↗ Opens calculator</span><br>'
-        : '';
-      // Reuse window._newsArticles set during ticker render
-      window._newsArticles = window._newsArticles || {};
-      window._newsArticles['n'+idx] = { title: a.title, link: a.link };
-      if (isInternal) {
-        return '<a href="javascript:void(0);" onclick="handleNewsClick(event,window._newsArticles[\'n'+idx+'\'].title,window._newsArticles[\'n'+idx+'\'].link);return false;" class="news-card">' +
+      var title  = a.title.length > 100 ? a.title.slice(0,97)+'…' : a.title;
+      var badge  = a.tab ? '<span style="display:inline-block;margin-bottom:4px;font-size:8px;background:rgba(201,168,76,.12);color:var(--gold-light);border:1px solid rgba(201,168,76,.25);border-radius:100px;padding:1px 7px;">&#8599; Opens calculator</span><br>' : '';
+      if (a.tab) {
+        return '<a href="javascript:void(0);" onclick="handleNewsClick(event,'' + a.tab + '','' + a.link.replace(/'/g,"\'") + '');return false;" class="news-card">' +
           '<span class="news-card-src" style="' + bStyle + '">' + (a.emoji||'📰') + ' ' + (a.source||'') + '</span>' +
-          internalBadge +
-          '<div class="news-card-title">' + title + '</div>' +
-          '<div class="news-card-time">' + (a.timeLabel||'') + '</div>' +
-        '</a>';
+          badge + '<div class="news-card-title">' + title + '</div>' +
+          '<div class="news-card-time">' + (a.timeLabel||'') + '</div></a>';
       } else {
         return '<a href="' + a.link + '" target="_blank" rel="noopener noreferrer" class="news-card">' +
           '<span class="news-card-src" style="' + bStyle + '">' + (a.emoji||'📰') + ' ' + (a.source||'') + '</span>' +
           '<div class="news-card-title">' + title + '</div>' +
-          '<div class="news-card-time">' + (a.timeLabel||'') + '</div>' +
-        '</a>';
+          '<div class="news-card-time">' + (a.timeLabel||'') + '</div></a>';
       }
     }).join('');
   }
-
   var dot = document.getElementById('news-live-dot');
   if (dot) dot.style.background = '#4ade80';
 }
@@ -3065,8 +2566,7 @@ function toggleNewsExpand() {
   if (btn) btn.textContent = _newsExpanded ? '⊟ Collapse' : '⊞ Expand';
 }
 
-// Auto-refresh every 30 min (initial fetch handled by window.onload)
-setInterval(function() { if(typeof fetchNews==='function') fetchNews(false); }, NEWS_CACHE_MS);
+setInterval(function() { if (typeof fetchNews === 'function') fetchNews(false); }, NEWS_CACHE_MS);
 
 // Add SEBI disclaimer to sidebar bottom panel
 (function(){
