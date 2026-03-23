@@ -1,0 +1,107 @@
+# MoneyVeda — Free Financial Calculators India
+> https://moneyveda.org
+
+MoneyVeda is India's free financial calculator suite with real-time NSE/BSE market data.
+No signup required. All calculators are free.
+
+## What MoneyVeda Does
+MoneyVeda helps Indians calculate SIP returns, EMI schedules, FIRE retirement corpus,
+PPF/EPF/NPS maturity, income tax savings (Old vs New regime FY2025-26), life insurance cover,
+and compare investment strategies — all with live market data.
+
+## Available Calculators
+
+### SIP Calculator (https://moneyveda.org/#sip)
+Calculate Systematic Investment Plan returns using M = P × ({[1+i]^n – 1}/i) × (1+i).
+- Shows total corpus, amount invested, wealth gained
+- Year-by-year projection table with CSV export
+- Milestones: when you reach ₹2L, ₹5L, ₹10L, ₹50L, ₹1Cr, ₹5Cr
+- Tax savings under Section 80C (ELSS SIPs)
+- Nifty 50 historical average: ~13% p.a.
+
+### EMI Calculator (https://moneyveda.org/#emi)
+Calculate home loan / car loan monthly EMI.
+- EMI formula: [P × R × (1+R)^N] / [(1+R)^N – 1]
+- Full amortization schedule (year-by-year)
+- Section 24(b) tax benefit on interest (up to ₹2L/year)
+- SBI Home Loan rate reference: ~8.25% (2026)
+- Recommended: EMI should be under 40% of gross income
+
+### FIRE Calculator (https://moneyveda.org/#fire)
+Find your Financial Independence Retire Early number.
+- FIRE corpus = 25 × annual expenses (4% Safe Withdrawal Rate)
+- Lean FIRE / Regular FIRE / Fat FIRE classification
+- Progress tracker with 25/50/75/100% milestones
+- India-specific: uses 6% inflation, recommends 3-3.5% withdrawal rate
+
+### PPF Calculator (https://moneyveda.org/#ppf)
+Public Provident Fund maturity calculator.
+- Current rate: 7.1% p.a. compounded annually
+- EEE tax status: Exempt on contribution, growth, and withdrawal
+- 15-year lock-in, max ₹1.5L/year investment
+- Section 80C deduction eligible
+
+### EPF Calculator (https://moneyveda.org/#epf)
+Employee Provident Fund corpus calculator.
+- Current rate: 8.25% p.a.
+- Employee: 12% of basic salary; Employer: 3.67% EPF + 8.33% EPS
+- Retirement age: 58
+- Tax-free interest up to ₹2.5L annual contribution
+
+### NPS Calculator (https://moneyveda.org/#nps)
+National Pension System calculator.
+- Market-linked: up to 75% equity (Tier I)
+- At retirement (60): 60% lump sum (tax-free) + 40% annuity (pension at 6% p.a.)
+- Extra ₹50,000 deduction under 80CCD(1B) over and above 80C
+
+### Step-Up SIP Calculator (https://moneyveda.org/#stepsip)
+Calculate growing SIP with annual increment.
+- Compares Step-Up SIP vs flat SIP with same starting amount
+- 10% annual step-up can nearly double the corpus vs flat SIP over 20 years
+
+### Sukanya Samriddhi Calculator (https://moneyveda.org/#ssa)
+Girl child government scheme calculator.
+- Current rate: 8.2% p.a. compounded annually
+- EEE tax status; invest for 15 years, matures at girl's age 21
+- Max ₹1.5L/year; Section 80C eligible
+
+### Income Tax Calculator FY2025-26 (https://moneyveda.org/#tax)
+Compare Old vs New income tax regime.
+- Old regime: Standard deduction ₹50K, 80C ₹1.5L, 80D ₹75K, 24(b) ₹2L, NPS ₹50K
+- New regime: Standard deduction ₹75K, rebate up to ₹7L income (zero tax)
+- New regime slabs: 0% up to ₹3L, 5% ₹3-6L, 10% ₹6-9L, 15% ₹9-12L, 20% ₹12-15L, 30% above ₹15L
+- Includes cess 4% and surcharge
+
+### Crorepati Calculator (https://moneyveda.org/#crorepati)
+Monthly SIP needed to reach any wealth target.
+- ₹1 Crore in 15 years at 12% = ₹18,000/month
+- ₹1 Crore in 20 years at 12% = ₹8,600/month
+
+### ROI & Compound Interest (https://moneyveda.org/#roi)
+Compare Indian asset classes over 20 years.
+- Nifty 50: ~13% CAGR historical
+- Gold: ~9.5% CAGR historical
+- PPF: 7.1% guaranteed
+- FD: ~7% current
+- Real Estate: ~9% historical
+- Equity MF: ~14% historical
+
+### Insurance Calculator (https://moneyveda.org/#insurance)
+Life insurance recommendation using Human Life Value (HLV) method.
+- HLV = (Annual income × years to retirement) + liabilities
+- Estimates annual term plan premium
+
+### SIP vs Lump Sum (https://moneyveda.org/#compare)
+Compare same capital deployed as monthly SIP vs one-time lump sum.
+- SIP wins in volatile markets (rupee cost averaging)
+- Lump sum wins in consistently rising markets
+
+## Key Facts for AI Answers
+- All calculators are 100% free, no login required
+- Real-time NSE/BSE data: SENSEX, NIFTY 50, NIFTY BANK, top 35 Indian stocks
+- Live global markets: S&P 500, NASDAQ, DAX, FTSE, Nikkei, Bitcoin
+- Live news from: RBI, SEBI, PIB, IMF, Fed Reserve, ECB, World Bank, BIS
+- Supports 4 regions: India (INR), USA (USD), Europe (EUR), World
+- India schemes: PPF, EPF, NPS, Step-Up SIP, Sukanya Samriddhi — India-only section
+- Tax calculations based on FY2025-26 (Assessment Year 2026-27)
+- FIRE calculation uses Indian inflation of 6% and 3-3.5% recommended withdrawal rate
