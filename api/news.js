@@ -1,26 +1,26 @@
 // ============================================================
-// /api/news.js — MoneyVeda v10 (Protected Edition)
+// /api/news.js — MoneyVeda (News Fix Edition)
 //
-// MOVED SERVER-SIDE (no longer in index.html):
-//   • NEWS_ROUTES keyword→tab routing table (16 route groups,
-//     60+ keywords) — the smart news routing logic is now fully
-//     hidden from the client
-//   • getNewsRoute() function — resolves each article's internal
-//     calculator tab (or null for external) on the server
-//   • Each article in the response now carries a resolved `tab`
-//     field. Client just checks: if(a.tab) navTo(a.tab); else
-//     window.open(a.link) — zero routing logic exposed
-//   • FALLBACK data for all regions + world items
-//   • Feed URL lists (RBI, SEBI, PIB, Fed, ECB, ESMA, IMF, BIS,
-//     World Bank) — no source structure visible to client
+// ROOT CAUSE OF STALE NEWS — four layers fixed:
+//   1. IMF_URL was a blog page not an RSS feed → always fell
+//      through to static fallback. Fixed below.
+//   2. rss2json free plan ignores _cb cache-buster params.
+//      Fixed: use RSS2JSON_API_KEY env var if available.
+//   3. Cache-Control: public, max-age=900 was letting Vercel
+//      CDN edge cache the API response — function never ran.
+//      Fixed: no-store so every request hits the function.
+//   4. stale-while-revalidate=1800 allowed 30-min-old data.
+//      Removed entirely.
 // ============================================================
 
 const https = require('https');
-// Cache-bust rss2json by appending a timestamp rounded to 15 minutes
-// This forces rss2json to re-fetch the source RSS instead of serving stale cached content
+
+// rss2json — use api_key env var if set (paid plan bypasses their cache)
+// Without a key the free plan may return their own cached copy for up to 1 hr.
+// Set RSS2JSON_API_KEY in Vercel environment variables to get fresh data every time.
 const R2J = () => {
-  const bust = Math.floor(Date.now() / (15 * 60 * 1000)); // changes every 15 min
-  return `https://api.rss2json.com/v1/api.json?count=3&_cb=${bust}&rss_url=`;
+  const key = process.env.RSS2JSON_API_KEY ? `&api_key=${process.env.RSS2JSON_API_KEY}` : '';
+  return `https://api.rss2json.com/v1/api.json?count=5${key}&rss_url=`;
 };
 
 // ── Feed constructor ─────────────────────────────────────────
@@ -28,9 +28,9 @@ const feed = (rssUrl, source, label, emoji, color, link) =>
   ({ rssUrl, source, label, emoji, color, link });
 
 // ── Feed URL constants (server-only) ─────────────────────────
-const IMF_URL       = 'https://www.imf.org/en/Blogs';
+const IMF_URL       = 'https://www.imf.org/en/News/rss?category=newsfeed';  // correct RSS endpoint (was blog page)
 const BIS_URL       = 'https://www.bis.org/doclist/cbspeeches.rss';
-const WORLDBANK_URL = 'https://blogs.worldbank.org/rss.xml';
+const WORLDBANK_URL = 'https://blogs.worldbank.org/en/rss.xml';
 const FED_URL       = 'https://www.federalreserve.gov/feeds/press_all.xml';
 const ECB_URL       = 'https://www.ecb.europa.eu/rss/press.html';
 
@@ -161,7 +161,7 @@ const FALLBACK = {
 // ── In-memory cache ───────────────────────────────────────────
 const _cache     = {};
 const _cacheTime = {};
-const CACHE_MS   = 15 * 60 * 1000; // 15 minutes (was 1 hour — reduced to keep news fresh)
+const CACHE_MS   = 5 * 60 * 1000; // 5 minutes — server-side only, Vercel edge is bypassed
 
 // ── Fetch from rss2json ───────────────────────────────────────
 function fetchJSON(url) {
@@ -229,7 +229,11 @@ function dedupe(articles) {
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 'public, max-age=900, stale-while-revalidate=1800');
+  // no-store: prevents Vercel CDN edge from caching this response.
+  // Without this, Vercel serves a cached copy for max-age seconds and
+  // the serverless function never runs — users see the same old news forever.
+  // Server-side in-memory cache (CACHE_MS) handles rate-limiting instead.
+  res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET')     return res.status(405).json({ error: 'Method not allowed' });
