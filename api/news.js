@@ -16,7 +16,12 @@
 // ============================================================
 
 const https = require('https');
-const R2J   = 'https://api.rss2json.com/v1/api.json?count=3&rss_url=';
+// Cache-bust rss2json by appending a timestamp rounded to 15 minutes
+// This forces rss2json to re-fetch the source RSS instead of serving stale cached content
+const R2J = () => {
+  const bust = Math.floor(Date.now() / (15 * 60 * 1000)); // changes every 15 min
+  return `https://api.rss2json.com/v1/api.json?count=3&_cb=${bust}&rss_url=`;
+};
 
 // ── Feed constructor ─────────────────────────────────────────
 const feed = (rssUrl, source, label, emoji, color, link) =>
@@ -156,7 +161,7 @@ const FALLBACK = {
 // ── In-memory cache ───────────────────────────────────────────
 const _cache     = {};
 const _cacheTime = {};
-const CACHE_MS   = 60 * 60 * 1000; // 1 hour
+const CACHE_MS   = 15 * 60 * 1000; // 15 minutes (was 1 hour — reduced to keep news fresh)
 
 // ── Fetch from rss2json ───────────────────────────────────────
 function fetchJSON(url) {
@@ -224,7 +229,7 @@ function dedupe(articles) {
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=7200');
+  res.setHeader('Cache-Control', 'public, max-age=900, stale-while-revalidate=1800');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET')     return res.status(405).json({ error: 'Method not allowed' });
@@ -241,7 +246,7 @@ module.exports = async function handler(req, res) {
   try {
     const results = await Promise.allSettled(
       feeds.map(f =>
-        fetchJSON(R2J + encodeURIComponent(f.rssUrl))
+        fetchJSON(R2J() + encodeURIComponent(f.rssUrl))
           .then(data => parseItems(data, f))
           .catch(err => { console.warn(`[${f.source}]: ${err.message}`); return []; })
       )
