@@ -1,46 +1,59 @@
 // ============================================================
-// /api/news.js — MoneyVeda (Direct RSS Edition)
+// /api/news.js — MoneyVeda (Direct RSS + Quality Feeds)
 //
-// WHY rss2json was always returning stale news:
-//   • rss2json FREE plan caches RSS feeds on THEIR servers for
-//     60 minutes. No params (_cb, api_key without paid account)
-//     bypass this. You always get their cached copy.
+// Fetches RSS directly — no rss2json middleman.
+// rss2json free plan caches for 60min and can't be bypassed.
+// This version hits RSS sources directly using Node https.
 //
-// FIX: Parse RSS feeds DIRECTLY using Node's built-in https
-// module + XML parsing. Zero third-party dependencies.
-// Works natively on Vercel serverless.
+// FEEDS USED:
+//   India:  Economic Times, Business Standard, RBI, SEBI, PIB
+//   USA:    Fed Reserve, FOMC, MarketWatch, Nasdaq
+//   Europe: ECB, ESMA + world feeds
+//   World:  Fed, ECB, Investing.com, Nasdaq
+//
+// NOTE: Reuters RSS shut down March 2026.
 // ============================================================
 
 const https = require('https');
 const http  = require('http');
 
-// ── Feed constructor ──────────────────────────────────────────
 const feed = (rssUrl, source, label, emoji, color, link) =>
   ({ rssUrl, source, label, emoji, color, link });
 
 // ── Feed URLs ─────────────────────────────────────────────────
-const FED_URL       = 'https://www.federalreserve.gov/feeds/press_all.xml';
-const ECB_URL       = 'https://www.ecb.europa.eu/rss/press.html';
-const BIS_URL       = 'https://www.bis.org/doclist/cbspeeches.rss';
-const IMF_URL       = 'https://www.imf.org/en/News/rss?category=newsfeed';
-const WORLDBANK_URL = 'https://blogs.worldbank.org/en/rss.xml';
+const FED_URL        = 'https://www.federalreserve.gov/feeds/press_all.xml';
+const ECB_URL        = 'https://www.ecb.europa.eu/rss/press.html';
+const BIS_URL        = 'https://www.bis.org/doclist/cbspeeches.rss';
+const IMF_URL        = 'https://www.imf.org/en/News/rss?category=newsfeed';
+const NASDAQ_URL     = 'https://www.nasdaq.com/feed/nasdaq-originals.rss';
+const INVESTING_URL  = 'https://in.investing.com/rss/news.rss';
+const ET_URL         = 'https://economictimes.indiatimes.com/rssfeedstopstories.cms';
+const ET_MARKET_URL  = 'https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms';
+const ET_FINANCE_URL = 'https://economictimes.indiatimes.com/wealth/rssfeeds/837555173.cms';
+const BS_URL         = 'https://www.business-standard.com/rss/finance-markets-10201.rss';
+const BS_ECON_URL    = 'https://www.business-standard.com/rss/economy-policy-10102.rss';
+const MW_URL         = 'https://feeds.content.dowjones.io/public/rss/mw_topstories';
+const WORLDBANK_URL  = 'https://blogs.worldbank.org/en/rss.xml';
 
 const WORLD_FEEDS = [
-  feed(IMF_URL,       'IMF',        'Global Economy', '🌍', '#3B82F6', 'https://imf.org/en/News'),
-  feed(BIS_URL,       'BIS',        'Central Banks',  '🏛️', '#C9A84C', 'https://bis.org'),
-  feed(FED_URL,       'Fed Reserve','US Policy',      '💵', '#22C55E', 'https://federalreserve.gov'),
-  feed(ECB_URL,       'ECB',        'EU Policy',      '🇪🇺', '#6366F1', 'https://ecb.europa.eu'),
-  feed(WORLDBANK_URL, 'World Bank', 'Global Finance', '🌐', '#0ea5e9', 'https://blogs.worldbank.org'),
+  feed(FED_URL,       'Fed Reserve', 'US Policy',      '💵', '#22C55E', 'https://federalreserve.gov'),
+  feed(ECB_URL,       'ECB',         'EU Policy',      '🇪🇺', '#6366F1', 'https://ecb.europa.eu'),
+  feed(IMF_URL,       'IMF',         'Global Economy', '🌍', '#3B82F6', 'https://imf.org/en/News'),
+  feed(BIS_URL,       'BIS',         'Central Banks',  '🏛️', '#C9A84C', 'https://bis.org'),
+  feed(INVESTING_URL, 'Investing.com','Markets',       '📊', '#F59E0B', 'https://in.investing.com'),
 ];
 
 const FEEDS = {
   india: [
+    feed(ET_URL,         'Economic Times', 'Top Stories',  '📰', '#F97316', 'https://economictimes.indiatimes.com'),
+    feed(ET_MARKET_URL,  'Economic Times', 'Markets',      '📈', '#C9A84C', 'https://economictimes.indiatimes.com/markets'),
+    feed(ET_FINANCE_URL, 'ET Wealth',      'Personal Finance','💰','#22C55E','https://economictimes.indiatimes.com/wealth'),
+    feed(BS_URL,         'Business Standard','Finance',    '📊', '#6366F1', 'https://business-standard.com'),
+    feed(BS_ECON_URL,    'Business Standard','Economy',    '🏛️', '#EC4899', 'https://business-standard.com'),
     feed('https://rbi.org.in/pressreleases_rss.xml',
       'RBI',  'Press Release', '🏦', '#C9A84C', 'https://rbi.org.in'),
     feed('https://www.sebi.gov.in/sebirss.xml',
       'SEBI', 'Regulator',     '📋', '#6366F1', 'https://sebi.gov.in'),
-    feed('https://rbi.org.in/notifications_rss.xml',
-      'RBI',  'Notification',  '📢', '#22C55E', 'https://rbi.org.in'),
     feed('https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3',
       'PIB',  'Govt Finance',  '🇮🇳', '#EC4899', 'https://pib.gov.in'),
     ...WORLD_FEEDS,
@@ -49,24 +62,37 @@ const FEEDS = {
     feed(FED_URL,
       'Fed Reserve', 'Monetary Policy', '🏛️', '#3B82F6', 'https://federalreserve.gov'),
     feed('https://www.federalreserve.gov/feeds/press_monetary.xml',
-      'FOMC', 'Rate Decision',   '💵', '#22C55E', 'https://federalreserve.gov'),
+      'FOMC', 'Rate Decision', '💵', '#22C55E', 'https://federalreserve.gov'),
+    feed(MW_URL,
+      'MarketWatch', 'Top Stories', '📈', '#F97316', 'https://marketwatch.com'),
+    feed(NASDAQ_URL,
+      'Nasdaq', 'Markets', '💹', '#22C55E', 'https://nasdaq.com'),
     feed('https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=&dateb=&owner=include&count=10&search_text=&output=atom',
-      'SEC',  'Regulator',       '⚖️', '#F59E0B', 'https://sec.gov'),
+      'SEC', 'Regulator', '⚖️', '#F59E0B', 'https://sec.gov'),
     ...WORLD_FEEDS,
   ],
   europe: [
     feed(ECB_URL,
-      'ECB',  'Rate Decision',   '🏦', '#6366F1', 'https://ecb.europa.eu'),
+      'ECB',  'Rate Decision',  '🏦', '#6366F1', 'https://ecb.europa.eu'),
     feed('https://www.ecb.europa.eu/rss/key.html',
-      'ECB',  'Key Speech',      '🎙️', '#22C55E', 'https://ecb.europa.eu'),
+      'ECB',  'Key Speech',     '🎙️', '#22C55E', 'https://ecb.europa.eu'),
     feed('https://www.esma.europa.eu/sites/default/files/library/esma_news.xml',
-      'ESMA', 'Regulator',       '📋', '#EC4899', 'https://esma.europa.eu'),
+      'ESMA', 'Regulator',      '📋', '#EC4899', 'https://esma.europa.eu'),
     ...WORLD_FEEDS,
   ],
-  world: [ ...WORLD_FEEDS ],
+  world: [
+    feed(FED_URL,       'Fed Reserve',    'US Policy',     '💵', '#22C55E', 'https://federalreserve.gov'),
+    feed(ECB_URL,       'ECB',            'EU Policy',     '🇪🇺', '#6366F1', 'https://ecb.europa.eu'),
+    feed(IMF_URL,       'IMF',            'Global Economy','🌍', '#3B82F6', 'https://imf.org/en/News'),
+    feed(BIS_URL,       'BIS',            'Central Banks', '🏛️', '#C9A84C', 'https://bis.org'),
+    feed(NASDAQ_URL,    'Nasdaq',         'Markets',       '💹', '#22C55E', 'https://nasdaq.com'),
+    feed(MW_URL,        'MarketWatch',    'Top Stories',   '📈', '#F97316', 'https://marketwatch.com'),
+    feed(INVESTING_URL, 'Investing.com',  'Markets',       '📊', '#F59E0B', 'https://in.investing.com'),
+    feed(WORLDBANK_URL, 'World Bank',     'Global Finance','🌐', '#0ea5e9', 'https://blogs.worldbank.org'),
+  ],
 };
 
-// ── News routing ──────────────────────────────────────────────
+// ── News tab routing ──────────────────────────────────────────
 const NEWS_ROUTES = [
   { kw: ['nps','national pension','pfrda','pension corpus'],              tab: 'nps'       },
   { kw: ['sip','mutual fund','amfi','elss','equity fund','nav'],          tab: 'sip'       },
@@ -79,15 +105,17 @@ const NEWS_ROUTES = [
   { kw: ['federal reserve','fomc','fed rate','interest rate'],            tab: 'emi'       },
   { kw: ['401k','roth ira','retirement savings'],                         tab: 'fire'      },
   { kw: ['mortgage rate','housing market'],                               tab: 'emi'       },
-  { kw: ['s&p 500','nasdaq','stock market','equity market'],              tab: 'sip'       },
-  { kw: ['capital gains tax','irs','federal tax'],                        tab: 'tax'       },
+  { kw: ['s&p 500','nasdaq','stock market','sensex','nifty','bse','nse'], tab: 'sip'       },
+  { kw: ['capital gains','income tax','irs','federal tax'],               tab: 'tax'       },
   { kw: ['ecb','european central bank','eurozone'],                       tab: 'emi'       },
   { kw: ['imf','world bank','global growth','gdp'],                       tab: 'fire'      },
-  { kw: ['inflation','cpi','price index'],                                tab: 'emi'       },
-  { kw: ['retirement','retire early','financial independence'],           tab: 'fire'      },
-  { kw: ['investment','wealth','portfolio','compounding'],                tab: 'sip'       },
-  { kw: ['tax','taxation','fiscal','budget'],                             tab: 'tax'       },
-  { kw: ['life insurance','term insurance','coverage'],                   tab: 'insurance' },
+  { kw: ['inflation','cpi','price index','repo'],                         tab: 'emi'       },
+  { kw: ['retirement','retire early','financial independence','fire'],    tab: 'fire'      },
+  { kw: ['mutual fund','sip','investment','portfolio','compounding'],     tab: 'sip'       },
+  { kw: ['tax','taxation','fiscal','budget','deduction'],                 tab: 'tax'       },
+  { kw: ['life insurance','term insurance','coverage','premium'],         tab: 'insurance' },
+  { kw: ['crorepati','crore','millionaire','wealth goal'],                tab: 'crorepati' },
+  { kw: ['roi','returns','cagr','compound interest'],                     tab: 'roi'       },
 ];
 
 function resolveTab(title) {
@@ -101,24 +129,34 @@ function resolveTab(title) {
   return null;
 }
 
-// ── Static fallback (only if ALL feeds fail) ──────────────────
-const WORLD_FALLBACK = [
-  { title: 'IMF: Global growth outlook for 2026',                 source: 'IMF',        emoji: '🌍', color: '#3B82F6', label: 'Global Economy', timeLabel: 'Latest', link: 'https://imf.org/en/News',     tab: 'fire' },
-  { title: 'BIS: Central banks post-inflation navigation',        source: 'BIS',        emoji: '🏛️', color: '#C9A84C', label: 'Central Banks',  timeLabel: 'Latest', link: 'https://bis.org',             tab: 'fire' },
-  { title: 'Fed: Latest monetary policy statement',               source: 'Fed Reserve',emoji: '💵', color: '#22C55E', label: 'US Policy',      timeLabel: 'Latest', link: 'https://federalreserve.gov', tab: 'emi'  },
-  { title: 'ECB: Euro area economic and inflation assessment',    source: 'ECB',        emoji: '🇪🇺', color: '#6366F1', label: 'EU Policy',      timeLabel: 'Latest', link: 'https://ecb.europa.eu',      tab: 'emi'  },
-  { title: 'World Bank: Global development update',               source: 'World Bank', emoji: '🌐', color: '#0ea5e9', label: 'Global Finance', timeLabel: 'Latest', link: 'https://blogs.worldbank.org',tab: 'fire' },
-];
+// ── Static fallback (only when ALL feeds fail) ────────────────
 const FALLBACK = {
   india: [
-    { title: 'RBI: Latest monetary policy committee decision',     source: 'RBI',  emoji: '🏦', color: '#C9A84C', label: 'Press Release', timeLabel: 'Latest', link: 'https://rbi.org.in',  tab: 'emi' },
-    { title: 'SEBI: Recent mutual fund regulation circular',       source: 'SEBI', emoji: '📋', color: '#6366F1', label: 'Regulator',     timeLabel: 'Latest', link: 'https://sebi.gov.in', tab: 'sip' },
-    { title: 'PIB: Budget income tax key announcements',           source: 'PIB',  emoji: '🇮🇳', color: '#EC4899', label: 'Govt Finance',  timeLabel: 'Latest', link: 'https://pib.gov.in',  tab: 'tax' },
-    ...WORLD_FALLBACK,
+    { title: 'RBI MPC: Latest monetary policy decision',                 source: 'RBI',            emoji: '🏦', color: '#C9A84C', label: 'Press Release',   timeLabel: 'Latest', link: 'https://rbi.org.in',                        tab: 'emi'  },
+    { title: 'SEBI: New mutual fund regulation circular',                source: 'SEBI',           emoji: '📋', color: '#6366F1', label: 'Regulator',       timeLabel: 'Latest', link: 'https://sebi.gov.in',                       tab: 'sip'  },
+    { title: 'Economic Times: India markets top stories',                source: 'Economic Times', emoji: '📰', color: '#F97316', label: 'Top Stories',     timeLabel: 'Latest', link: 'https://economictimes.indiatimes.com',       tab: null   },
+    { title: 'Budget 2025-26: Income tax key announcements',             source: 'PIB',            emoji: '🇮🇳', color: '#EC4899', label: 'Govt Finance',    timeLabel: 'Latest', link: 'https://pib.gov.in',                        tab: 'tax'  },
+    { title: 'Fed: Latest monetary policy statement',                    source: 'Fed Reserve',    emoji: '💵', color: '#22C55E', label: 'US Policy',       timeLabel: 'Latest', link: 'https://federalreserve.gov',                tab: 'emi'  },
+    { title: 'IMF: Global growth outlook 2026',                          source: 'IMF',            emoji: '🌍', color: '#3B82F6', label: 'Global Economy',  timeLabel: 'Latest', link: 'https://imf.org/en/News',                   tab: 'fire' },
   ],
-  usa:    [ ...WORLD_FALLBACK ],
-  europe: [ ...WORLD_FALLBACK ],
-  world:  [ ...WORLD_FALLBACK ],
+  usa: [
+    { title: 'Federal Reserve: Latest monetary policy decision',         source: 'Fed Reserve',    emoji: '🏛️', color: '#3B82F6', label: 'Monetary Policy', timeLabel: 'Latest', link: 'https://federalreserve.gov',                tab: 'emi'  },
+    { title: 'MarketWatch: US markets top stories',                      source: 'MarketWatch',    emoji: '📈', color: '#F97316', label: 'Top Stories',     timeLabel: 'Latest', link: 'https://marketwatch.com',                   tab: null   },
+    { title: 'Nasdaq: Markets and trading update',                       source: 'Nasdaq',         emoji: '💹', color: '#22C55E', label: 'Markets',         timeLabel: 'Latest', link: 'https://nasdaq.com',                        tab: 'sip'  },
+    { title: 'IMF: Global economic outlook',                             source: 'IMF',            emoji: '🌍', color: '#3B82F6', label: 'Global Economy',  timeLabel: 'Latest', link: 'https://imf.org/en/News',                   tab: 'fire' },
+  ],
+  europe: [
+    { title: 'ECB: Interest rate and monetary policy decision',          source: 'ECB',            emoji: '🏦', color: '#6366F1', label: 'Rate Decision',   timeLabel: 'Latest', link: 'https://ecb.europa.eu',                     tab: 'emi'  },
+    { title: 'ESMA: New sustainable finance guidelines',                 source: 'ESMA',           emoji: '📋', color: '#EC4899', label: 'Regulator',       timeLabel: 'Latest', link: 'https://esma.europa.eu',                    tab: null   },
+    { title: 'IMF: Euro area economic assessment',                       source: 'IMF',            emoji: '🌍', color: '#3B82F6', label: 'Global Economy',  timeLabel: 'Latest', link: 'https://imf.org/en/News',                   tab: 'fire' },
+  ],
+  world: [
+    { title: 'Fed: Latest monetary policy statement',                    source: 'Fed Reserve',    emoji: '💵', color: '#22C55E', label: 'US Policy',       timeLabel: 'Latest', link: 'https://federalreserve.gov',                tab: 'emi'  },
+    { title: 'ECB: Euro area rate decision',                             source: 'ECB',            emoji: '🇪🇺', color: '#6366F1', label: 'EU Policy',       timeLabel: 'Latest', link: 'https://ecb.europa.eu',                     tab: 'emi'  },
+    { title: 'IMF: Global growth outlook 2026',                          source: 'IMF',            emoji: '🌍', color: '#3B82F6', label: 'Global Economy',  timeLabel: 'Latest', link: 'https://imf.org/en/News',                   tab: 'fire' },
+    { title: 'Nasdaq: Markets and trading update',                       source: 'Nasdaq',         emoji: '💹', color: '#22C55E', label: 'Markets',         timeLabel: 'Latest', link: 'https://nasdaq.com',                        tab: 'sip'  },
+    { title: 'MarketWatch: Global markets top stories',                  source: 'MarketWatch',    emoji: '📈', color: '#F97316', label: 'Top Stories',     timeLabel: 'Latest', link: 'https://marketwatch.com',                   tab: null   },
+  ],
 };
 
 // ── In-memory cache (5 min) ───────────────────────────────────
@@ -190,7 +228,6 @@ function parseRSS(xml, feedMeta) {
     if (!title || title.length < 5) continue;
     if (title.length > 110) title = title.slice(0, 107) + '…';
 
-    // Link: try <link>text</link>, then <link href="..."/>, then <guid>
     let link = extractTag(block, 'link');
     if (!link) {
       const hrefM = block.match(/<link[^>]+href="([^"]+)"/i);
@@ -243,8 +280,7 @@ function dedupe(articles) {
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  // no-store: Vercel CDN must NOT cache this — every request hits the function
-  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Cache-Control', 'no-store'); // no Vercel CDN caching
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET')     return res.status(405).json({ error: 'Method not allowed' });
@@ -253,7 +289,6 @@ module.exports = async function handler(req, res) {
   const feeds  = FEEDS[region];
   if (!feeds) return res.status(200).json({ articles: [], region, note: 'Coming soon' });
 
-  // Serve from in-memory cache if still fresh
   if (_cache[region] && (Date.now() - (_cacheTime[region] || 0)) < CACHE_MS) {
     return res.status(200).json({ articles: _cache[region], cached: true, region });
   }
