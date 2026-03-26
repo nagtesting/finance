@@ -1,49 +1,38 @@
 // ============================================================
-// /api/news.js — MoneyVeda (News Fix Edition)
+// /api/news.js — MoneyVeda (Direct RSS Edition)
 //
-// ROOT CAUSE OF STALE NEWS — four layers fixed:
-//   1. IMF_URL was a blog page not an RSS feed → always fell
-//      through to static fallback. Fixed below.
-//   2. rss2json free plan ignores _cb cache-buster params.
-//      Fixed: use RSS2JSON_API_KEY env var if available.
-//   3. Cache-Control: public, max-age=900 was letting Vercel
-//      CDN edge cache the API response — function never ran.
-//      Fixed: no-store so every request hits the function.
-//   4. stale-while-revalidate=1800 allowed 30-min-old data.
-//      Removed entirely.
+// WHY rss2json was always returning stale news:
+//   • rss2json FREE plan caches RSS feeds on THEIR servers for
+//     60 minutes. No params (_cb, api_key without paid account)
+//     bypass this. You always get their cached copy.
+//
+// FIX: Parse RSS feeds DIRECTLY using Node's built-in https
+// module + XML parsing. Zero third-party dependencies.
+// Works natively on Vercel serverless.
 // ============================================================
 
 const https = require('https');
+const http  = require('http');
 
-// rss2json — use api_key env var if set (paid plan bypasses their cache)
-// Without a key the free plan may return their own cached copy for up to 1 hr.
-// Set RSS2JSON_API_KEY in Vercel environment variables to get fresh data every time.
-const R2J = () => {
-  const key = process.env.RSS2JSON_API_KEY ? `&api_key=${process.env.RSS2JSON_API_KEY}` : '';
-  return `https://api.rss2json.com/v1/api.json?count=5${key}&rss_url=`;
-};
-
-// ── Feed constructor ─────────────────────────────────────────
+// ── Feed constructor ──────────────────────────────────────────
 const feed = (rssUrl, source, label, emoji, color, link) =>
   ({ rssUrl, source, label, emoji, color, link });
 
-// ── Feed URL constants (server-only) ─────────────────────────
-const IMF_URL       = 'https://www.imf.org/en/News/rss?category=newsfeed';  // correct RSS endpoint (was blog page)
-const BIS_URL       = 'https://www.bis.org/doclist/cbspeeches.rss';
-const WORLDBANK_URL = 'https://blogs.worldbank.org/en/rss.xml';
+// ── Feed URLs ─────────────────────────────────────────────────
 const FED_URL       = 'https://www.federalreserve.gov/feeds/press_all.xml';
 const ECB_URL       = 'https://www.ecb.europa.eu/rss/press.html';
+const BIS_URL       = 'https://www.bis.org/doclist/cbspeeches.rss';
+const IMF_URL       = 'https://www.imf.org/en/News/rss?category=newsfeed';
+const WORLDBANK_URL = 'https://blogs.worldbank.org/en/rss.xml';
 
-// ── World feeds (merged into every region) ───────────────────
 const WORLD_FEEDS = [
-  feed(IMF_URL,       'IMF',        'Global Economy', '🌍', '#3B82F6', 'https://imf.org/en/Blogs'),
+  feed(IMF_URL,       'IMF',        'Global Economy', '🌍', '#3B82F6', 'https://imf.org/en/News'),
   feed(BIS_URL,       'BIS',        'Central Banks',  '🏛️', '#C9A84C', 'https://bis.org'),
   feed(FED_URL,       'Fed Reserve','US Policy',      '💵', '#22C55E', 'https://federalreserve.gov'),
   feed(ECB_URL,       'ECB',        'EU Policy',      '🇪🇺', '#6366F1', 'https://ecb.europa.eu'),
   feed(WORLDBANK_URL, 'World Bank', 'Global Finance', '🌐', '#0ea5e9', 'https://blogs.worldbank.org'),
 ];
 
-// ── Feed lists per region ─────────────────────────────────────
 const FEEDS = {
   india: [
     feed('https://rbi.org.in/pressreleases_rss.xml',
@@ -77,45 +66,30 @@ const FEEDS = {
   world: [ ...WORLD_FEEDS ],
 };
 
-// ── NEWS ROUTING TABLE (was NEWS_ROUTES in client JS) ─────────
-// Fully hidden server-side. Client receives a resolved `tab` field per article.
+// ── News routing ──────────────────────────────────────────────
 const NEWS_ROUTES = [
-  // India
-  { kw: ['nps','national pension','pfrda','pension corpus','pension fund'],              tab: 'nps'       },
-  { kw: ['sip','mutual fund','amfi','elss','equity fund','nfo','nav','systematic invest'],tab: 'sip'       },
-  { kw: ['ppf','public provident fund','small savings'],                                 tab: 'ppf'       },
-  { kw: ['epf','provident fund','pf withdrawal','pf balance','employees provident'],     tab: 'epf'       },
-  { kw: ['home loan','repo rate','emi','housing loan','rbi rate'],                       tab: 'emi'       },
-  { kw: ['income tax','tax slab','80c','section 80','itr','deduction','new regime','old regime','budget tax'], tab: 'tax' },
-  { kw: ['insurance','term plan','life cover','health insurance'],                       tab: 'insurance' },
-  { kw: ['sukanya','girl child','ssa','samriddhi'],                                      tab: 'ssa'       },
-  { kw: ['step up sip','increase sip','sip increment'],                                  tab: 'stepsip'   },
-  // USA
-  { kw: ['federal reserve','fed rate','fomc','interest rate','fed hike','fed cut','rate decision'], tab: 'emi' },
-  { kw: ['401k','roth ira','ira contribution','retirement savings','social security'],   tab: 'fire'      },
-  { kw: ['mortgage rate','home purchase','housing market','refinance'],                  tab: 'emi'       },
-  { kw: ['s&p 500','nasdaq','stock market','equity market','bull market','bear market'], tab: 'sip'       },
-  { kw: ['sec regulation','investor protection','securities'],                           tab: 'insurance' },
-  { kw: ['capital gains tax','tax bracket','irs','federal tax','tax return'],            tab: 'tax'       },
-  // Europe
-  { kw: ['ecb','european central bank','euro rate','eurozone inflation'],                tab: 'emi'       },
-  { kw: ['esma','mifid','ucits','european fund'],                                        tab: 'sip'       },
-  { kw: ['pension reform','occupational pension','retirement europe'],                   tab: 'fire'      },
-  { kw: ['euro mortgage','housing europe','property market europe'],                     tab: 'emi'       },
-  // World / Global
-  { kw: ['imf','world bank','global growth','gdp forecast','bis','central bank'],        tab: 'fire'      },
-  { kw: ['inflation','cpi','price index','deflation'],                                   tab: 'emi'       },
-  { kw: ['cryptocurrency','bitcoin','ethereum','crypto regulation'],                     tab: 'roi'       },
-  { kw: ['global trade','tariff','trade war','sanctions'],                               tab: 'fire'      },
-  // Universal
-  { kw: ['retirement','retire early','financial independence'],                          tab: 'fire'      },
-  { kw: ['mortgage','interest rate','basis point','rate hike','rate cut'],               tab: 'emi'       },
-  { kw: ['investment','wealth','portfolio','compounding','returns'],                     tab: 'sip'       },
-  { kw: ['tax','taxation','fiscal','budget'],                                            tab: 'tax'       },
-  { kw: ['life insurance','term insurance','coverage','premium'],                        tab: 'insurance' },
+  { kw: ['nps','national pension','pfrda','pension corpus'],              tab: 'nps'       },
+  { kw: ['sip','mutual fund','amfi','elss','equity fund','nav'],          tab: 'sip'       },
+  { kw: ['ppf','public provident fund','small savings'],                  tab: 'ppf'       },
+  { kw: ['epf','provident fund','pf withdrawal','employees provident'],   tab: 'epf'       },
+  { kw: ['home loan','repo rate','emi','housing loan','rbi rate'],        tab: 'emi'       },
+  { kw: ['income tax','tax slab','80c','section 80','itr','new regime'],  tab: 'tax'       },
+  { kw: ['insurance','term plan','life cover','health insurance'],        tab: 'insurance' },
+  { kw: ['sukanya','girl child','samriddhi'],                             tab: 'ssa'       },
+  { kw: ['federal reserve','fomc','fed rate','interest rate'],            tab: 'emi'       },
+  { kw: ['401k','roth ira','retirement savings'],                         tab: 'fire'      },
+  { kw: ['mortgage rate','housing market'],                               tab: 'emi'       },
+  { kw: ['s&p 500','nasdaq','stock market','equity market'],              tab: 'sip'       },
+  { kw: ['capital gains tax','irs','federal tax'],                        tab: 'tax'       },
+  { kw: ['ecb','european central bank','eurozone'],                       tab: 'emi'       },
+  { kw: ['imf','world bank','global growth','gdp'],                       tab: 'fire'      },
+  { kw: ['inflation','cpi','price index'],                                tab: 'emi'       },
+  { kw: ['retirement','retire early','financial independence'],           tab: 'fire'      },
+  { kw: ['investment','wealth','portfolio','compounding'],                tab: 'sip'       },
+  { kw: ['tax','taxation','fiscal','budget'],                             tab: 'tax'       },
+  { kw: ['life insurance','term insurance','coverage'],                   tab: 'insurance' },
 ];
 
-// ── Resolve routing tab for an article title (server-side only) ──
 function resolveTab(title) {
   if (!title) return null;
   const lower = title.toLowerCase();
@@ -127,91 +101,131 @@ function resolveTab(title) {
   return null;
 }
 
-// ── Static fallbacks ──────────────────────────────────────────
+// ── Static fallback (only if ALL feeds fail) ──────────────────
 const WORLD_FALLBACK = [
-  { title: 'IMF: Global growth at 3.2% for 2026 amid trade tensions',         source: 'IMF',        emoji: '🌍', color: '#3B82F6', label: 'Global Economy', timeLabel: 'Latest', link: 'https://imf.org/en/Blogs',         tab: 'fire'      },
-  { title: 'BIS: Central banks navigating post-inflation normalisation',       source: 'BIS',        emoji: '🏛️', color: '#C9A84C', label: 'Central Banks',  timeLabel: 'Latest', link: 'https://bis.org',                 tab: 'fire'      },
-  { title: 'Fed holds rates — next move depends on employment and CPI',        source: 'Fed Reserve',emoji: '💵', color: '#22C55E', label: 'US Policy',      timeLabel: 'Latest', link: 'https://federalreserve.gov',      tab: 'emi'       },
-  { title: 'ECB holds rates — euro area inflation nearing 2% target',          source: 'ECB',        emoji: '🇪🇺', color: '#6366F1', label: 'EU Policy',      timeLabel: 'Latest', link: 'https://ecb.europa.eu',           tab: 'emi'       },
-  { title: 'World Bank: 1.2B youth entering workforce by 2040',                source: 'World Bank', emoji: '🌐', color: '#0ea5e9', label: 'Global Finance', timeLabel: 'Latest', link: 'https://blogs.worldbank.org',     tab: 'fire'      },
+  { title: 'IMF: Global growth outlook for 2026',                 source: 'IMF',        emoji: '🌍', color: '#3B82F6', label: 'Global Economy', timeLabel: 'Latest', link: 'https://imf.org/en/News',     tab: 'fire' },
+  { title: 'BIS: Central banks post-inflation navigation',        source: 'BIS',        emoji: '🏛️', color: '#C9A84C', label: 'Central Banks',  timeLabel: 'Latest', link: 'https://bis.org',             tab: 'fire' },
+  { title: 'Fed: Latest monetary policy statement',               source: 'Fed Reserve',emoji: '💵', color: '#22C55E', label: 'US Policy',      timeLabel: 'Latest', link: 'https://federalreserve.gov', tab: 'emi'  },
+  { title: 'ECB: Euro area economic and inflation assessment',    source: 'ECB',        emoji: '🇪🇺', color: '#6366F1', label: 'EU Policy',      timeLabel: 'Latest', link: 'https://ecb.europa.eu',      tab: 'emi'  },
+  { title: 'World Bank: Global development update',               source: 'World Bank', emoji: '🌐', color: '#0ea5e9', label: 'Global Finance', timeLabel: 'Latest', link: 'https://blogs.worldbank.org',tab: 'fire' },
 ];
-
 const FALLBACK = {
   india: [
-    { title: 'RBI holds repo rate at 6.5% — impact on home loan EMIs',        source: 'RBI',  emoji: '🏦', color: '#C9A84C', label: 'Press Release', timeLabel: 'Latest', link: 'https://rbi.org.in',  tab: 'emi'  },
-    { title: 'SEBI circular: Updated mutual fund expense ratio norms',         source: 'SEBI', emoji: '📋', color: '#6366F1', label: 'Regulator',     timeLabel: 'Latest', link: 'https://sebi.gov.in', tab: 'sip'  },
-    { title: 'Budget 2026-27: Key income tax changes under new regime',        source: 'PIB',  emoji: '🇮🇳', color: '#EC4899', label: 'Govt Finance',  timeLabel: 'Latest', link: 'https://pib.gov.in',  tab: 'tax'  },
+    { title: 'RBI: Latest monetary policy committee decision',     source: 'RBI',  emoji: '🏦', color: '#C9A84C', label: 'Press Release', timeLabel: 'Latest', link: 'https://rbi.org.in',  tab: 'emi' },
+    { title: 'SEBI: Recent mutual fund regulation circular',       source: 'SEBI', emoji: '📋', color: '#6366F1', label: 'Regulator',     timeLabel: 'Latest', link: 'https://sebi.gov.in', tab: 'sip' },
+    { title: 'PIB: Budget income tax key announcements',           source: 'PIB',  emoji: '🇮🇳', color: '#EC4899', label: 'Govt Finance',  timeLabel: 'Latest', link: 'https://pib.gov.in',  tab: 'tax' },
     ...WORLD_FALLBACK,
   ],
-  usa: [
-    { title: 'Federal Reserve holds rates at 3.5–3.75% range',                source: 'Fed Reserve', emoji: '🏛️', color: '#3B82F6', label: 'Monetary Policy', timeLabel: 'Latest', link: 'https://federalreserve.gov', tab: 'emi'  },
-    { title: 'FOMC: Inflation data determines timing of next rate move',       source: 'FOMC',        emoji: '💵', color: '#22C55E', label: 'Rate Decision',   timeLabel: 'Latest', link: 'https://federalreserve.gov', tab: 'emi'  },
-    { title: 'SEC proposes enhanced retail investor protection rules',          source: 'SEC',         emoji: '⚖️', color: '#F59E0B', label: 'Regulator',       timeLabel: 'Latest', link: 'https://sec.gov',            tab: 'insurance' },
-    ...WORLD_FALLBACK,
-  ],
-  europe: [
-    { title: 'ECB keeps key interest rates unchanged at current levels',       source: 'ECB',  emoji: '🏦', color: '#6366F1', label: 'Rate Decision', timeLabel: 'Latest', link: 'https://ecb.europa.eu',  tab: 'emi' },
-    { title: 'Lagarde: ECB remains data-dependent on future rate path',        source: 'ECB',  emoji: '🎙️', color: '#22C55E', label: 'Key Speech',    timeLabel: 'Latest', link: 'https://ecb.europa.eu',  tab: 'emi' },
-    { title: 'ESMA: New sustainable finance disclosure guidelines published',  source: 'ESMA', emoji: '📋', color: '#EC4899', label: 'Regulator',     timeLabel: 'Latest', link: 'https://esma.europa.eu', tab: null  },
-    ...WORLD_FALLBACK,
-  ],
-  world: [ ...WORLD_FALLBACK ],
+  usa:    [ ...WORLD_FALLBACK ],
+  europe: [ ...WORLD_FALLBACK ],
+  world:  [ ...WORLD_FALLBACK ],
 };
 
-// ── In-memory cache ───────────────────────────────────────────
+// ── In-memory cache (5 min) ───────────────────────────────────
 const _cache     = {};
 const _cacheTime = {};
-const CACHE_MS   = 5 * 60 * 1000; // 5 minutes — server-side only, Vercel edge is bypassed
+const CACHE_MS   = 5 * 60 * 1000;
 
-// ── Fetch from rss2json ───────────────────────────────────────
-function fetchJSON(url) {
+// ── Fetch raw RSS/Atom XML directly ──────────────────────────
+function fetchRSS(url, redirectCount) {
+  redirectCount = redirectCount || 0;
+  if (redirectCount > 3) return Promise.reject(new Error('Too many redirects'));
   return new Promise((resolve, reject) => {
-    const req = https.get(url, {
-      timeout: 9000,
-      headers: { 'User-Agent': 'MoneyVeda/1.0', 'Accept': 'application/json' },
+    const client = url.startsWith('https') ? https : http;
+    const req = client.get(url, {
+      timeout: 8000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; MoneyVeda/1.0; +https://moneyveda.org)',
+        'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
+        'Cache-Control': 'no-cache',
+      },
     }, (res) => {
-      if (res.statusCode !== 200) { res.resume(); return reject(new Error(`HTTP ${res.statusCode}`)); }
-      let body = '';
-      res.setEncoding('utf8');
-      res.on('data', c => { body += c; });
-      res.on('end', () => {
-        const t = body.trim();
-        if (!t.startsWith('{') && !t.startsWith('[')) return reject(new Error('Not JSON'));
-        try { resolve(JSON.parse(t)); } catch (e) { reject(new Error('Parse: ' + e.message)); }
-      });
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        res.resume();
+        return fetchRSS(res.headers.location, redirectCount + 1).then(resolve).catch(reject);
+      }
+      if (res.statusCode !== 200) {
+        res.resume();
+        return reject(new Error(`HTTP ${res.statusCode}`));
+      }
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
     });
     req.on('error', reject);
     req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
   });
 }
 
-// ── Parse rss2json items ──────────────────────────────────────
-function parseItems(data, feedMeta) {
-  if (!data || data.status !== 'ok' || !Array.isArray(data.items)) return [];
-  return data.items.slice(0, 2).map(item => {
-    const title = (item.title || '')
-      .replace(/<[^>]+>/g, '')
-      .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-      .replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim();
-    if (!title || title.length < 5) return null;
-    const link = item.link || item.guid || feedMeta.link;
-    const pub  = new Date(item.pubDate || Date.now());
-    const h    = Math.floor((Date.now() - pub.getTime()) / 3600000);
+// ── Extract XML tag value (handles CDATA) ─────────────────────
+function extractTag(xml, tag) {
+  const cdata = new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>`, 'i');
+  const plain = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, 'i');
+  const m = xml.match(cdata) || xml.match(plain);
+  return m ? m[1].trim() : '';
+}
+
+function decodeEntities(str) {
+  return str
+    .replace(/&amp;/g,  '&')
+    .replace(/&lt;/g,   '<')
+    .replace(/&gt;/g,   '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g,  "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n))
+    .replace(/<[^>]+>/g, '')
+    .trim();
+}
+
+// ── Parse RSS or Atom XML ─────────────────────────────────────
+function parseRSS(xml, feedMeta) {
+  const articles = [];
+  const itemRegex = /<(?:item|entry)[\s>]([\s\S]*?)<\/(?:item|entry)>/gi;
+  let match;
+
+  while ((match = itemRegex.exec(xml)) !== null) {
+    const block = match[1];
+
+    let title = decodeEntities(extractTag(block, 'title'));
+    if (!title || title.length < 5) continue;
+    if (title.length > 110) title = title.slice(0, 107) + '…';
+
+    // Link: try <link>text</link>, then <link href="..."/>, then <guid>
+    let link = extractTag(block, 'link');
+    if (!link) {
+      const hrefM = block.match(/<link[^>]+href="([^"]+)"/i);
+      if (hrefM) link = hrefM[1];
+    }
+    if (!link) link = extractTag(block, 'guid');
+    link = (link || feedMeta.link).trim();
+
+    const rawDate =
+      extractTag(block, 'pubDate') ||
+      extractTag(block, 'published') ||
+      extractTag(block, 'updated') ||
+      extractTag(block, 'dc:date') || '';
+
+    const pub = rawDate ? new Date(rawDate) : new Date();
+    const validDate = !isNaN(pub.getTime()) ? pub : new Date();
+    const h = Math.floor((Date.now() - validDate.getTime()) / 3600000);
     const timeLabel = h < 1 ? 'Just now' : h < 24 ? `${h}h ago` : `${Math.floor(h / 24)}d ago`;
-    // Resolve routing tab server-side — not exposed to client
-    const tab = resolveTab(title);
-    return {
-      title:     title.length > 110 ? title.slice(0, 107) + '…' : title,
+
+    articles.push({
+      title,
       link,
       source:    feedMeta.source,
       label:     feedMeta.label,
       emoji:     feedMeta.emoji,
       color:     feedMeta.color,
       timeLabel,
-      pubDate:   pub.toISOString(),
-      tab,        // null = open external link; string = navTo(tab)
-    };
-  }).filter(Boolean);
+      pubDate:   validDate.toISOString(),
+      tab:       resolveTab(title),
+    });
+
+    if (articles.length >= 3) break;
+  }
+
+  return articles;
 }
 
 // ── Deduplicate ───────────────────────────────────────────────
@@ -229,10 +243,7 @@ function dedupe(articles) {
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  // no-store: prevents Vercel CDN edge from caching this response.
-  // Without this, Vercel serves a cached copy for max-age seconds and
-  // the serverless function never runs — users see the same old news forever.
-  // Server-side in-memory cache (CACHE_MS) handles rate-limiting instead.
+  // no-store: Vercel CDN must NOT cache this — every request hits the function
   res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -242,7 +253,7 @@ module.exports = async function handler(req, res) {
   const feeds  = FEEDS[region];
   if (!feeds) return res.status(200).json({ articles: [], region, note: 'Coming soon' });
 
-  // Serve from cache if fresh
+  // Serve from in-memory cache if still fresh
   if (_cache[region] && (Date.now() - (_cacheTime[region] || 0)) < CACHE_MS) {
     return res.status(200).json({ articles: _cache[region], cached: true, region });
   }
@@ -250,9 +261,12 @@ module.exports = async function handler(req, res) {
   try {
     const results = await Promise.allSettled(
       feeds.map(f =>
-        fetchJSON(R2J() + encodeURIComponent(f.rssUrl))
-          .then(data => parseItems(data, f))
-          .catch(err => { console.warn(`[${f.source}]: ${err.message}`); return []; })
+        fetchRSS(f.rssUrl)
+          .then(xml => parseRSS(xml, f))
+          .catch(err => {
+            console.warn(`[${f.source}] failed: ${err.message}`);
+            return [];
+          })
       )
     );
 
@@ -264,7 +278,7 @@ module.exports = async function handler(req, res) {
     ).slice(0, 12);
 
     if (articles.length === 0) {
-      console.warn(`All feeds failed for ${region} — serving fallback`);
+      console.warn(`All RSS feeds failed for ${region} — serving fallback`);
       articles = FALLBACK[region] || [];
     }
 
@@ -280,12 +294,12 @@ module.exports = async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error('[MoneyVeda News] Handler error:', err.message);
+    console.error('[MoneyVeda News] Error:', err.message);
     return res.status(200).json({
-      articles: FALLBACK[region] || [],
-      cached:   false,
+      articles:  FALLBACK[region] || [],
+      cached:    false,
       region,
-      fallback: true,
+      fallback:  true,
     });
   }
 };
