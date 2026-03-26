@@ -1,6 +1,23 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
+    { "source": "/api/(.*)",                    "destination": "/api/$1" },
+    { "source": "/sip-calculator",              "destination": "/index.html" },
+    { "source": "/emi-calculator",              "destination": "/index.html" },
+    { "source": "/fire-calculator",             "destination": "/index.html" },
+    { "source": "/ppf-calculator",              "destination": "/index.html" },
+    { "source": "/epf-calculator",              "destination": "/index.html" },
+    { "source": "/nps-calculator",              "destination": "/index.html" },
+    { "source": "/step-up-sip-calculator",      "destination": "/index.html" },
+    { "source": "/sukanya-samriddhi-calculator","destination": "/index.html" },
+    { "source": "/income-tax-calculator",       "destination": "/index.html" },
+    { "source": "/insurance-calculator",        "destination": "/index.html" },
+    { "source": "/roi-calculator",              "destination": "/index.html" },
+    { "source": "/crorepati-calculator",        "destination": "/index.html" },
+    { "source": "/habit-cost-calculator",       "destination": "/index.html" },
+    { "source": "/sip-vs-lump-sum",             "destination": "/index.html" },
+    { "source": "/financial-academy",           "destination": "/index.html" },
+    { "source": "/finance-glossary",            "destination": "/index.html" },
+    { "source": "/contact",                     "destination": "/index.html" }
   ]
 }
