@@ -2781,7 +2781,7 @@ var _newsCache        = {};
 var _newsCacheTime    = {};
 var _newsFetching     = false;
 var _newsFetchingRegion = null;
-var NEWS_CACHE_MS     = 10 * 60 * 1000; // 10 minutes (was 30 — reduced so news refreshes more often)
+var NEWS_CACHE_MS     = 5 * 60 * 1000; // 5 minutes — matches server-side cache
 
 function fetchNews(forceRefresh) {
   var strip  = document.getElementById('news-strip');
