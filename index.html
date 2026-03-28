@@ -259,7 +259,7 @@
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-<!-- Non-blocking Google Fonts: loads after paint so it never delays FCP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <style>
@@ -690,6 +690,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="nav-item" id="btn-edu"      onclick="navTo('edu')">🎓 Financial Academy</div>
     <div class="nav-item" id="btn-glossary" onclick="navTo('glossary')">📖 Glossary</div>
     <div class="nav-item" id="btn-compare" onclick="navTo('compare')">⚖️ SIP vs Lump Sum</div>
+    <div class="nav-item" id="btn-gratuity" onclick="navTo('gratuity')">🤝 Gratuity Calc</div>
+    <div class="nav-item" id="btn-homegoal" onclick="navTo('homegoal')">🏠 Buy a Home</div>
     <div class="nav-item" id="btn-contact"  onclick="navTo('contact')">✉️ Write to Us</div>
   </div>
 
@@ -822,6 +824,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
       <button class="btn-outline" onclick="shareResult('sip')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;"><span>📤</span> Share Result</button>
+      <button class="btn-outline" onclick="generateSIPShareCard()" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.3);"><span>📸</span> Save as Image</button>
       <button class="btn-outline" onclick="navTo('compare')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;background:rgba(201,168,76,.08);"><span>⚖️</span> SIP vs Lump Sum</button>
     </div>
 
@@ -1260,7 +1263,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:14px;padding:24px;text-align:center;"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#f87171;margin-bottom:8px;">💸 SPENT ON HABIT</div><div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:#f87171;" id="hab_spent">—</div><div style="font-size:11px;color:var(--muted);margin-top:6px;" id="hab_spent_sub">—</div></div>
       <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:14px;padding:24px;text-align:center;"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#4ade80;margin-bottom:8px;">📈 IF INVESTED INSTEAD</div><div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:#4ade80;" id="hab_corpus">—</div><div style="font-size:11px;color:var(--muted);margin-top:6px;" id="hab_corpus_sub">—</div></div>
     </div>
-    <div class="card" style="background:rgba(201,168,76,.06);border-color:rgba(201,168,76,.2);margin-bottom:20px;"><div id="hab_verdict" style="font-size:14px;line-height:1.9;color:var(--cream);"></div><button class="btn-outline" onclick="shareResult('habit')" style="margin-top:16px;">📤 Share on WhatsApp</button></div>
+    <div class="card" style="background:rgba(201,168,76,.06);border-color:rgba(201,168,76,.2);margin-bottom:20px;"><div id="hab_verdict" style="font-size:14px;line-height:1.9;color:var(--cream);"></div><button class="btn-outline" onclick="shareResult('habit')" style="margin-top:16px;">📤 Share on WhatsApp</button>
+<button class="btn-outline" onclick="generateHabitShareCard()" style="margin-top:10px;width:100%;background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.3);">📸 Save as Image</button></div>
   </div>
 
   <!-- ====== CONTACT TAB ====== -->
@@ -1592,6 +1596,8 @@ const TAB_SEO = {
   compare:   { slug: 'sip-vs-lump-sum',             title: 'SIP vs Lump Sum Calculator | MoneyVeda',                      desc: 'Compare SIP vs lump sum investment returns side by side. Free calculator to pick the best mutual fund strategy for you.' },
   edu:       { slug: 'financial-academy',           title: 'Financial Academy — Learn Personal Finance | MoneyVeda',       desc: 'Free personal finance lessons: SIP, EMI, FIRE, tax planning, insurance and more. No signup needed. Made for India.' },
   glossary:  { slug: 'finance-glossary',            title: 'Finance Glossary — 100+ Terms Explained | MoneyVeda',          desc: 'Plain-English explanations of SIP, CAGR, XIRR, FIRE, repo rate, NAV, expense ratio and 100+ financial terms. Free.' },
+  gratuity:  { slug: 'gratuity-calculator',    title: 'Gratuity Calculator India 2025 | MoneyVeda',               desc: 'Calculate your gratuity payout under the Payment of Gratuity Act 1972. Formula: (Basic+DA × 15 × Years) ÷ 26. Tax-free up to ₹20L.' },
+  homegoal:  { slug: 'buy-a-home',             title: 'Home Buying Plan — EMI, SIP & Tax Calculator | MoneyVeda', desc: 'Complete home buying guide: check EMI eligibility, plan down payment SIP, and calculate tax savings in one place.' },
   contact:   { slug: 'contact',                     title: 'Contact MoneyVeda — Feedback & Suggestions',                   desc: 'Share feedback, report a bug or suggest a new calculator. We love hearing from MoneyVeda users.' },
 };
 
@@ -1635,7 +1641,7 @@ function updatePageMeta(id) {
   }
 }
 
-const ALL_TABS=['sip','emi','fire','roi','insurance','tax','ppf','epf','nps','stepsip','ssa','crorepati','habit','edu','glossary','compare','contact'];
+const ALL_TABS=['sip','emi','fire','roi','insurance','tax','ppf','epf','nps','stepsip','ssa','crorepati','habit','edu','glossary','compare','gratuity','homegoal','contact'];
 function navTo(id){
   closeDrawer();
   ALL_TABS.forEach(t=>{
@@ -1657,6 +1663,8 @@ function navTo(id){
   else if(id==='crorepati') calcCrorepati();
   else if(id==='habit') calcHabit();
   else if(id==='contact') renderContact();
+  else if(id==='gratuity') calcGratuity();
+  else if(id==='homegoal') calcHomeWizard();
   else if(id==='edu') buildEdu();
   else if(id==='glossary') buildGlossary();
   else if(id==='compare') buildCompare();
@@ -2229,29 +2237,16 @@ function tabFromPath() {
   return SLUG_TO_TAB[slug] || null;
 }
 
-// Use DOMContentLoaded so news fallback renders before images/iframes load.
-// window.onload fires much later (waits for all resources).
 document.addEventListener('DOMContentLoaded', function() {
   setMode('india');
-
-  // Open the calculator that matches the URL path
   var initialTab = tabFromPath();
   if (initialTab) navTo(initialTab);
-
-  // Render static fallback news immediately — no blank strip.
-  // NEWS_CLIENT_FALLBACK and renderNews are in a later <script> block,
-  // but DOMContentLoaded fires after ALL inline scripts are parsed,
-  // so they are guaranteed to be defined here.
   var region   = (typeof currentMode !== 'undefined') ? currentMode : 'india';
   var fallback = typeof NEWS_CLIENT_FALLBACK !== 'undefined'
     ? (NEWS_CLIENT_FALLBACK[region] || NEWS_CLIENT_FALLBACK.india) : null;
   if (fallback && typeof renderNews === 'function') renderNews(fallback);
-
-  // Fetch live news — replaces fallback when API responds
   if (typeof fetchNews === 'function') fetchNews(false);
 });
-
-// Keep window.onload as a no-op alias for backward compat (popstate etc. use it)
 window.onload = function() {};
 
 // ── Back / forward button support ─────────────────────────────
@@ -2394,6 +2389,14 @@ let sidebarTimer    = null;
 let tickerAnimation = null;
 let _tickerLoaded   = false;
 
+function safeAbortSignal(ms) {
+  try {
+    if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) return AbortSignal.timeout(ms);
+  } catch(e) {}
+  const ctrl = new AbortController();
+  setTimeout(function() { ctrl.abort(); }, ms);
+  return ctrl.signal;
+}
 async function loadSidebarLive() {
   try {
     const res  = await fetch('/api/market?mode=' + currentMode + '&view=sidebar', { signal: safeAbortSignal(5000) });
@@ -2415,20 +2418,6 @@ function startSidebarRefresh() {
 
 // FIX-1: loadTickerData now retries automatically on failure, and
 //        also triggers a 5s retry on page load for cold-start latency.
-function safeAbortSignal(ms) {
-  // AbortSignal.timeout() is unavailable in some Android WebViews and
-  // throws when cloned across iframe boundaries in sandbox previews.
-  // This polyfill works everywhere.
-  try {
-    if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
-      return AbortSignal.timeout(ms);
-    }
-  } catch(e) {}
-  const ctrl = new AbortController();
-  setTimeout(function() { ctrl.abort(); }, ms);
-  return ctrl.signal;
-}
-
 async function loadTickerData(mode) {
   try {
     const res  = await fetch('/api/market?mode=' + mode + '&view=ticker', { signal: safeAbortSignal(12000) });
@@ -3137,6 +3126,504 @@ setInterval(function() { if (typeof fetchNews === 'function') fetchNews(false); 
 
 <!-- Patch: per-region habit presets, slider range updates on mode switch,
      fine-tune number inputs next to every slider. Must load AFTER main script. -->
+
+<script>
+// ============================================================
+// SHARE CARD GENERATOR (html2canvas)
+// ============================================================
+
+function formatShareNumber(num) {
+  const n = parseFloat(String(num).replace(/[^0-9.]/g, '')) || 0;
+  if (n >= 10000000) return (n / 10000000).toFixed(2) + ' Cr';
+  if (n >= 100000)   return (n / 100000).toFixed(2) + ' L';
+  if (n >= 1000)     return (n / 1000).toFixed(1) + 'K';
+  return n.toLocaleString('en-IN');
+}
+
+function showToast(message, duration) {
+  // Reuse existing showToast if available, otherwise create one
+  if (typeof window._showToastOrig === 'function') { window._showToastOrig(message); return; }
+  const t = document.createElement('div');
+  t.textContent = message;
+  t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#18181F;color:#C9A84C;border:1px solid rgba(201,168,76,.4);padding:12px 24px;border-radius:100px;font-size:13px;z-index:9999;font-family:'DM Sans',sans-serif;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.6);';
+  document.body.appendChild(t);
+  setTimeout(function() { t.style.opacity='0'; t.style.transition='opacity .4s'; setTimeout(function(){ t.remove(); }, 400); }, duration || 3000);
+}
+
+async function generateSIPShareCard() {
+  if (typeof html2canvas === 'undefined') {
+    showToast('Image library loading, please try again in a moment.');
+    return;
+  }
+  const sym = (typeof currentMode !== 'undefined' && currentMode !== 'india') ? '$' : '₹';
+  const corpusRaw   = document.getElementById('sip_total')?.textContent    || '—';
+  const investedRaw = document.getElementById('sip_invested')?.textContent || '—';
+  const gainsRaw    = document.getElementById('sip_gains')?.textContent    || '—';
+  const years       = document.getElementById('v_sip_t')?.textContent      || '15';
+  const mult        = (document.getElementById('sip_xbadge')?.textContent  || '0x').replace('x','');
+
+  const corpusNum   = parseFloat(corpusRaw.replace(/[^0-9.]/g,''))   || 0;
+  const investedNum = parseFloat(investedRaw.replace(/[^0-9.]/g,'')) || 1;
+  const invPct      = corpusNum > 0 ? Math.round((investedNum / corpusNum) * 100) : 50;
+  const retPct      = 100 - invPct;
+
+  document.getElementById('card-corpus').textContent    = sym + formatShareNumber(corpusNum);
+  document.getElementById('card-years').textContent     = years;
+  document.getElementById('card-invested').textContent  = sym + formatShareNumber(investedNum);
+  document.getElementById('card-gains').textContent     = sym + formatShareNumber(parseFloat(gainsRaw.replace(/[^0-9.]/g,'')) || 0);
+  document.getElementById('card-multiplier').textContent = mult;
+  document.getElementById('card-bar-invested').style.width = invPct + '%';
+  document.getElementById('card-bar-returns').style.width  = retPct + '%';
+  document.getElementById('card-pct-invested').textContent = invPct + '%';
+  document.getElementById('card-pct-returns').textContent  = retPct + '%';
+
+  showToast('Generating your share card…', 8000);
+  try {
+    const el     = document.getElementById('sip-share-card');
+    const canvas = await html2canvas(el, { scale:2, useCORS:true, allowTaint:true, backgroundColor:null, logging:false, width:1080, height:1350 });
+    const link   = document.createElement('a');
+    link.download = 'moneyveda-sip-' + years + 'yr.png';
+    link.href     = canvas.toDataURL('image/png', 1.0);
+    link.click();
+    showToast('✅ Image saved! Share on WhatsApp or Instagram Stories.');
+  } catch(err) {
+    console.error('Share card error:', err);
+    showToast('Could not generate image. Try the Share Result button instead.');
+  }
+}
+
+async function generateHabitShareCard() {
+  if (typeof html2canvas === 'undefined') {
+    showToast('Image library loading, please try again in a moment.');
+    return;
+  }
+  const sym      = (typeof currentMode !== 'undefined' && currentMode !== 'india') ? '$' : '₹';
+  const spentRaw  = document.getElementById('hab_spent')?.textContent  || '—';
+  const corpusRaw = document.getElementById('hab_corpus')?.textContent || '—';
+  const years     = document.getElementById('v_hab_t')?.textContent    || '20';
+  const habitName = (typeof _currentHabitName !== 'undefined') ? _currentHabitName : 'This Habit';
+  const multEl    = document.getElementById('hab_corpus_sub')?.textContent || '';
+  const multMatch = multEl.match(/([\d.]+)x/);
+  const mult      = multMatch ? multMatch[1] : '—';
+
+  document.getElementById('hcard-spent').textContent  = sym + formatShareNumber(parseFloat(spentRaw.replace(/[^0-9.]/g,'')) || 0);
+  document.getElementById('hcard-corpus').textContent = sym + formatShareNumber(parseFloat(corpusRaw.replace(/[^0-9.]/g,'')) || 0);
+  document.getElementById('hcard-years').textContent  = years;
+  document.getElementById('hcard-habit').textContent  = habitName;
+  document.getElementById('hcard-mult').textContent   = mult;
+
+  showToast('Generating your share card…', 8000);
+  try {
+    const el     = document.getElementById('habit-share-card');
+    const canvas = await html2canvas(el, { scale:2, useCORS:true, allowTaint:true, backgroundColor:null, logging:false, width:1080, height:1350 });
+    const link   = document.createElement('a');
+    link.download = 'moneyveda-habit-cost.png';
+    link.href     = canvas.toDataURL('image/png', 1.0);
+    link.click();
+    showToast('✅ Image saved! Share on WhatsApp or Instagram Stories.');
+  } catch(err) {
+    console.error('Share card error:', err);
+    showToast('Could not generate image. Try the Share Result button instead.');
+  }
+}
+
+// ============================================================
+// GRATUITY CALCULATOR
+// ============================================================
+var _gratType = 'govt';
+
+function setGratType(type) {
+  _gratType = type;
+  document.getElementById('grat-govt-btn').style.background = type === 'govt' ? 'rgba(201,168,76,.12)' : 'transparent';
+  document.getElementById('grat-govt-btn').style.borderColor = type === 'govt' ? 'rgba(201,168,76,.4)' : 'rgba(255,255,255,.1)';
+  document.getElementById('grat-govt-btn').style.color = type === 'govt' ? 'var(--gold-light)' : 'var(--muted)';
+  document.getElementById('grat-pvt-btn').style.background = type === 'pvt' ? 'rgba(201,168,76,.12)' : 'transparent';
+  document.getElementById('grat-pvt-btn').style.borderColor = type === 'pvt' ? 'rgba(201,168,76,.4)' : 'rgba(255,255,255,.1)';
+  document.getElementById('grat-pvt-btn').style.color = type === 'pvt' ? 'var(--gold-light)' : 'var(--muted)';
+  calcGratuity();
+}
+
+function calcGratuity() {
+  var sal  = +document.getElementById('grat_sal').value;
+  var yrs  = +document.getElementById('grat_yrs').value;
+  var div  = _gratType === 'govt' ? 30 : 26;
+
+  document.getElementById('v_grat_sal').textContent = fmtSym(sal);
+  document.getElementById('v_grat_yrs').textContent = yrs;
+
+  if (yrs < 5) {
+    document.getElementById('grat_amount').textContent = 'Not Eligible';
+    document.getElementById('grat_amount_sub').textContent = 'Minimum 5 years required';
+    document.getElementById('grat_formula').textContent = '';
+    document.getElementById('grat_tax_status').textContent = '—';
+    document.getElementById('grat_tax_sub').textContent = '—';
+    return;
+  }
+
+  // Formula: (Basic+DA × 15 × Years) ÷ 26 (pvt) or ÷ 30 (govt)
+  var gratuity = (sal * 15 * yrs) / div;
+  var taxFreeLimit = 2000000; // ₹20L
+  var taxable = Math.max(0, gratuity - taxFreeLimit);
+  var taxStatus, taxSub, taxColor;
+
+  if (gratuity <= taxFreeLimit) {
+    taxStatus = 'Fully Tax-Free'; taxColor = '#4ade80';
+    taxSub = 'Below ₹20L exemption limit';
+  } else {
+    taxStatus = 'Partially Taxable'; taxColor = '#f59e0b';
+    taxSub = fmtSym(taxable) + ' taxable above ₹20L limit';
+  }
+
+  document.getElementById('grat_amount').textContent    = fmtSym(Math.round(gratuity));
+  document.getElementById('grat_amount_sub').textContent = 'Tax-free up to ₹20L';
+  document.getElementById('grat_tax_status').textContent = taxStatus;
+  document.getElementById('grat_tax_status').style.color = taxColor;
+  document.getElementById('grat_tax_sub').textContent   = taxSub;
+  document.getElementById('grat_formula').innerHTML =
+    'Basic + DA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = ' + fmtSym(sal) + '/month<br>' +
+    'Years of Service &nbsp;&nbsp;&nbsp; = ' + yrs + ' years<br>' +
+    'Divisor (' + (_gratType === 'govt' ? 'Govt/PSU' : 'Private') + ') = ÷' + div + '<br>' +
+    '<br>' +
+    '<strong style="color:var(--gold-light);">(' + fmtSym(sal) + ' × 15 × ' + yrs + ') ÷ ' + div + ' = ' + fmtSym(Math.round(gratuity)) + '</strong>';
+}
+
+// ============================================================
+// HOME GOAL WIZARD
+// ============================================================
+var _hwStep = 1;
+
+function hwGoTo(step) {
+  _hwStep = step;
+  [1,2,3].forEach(function(s) {
+    var el = document.getElementById('hw-step-' + s);
+    var tab = document.getElementById('hw-step-' + s + '-tab');
+    if (el) el.style.display = s === step ? 'block' : 'none';
+    if (tab) { tab.style.opacity = s === step ? '1' : '0.5'; tab.style.background = s === step ? 'rgba(201,168,76,.12)' : 'transparent'; }
+  });
+  calcHomeWizard();
+}
+
+function calcHomeWizard() {
+  var income  = +document.getElementById('hw_income')?.value  || 100000;
+  var price   = +document.getElementById('hw_price')?.value   || 10000000;
+  var tenure  = +document.getElementById('hw_tenure')?.value  || 20;
+  var dpy     = +document.getElementById('hw_dpy')?.value     || 3;
+
+  document.getElementById('v_hw_income').textContent = fmtSym(income);
+  document.getElementById('v_hw_price').textContent  = fmtSym(price);
+  document.getElementById('v_hw_tenure').textContent = tenure;
+  if (document.getElementById('v_hw_dpy')) document.getElementById('v_hw_dpy').textContent = dpy;
+
+  // STEP 1: EMI eligibility
+  var maxEmi      = Math.round(income * 0.40);
+  var r           = 8.5 / 12 / 100; // nominal monthly rate (banks use this)
+  var months      = tenure * 12;
+  var loanEligible = maxEmi * (Math.pow(1+r, months) - 1) / (r * Math.pow(1+r, months));
+  var downPayment  = Math.max(price * 0.20, price - loanEligible); // at least 20%
+  var actualLoan   = price - downPayment;
+  var actualEmi    = actualLoan * r * Math.pow(1+r,months) / (Math.pow(1+r,months)-1);
+  var affordable   = actualEmi <= maxEmi;
+
+  document.getElementById('hw_max_emi').textContent = fmtSym(Math.round(maxEmi));
+  document.getElementById('hw_eligible').textContent = fmtSym(Math.round(loanEligible));
+  document.getElementById('hw_eligible').style.color = affordable ? '#4ade80' : '#f87171';
+
+  var v1 = document.getElementById('hw_step1_verdict');
+  if (v1) v1.innerHTML = affordable
+    ? '<div style="font-size:13px;line-height:1.8;color:var(--cream);">✅ <strong>You can afford this home.</strong><br>Loan: ' + fmtSym(Math.round(actualLoan)) + ' · EMI: ' + fmtSym(Math.round(actualEmi)) + '/mo · Down payment needed: ' + fmtSym(Math.round(downPayment)) + '</div>'
+    : '<div style="font-size:13px;line-height:1.8;color:var(--cream);">⚠️ <strong>EMI (' + fmtSym(Math.round(actualEmi)) + '/mo) exceeds 40% of income.</strong><br>Consider a lower price, longer tenure, or a larger down payment.</div>';
+
+  // STEP 2: Down payment SIP
+  var dpInfo = document.getElementById('hw_dp_info');
+  if (dpInfo) dpInfo.innerHTML = 'You need a down payment of <strong style="color:var(--gold-light);">' + fmtSym(Math.round(downPayment)) + '</strong> (' + Math.round((downPayment/price)*100) + '% of home price).';
+
+  var mr   = Math.pow(1 + 12/100, 1/12) - 1;
+  var dpMonths = dpy * 12;
+  var dpSip = downPayment * mr / (Math.pow(1+mr, dpMonths) - 1) / (1+mr);
+  document.getElementById('hw_dp_sip').textContent = fmtSym(Math.round(dpSip));
+  document.getElementById('hw_dp_sip_sub').textContent = 'Monthly SIP at 12% to save ' + fmtSym(Math.round(downPayment)) + ' in ' + dpy + ' year' + (dpy>1?'s':'');
+
+  var v2 = document.getElementById('hw_step2_verdict');
+  if (v2) v2.innerHTML = '<div style="font-size:13px;line-height:1.8;color:var(--cream);">💡 Start a SIP of <strong style="color:var(--gold-light);">' + fmtSym(Math.round(dpSip)) + '/month</strong> today. At 12% return, you'll have your down payment ready in ' + dpy + ' years.</div>';
+
+  // STEP 3: Tax savings
+  var annualInterest = actualEmi * 12 - (actualLoan / months) * 12; // approx year-1 interest
+  var sec24b = Math.min(annualInterest, 200000);
+  var sec80c = 150000; // principal component counts toward 80C
+  var taxSaving24b = Math.round(sec24b * 0.30);
+  var taxSaving80c = Math.round(sec80c * 0.30);
+  var totalTaxSaving = taxSaving24b + taxSaving80c;
+
+  var v3 = document.getElementById('hw_tax_breakdown');
+  if (v3) v3.innerHTML =
+    '📋 Section 24(b) — Interest paid &nbsp;&nbsp; up to <strong style="color:var(--gold-light);">₹2L/yr</strong><br>' +
+    '&nbsp;&nbsp;&nbsp;&nbsp;Estimated year-1 interest: ' + fmtSym(Math.round(annualInterest)) + ' → Deduction: ' + fmtSym(Math.round(sec24b)) + '<br>' +
+    '&nbsp;&nbsp;&nbsp;&nbsp;Tax saved: <strong style="color:#4ade80;">' + fmtSym(taxSaving24b) + '/yr</strong><br><br>' +
+    '📋 Section 80C — Principal repaid up to <strong style="color:var(--gold-light);">₹1.5L/yr</strong><br>' +
+    '&nbsp;&nbsp;&nbsp;&nbsp;Deduction: ' + fmtSym(sec80c) + '<br>' +
+    '&nbsp;&nbsp;&nbsp;&nbsp;Tax saved: <strong style="color:#4ade80;">' + fmtSym(taxSaving80c) + '/yr</strong>';
+
+  document.getElementById('hw_total_tax_saving').textContent = fmtSym(totalTaxSaving);
+
+  var v3v = document.getElementById('hw_step3_verdict');
+  if (v3v) v3v.innerHTML = '<div style="font-size:13px;line-height:1.8;color:var(--cream);">💡 Your home loan saves you <strong style="color:#4ade80;">' + fmtSym(totalTaxSaving) + '/year</strong> in taxes under the Old Regime — that's <strong>' + fmtSym(Math.round(totalTaxSaving/12)) + '/month</strong> back in your pocket.</div>';
+
+  var summary = document.getElementById('hw_summary');
+  if (summary) {
+    summary.style.display = 'block';
+    summary.innerHTML = '<div style="font-size:13px;font-weight:700;margin-bottom:12px;">📊 Your Home Purchase Summary</div>' +
+      '<div style="font-size:12px;color:var(--muted);line-height:2;">' +
+      'Home Price &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong style="color:var(--cream);">' + fmtSym(price) + '</strong><br>' +
+      'Down Payment &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong style="color:var(--cream);">' + fmtSym(Math.round(downPayment)) + '</strong><br>' +
+      'Loan Amount &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong style="color:var(--cream);">' + fmtSym(Math.round(actualLoan)) + '</strong><br>' +
+      'Monthly EMI &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong style="color:var(--gold-light);">' + fmtSym(Math.round(actualEmi)) + '/mo</strong><br>' +
+      'SIP for Down Payment : <strong style="color:var(--gold-light);">' + fmtSym(Math.round(dpSip)) + '/mo for ' + dpy + 'yr</strong><br>' +
+      'Annual Tax Saving &nbsp;&nbsp;&nbsp;: <strong style="color:#4ade80;">' + fmtSym(totalTaxSaving) + '/yr</strong>' +
+      '</div>';
+  }
+}
+
+// Init gratuity on first load
+document.addEventListener('DOMContentLoaded', function() {
+  calcGratuity();
+  calcHomeWizard();
+});
+
+// ============================================================
+// @keyframes fadeUp for toast animation
+// ============================================================
+(function() {
+  var s = document.createElement('style');
+  s.textContent = '@keyframes fadeUp{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}';
+  document.head.appendChild(s);
+})();
+</script>
+
 <script src="patch.js"></script>
+
+<!-- ============================================================ -->
+<!-- SIP SHARE CARD (hidden, off-screen, rendered by html2canvas) -->
+<!-- ============================================================ -->
+<div id="sip-share-card" style="position:fixed;left:-9999px;top:0;width:1080px;height:1350px;background:linear-gradient(180deg,#0A0A0F 0%,#111118 50%,#18181F 100%);font-family:'DM Sans',sans-serif;overflow:hidden;box-sizing:border-box;padding:80px 60px;">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:60px;">
+    <div style="width:56px;height:56px;background:linear-gradient(135deg,#C9A84C,#E8C97A);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;">💰</div>
+    <div>
+      <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:#C9A84C;letter-spacing:-1px;">MONEY<span style="color:#E8C97A;">VEDA</span></div>
+      <div style="font-size:14px;color:#9090A8;letter-spacing:3px;text-transform:uppercase;margin-top:4px;">India's Finance Suite</div>
+    </div>
+  </div>
+  <div style="font-size:28px;color:#9090A8;text-transform:uppercase;letter-spacing:4px;margin-bottom:20px;">My SIP Goal</div>
+  <div id="card-corpus" style="font-family:'Playfair Display',serif;font-size:110px;font-weight:900;color:#4ade80;line-height:1;margin-bottom:20px;letter-spacing:-4px;">₹0</div>
+  <div style="font-size:32px;color:#F5F0E8;margin-bottom:60px;">in <span id="card-years" style="color:#C9A84C;font-weight:700;">0</span> years</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-bottom:50px;">
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:30px;">
+      <div style="font-size:16px;color:#9090A8;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Invested</div>
+      <div id="card-invested" style="font-family:'DM Mono',monospace;font-size:36px;color:#F5F0E8;font-weight:600;">₹0</div>
+    </div>
+    <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:20px;padding:30px;">
+      <div style="font-size:16px;color:#4ade80;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Wealth Gained</div>
+      <div id="card-gains" style="font-family:'DM Mono',monospace;font-size:36px;color:#4ade80;font-weight:600;">₹0</div>
+    </div>
+  </div>
+  <div style="display:inline-flex;align-items:center;gap:16px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:100px;padding:20px 40px;margin-bottom:50px;">
+    <span style="font-size:28px;">📈</span>
+    <span style="font-size:24px;color:#E8C97A;font-weight:700;"><span id="card-multiplier">0</span>x Returns</span>
+  </div>
+  <div style="margin-bottom:50px;">
+    <div style="display:flex;justify-content:space-between;font-size:18px;color:#9090A8;margin-bottom:16px;"><span>Invested</span><span>Returns</span></div>
+    <div style="height:24px;background:#1a1a24;border-radius:12px;overflow:hidden;display:flex;">
+      <div id="card-bar-invested" style="height:100%;background:#334155;width:50%;"></div>
+      <div id="card-bar-returns" style="height:100%;background:#C9A84C;width:50%;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:16px;margin-top:12px;">
+      <span id="card-pct-invested" style="color:#9090A8;font-family:'DM Mono',monospace;">50%</span>
+      <span id="card-pct-returns" style="color:#C9A84C;font-family:'DM Mono',monospace;">50%</span>
+    </div>
+  </div>
+  <div style="font-size:26px;color:#9090A8;font-style:italic;line-height:1.6;margin-bottom:60px;border-left:4px solid #C9A84C;padding-left:30px;">"The best time to start was yesterday.<br>The second best time is now."</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,rgba(201,168,76,.15),rgba(201,168,76,.05));border:1px solid rgba(201,168,76,.3);border-radius:16px;padding:24px 32px;">
+    <div>
+      <div style="font-size:18px;color:#9090A8;margin-bottom:4px;">Calculate yours at</div>
+      <div style="font-size:28px;color:#C9A84C;font-weight:700;font-family:'DM Mono',monospace;">moneyveda.org</div>
+    </div>
+    <div style="width:60px;height:60px;background:#C9A84C;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:32px;">🔗</div>
+  </div>
+</div>
+
+<!-- HABIT SHARE CARD -->
+<div id="habit-share-card" style="position:fixed;left:-9999px;top:0;width:1080px;height:1350px;background:linear-gradient(180deg,#0A0A0F 0%,#111118 50%,#18181F 100%);font-family:'DM Sans',sans-serif;overflow:hidden;box-sizing:border-box;padding:80px 60px;">
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:60px;">
+    <div style="width:56px;height:56px;background:linear-gradient(135deg,#C9A84C,#E8C97A);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;">☕</div>
+    <div>
+      <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:#C9A84C;letter-spacing:-1px;">MONEY<span style="color:#E8C97A;">VEDA</span></div>
+      <div style="font-size:14px;color:#9090A8;letter-spacing:3px;text-transform:uppercase;margin-top:4px;">The Real Cost of Habits</div>
+    </div>
+  </div>
+  <div style="font-size:28px;color:#9090A8;text-transform:uppercase;letter-spacing:4px;margin-bottom:20px;">My Habit Will Cost Me</div>
+  <div id="hcard-spent" style="font-family:'Playfair Display',serif;font-size:110px;font-weight:900;color:#f87171;line-height:1;margin-bottom:20px;letter-spacing:-4px;">₹0</div>
+  <div style="font-size:32px;color:#F5F0E8;margin-bottom:50px;">spent on <span id="hcard-habit" style="color:#C9A84C;font-weight:700;">this habit</span> over <span id="hcard-years" style="color:#C9A84C;font-weight:700;">0</span> years</div>
+  <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:20px;padding:40px;margin-bottom:50px;">
+    <div style="font-size:20px;color:#4ade80;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;">💡 If Invested Instead</div>
+    <div id="hcard-corpus" style="font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:#4ade80;line-height:1;">₹0</div>
+    <div style="font-size:22px;color:#9090A8;margin-top:12px;"><span id="hcard-mult">0</span>x multiplier — same money, invested</div>
+  </div>
+  <div style="font-size:26px;color:#9090A8;font-style:italic;line-height:1.6;margin-bottom:60px;border-left:4px solid #f87171;padding-left:30px;">"Small habits, compounded over time,<br>are the difference between rich and broke."</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,rgba(201,168,76,.15),rgba(201,168,76,.05));border:1px solid rgba(201,168,76,.3);border-radius:16px;padding:24px 32px;">
+    <div><div style="font-size:18px;color:#9090A8;margin-bottom:4px;">Calculate yours at</div><div style="font-size:28px;color:#C9A84C;font-weight:700;font-family:'DM Mono',monospace;">moneyveda.org</div></div>
+    <div style="width:60px;height:60px;background:#C9A84C;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:32px;">🔗</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- GRATUITY CALCULATOR TAB                                      -->
+<!-- ============================================================ -->
+<div id="gratuity" class="tab">
+  <div class="section-eyebrow">Employment Benefit</div>
+  <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">Gratuity Calculator</h1>
+  <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Calculate your gratuity payout under the Payment of Gratuity Act, 1972.</p>
+  <div class="card" style="margin-bottom:20px;">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">YOUR EMPLOYMENT DETAILS</div>
+    <div style="margin-bottom:18px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Last Drawn Basic + DA (Monthly)</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_grat_sal">₹50,000</span></div>
+      <input type="range" id="grat_sal" min="10000" max="500000" step="5000" value="50000" oninput="calcGratuity()">
+    </div>
+    <div style="margin-bottom:18px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Years of Service</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_grat_yrs">10</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div>
+      <input type="range" id="grat_yrs" min="5" max="40" step="1" value="10" oninput="calcGratuity()">
+      <div style="font-size:9px;color:var(--muted);margin-top:3px;text-align:center;">Minimum 5 years for eligibility</div>
+    </div>
+    <div style="margin-bottom:8px;">
+      <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:8px;">Employment Type</label>
+      <div style="display:flex;gap:10px;">
+        <button id="grat-govt-btn" onclick="setGratType('govt')" style="flex:1;padding:10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.4);color:var(--gold-light);font-family:'DM Sans',sans-serif;">🏛️ Govt / PSU</button>
+        <button id="grat-pvt-btn" onclick="setGratType('pvt')" style="flex:1;padding:10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--muted);font-family:'DM Sans',sans-serif;">🏢 Private (Act)</button>
+      </div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="result-box" style="padding:24px;text-align:center;">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">💰 GRATUITY AMOUNT</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--gold-light);" id="grat_amount">—</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="grat_amount_sub">Tax-free up to ₹20L</div>
+    </div>
+    <div class="result-box" style="padding:24px;text-align:center;">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">📋 TAX STATUS</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:#4ade80;" id="grat_tax_status">Fully Tax-Free</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="grat_tax_sub">—</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px;">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">FORMULA BREAKDOWN</div>
+    <div id="grat_formula" style="font-size:13px;color:var(--cream);line-height:2;font-family:'DM Mono',monospace;"></div>
+  </div>
+  <div class="card" style="background:rgba(201,168,76,.04);border-color:rgba(201,168,76,.2);">
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px;">📌 Key Rules</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.8;">
+      • Eligible after <strong style="color:var(--cream);">5 continuous years</strong> of service<br>
+      • Formula (Private): <strong style="color:var(--cream);">(Basic+DA × 15 × Years) ÷ 26</strong><br>
+      • Formula (Govt): <strong style="color:var(--cream);">(Basic+DA × 15 × Years) ÷ 30</strong><br>
+      • Tax-free up to <strong style="color:var(--gold-light);">₹20 Lakh</strong> (Budget 2023 limit)<br>
+      • Payable on resignation, retirement, death, or disability
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- GOAL WIZARD: BUY A HOME                                      -->
+<!-- ============================================================ -->
+<div id="homegoal" class="tab">
+  <div class="section-eyebrow">Goal-Based Planning</div>
+  <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">🏠 Buy a Home</h1>
+  <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Your complete home-buying plan — EMI eligibility, down payment SIP, and tax savings in one flow.</p>
+
+  <!-- Step progress -->
+  <div style="display:flex;gap:0;margin-bottom:28px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.08);">
+    <div id="hw-step-1-tab" style="flex:1;padding:12px;text-align:center;background:rgba(201,168,76,.12);border-right:1px solid rgba(255,255,255,.08);cursor:pointer;" onclick="hwGoTo(1)">
+      <div style="font-size:10px;font-weight:700;color:var(--gold-light);letter-spacing:1px;">STEP 1</div>
+      <div style="font-size:11px;color:var(--cream);">Income & EMI</div>
+    </div>
+    <div id="hw-step-2-tab" style="flex:1;padding:12px;text-align:center;background:transparent;border-right:1px solid rgba(255,255,255,.08);cursor:pointer;opacity:.5;" onclick="hwGoTo(2)">
+      <div style="font-size:10px;font-weight:700;color:var(--gold-light);letter-spacing:1px;">STEP 2</div>
+      <div style="font-size:11px;color:var(--cream);">Down Payment</div>
+    </div>
+    <div id="hw-step-3-tab" style="flex:1;padding:12px;text-align:center;background:transparent;cursor:pointer;opacity:.5;" onclick="hwGoTo(3)">
+      <div style="font-size:10px;font-weight:700;color:var(--gold-light);letter-spacing:1px;">STEP 3</div>
+      <div style="font-size:11px;color:var(--cream);">Tax Savings</div>
+    </div>
+  </div>
+
+  <!-- Step 1: Income → EMI eligibility -->
+  <div id="hw-step-1" style="display:block;">
+    <div class="card" style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">YOUR INCOME</div>
+      <div style="margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Monthly Take-Home Salary</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_hw_income">₹1,00,000</span></div>
+        <input type="range" id="hw_income" min="25000" max="1000000" step="5000" value="100000" oninput="calcHomeWizard()">
+      </div>
+      <div style="margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Home Price</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_hw_price">₹1 Cr</span></div>
+        <input type="range" id="hw_price" min="2000000" max="50000000" step="500000" value="10000000" oninput="calcHomeWizard()">
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Loan Tenure</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_hw_tenure">20</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div>
+        <input type="range" id="hw_tenure" min="5" max="30" step="1" value="20" oninput="calcHomeWizard()">
+      </div>
+    </div>
+    <div class="grid-2" style="margin-bottom:20px;">
+      <div class="result-box" style="padding:20px;text-align:center;">
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">MAX EMI (40% of income)</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--gold-light);" id="hw_max_emi">—</div>
+      </div>
+      <div class="result-box" style="padding:20px;text-align:center;">
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">LOAN ELIGIBLE</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:#4ade80;" id="hw_eligible">—</div>
+      </div>
+    </div>
+    <div class="card" style="background:rgba(201,168,76,.04);border-color:rgba(201,168,76,.2);margin-bottom:20px;" id="hw_step1_verdict"></div>
+    <button onclick="hwGoTo(2)" style="width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:12px;color:#0A0A0F;font-weight:800;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;">Next: Down Payment Plan →</button>
+  </div>
+
+  <!-- Step 2: Down payment SIP -->
+  <div id="hw-step-2" style="display:none;">
+    <div class="card" style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">DOWN PAYMENT PLANNING</div>
+      <div id="hw_dp_info" style="font-size:13px;color:var(--cream);margin-bottom:18px;line-height:1.7;"></div>
+      <div style="margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Target Timeline (years to buy)</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_hw_dpy">3</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div>
+        <input type="range" id="hw_dpy" min="1" max="10" step="1" value="3" oninput="calcHomeWizard()">
+      </div>
+    </div>
+    <div class="result-box" style="padding:24px;text-align:center;margin-bottom:20px;">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">📈 MONTHLY SIP NEEDED</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:var(--gold-light);" id="hw_dp_sip">—</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;" id="hw_dp_sip_sub">At 12% annual return</div>
+    </div>
+    <div class="card" style="background:rgba(201,168,76,.04);border-color:rgba(201,168,76,.2);margin-bottom:20px;" id="hw_step2_verdict"></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="hwGoTo(1)" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:12px;color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">← Back</button>
+      <button onclick="hwGoTo(3)" style="flex:2;padding:12px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:12px;color:#0A0A0F;font-weight:800;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;">Next: Tax Benefits →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Tax savings -->
+  <div id="hw-step-3" style="display:none;">
+    <div class="card" style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">ANNUAL TAX SAVINGS ON HOME LOAN</div>
+      <div id="hw_tax_breakdown" style="font-size:13px;color:var(--cream);line-height:2;"></div>
+    </div>
+    <div class="result-box" style="padding:24px;text-align:center;margin-bottom:20px;">
+      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">💰 TOTAL ANNUAL TAX SAVING</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:#4ade80;" id="hw_total_tax_saving">—</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;">Under Old Tax Regime</div>
+    </div>
+    <div class="card" style="background:rgba(34,197,94,.04);border-color:rgba(34,197,94,.2);margin-bottom:20px;" id="hw_step3_verdict"></div>
+    <div class="card" style="background:rgba(201,168,76,.04);border-color:rgba(201,168,76,.2);margin-bottom:20px;" id="hw_summary" style="display:none;"></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="hwGoTo(2)" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:12px;color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">← Back</button>
+      <button onclick="navTo('emi')" style="flex:2;padding:12px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:12px;color:#0A0A0F;font-weight:800;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;">Open EMI Calculator →</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
