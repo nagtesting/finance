@@ -190,11 +190,14 @@ function calcHabit() {
 }
 
 // Hook into setMode: after it runs, call updateHabitPresets
-const _origSetMode = setMode;
-function setMode(mode) {
+// MUST use var + assignment — NOT a function declaration.
+// function declarations are hoisted, so _origSetMode would capture
+// the new setMode (itself) causing infinite recursion on mode switch.
+var _origSetMode = setMode;
+setMode = function(mode) {
   _origSetMode(mode);
   updateHabitPresets();
-}
+};
 
 
 // ── FIX-C: Fine-tune number inputs next to every slider ────────
