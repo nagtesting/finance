@@ -259,7 +259,9 @@
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Non-blocking Google Fonts: loads after paint so it never delays FCP -->
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{
   --gold:#C9A84C;--gold-light:#E8C97A;--cream:#F5F0E8;
@@ -2227,26 +2229,30 @@ function tabFromPath() {
   return SLUG_TO_TAB[slug] || null;
 }
 
-window.onload = function() {
+// Use DOMContentLoaded so news fallback renders before images/iframes load.
+// window.onload fires much later (waits for all resources).
+document.addEventListener('DOMContentLoaded', function() {
   setMode('india');
-  // Open the calculator that matches the URL path (e.g. /sip-calculator opens SIP tab)
+
+  // Open the calculator that matches the URL path
   var initialTab = tabFromPath();
-  if (initialTab) {
-    navTo(initialTab);
-  }
-  // FIX-3: Render fallback news immediately (no blank strip), then
-  // fetch live articles and replace once the API responds.
-  // Using setTimeout 0 so this runs after all script blocks are parsed.
-  setTimeout(function() {
-    var region   = (typeof currentMode !== 'undefined') ? currentMode : 'india';
-    var fallback = typeof NEWS_CLIENT_FALLBACK !== 'undefined'
-      ? (NEWS_CLIENT_FALLBACK[region] || NEWS_CLIENT_FALLBACK.india)
-      : null;
-    if (fallback && typeof renderNews === 'function') renderNews(fallback);
-    // Then fetch live — will overwrite fallback when ready
-    if (typeof fetchNews === 'function') fetchNews(false);
-  }, 0);
-};
+  if (initialTab) navTo(initialTab);
+
+  // Render static fallback news immediately — no blank strip.
+  // NEWS_CLIENT_FALLBACK and renderNews are in a later <script> block,
+  // but DOMContentLoaded fires after ALL inline scripts are parsed,
+  // so they are guaranteed to be defined here.
+  var region   = (typeof currentMode !== 'undefined') ? currentMode : 'india';
+  var fallback = typeof NEWS_CLIENT_FALLBACK !== 'undefined'
+    ? (NEWS_CLIENT_FALLBACK[region] || NEWS_CLIENT_FALLBACK.india) : null;
+  if (fallback && typeof renderNews === 'function') renderNews(fallback);
+
+  // Fetch live news — replaces fallback when API responds
+  if (typeof fetchNews === 'function') fetchNews(false);
+});
+
+// Keep window.onload as a no-op alias for backward compat (popstate etc. use it)
+window.onload = function() {};
 
 // ── Back / forward button support ─────────────────────────────
 window.addEventListener('popstate', function(e) {
