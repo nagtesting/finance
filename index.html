@@ -1667,7 +1667,7 @@ function navTo(id){
   if (seo) {
     var newUrl = '/' + seo.slug;
     if (window.location.pathname !== newUrl) {
-      history.pushState({ tab: id }, '', newUrl);
+      try { history.pushState({ tab: id }, '', newUrl); } catch(e) {}
     }
     updatePageMeta(id);
   }
@@ -2396,7 +2396,7 @@ let _tickerLoaded   = false;
 
 async function loadSidebarLive() {
   try {
-    const res  = await fetch('/api/market?mode=' + currentMode + '&view=sidebar', { signal: AbortSignal.timeout(5000) });
+    const res  = await fetch('/api/market?mode=' + currentMode + '&view=sidebar', { signal: safeAbortSignal(5000) });
     if (!res.ok) throw new Error('non-200');
     const data = await res.json();
     const el   = document.getElementById('sidebar-market');
@@ -2415,9 +2415,23 @@ function startSidebarRefresh() {
 
 // FIX-1: loadTickerData now retries automatically on failure, and
 //        also triggers a 5s retry on page load for cold-start latency.
+function safeAbortSignal(ms) {
+  // AbortSignal.timeout() is unavailable in some Android WebViews and
+  // throws when cloned across iframe boundaries in sandbox previews.
+  // This polyfill works everywhere.
+  try {
+    if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+      return AbortSignal.timeout(ms);
+    }
+  } catch(e) {}
+  const ctrl = new AbortController();
+  setTimeout(function() { ctrl.abort(); }, ms);
+  return ctrl.signal;
+}
+
 async function loadTickerData(mode) {
   try {
-    const res  = await fetch('/api/market?mode=' + mode + '&view=ticker', { signal: AbortSignal.timeout(12000) });
+    const res  = await fetch('/api/market?mode=' + mode + '&view=ticker', { signal: safeAbortSignal(12000) });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     const track = document.getElementById('ticker-track');
