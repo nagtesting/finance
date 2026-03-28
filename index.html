@@ -1744,13 +1744,15 @@ function setMode(mode){
 
   // News: clear cache for new region and force fresh fetch
   // Keeps other regions' caches intact for fast switching back
+  // FIX-3: show fallback for new region instantly, then fetch live
+  if (typeof NEWS_CLIENT_FALLBACK !== 'undefined' && typeof renderNews === 'function') {
+    var fb = NEWS_CLIENT_FALLBACK[mode] || NEWS_CLIENT_FALLBACK.india;
+    renderNews(fb);
+  }
   if (typeof fetchNews === 'function') {
     delete _newsCache[mode];
     delete _newsCacheTime[mode];
     fetchNews(true);
-  } else {
-    var strip = document.getElementById('news-strip');
-    if (strip) strip.style.display = 'flex';
   }
 
   var at=document.querySelector('.tab.active');
@@ -2232,8 +2234,18 @@ window.onload = function() {
   if (initialTab) {
     navTo(initialTab);
   }
-  // fetchNews is in a later script block — call after short delay to ensure it's defined
-  setTimeout(function(){ if(typeof fetchNews==='function') fetchNews(false); }, 2000);
+  // FIX-3: Render fallback news immediately (no blank strip), then
+  // fetch live articles and replace once the API responds.
+  // Using setTimeout 0 so this runs after all script blocks are parsed.
+  setTimeout(function() {
+    var region   = (typeof currentMode !== 'undefined') ? currentMode : 'india';
+    var fallback = typeof NEWS_CLIENT_FALLBACK !== 'undefined'
+      ? (NEWS_CLIENT_FALLBACK[region] || NEWS_CLIENT_FALLBACK.india)
+      : null;
+    if (fallback && typeof renderNews === 'function') renderNews(fallback);
+    // Then fetch live — will overwrite fallback when ready
+    if (typeof fetchNews === 'function') fetchNews(false);
+  }, 0);
 };
 
 // ── Back / forward button support ─────────────────────────────
@@ -2372,13 +2384,9 @@ function buildGlossary() {
 // ================================================================
 // LIVE SIDEBAR & TICKER
 // ================================================================
-// ── LIVE TICKER & SIDEBAR — thin client wrappers ─────────────
-// All symbol lists, modeColors, modeFlags, fallback data, and
-// HTML assembly have moved to /api/market. Client only injects
-// the pre-built HTML strings returned by the server.
-
-let sidebarTimer   = null;
+let sidebarTimer    = null;
 let tickerAnimation = null;
+let _tickerLoaded   = false;
 
 async function loadSidebarLive() {
   try {
@@ -2390,9 +2398,7 @@ async function loadSidebarLive() {
     el.innerHTML = data.sidebarHtml;
     document.getElementById('sidebar-live-dot').style.background = data.live ? '#4ade80' : '#9090A8';
     document.getElementById('sidebar-updated').textContent = data.updatedTime;
-  } catch(e) {
-    // On error, sidebar shows last-known content — no action needed
-  }
+  } catch(e) { /* sidebar keeps last-known content */ }
 }
 
 function startSidebarRefresh() {
@@ -2401,24 +2407,47 @@ function startSidebarRefresh() {
   sidebarTimer = setInterval(loadSidebarLive, 30000);
 }
 
+// FIX-1: loadTickerData now retries automatically on failure, and
+//        also triggers a 5s retry on page load for cold-start latency.
 async function loadTickerData(mode) {
   try {
-    const res  = await fetch('/api/market?mode=' + mode + '&view=ticker');
+    const res  = await fetch('/api/market?mode=' + mode + '&view=ticker', { signal: AbortSignal.timeout(12000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     const track = document.getElementById('ticker-track');
     if (track && data.tickerHtml) {
       track.innerHTML = data.tickerHtml;
-      startTickerScroll(track);
+      _tickerLoaded = true;
+      // FIX-2: wait two animation frames so browser has painted the
+      // injected HTML before reading scrollWidth (prevents half=0 bug)
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          startTickerScroll(track);
+        });
+      });
     }
-  } catch(e) { /* ticker stays blank until next retry */ }
+  } catch(e) {
+    console.warn('[ticker] fetch failed:', e.message);
+    // Retry once after 8s on failure (covers Vercel cold-start)
+    if (!_tickerLoaded) {
+      setTimeout(function() { loadTickerData(currentMode); }, 8000);
+    }
+  }
 }
 
+// FIX-2: scroll loop uses a captured half-width so resizes don't reset pos
 function startTickerScroll(track) {
   if (tickerAnimation) cancelAnimationFrame(tickerAnimation);
-  let pos = 0;
+  let pos  = 0;
+  // Capture half-width after paint — scrollWidth is now reliable
+  const half = track.scrollWidth / 2;
+  if (half <= 0) {
+    // Fallback: try again after next paint if layout not ready
+    requestAnimationFrame(function() { startTickerScroll(track); });
+    return;
+  }
   function step() {
-    const half = track.scrollWidth / 2;
-    pos += 0.45;
+    pos += 0.5;
     if (pos >= half) pos = 0;
     track.style.transform = 'translateX(' + (-pos) + 'px)';
     tickerAnimation = requestAnimationFrame(step);
@@ -2429,9 +2458,15 @@ function startTickerScroll(track) {
 const lt = document.getElementById('live-ticker');
 if (lt) {
   lt.addEventListener('mouseenter', function() { if (tickerAnimation) cancelAnimationFrame(tickerAnimation); });
-  lt.addEventListener('mouseleave', function() { const t = document.getElementById('ticker-track'); if (t && t.innerHTML) startTickerScroll(t); });
+  lt.addEventListener('mouseleave', function() {
+    const t = document.getElementById('ticker-track');
+    if (t && t.innerHTML) startTickerScroll(t);
+  });
 }
+
+// Refresh every 30s; also fire an extra load at 5s for cold-start
 setInterval(function() { loadTickerData(currentMode); }, 30000);
+setTimeout(function() { if (!_tickerLoaded) loadTickerData(currentMode); }, 5000);
 </script>
 
 <!-- ============================================================ -->
@@ -2883,6 +2918,40 @@ function shareResult(tab){
 //   • Injects returned HTML (pills + cards)
 //   • On click: if(a.tab) navTo(a.tab) else window.open(a.link)
 
+// FIX-3: Client-side fallback — always shown when /api/news fails or is slow
+var NEWS_CLIENT_FALLBACK = {
+  india: [
+    { title:'RBI Monetary Policy: Latest rate decision and outlook',        source:'RBI',            emoji:'🏦', color:'#C9A84C', timeLabel:'Latest', link:'https://rbi.org.in',                   tab:'emi'  },
+    { title:'SEBI: New mutual fund regulation update',                      source:'SEBI',           emoji:'📋', color:'#6366F1', timeLabel:'Latest', link:'https://sebi.gov.in',                  tab:'sip'  },
+    { title:'Economic Times: India markets top stories',                    source:'Economic Times', emoji:'📰', color:'#F97316', timeLabel:'Latest', link:'https://economictimes.indiatimes.com', tab:null   },
+    { title:'Budget 2025-26: Income tax slab announcements',                source:'PIB',            emoji:'🇮🇳', color:'#EC4899', timeLabel:'Latest', link:'https://pib.gov.in',                  tab:'tax'  },
+    { title:'Nifty 50 & Sensex: Market movement and outlook',               source:'ET Markets',     emoji:'📈', color:'#C9A84C', timeLabel:'Latest', link:'https://economictimes.indiatimes.com/markets', tab:'sip' },
+    { title:'PPF, NPS, EPF: Latest interest rates and rule changes',        source:'ET Wealth',      emoji:'💰', color:'#22C55E', timeLabel:'Latest', link:'https://economictimes.indiatimes.com/wealth', tab:'ppf' },
+    { title:'Fed Reserve: Latest monetary policy statement',                source:'Fed Reserve',    emoji:'💵', color:'#22C55E', timeLabel:'Latest', link:'https://federalreserve.gov',          tab:'emi'  },
+    { title:'IMF: Global growth and emerging markets outlook 2026',         source:'IMF',            emoji:'🌍', color:'#3B82F6', timeLabel:'Latest', link:'https://imf.org/en/News',             tab:'fire' },
+  ],
+  usa: [
+    { title:'Federal Reserve: Latest monetary policy decision',             source:'Fed Reserve',    emoji:'🏛️', color:'#3B82F6', timeLabel:'Latest', link:'https://federalreserve.gov',          tab:'emi'  },
+    { title:'FOMC: Interest rate decision and economic projections',        source:'FOMC',           emoji:'💵', color:'#22C55E', timeLabel:'Latest', link:'https://federalreserve.gov',          tab:'emi'  },
+    { title:'MarketWatch: S&P 500, Dow and Nasdaq market update',           source:'MarketWatch',    emoji:'📈', color:'#F97316', timeLabel:'Latest', link:'https://marketwatch.com',             tab:'sip'  },
+    { title:'Nasdaq: Technology stocks and market update',                  source:'Nasdaq',         emoji:'💹', color:'#22C55E', timeLabel:'Latest', link:'https://nasdaq.com',                  tab:'sip'  },
+    { title:'IMF: US and global economic outlook 2026',                     source:'IMF',            emoji:'🌍', color:'#3B82F6', timeLabel:'Latest', link:'https://imf.org/en/News',             tab:'fire' },
+  ],
+  europe: [
+    { title:'ECB: Interest rate decision and monetary policy statement',    source:'ECB',            emoji:'🏦', color:'#6366F1', timeLabel:'Latest', link:'https://ecb.europa.eu',               tab:'emi'  },
+    { title:'ESMA: Investment regulation and sustainable finance update',   source:'ESMA',           emoji:'📋', color:'#EC4899', timeLabel:'Latest', link:'https://esma.europa.eu',              tab:null   },
+    { title:'IMF: Euro area economic assessment and growth forecast',       source:'IMF',            emoji:'🌍', color:'#3B82F6', timeLabel:'Latest', link:'https://imf.org/en/News',             tab:'fire' },
+    { title:'MarketWatch: Euro Stoxx, DAX and FTSE market update',          source:'MarketWatch',    emoji:'📈', color:'#F97316', timeLabel:'Latest', link:'https://marketwatch.com',             tab:'sip'  },
+  ],
+  world: [
+    { title:'Fed Reserve: Latest monetary policy statement',                source:'Fed Reserve',    emoji:'💵', color:'#22C55E', timeLabel:'Latest', link:'https://federalreserve.gov',          tab:'emi'  },
+    { title:'ECB: Euro area rate decision and economic outlook',            source:'ECB',            emoji:'🇪🇺', color:'#6366F1', timeLabel:'Latest', link:'https://ecb.europa.eu',               tab:'emi'  },
+    { title:'IMF: Global growth outlook and emerging markets 2026',         source:'IMF',            emoji:'🌍', color:'#3B82F6', timeLabel:'Latest', link:'https://imf.org/en/News',             tab:'fire' },
+    { title:'Nasdaq: Global technology and equity market update',           source:'Nasdaq',         emoji:'💹', color:'#22C55E', timeLabel:'Latest', link:'https://nasdaq.com',                  tab:'sip'  },
+    { title:'MarketWatch: Global markets — S&P 500, Nifty, DAX round-up', source:'MarketWatch',    emoji:'📈', color:'#F97316', timeLabel:'Latest', link:'https://marketwatch.com',             tab:'sip'  },
+  ],
+};
+
 var _newsCache        = {};
 var _newsCacheTime    = {};
 var _newsFetching     = false;
@@ -3005,9 +3074,18 @@ function renderNews(articles) {
 }
 
 function renderNewsError() {
-  var ticker = document.getElementById('news-ticker-inner');
-  if (ticker) ticker.innerHTML = '<span style="font-size:11px;color:var(--muted);padding:0 12px;">News temporarily unavailable — </span>' +
-    '<button onclick="fetchNews(true)" style="font-size:11px;color:var(--gold-light);background:none;border:none;cursor:pointer;text-decoration:underline;">retry</button>';
+  // FIX-3: instead of showing an error message, render the client-side
+  // fallback articles so the strip always has scrolling content
+  var region   = (typeof currentMode !== 'undefined') ? currentMode : 'india';
+  var fallback = NEWS_CLIENT_FALLBACK[region] || NEWS_CLIENT_FALLBACK.india;
+  if (fallback && fallback.length) {
+    renderNews(fallback);
+  } else {
+    var ticker = document.getElementById('news-ticker-inner');
+    if (ticker) ticker.innerHTML =
+      '<span style="font-size:11px;color:var(--muted);padding:0 12px;">News loading… </span>' +
+      '<button onclick="fetchNews(true)" style="font-size:11px;color:var(--gold-light);background:none;border:none;cursor:pointer;text-decoration:underline;">retry</button>';
+  }
 }
 
 function toggleNewsExpand() {
