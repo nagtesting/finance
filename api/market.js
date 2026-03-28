@@ -1,3 +1,4 @@
+
 /**
  * /api/market.js — MoneyVeda Market API v3 (Protected Edition)
  *
