@@ -191,7 +191,7 @@ function calcHabit() {
 
 // Hook into setMode: after it runs, call updateHabitPresets
 // MUST use var + assignment — NOT a function declaration.
-// function declarations are hoisted, so _origSetMode would capture
+// function declarations are hoisted so _origSetMode would capture
 // the new setMode (itself) causing infinite recursion on mode switch.
 var _origSetMode = setMode;
 setMode = function(mode) {
