@@ -18,65 +18,125 @@
  * YAHOO RATE LIMIT: server-side 15s cache → max 4 Yahoo calls/min ✅
  */
 
-// SYMBOLS: trimmed to 12 per region — covers all major indices + key assets.
-// Cutting from 36/25 → 12 reduces Yahoo Finance API calls by ~65%,
-// dropping ticker load time from 45-60s to ~4-6s.
 const SYMBOLS = {
   india: [
-    { symbol: '^BSESN',        label: 'SENSEX'      },
-    { symbol: '^NSEI',         label: 'NIFTY 50'    },
-    { symbol: '^NSEBANK',      label: 'NIFTY BANK'  },
-    { symbol: '^CNXIT',        label: 'NIFTY IT'    },
-    { symbol: 'USDINR=X',      label: 'USD/INR'     },
-    { symbol: 'GC=F',          label: 'GOLD'        },
-    { symbol: 'CL=F',          label: 'CRUDE OIL'   },
-    { symbol: 'RELIANCE.NS',   label: 'RELIANCE'    },
-    { symbol: 'HDFCBANK.NS',   label: 'HDFC BANK'   },
-    { symbol: 'TCS.NS',        label: 'TCS'         },
-    { symbol: 'INFY.NS',       label: 'INFOSYS'     },
-    { symbol: 'ICICIBANK.NS',  label: 'ICICI BANK'  },
+    { symbol: '^BSESN',        label: 'SENSEX'        },
+    { symbol: '^NSEI',         label: 'NIFTY 50'      },
+    { symbol: '^NSEBANK',      label: 'NIFTY BANK'    },
+    { symbol: '^CNXIT',        label: 'NIFTY IT'      },
+    { symbol: '^CNXAUTO',      label: 'NIFTY AUTO'    },
+    { symbol: '^CNXPHARMA',    label: 'NIFTY PHARMA'  },
+    { symbol: '^CNXFMCG',      label: 'NIFTY FMCG'   },
+    { symbol: 'USDINR=X',      label: 'USD/INR'       },
+    { symbol: 'GC=F',          label: 'GOLD'          },
+    { symbol: 'CL=F',          label: 'CRUDE OIL'     },
+    { symbol: 'SI=F',          label: 'SILVER'        },
+    { symbol: 'RELIANCE.NS',   label: 'RELIANCE'      },
+    { symbol: 'HDFCBANK.NS',   label: 'HDFC BANK'     },
+    { symbol: 'TCS.NS',        label: 'TCS'           },
+    { symbol: 'INFY.NS',       label: 'INFOSYS'       },
+    { symbol: 'TATAMOTORS.NS', label: 'TATA MOTORS'   },
+    { symbol: 'ICICIBANK.NS',  label: 'ICICI BANK'    },
+    { symbol: 'WIPRO.NS',      label: 'WIPRO'         },
+    { symbol: 'AXISBANK.NS',   label: 'AXIS BANK'     },
+    { symbol: 'SBIN.NS',       label: 'SBI'           },
+    { symbol: 'MARUTI.NS',     label: 'MARUTI'        },
+    { symbol: 'SUNPHARMA.NS',  label: 'SUN PHARMA'    },
+    { symbol: 'BAJFINANCE.NS', label: 'BAJAJ FIN'     },
+    { symbol: 'HINDUNILVR.NS', label: 'HUL'           },
+    { symbol: 'LT.NS',         label: 'L&T'           },
+    { symbol: 'KOTAKBANK.NS',  label: 'KOTAK BANK'    },
+    { symbol: 'ITC.NS',        label: 'ITC'           },
+    { symbol: 'BHARTIARTL.NS', label: 'AIRTEL'        },
+    { symbol: 'ASIANPAINT.NS', label: 'ASIAN PAINTS'  },
+    { symbol: 'TITAN.NS',      label: 'TITAN'         },
+    { symbol: 'ULTRACEMCO.NS', label: 'ULTRATECH CEM' },
+    { symbol: 'NESTLEIND.NS',  label: 'NESTLE INDIA'  },
+    { symbol: 'POWERGRID.NS',  label: 'POWER GRID'    },
+    { symbol: 'NTPC.NS',       label: 'NTPC'          },
+    { symbol: 'ONGC.NS',       label: 'ONGC'          },
+    { symbol: 'ADANIENT.NS',   label: 'ADANI ENT'     },
   ],
   usa: [
-    { symbol: '^GSPC',    label: 'S&P 500'   },
-    { symbol: '^IXIC',    label: 'NASDAQ'    },
-    { symbol: '^DJI',     label: 'DOW JONES' },
-    { symbol: 'GC=F',     label: 'GOLD'      },
-    { symbol: 'CL=F',     label: 'CRUDE OIL' },
-    { symbol: 'BTC-USD',  label: 'BITCOIN'   },
-    { symbol: 'AAPL',     label: 'APPLE'     },
-    { symbol: 'MSFT',     label: 'MICROSOFT' },
-    { symbol: 'NVDA',     label: 'NVIDIA'    },
-    { symbol: 'TSLA',     label: 'TESLA'     },
-    { symbol: 'AMZN',     label: 'AMAZON'    },
-    { symbol: 'META',     label: 'META'      },
+    { symbol: '^GSPC',    label: 'S&P 500'      },
+    { symbol: '^IXIC',    label: 'NASDAQ'       },
+    { symbol: '^DJI',     label: 'DOW JONES'    },
+    { symbol: '^RUT',     label: 'RUSSELL 2000' },
+    { symbol: '^VIX',     label: 'VIX'          },
+    { symbol: 'GC=F',     label: 'GOLD'         },
+    { symbol: 'CL=F',     label: 'CRUDE OIL'    },
+    { symbol: 'SI=F',     label: 'SILVER'       },
+    { symbol: 'EURUSD=X', label: 'EUR/USD'      },
+    { symbol: 'DX-Y.NYB', label: 'US DOLLAR'    },
+    { symbol: 'BTC-USD',  label: 'BITCOIN'      },
+    { symbol: 'ETH-USD',  label: 'ETHEREUM'     },
+    { symbol: 'AAPL',     label: 'APPLE'        },
+    { symbol: 'MSFT',     label: 'MICROSOFT'    },
+    { symbol: 'TSLA',     label: 'TESLA'        },
+    { symbol: 'NVDA',     label: 'NVIDIA'       },
+    { symbol: 'AMZN',     label: 'AMAZON'       },
+    { symbol: 'GOOGL',    label: 'ALPHABET'     },
+    { symbol: 'META',     label: 'META'         },
+    { symbol: 'NFLX',     label: 'NETFLIX'      },
+    { symbol: 'JPM',      label: 'JPMORGAN'     },
+    { symbol: 'BAC',      label: 'BANK OF AM.'  },
+    { symbol: 'BRK-B',    label: 'BERKSHIRE'    },
+    { symbol: 'UNH',      label: 'UNITEDHEALTH' },
+    { symbol: 'V',        label: 'VISA'         },
   ],
   europe: [
-    { symbol: '^STOXX50E', label: 'EURO STOXX' },
-    { symbol: '^GDAXI',    label: 'DAX'        },
-    { symbol: '^FTSE',     label: 'FTSE 100'   },
-    { symbol: '^FCHI',     label: 'CAC 40'     },
-    { symbol: 'EURUSD=X',  label: 'EUR/USD'    },
-    { symbol: 'GBPUSD=X',  label: 'GBP/USD'   },
-    { symbol: 'GC=F',      label: 'GOLD'       },
-    { symbol: 'CL=F',      label: 'CRUDE OIL'  },
-    { symbol: 'ASML.AS',   label: 'ASML'       },
-    { symbol: 'SAP.DE',    label: 'SAP'        },
-    { symbol: 'LVMH.PA',   label: 'LVMH'       },
-    { symbol: 'SIE.DE',    label: 'SIEMENS'    },
+    { symbol: '^STOXX50E', label: 'EURO STOXX'    },
+    { symbol: '^GDAXI',    label: 'DAX'           },
+    { symbol: '^FTSE',     label: 'FTSE 100'      },
+    { symbol: '^FCHI',     label: 'CAC 40'        },
+    { symbol: '^IBEX',     label: 'IBEX 35'       },
+    { symbol: '^SSMI',     label: 'SMI'           },
+    { symbol: '^AEX',      label: 'AEX'           },
+    { symbol: 'EURUSD=X',  label: 'EUR/USD'       },
+    { symbol: 'GBPUSD=X',  label: 'GBP/USD'       },
+    { symbol: 'GC=F',      label: 'GOLD'          },
+    { symbol: 'CL=F',      label: 'CRUDE OIL'     },
+    { symbol: 'NG=F',      label: 'NAT. GAS'      },
+    { symbol: 'ASML.AS',   label: 'ASML'          },
+    { symbol: 'SAP.DE',    label: 'SAP'           },
+    { symbol: 'LVMH.PA',   label: 'LVMH'          },
+    { symbol: 'SIE.DE',    label: 'SIEMENS'       },
+    { symbol: 'NOVO-B.CO', label: 'NOVO NORDISK'  },
+    { symbol: 'NESN.SW',   label: 'NESTLE'        },
+    { symbol: 'ROG.SW',    label: 'ROCHE'         },
+    { symbol: 'MC.PA',     label: 'MOET HENNESSY' },
+    { symbol: 'TTE.PA',    label: 'TOTALENERGIES' },
+    { symbol: 'SHELL.AS',  label: 'SHELL'         },
+    { symbol: 'ULVR.L',    label: 'UNILEVER'      },
+    { symbol: 'AZN.L',     label: 'ASTRAZENECA'   },
+    { symbol: 'HSBA.L',    label: 'HSBC'          },
   ],
   world: [
     { symbol: '^GSPC',     label: 'S&P 500'    },
-    { symbol: '^NSEI',     label: 'NIFTY 50'   },
+    { symbol: '^IXIC',     label: 'NASDAQ'     },
+    { symbol: '^DJI',      label: 'DOW JONES'  },
     { symbol: '^FTSE',     label: 'FTSE 100'   },
     { symbol: '^GDAXI',    label: 'DAX'        },
+    { symbol: '^BSESN',    label: 'SENSEX'     },
+    { symbol: '^NSEI',     label: 'NIFTY 50'   },
     { symbol: '^N225',     label: 'NIKKEI 225' },
     { symbol: '^HSI',      label: 'HANG SENG'  },
+    { symbol: '^STOXX50E', label: 'EURO STOXX' },
+    { symbol: '^AXJO',     label: 'ASX 200'    },
+    { symbol: '^KS11',     label: 'KOSPI'      },
     { symbol: 'GC=F',      label: 'GOLD'       },
     { symbol: 'CL=F',      label: 'CRUDE OIL'  },
+    { symbol: 'SI=F',      label: 'SILVER'     },
+    { symbol: 'NG=F',      label: 'NAT. GAS'   },
     { symbol: 'BTC-USD',   label: 'BITCOIN'    },
+    { symbol: 'ETH-USD',   label: 'ETHEREUM'   },
+    { symbol: 'BNB-USD',   label: 'BNB'        },
     { symbol: 'EURUSD=X',  label: 'EUR/USD'    },
+    { symbol: 'GBPUSD=X',  label: 'GBP/USD'   },
     { symbol: 'USDINR=X',  label: 'USD/INR'    },
     { symbol: 'USDJPY=X',  label: 'USD/JPY'    },
+    { symbol: 'USDCNY=X',  label: 'USD/CNY'    },
+    { symbol: 'DX-Y.NYB',  label: 'US DOLLAR'  },
   ],
 };
 
@@ -125,6 +185,52 @@ const _cache     = {};
 const _cacheTime = {};
 const SERVER_CACHE_MS = 15 * 1000;
 
+// ── Per-region market hours (UTC) ────────────────────────────
+// Returns { open: bool, label: string, nextOpen: string }
+function getMarketStatus(mode) {
+  const now  = new Date();
+  const day  = now.getUTCDay();   // 0=Sun, 6=Sat
+  const hour = now.getUTCHours();
+  const min  = now.getUTCMinutes();
+  const t    = hour * 60 + min;   // minutes since UTC midnight
+
+  // Weekend check (universal)
+  const isWeekend = day === 0 || day === 6;
+
+  const schedules = {
+    // NSE/BSE: Mon-Fri 03:45–10:00 UTC (09:15–15:30 IST)
+    india:  { open: 3*60+45,  close: 10*60,     tz: 'IST',  exchange: 'NSE/BSE',  local: '9:15–15:30 IST'  },
+    // NYSE/NASDAQ: Mon-Fri 13:30–20:00 UTC (9:30–16:00 ET)
+    usa:    { open: 13*60+30, close: 20*60,      tz: 'ET',   exchange: 'NYSE',     local: '9:30–16:00 ET'   },
+    // Euronext/Frankfurt: Mon-Fri 07:00–15:30 UTC (8:00–16:30 CET)
+    europe: { open: 7*60,     close: 15*60+30,   tz: 'CET',  exchange: 'XETRA',   local: '8:00–16:30 CET'  },
+    // World: use NYSE as primary reference
+    world:  { open: 13*60+30, close: 20*60,      tz: 'ET',   exchange: 'NYSE',     local: '9:30–16:00 ET'   },
+  };
+
+  const s = schedules[mode] || schedules.india;
+  const isOpen = !isWeekend && t >= s.open && t < s.close;
+
+  let statusLabel, statusColor;
+  if (isWeekend) {
+    statusLabel = `${s.exchange} closed (weekend) · Opens Mon ${s.local}`;
+    statusColor = '#f59e0b';
+  } else if (!isOpen && t < s.open) {
+    const minsTo = s.open - t;
+    const hTo = Math.floor(minsTo / 60), mTo = minsTo % 60;
+    statusLabel = `${s.exchange} pre-market · Opens in ${hTo}h ${mTo}m (${s.local})`;
+    statusColor = '#f59e0b';
+  } else if (!isOpen && t >= s.close) {
+    statusLabel = `${s.exchange} closed · Opens tomorrow ${s.local}`;
+    statusColor = '#9090A8';
+  } else {
+    statusLabel = `${s.exchange} live · ${s.local}`;
+    statusColor = '#4ade80';
+  }
+
+  return { isOpen, isWeekend, statusLabel, statusColor, exchange: s.exchange };
+}
+
 function isAnyMarketOpen() {
   const day = new Date().getUTCDay();
   return day !== 0 && day !== 6;
@@ -137,7 +243,7 @@ async function fetchQuote(symbol) {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       'Accept': 'application/json',
     },
-    signal: AbortSignal.timeout(6000),
+    signal: (() => { try { return AbortSignal.timeout(6000); } catch(e) { const c = new AbortController(); setTimeout(() => c.abort(), 6000); return c.signal; } })(),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
@@ -172,12 +278,22 @@ function buildTickerItemHtml(t) {
     `</span></div>`;
 }
 
-function buildBadgeHtml(mode) {
-  const m = MODE_META[mode];
-  return `<div style="display:inline-flex;align-items:center;padding:0 16px;height:44px;` +
-    `border-right:1px solid rgba(201,168,76,.2);flex-shrink:0;">` +
-    `<span style="font-size:9px;font-weight:800;letter-spacing:2px;color:${m.color};` +
-    `font-family:'DM Sans',sans-serif;">${m.flag} LIVE</span></div>`;
+function buildBadgeHtml(mode, marketStatus) {
+  const m   = MODE_META[mode];
+  const ms  = marketStatus || { isOpen: true, statusColor: '#4ade80', statusLabel: 'LIVE' };
+  const dot = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;` +
+    `background:${ms.statusColor};margin-right:6px;flex-shrink:0;` +
+    `${ms.isOpen ? 'box-shadow:0 0 6px ' + ms.statusColor + ';' : ''}"></span>`;
+  const liveText = ms.isOpen ? 'LIVE' : 'CLOSED';
+  return `<div style="display:inline-flex;align-items:center;padding:0 14px;height:44px;` +
+    `border-right:1px solid rgba(201,168,76,.2);flex-shrink:0;gap:0;">` +
+    `${dot}<span style="font-size:9px;font-weight:800;letter-spacing:2px;color:${m.color};` +
+    `font-family:'DM Sans',sans-serif;margin-right:8px;">${m.flag} ${liveText}</span>` +
+    // Scrolling status text if market closed
+    (!ms.isOpen ? `<span style="font-size:8px;color:${ms.statusColor};font-family:'DM Mono',monospace;` +
+      `letter-spacing:0.5px;max-width:220px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">` +
+      `${ms.statusLabel}</span>` : '') +
+    `</div>`;
 }
 
 function buildSidebarItemHtml(t) {
@@ -271,11 +387,12 @@ export default async function handler(req, res) {
   // Returns ready-to-inject HTML for #ticker-track.
   // Client does: track.innerHTML = data.tickerHtml; startScroll(track);
   if (view === 'ticker') {
+    const ms         = getMarketStatus(mode);
     const items      = resolveTickerItems(mode, tickers);
-    const badge      = buildBadgeHtml(mode);
+    const badge      = buildBadgeHtml(mode, ms);
     const itemsHtml  = items.map(buildTickerItemHtml).join('');
     const tickerHtml = badge + itemsHtml + badge + itemsHtml; // doubled for seamless loop
-    return res.status(200).json({ tickerHtml, mode, weekend: isWeekend });
+    return res.status(200).json({ tickerHtml, mode, weekend: ms.isWeekend, marketOpen: ms.isOpen, marketStatus: ms.statusLabel });
   }
 
   // ── ?view=sidebar ────────────────────────────────────────
