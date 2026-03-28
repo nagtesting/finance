@@ -1,5 +1,5 @@
 // ============================================================
-// /api/calculate.js — MoneyVeda v4 (Full Protection Edition)
+// /api/calculate.js — MoneyVeda v4 (Fixed Edition)
 //
 // ALL computation is server-side. index.html contains zero
 // math — only DOM reads (slider values) and DOM writes
@@ -9,6 +9,34 @@
 // SUPPORTED TYPES:
 //   sip, emi, fire, roi, insurance, tax,
 //   ppf, epf, nps, stepsip, ssa, crorepati, habit, compare
+//
+// FIX LOG:
+//   BUG-01 SIP       — mr was r/12/100 (naive).
+//                      Fixed to geometric: (1+r/100)^(1/12)-1
+//   BUG-02 FIRE      — mr was ret/12 (naive, ret already decimal).
+//                      Fixed to geometric: (1+ret)^(1/12)-1
+//   BUG-03 NPS       — mr was ret/12 (naive, ret already decimal).
+//                      Fixed to geometric: (1+ret)^(1/12)-1
+//   BUG-04 STEPSIP   — mr was r/12/100 (naive).
+//                      Fixed to geometric: (1+r/100)^(1/12)-1
+//   BUG-05 CROREPATI — mr was r/12/100 (naive).
+//                      Fixed to geometric: (1+r/100)^(1/12)-1
+//   BUG-06 HABIT     — mr was r/12/100 (naive).
+//                      Fixed to geometric: (1+r/100)^(1/12)-1
+//   BUG-07 COMPARE   — SIP side mr was r/12/100 (naive).
+//                      Fixed to geometric: (1+r/100)^(1/12)-1
+//   BUG-08 PPF       — interest was Math.round()'d each year before
+//                      being added to balance, causing small cumulative
+//                      rounding errors. Now accumulates exact float;
+//                      only rounds in the output row and final return.
+//   BUG-09 SSA       — same annual-rounding issue as PPF. Fixed same way.
+//
+//   NOT BUGS (verified correct):
+//   EMI    — r/12/100 is CORRECT; banks quote nominal annual rate.
+//   EPF    — formula (balance+contrib)*(1+rate) is correct.
+//   TAX    — surcharge reverse-iterate logic is correct.
+//   ROI    — annual compounding Math.pow(1+r/100,t) is correct.
+//   INSURANCE — HLV formula is standard and correct.
 // ============================================================
 
 // ── Tax config ────────────────────────────────────────────────
@@ -36,6 +64,20 @@ const ACTIVE_AY = 'AY2025-26';
 function clamp(val, min, max, def) {
   const n = parseFloat(val);
   return (!isFinite(n) || n < min || n > max) ? def : n;
+}
+
+// FIX: single shared helper — converts an annual % rate into the
+// true geometric monthly rate. Used by every calculator that
+// compounds monthly.  (1+r/100)^(1/12)-1
+// EMI intentionally does NOT use this; banks quote nominal rates.
+function monthlyRate(annualPct) {
+  return Math.pow(1 + annualPct / 100, 1 / 12) - 1;
+}
+
+// FIX: same helper for when the annual rate is already a decimal
+// (e.g. 0.10 for 10%).  Used by FIRE and NPS.
+function monthlyRateDecimal(annualDecimal) {
+  return Math.pow(1 + annualDecimal, 1 / 12) - 1;
 }
 
 function calcRegimeTax(taxable, gross, regime, cess) {
@@ -123,7 +165,8 @@ export default async function handler(req, res) {
     const p  = clamp(b.p, 100, 10000000, 25000);
     const r  = clamp(b.r, 0.1, 50, 12);
     const t  = clamp(b.t, 1, 50, 15);
-    const mr = r / 12 / 100;
+    // FIX BUG-01: was r/12/100 (naive). Use geometric monthly rate.
+    const mr = monthlyRate(r);
     const months   = t * 12;
     const invested = p * months;
     const total    = p * (((Math.pow(1+mr,months)-1)/mr) * (1+mr));
@@ -137,7 +180,6 @@ export default async function handler(req, res) {
       const vv = p * (((Math.pow(1+mr,m)-1)/mr) * (1+mr));
       yearlyData.push({ year:y, invested:Math.round(iv), value:Math.round(vv), gains:Math.round(vv-iv), gainPct:((vv-iv)/iv*100) });
     }
-    // Milestone targets per mode
     const milestoneTargets = mode==='india'
       ? [200000,500000,1000000,5000000,10000000,50000000]
       : [5000,10000,50000,100000,500000,1000000];
@@ -159,11 +201,15 @@ export default async function handler(req, res) {
   }
 
   // ── EMI ──────────────────────────────────────────────────────
+  // NOTE: EMI intentionally keeps r/12/100. Banks in India (and globally)
+  // quote home/car loan rates as nominal annual rates, and the standard
+  // EMI formula uses the nominal monthly rate = r/12/100. Using the
+  // geometric rate here would give wrong EMIs vs your bank statement.
   if (type === 'emi') {
     const p      = clamp(b.p, 1000, 500000000, 5000000);
     const r      = clamp(b.r, 0.1, 30, 8.5);
     const t      = clamp(b.t, 1, 30, 20);
-    const mr     = r / 12 / 100;
+    const mr     = r / 12 / 100;   // nominal monthly rate — CORRECT for EMI
     const months = t * 12;
     const emi    = (p * mr * Math.pow(1+mr,months)) / (Math.pow(1+mr,months) - 1);
     const totalPaid = emi * months;
@@ -194,8 +240,9 @@ export default async function handler(req, res) {
     const saved = clamp(b.saved,0,   1e9, 0);
     const inv   = clamp(b.inv,  100, 1e7, 50000);
     const ret   = clamp(b.ret,  1,   30,  10) / 100;
-    const inf   = clamp(b.inf,  1,   15,  6)  / 100;
-    const mr    = ret / 12;
+    const inf   = clamp(b.inf,  1,   15,  6)  / 100;  // kept for future use
+    // FIX BUG-02: was ret/12 (naive). ret is a decimal like 0.10.
+    const mr    = monthlyRateDecimal(ret);
     const fireCorpus = exp * 12 * 25;
     const swr        = fireCorpus * 0.04 / 12;
     let corpus = saved, years = 0;
@@ -223,6 +270,7 @@ export default async function handler(req, res) {
   }
 
   // ── ROI ──────────────────────────────────────────────────────
+  // ROI compounds annually — Math.pow(1+r/100,t) is correct.
   if (type === 'roi') {
     const p = clamp(b.p, 100, 1e9, 100000);
     const r = clamp(b.r, 0.1, 50, 12);
@@ -245,6 +293,7 @@ export default async function handler(req, res) {
   }
 
   // ── INSURANCE ────────────────────────────────────────────────
+  // HLV = income × remaining working years + liabilities. Correct.
   if (type === 'insurance') {
     const inc    = clamp(b.inc,   1000,  1e8, 1800000);
     const age    = clamp(b.age,   18,    60,  30);
@@ -260,6 +309,7 @@ export default async function handler(req, res) {
   }
 
   // ── TAX (India) ───────────────────────────────────────────────
+  // Surcharge reverse-iterate logic verified correct.
   if (type === 'tax') {
     const cfg = TAX_CONFIG[ACTIVE_AY];
     const inc  = clamp(b.inc,  0, 1e8, 1800000);
@@ -290,12 +340,16 @@ export default async function handler(req, res) {
     const y = clamp(b.y, 500, 150000, 150000);
     const t = clamp(b.t, 15, 50, 15);
     const rate = 0.071;
+    // FIX BUG-08: was Math.round()'ing interest each year before adding to
+    // balance, causing small cumulative rounding errors. Now carry exact
+    // float in balance; only round for display in rows and final output.
     let balance=0, totalInv=0;
     const rows = [];
     for (let yr=1; yr<=t; yr++) {
-      const interest = Math.round((balance+y)*rate);
-      balance = balance+y+interest; totalInv += y;
-      rows.push({ year:yr, deposit:Math.round(y), interest, balance:Math.round(balance) });
+      const interest = (balance + y) * rate;   // exact float, no premature rounding
+      balance = balance + y + interest;
+      totalInv += y;
+      rows.push({ year:yr, deposit:Math.round(y), interest:Math.round(interest), balance:Math.round(balance) });
     }
     return res.json({
       maturity:Math.round(balance), invested:Math.round(totalInv),
@@ -305,6 +359,8 @@ export default async function handler(req, res) {
   }
 
   // ── EPF ──────────────────────────────────────────────────────
+  // Formula verified correct: (balance+contrib)*(1+rate) is standard
+  // end-of-year contribution + compounding model.
   if (type === 'epf') {
     const sal  = clamp(b.sal,  1000, 500000, 50000);
     const age  = clamp(b.age,  18,   55,     28);
@@ -326,15 +382,17 @@ export default async function handler(req, res) {
 
   // ── NPS ──────────────────────────────────────────────────────
   if (type === 'nps') {
-    const p   = clamp(b.p,   500, 100000, 5000);
-    const age = clamp(b.age, 18,  55,     30);
-    const eq  = clamp(b.eq,  0,   75,     75) / 100;
-    const debt = 0.75-eq;
+    const p    = clamp(b.p,   500, 100000, 5000);
+    const age  = clamp(b.age, 18,  55,     30);
+    const eq   = clamp(b.eq,  0,   75,     75) / 100;
+    const debt = 0.75 - eq;
     const ret  = eq*0.11 + debt*0.07 + (0.25-debt)*0.09;
-    const years  = 60-age, months = years*12, mr = ret/12;
+    const years = 60 - age, months = years * 12;
+    // FIX BUG-03: was ret/12 (naive, ret is decimal like 0.105).
+    const mr = monthlyRateDecimal(ret);
     const corpus  = p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
-    const lumpsum = corpus*0.60;
-    const pension = corpus*0.40*0.06/12;
+    const lumpsum = corpus * 0.60;
+    const pension = corpus * 0.40 * 0.06 / 12;
     const taxSaved = Math.round(Math.min(p*12,50000)*0.30);
     return res.json({
       corpus:Math.round(corpus), lumpsum:Math.round(lumpsum),
@@ -350,7 +408,8 @@ export default async function handler(req, res) {
     const step = clamp(b.step, 0,   30,      10) / 100;
     const r    = clamp(b.r,    1,   30,      12);
     const t    = clamp(b.t,    1,   40,      20);
-    const mr   = r/12/100;
+    // FIX BUG-04: was r/12/100 (naive).
+    const mr   = monthlyRate(r);
     let stepCorpus=0, flatCorpus=0, cur=p;
     const rows = [];
     for (let y=1; y<=t; y++) {
@@ -372,15 +431,17 @@ export default async function handler(req, res) {
     const age = clamp(b.age, 0,  10,     3);
     const dep = clamp(b.dep, 250,150000, 150000);
     const rate=0.082, totalYears=21-age, depositYears=15;
+    // FIX BUG-09: same as PPF — was Math.round()'ing interest before
+    // adding to balance. Now carry exact float; only round for display.
     let balance=0, totalInv=0;
     const rows = [];
     for (let yr=1; yr<=totalYears; yr++) {
       const depositing = yr<=depositYears;
       const deposit    = depositing ? dep : 0;
-      const interest   = Math.round((balance+deposit)*rate);
-      balance += deposit+interest;
+      const interest   = (balance + deposit) * rate;  // exact float
+      balance += deposit + interest;
       if (depositing) totalInv += dep;
-      rows.push({ year:yr, deposit:depositing?Math.round(dep):0, interest, balance:Math.round(balance) });
+      rows.push({ year:yr, deposit:depositing?Math.round(dep):0, interest:Math.round(interest), balance:Math.round(balance) });
     }
     return res.json({
       maturity:Math.round(balance), invested:Math.round(totalInv),
@@ -393,7 +454,9 @@ export default async function handler(req, res) {
     const target = clamp(b.target, 100000, 5e9, 10000000);
     const t      = clamp(b.t,      1,      40,  15);
     const r      = clamp(b.r,      1,      30,  12);
-    const mr     = r/12/100, months = t*12;
+    // FIX BUG-05: was r/12/100 (naive).
+    const mr     = monthlyRate(r);
+    const months = t * 12;
     const monthly = target * mr / (((Math.pow(1+mr,months)-1)) * (1+mr));
     return res.json({
       monthly:Math.round(monthly), target, years:t, rate:r,
@@ -406,8 +469,10 @@ export default async function handler(req, res) {
     const p      = clamp(b.p, 100, 500000, 4500);
     const t      = clamp(b.t, 1,   40,     20);
     const r      = clamp(b.r, 1,   30,     12);
-    const mr     = r/12/100, months = t*12;
-    const spent  = p*12*t;
+    // FIX BUG-06: was r/12/100 (naive).
+    const mr     = monthlyRate(r);
+    const months = t * 12;
+    const spent  = p * 12 * t;
     const corpus = p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
     return res.json({
       spent:Math.round(spent), corpus:Math.round(corpus),
@@ -421,7 +486,10 @@ export default async function handler(req, res) {
     const p      = clamp(b.p, 100, 10000000, 25000);
     const r      = clamp(b.r, 0.1, 30,       12);
     const t      = clamp(b.t, 1,   40,       15);
-    const mr     = r/12/100, months = t*12;
+    // FIX BUG-07: SIP side was r/12/100 (naive).
+    // Lump sum side uses Math.pow(1+r/100,t) — annual compounding, correct.
+    const mr     = monthlyRate(r);
+    const months = t * 12;
     const lumpTotal  = p * months;
     const sipFinal   = p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
     const lsFinal    = lumpTotal * Math.pow(1+r/100, t);
