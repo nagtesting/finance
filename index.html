@@ -1309,7 +1309,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <button class="bnav-item" id="bnav-stepsip"          onclick="navTo('stepsip')"   style="position:relative;"><span class="bnav-icon">📊</span><span class="bnav-label">Step SIP</span><span class="bnav-indicator"></span></button>
   <button class="bnav-item" id="bnav-ssa"              onclick="navTo('ssa')"       style="position:relative;"><span class="bnav-icon">👧</span><span class="bnav-label">SSA</span><span class="bnav-indicator"></span></button>
   <button class="bnav-item" id="bnav-crorepati"        onclick="navTo('crorepati')" style="position:relative;"><span class="bnav-icon">🏆</span><span class="bnav-label" id="bnav-cr-label">Crorepati</span><span class="bnav-indicator"></span></button>
-  <button class="bnav-item" id="bnav-habit"            onclick="navTo('habit')"     style="position:relative;"><span class="bnav-icon">☕</span><span class="bnav-label">Habit$</span><span class="bnav-indicator"></span></button>
+  <button class="bnav-item" id="bnav-habit"            onclick="navTo('habit')"     style="position:relative;"><span class="bnav-icon">☕</span><span class="bnav-label">Habit</span><span class="bnav-indicator"></span></button>
   <button class="bnav-item" id="bnav-roi"              onclick="navTo('roi')"       style="position:relative;"><span class="bnav-icon">💹</span><span class="bnav-label">ROI</span><span class="bnav-indicator"></span></button>
   <button class="bnav-item" id="bnav-insurance"        onclick="navTo('insurance')" style="position:relative;"><span class="bnav-icon">🛡️</span><span class="bnav-label">Insure</span><span class="bnav-indicator"></span></button>
   <button class="bnav-item" id="bnav-tax"              onclick="navTo('tax')"       style="position:relative;"><span class="bnav-icon">📋</span><span class="bnav-label">Tax</span><span class="bnav-indicator"></span></button>
@@ -1337,7 +1337,7 @@ const REGIONS = {
     sipTaxLabel:'Tax Saved (80C/ELSS)',
     sipTaxNote:'Up to ₹1.5L/yr deduction',
     sipDesc:"Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.",
-    sipEdu1:'₹5,000/month at 25 = ₹3.5 Cr by 60. At 35, same SIP = only ₹1.2 Cr. Start early.',
+    sipEdu1:'₹5,000/month at 25 = ₹2.76 Cr by 60. At 35, same SIP = only ₹0.85 Cr. Start early.',
     sipEdu3:'Rupee Cost Averaging',
     sipEdu3Desc:'SIPs buy more units when markets fall and fewer when high — automatically lowering average cost.',
     // EMI
@@ -1903,7 +1903,7 @@ function calcSIP(){
 function calcEMI(){
   const p=+document.getElementById('emi_p').value, r=+document.getElementById('emi_r').value, t=+document.getElementById('emi_t').value;
   document.getElementById('v_emi_p').textContent=fmtSym(p);
-  document.getElementById('v_emi_r').textContent=r.toFixed(2);
+  document.getElementById('v_emi_r').textContent=r.toFixed(1);
   document.getElementById('v_emi_t').textContent=t;
   apiCalc({type:'emi',p,r,t}, d=>{
     document.getElementById('emi_monthly').textContent=fmtSym(d.emi);
@@ -2248,6 +2248,124 @@ window.addEventListener('popstate', function(e) {
     updatePageMeta(tab);
   }
 });
+
+// ── BUG 1 FIX: downloadSIPCSV ────────────────────────────────
+function downloadSIPCSV() {
+  var rows = [['Year','Invested','Value','Gains','%']];
+  var tbody = document.getElementById('sip_tbody');
+  if (!tbody) return;
+  tbody.querySelectorAll('tr').forEach(function(tr) {
+    var cells = tr.querySelectorAll('td');
+    if (cells.length >= 4) {
+      rows.push([
+        cells[0].textContent,
+        cells[1].textContent,
+        cells[2].textContent,
+        cells[3].textContent,
+        cells[4] ? cells[4].textContent : ''
+      ]);
+    }
+  });
+  var csv = rows.map(function(r) { return r.join(','); }).join('\n');
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'sip_projection.csv';
+  a.click();
+}
+
+// ── BUG 1 FIX: buildEdu ──────────────────────────────────────
+function buildEdu() {
+  var container = document.getElementById('accordion_container');
+  var timeline  = document.getElementById('timeline_content');
+  if (container && container.innerHTML.trim() === '') {
+    var items = [
+      { q:'What is a SIP?',         a:'A Systematic Investment Plan (SIP) lets you invest a fixed amount in mutual funds monthly — harnessing cost averaging and compounding.' },
+      { q:'What is the 4% Rule?',   a:'Withdraw 4% of your corpus annually in retirement. At this rate a well-invested portfolio historically lasts 30+ years.' },
+      { q:'What is CAGR?',          a:'Compounded Annual Growth Rate — the smooth annualised return of an investment, accounting for compounding across periods.' },
+      { q:'Old vs New Tax Regime?', a:'Old regime has more deductions (80C, 80D, HRA). New regime has lower slabs but no deductions. Best choice depends on your deduction profile.' },
+      { q:'What is XIRR?',          a:'Extended IRR — the correct metric for SIP returns. Unlike CAGR, it accounts for the timing of each individual cash flow.' },
+      { q:'What is FIRE?',          a:'Financial Independence, Retire Early. Build a corpus equal to 25× your annual expenses, then withdraw 4% per year indefinitely.' },
+      { q:'What is cost averaging?', a:'When you invest a fixed amount monthly, you automatically buy more units when prices fall. SIPs benefit from market dips.' },
+    ];
+    container.innerHTML = items.map(function(item) {
+      return '<div style="border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;">'
+        + '<button onclick="var p=this.nextElementSibling;p.style.display=p.style.display===\'block\'?\'none\':\'block\';" '
+        + 'style="width:100%;text-align:left;padding:14px 16px;background:rgba(255,255,255,.03);border:none;'
+        + 'color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif;">'
+        + item.q + '</button>'
+        + '<div style="display:none;padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.7;">'
+        + item.a + '</div></div>';
+    }).join('');
+  }
+  if (timeline && timeline.innerHTML.trim() === '') {
+    var milestones = [
+      { age:'20s', text:'Emergency fund (6 months expenses) · Term insurance · First SIP (even ₹500/mo)' },
+      { age:'30s', text:'SIP ≥ 20% of income · Family health insurance · FIRE corpus started' },
+      { age:'40s', text:'Debt reduction · NPS/PPF maxed · Child education fund if applicable' },
+      { age:'50s', text:'Shift to 60/40 equity-debt · Review FIRE target · Estate planning basics' },
+    ];
+    timeline.innerHTML = milestones.map(function(m) {
+      return '<div style="display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;">'
+        + '<div style="min-width:38px;padding:4px 8px;background:rgba(201,168,76,.12);border-radius:6px;'
+        + 'font-size:11px;font-weight:700;color:var(--gold-light);text-align:center;">' + m.age + '</div>'
+        + '<div style="font-size:12px;color:var(--muted);line-height:1.7;padding-top:4px;">' + m.text + '</div>'
+        + '</div>';
+    }).join('');
+  }
+}
+
+// ── BUG 1 FIX: buildGlossary ─────────────────────────────────
+function buildGlossary() {
+  var list = document.getElementById('glossary_list');
+  if (!list) return;
+  var terms = [
+    { term:'SIP',            def:'Systematic Investment Plan. Fixed monthly investment in mutual funds.' },
+    { term:'CAGR',           def:'Compounded Annual Growth Rate. Smooth annual return accounting for compounding.' },
+    { term:'XIRR',           def:'Extended IRR — correct return metric for staggered cash flows like SIPs.' },
+    { term:'FIRE',           def:'Financial Independence, Retire Early. Build corpus = 25× annual expenses.' },
+    { term:'4% Rule',        def:'Safe withdrawal rate in retirement — 4% of corpus per year historically sustains 30+ years.' },
+    { term:'NAV',            def:'Net Asset Value — price per unit of a mutual fund on a given day.' },
+    { term:'EMI',            def:'Equated Monthly Instalment — fixed monthly loan repayment.' },
+    { term:'PPF',            def:'Public Provident Fund — govt-backed 15-year savings at 7.1% p.a., EEE tax status.' },
+    { term:'EPF',            def:'Employee Provident Fund — mandatory employer + employee retirement savings at 8.25% p.a.' },
+    { term:'NPS',            def:'National Pension System — market-linked retirement scheme, partly taxable on withdrawal.' },
+    { term:'ELSS',           def:'Equity Linked Savings Scheme — tax-saving mutual fund with 3-year lock-in under 80C.' },
+    { term:'HLV',            def:'Human Life Value — life insurance quantum: income × remaining working years.' },
+    { term:'Corpus',         def:'Total accumulated investment value at a future date.' },
+    { term:'Step-Up SIP',    def:'SIP where you increase the monthly amount by a fixed % each year.' },
+    { term:'SSA',            def:'Sukanya Samriddhi Account — girl child savings scheme at 8.2% p.a.' },
+    { term:'Old Regime',     def:'Income tax with deductions (80C, 80D, HRA). Better for high deductions.' },
+    { term:'New Regime',     def:'Lower tax slabs, no deductions. Better if total deductions < ₹3.75L.' },
+    { term:'Rebalancing',    def:'Restoring target asset allocation annually by selling winners and buying laggards.' },
+    { term:'Cost Averaging', def:'Automatic effect of SIP — buying more units when prices fall, reducing average cost.' },
+    { term:'STP',            def:'Systematic Transfer Plan — shift money from a debt fund to equity fund gradually.' },
+    { term:'EEE',            def:'Exempt-Exempt-Exempt — investment, returns, and withdrawal all tax-free (e.g. PPF).' },
+    { term:'TER',            def:'Total Expense Ratio — annual fee charged by a mutual fund, expressed as % of AUM.' },
+    { term:'AUM',            def:'Assets Under Management — total value of investments managed by a fund house.' },
+    { term:'Crorepati',      def:'Having a corpus of ₹1 Crore (10 million rupees) or more.' },
+  ];
+  function render(filter) {
+    var filtered = filter
+      ? terms.filter(function(t) {
+          return t.term.toLowerCase().includes(filter) || t.def.toLowerCase().includes(filter);
+        })
+      : terms;
+    list.innerHTML = filtered.length
+      ? filtered.map(function(t) {
+          return '<div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);">'
+            + '<div style="font-size:13px;font-weight:700;color:var(--gold-light);margin-bottom:4px;">' + t.term + '</div>'
+            + '<div style="font-size:12px;color:var(--muted);line-height:1.6;">' + t.def + '</div>'
+            + '</div>';
+        }).join('')
+      : '<div style="color:var(--muted);font-size:12px;padding:20px 0;">No terms match your search.</div>';
+  }
+  render('');
+  var search = document.getElementById('gloss_search');
+  if (search && !search.dataset.wired) {
+    search.dataset.wired = '1';
+    search.addEventListener('input', function() { render(this.value.toLowerCase().trim()); });
+  }
+}
 </script>
 
 <script>
@@ -2413,7 +2531,7 @@ var LESSONS = {
     icon:"⚡", tag:"Power of Compounding",
     title:"Why Starting Early Changes Everything",
     body:"Compounding means earning returns on your returns. The longer your money stays invested, the more dramatic this effect becomes — growing exponentially, not linearly.<br><br>Time in the market is the single most powerful variable in wealth creation. More than picking the right stock. More than finding the highest return. More than saving a larger amount.",
-    example:"<strong>Same amount per month. Massive difference:</strong><br><br>Start at <strong style='color:#4ade80'>Age 25</strong> → 3.5 Cr by 60 (35 yrs @ 12%)<br>Start at <strong style='color:#f87171'>Age 35</strong> → 1.2 Cr by 60 (25 yrs @ 12%)<br>Start at <strong style='color:#f87171'>Age 45</strong> → 38L by 60 (15 yrs @ 12%)<br><br>Same monthly amount. A 10-year delay costs <strong style='color:#f87171'>2.3 Crore extra.</strong>",
+    example:"<strong>Same amount per month. Massive difference:</strong><br><br>Start at <strong style='color:#4ade80'>Age 25</strong> → 2.76 Cr by 60 (35 yrs @ 12%)<br>Start at <strong style='color:#f87171'>Age 35</strong> → 0.85 Cr by 60 (25 yrs @ 12%)<br>Start at <strong style='color:#f87171'>Age 45</strong> → 38L by 60 (15 yrs @ 12%)<br><br>Same monthly amount. A 10-year delay costs <strong style='color:#f87171'>1.91 Crore extra.</strong>",
     tip:"Set up an auto-debit SIP on the 1st of every month so you invest before you spend. Even a small amount started today beats a large amount started 5 years from now."
   },
   "rule-72": {
@@ -2647,11 +2765,6 @@ function applyProfileToSliders(p) {
   var age = parseInt(p.age);
   var income = parseFloat(p.income);
   if (age && age >= 18 && age <= 65) {
-    ["fire_age","ins_age"].forEach(function(id){
-      var el = document.getElementById(id);
-      var vEl = document.getElementById("v_" + id.replace("_","_"));
-      if (el) { el.value = age; }
-    });
     var fa = document.getElementById("fire_age");
     if (fa) { fa.value = age; document.getElementById("v_fire_age").textContent = age; }
     var ia = document.getElementById("ins_age");
@@ -2674,15 +2787,8 @@ function applyProfileToSliders(p) {
   }
 }
 
-// Also call applyProfileToSliders when obNext saves profile
-var _origObNext = obNext;
-obNext = function() {
-  _origObNext();
-  try {
-    var p = JSON.parse(localStorage.getItem("wh_profile")||"{}");
-    if (p.name) applyProfileToSliders(p);
-  } catch(e) {}
-};
+// applyProfileToSliders is called by the timeout block above after obNext saves.
+// (No re-wrap needed — obNext already updates sliders directly.)
 
 // ============================================================
 // SHARE RESULT
@@ -2930,5 +3036,9 @@ setInterval(function() { if (typeof fetchNews === 'function') fetchNews(false); 
   parent.appendChild(disc);
 })();
 </script>
+
+<!-- Patch: per-region habit presets, slider range updates on mode switch,
+     fine-tune number inputs next to every slider. Must load AFTER main script. -->
+<script src="patch.js"></script>
 </body>
 </html>
