@@ -716,7 +716,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
 
   <!-- ====== MARKET PULSE — compact ticker strip ====== -->
-  <div id="news-strip" style="display:none;">
+  <div id="news-strip" style="display:flex;">
     <!-- Label -->
     <div class="news-label">
       <span class="live-dot" id="news-live-dot" style="width:5px;height:5px;"></span>
@@ -1750,7 +1750,7 @@ function setMode(mode){
     fetchNews(true);
   } else {
     var strip = document.getElementById('news-strip');
-    if (strip) strip.style.display = 'block';
+    if (strip) strip.style.display = 'flex';
   }
 
   var at=document.querySelector('.tab.active');
@@ -2892,7 +2892,7 @@ var NEWS_CACHE_MS     = 5 * 60 * 1000; // 5 minutes — matches server-side cach
 function fetchNews(forceRefresh) {
   var strip  = document.getElementById('news-strip');
   if (!strip) return;
-  strip.style.display = 'block';
+  strip.style.display = 'flex';
   var region = (typeof currentMode !== 'undefined') ? currentMode : 'india';
 
   var cacheValid = !forceRefresh
