@@ -304,6 +304,7 @@ body{height:100%;background:var(--dark);color:var(--cream);font-family:'DM Sans'
 #main-scroll{
   flex:1;
   overflow-y:auto;overflow-x:hidden;
+  min-width:0;width:100%;
 }
 
 /* ---- TOPBAR (mobile only, hidden on desktop) ---- */
@@ -414,7 +415,7 @@ body{height:100%;background:var(--dark);color:var(--cream);font-family:'DM Sans'
 .big-number{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:900;color:var(--gold-light);line-height:1;letter-spacing:-1px;}
 
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.grid-2-1{display:grid;grid-template-columns:1.2fr 0.8fr;gap:18px;}
+.grid-2-1{display:grid;grid-template-columns:1.2fr 0.8fr;gap:18px;min-width:0;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--dark4);border-radius:2px;outline:none;margin-top:10px;}
@@ -452,7 +453,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 .milestone:last-child{border-bottom:none;}
 .milestone-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);margin-top:4px;flex-shrink:0;box-shadow:0 0 7px rgba(201,168,76,.5);}
 
-.tab{display:none;padding:24px 20px;max-width:1100px;}.tab.active{display:block;}
+.tab{display:none;padding:24px 20px 40px;max-width:1100px;width:100%;box-sizing:border-box;}.tab.active{display:block;}
 
 .accordion-content{max-height:0;overflow:hidden;transition:max-height .4s ease;}
 .accordion-content.open{max-height:500px;}
@@ -644,6 +645,15 @@ tr:hover td{background:rgba(255,255,255,.02);}
 .news-card-time{font-size:9px;color:var(--muted);margin-top:4px;font-family:'DM Mono',monospace;}
 /* Skeleton for ticker */
 .news-skel{display:inline-block;height:10px;border-radius:4px;background:linear-gradient(90deg,var(--dark4) 25%,var(--dark3) 50%,var(--dark4) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}
+/* Exchange status pills */
+.exch-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:100px;font-size:9px;font-weight:700;letter-spacing:.5px;border:1px solid;}
+.exch-pill.open{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:#4ade80;}
+.exch-pill.closed{background:rgba(144,144,168,.08);border-color:rgba(144,144,168,.2);color:var(--muted);}
+.exch-pill.pre{background:rgba(234,179,8,.08);border-color:rgba(234,179,8,.25);color:#fde047;}
+.exch-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.exch-pill.open .exch-dot{background:#4ade80;animation:pulse 2s infinite;}
+.exch-pill.closed .exch-dot{background:var(--muted);}
+.exch-pill.pre .exch-dot{background:#fde047;animation:pulse 2s infinite;}
 </style>
 </head>
 <body>
@@ -724,24 +734,27 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="nav-item" id="btn-contact"  onclick="navTo('contact')">✉️ Write to Us</div>
   </div>
 
-  <div style="padding:10px 18px;border-top:1px solid rgba(201,168,76,.1);flex-shrink:0;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+  <div style="padding:8px 18px;border-top:1px solid rgba(201,168,76,.1);flex-shrink:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
       <div style="display:flex;align-items:center;gap:5px;">
         <span class="live-dot" id="sidebar-live-dot"></span>
-        <span style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Live</span>
+        <span style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Live Markets</span>
       </div>
-      <span style="font-size:9px;color:var(--muted);" id="sidebar-updated">—</span>
+      <span style="font-size:8px;color:var(--muted);" id="sidebar-updated">—</span>
     </div>
-    <div id="sidebar-market">
-      <div class="sb-skeleton"></div><div class="sb-skeleton"></div>
-    </div>
-    <div style="font-size:8px;color:var(--muted);margin-top:6px;line-height:1.5;">30s refresh · Not for trading.</div>
+    <div id="sidebar-market" style="display:none;"></div>
+    <div id="sidebar-disclaimer" style="font-size:8px;color:rgba(144,144,168,.6);margin-top:4px;line-height:1.4;">⚠️ Educational only. Not SEBI-registered. Consult a qualified adviser.</div>
   </div>
 </nav>
 
 <!-- MAIN -->
 <div id="main">
-  <div class="mode-banner india" id="mode-banner">🇮🇳 &nbsp;India — INR · NSE/BSE · Indian Tax Laws</div>
+  <!-- Top info bar: mode banner + exchange status -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0;flex-wrap:wrap;">
+    <div class="mode-banner india" id="mode-banner" style="flex:1;border-bottom:none;padding:5px 16px;">🇮🇳 &nbsp;India — INR · NSE/BSE · Indian Tax Laws</div>
+    <div id="exchange-status-bar" style="display:flex;align-items:center;gap:6px;padding:4px 12px;background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.08);flex-shrink:0;flex-wrap:wrap;"></div>
+  </div>
+  <div style="height:1px;background:linear-gradient(90deg,rgba(255,107,53,.2),rgba(201,168,76,.15),transparent);flex-shrink:0;"></div>
 
   <div id="live-ticker" style="background:var(--dark2);border-bottom:1px solid rgba(201,168,76,.1);overflow:hidden;height:44px;position:relative;flex-shrink:0;">
     <div id="ticker-track" style="display:flex;align-items:center;height:100%;position:absolute;white-space:nowrap;will-change:transform;"></div>
@@ -892,6 +905,10 @@ tr:hover td{background:rgba(255,255,255,.02);}
       </div>
     </div>
 
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+      <button class="btn-outline" onclick="shareResult('emi')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;"><span>📤</span> <span id="emi-share-btn-label">Share Result</span></button>
+      <button class="btn-outline" onclick="generateEMIShareCard()" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.3);"><span id="emi-img-btn-label">📸 Save as Image</span></button>
+    </div>
     <div class="card">
       <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;">Amortization Schedule</h3>
       <div class="table-wrap" style="max-height:280px;overflow-y:auto;">
@@ -2003,32 +2020,270 @@ function setLang(lang) {
   renderLangToggle(currentMode);
 }
 
+// ─── FULL CALCULATOR LABEL TRANSLATIONS ─────────────────────
+var CALC_LABELS = {
+  india: {
+    en: {
+      sipTitle:'Investment Planner', sipEyebrow:'SIP · India',
+      sipDesc:"Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.",
+      sipParamLabel:'Monthly Investment', sipRateLabel:'Expected Return', sipTenureLabel:'Tenure',
+      sipTaxSectionLabel:'Tax Benefit', sipTotalLabel:'Total Corpus', sipInvestedLabel:'Amount Invested',
+      sipGainedLabel:'Wealth Gained', sipShareBtn:'Share Result', sipImageBtn:'Save as Image',
+      emiTitle:'Loan & Mortgage Planner', emiEyebrow:'Loan Planning',
+      emiDesc:'Calculate monthly repayments, total interest burden and tax benefits on your home loan.',
+      fireTitle:'FIRE Retirement Planner', fireEyebrow:'Early Retirement',
+      roiTitle:'ROI & Compound Interest', roiEyebrow:'Returns',
+      insTitle:'Insurance Planner', insEyebrow:'Life Cover',
+      taxTitle:'Tax Optimizer', taxEyebrow:'Tax Planning',
+      crorepatiTitle:'Crorepati Calculator',
+      habitTitle:'Habit vs Invest',
+      compareTitle:'SIP vs Lump Sum',
+      shareBtn:'Share Result', imageBtn:'📸 Save as Image',
+    },
+    hi: {
+      sipTitle:'निवेश योजनाकार', sipEyebrow:'SIP · भारत',
+      sipDesc:'अनुशासित मासिक SIP के माध्यम से चक्रवृद्धि का लाभ उठाएं — भारत का सबसे शक्तिशाली धन-सृजन उपकरण।',
+      sipParamLabel:'मासिक निवेश', sipRateLabel:'अपेक्षित रिटर्न', sipTenureLabel:'अवधि',
+      sipTaxSectionLabel:'कर लाभ', sipTotalLabel:'कुल कोष', sipInvestedLabel:'निवेशित राशि',
+      sipGainedLabel:'अर्जित संपदा', sipShareBtn:'परिणाम साझा करें', sipImageBtn:'📸 छवि सहेजें',
+      emiTitle:'ऋण और मॉर्गेज योजनाकार', emiEyebrow:'ऋण योजना',
+      emiDesc:'अपने गृह ऋण पर मासिक किस्त, कुल ब्याज और धारा 24(b) कर लाभ की गणना करें।',
+      fireTitle:'FIRE सेवानिवृत्ति योजनाकार', fireEyebrow:'जल्दी सेवानिवृत्ति',
+      roiTitle:'ROI और चक्रवृद्धि ब्याज', roiEyebrow:'रिटर्न',
+      insTitle:'बीमा योजनाकार', insEyebrow:'जीवन कवर',
+      taxTitle:'कर अनुकूलक', taxEyebrow:'कर योजना',
+      crorepatiTitle:'करोड़पति कैलकुलेटर',
+      habitTitle:'आदत बनाम निवेश',
+      compareTitle:'SIP बनाम एकमुश्त',
+      shareBtn:'परिणाम साझा करें', imageBtn:'📸 छवि सहेजें',
+    }
+  },
+  germany: {
+    de: {
+      sipTitle:'Investitionsplaner', sipEyebrow:'ETF-Sparplan · DE',
+      sipDesc:'Bauen Sie langfristig Vermögen durch disziplinierte monatliche ETF-Sparpläne auf — der deutsche Weg zur finanziellen Freiheit.',
+      sipParamLabel:'Monatliche Investition', sipRateLabel:'Erwartete Rendite', sipTenureLabel:'Laufzeit',
+      sipTaxSectionLabel:'Steuerersparnis', sipTotalLabel:'Gesamtvermögen', sipInvestedLabel:'Investierter Betrag',
+      sipGainedLabel:'Gewinn', sipShareBtn:'Ergebnis teilen', sipImageBtn:'📸 Als Bild speichern',
+      emiTitle:'Kredit- & Darlehensplaner', emiEyebrow:'Finanzierung',
+      emiDesc:'Berechne monatliche Raten, Gesamtzinsen und steuerliche Aspekte deiner Immobilienfinanzierung.',
+      fireTitle:'FIRE Ruhestandsplaner', fireEyebrow:'Frühzeitige Rente',
+      roiTitle:'Rendite & Zinseszins', roiEyebrow:'Renditen',
+      insTitle:'Versicherungsplaner', insEyebrow:'Lebensschutz',
+      taxTitle:'Steueroptimierung', taxEyebrow:'Steuern',
+      crorepatiTitle:'Millionär-Rechner',
+      habitTitle:'Gewohnheit vs. Investition',
+      compareTitle:'Sparplan vs. Einmalanlage',
+      shareBtn:'Ergebnis teilen', imageBtn:'📸 Als Bild speichern',
+    },
+    en: {
+      sipTitle:'Investment Planner', sipEyebrow:'ETF Savings Plan · DE',
+      sipDesc:'Build long-term wealth through disciplined monthly ETF savings plans — the German way to financial freedom.',
+      sipParamLabel:'Monthly Investment', sipRateLabel:'Expected Return', sipTenureLabel:'Tenure',
+      sipTaxSectionLabel:'Tax Saving', sipTotalLabel:'Total Wealth', sipInvestedLabel:'Amount Invested',
+      sipGainedLabel:'Wealth Gained', sipShareBtn:'Share Result', sipImageBtn:'📸 Save as Image',
+      emiTitle:'Loan & Mortgage Planner', emiEyebrow:'Financing',
+      emiDesc:'Calculate monthly repayments, total interest and tax aspects of your property financing.',
+      fireTitle:'FIRE Retirement Planner', fireEyebrow:'Early Retirement',
+      roiTitle:'ROI & Compound Interest', roiEyebrow:'Returns',
+      insTitle:'Insurance Planner', insEyebrow:'Life Cover',
+      taxTitle:'Tax Optimizer', taxEyebrow:'Taxes',
+      crorepatiTitle:'Millionaire Calculator',
+      habitTitle:'Habit vs. Investment',
+      compareTitle:'Savings Plan vs. Lump Sum',
+      shareBtn:'Share Result', imageBtn:'📸 Save as Image',
+    }
+  },
+  france: {
+    fr: {
+      sipTitle:'Planificateur d\u2019investissement', sipEyebrow:'PEA · France',
+      sipDesc:'Constituez votre patrimoine à long terme gr\u00e2ce \u00e0 des investissements mensuels r\u00e9guliers \u2014 l\u2019approche fran\u00e7aise de la libert\u00e9 financi\u00e8re.',
+      sipParamLabel:'Investissement mensuel', sipRateLabel:'Rendement attendu', sipTenureLabel:'Durée',
+      sipTaxSectionLabel:'Économie fiscale', sipTotalLabel:'Patrimoine total', sipInvestedLabel:'Montant investi',
+      sipGainedLabel:'Gains', sipShareBtn:'Partager le résultat', sipImageBtn:'📸 Enregistrer en image',
+      emiTitle:'Planificateur crédit immobilier', emiEyebrow:'Financement immobilier',
+      emiDesc:'Calculez vos mensualités, intérêts totaux et avantages fiscaux de votre crédit immobilier.',
+      fireTitle:'Planificateur retraite anticipée', fireEyebrow:'Retraite anticipée',
+      roiTitle:'Rendement & Intérêts composés', roiEyebrow:'Rendements',
+      insTitle:'Planificateur assurance', insEyebrow:'Couverture vie',
+      taxTitle:'Optimisation fiscale', taxEyebrow:'Fiscalité',
+      crorepatiTitle:'Calculateur millionnaire',
+      habitTitle:'Habitude vs. Investissement',
+      compareTitle:'Versements r\u00e9guliers vs. Capital unique',
+      shareBtn:'Partager le r\u00e9sultat', imageBtn:'\U0001f4f8 Enregistrer en image',
+    },
+    en: {
+      sipTitle:'Investment Planner', sipEyebrow:'PEA · France',
+      sipDesc:'Build long-term wealth through regular monthly investments — the French path to financial freedom.',
+      sipParamLabel:'Monthly Investment', sipRateLabel:'Expected Return', sipTenureLabel:'Tenure',
+      sipTaxSectionLabel:'Tax Saving', sipTotalLabel:'Total Wealth', sipInvestedLabel:'Amount Invested',
+      sipGainedLabel:'Wealth Gained', sipShareBtn:'Share Result', sipImageBtn:'📸 Save as Image',
+      emiTitle:'Mortgage Planner', emiEyebrow:'Property Financing',
+      emiDesc:'Calculate monthly payments, total interest and tax benefits on your French mortgage.',
+      fireTitle:'FIRE Retirement Planner', fireEyebrow:'Early Retirement',
+      roiTitle:'ROI & Compound Interest', roiEyebrow:'Returns',
+      insTitle:'Insurance Planner', insEyebrow:'Life Cover',
+      taxTitle:'Tax Optimizer', taxEyebrow:'Taxation',
+      crorepatiTitle:'Millionaire Calculator',
+      habitTitle:'Habit vs. Investment',
+      compareTitle:'Regular vs. Lump Sum',
+      shareBtn:'Share Result', imageBtn:'📸 Save as Image',
+    }
+  },
+  spain: {
+    es: {
+      sipTitle:'Planificador de inversión', sipEyebrow:'Fondos Indexados · España',
+      sipDesc:'Construye tu patrimonio a largo plazo con inversiones mensuales regulares — el camino español hacia la libertad financiera.',
+      sipParamLabel:'Inversión mensual', sipRateLabel:'Rentabilidad esperada', sipTenureLabel:'Plazo',
+      sipTaxSectionLabel:'Ahorro fiscal', sipTotalLabel:'Patrimonio total', sipInvestedLabel:'Importe invertido',
+      sipGainedLabel:'Ganancias', sipShareBtn:'Compartir resultado', sipImageBtn:'📸 Guardar como imagen',
+      emiTitle:'Calculadora de hipoteca', emiEyebrow:'Financiación inmobiliaria',
+      emiDesc:'Calcula tu cuota mensual, intereses totales y ventajas fiscales de tu hipoteca española.',
+      fireTitle:'Planificador jubilación anticipada', fireEyebrow:'Jubilación anticipada',
+      roiTitle:'Rentabilidad e interés compuesto', roiEyebrow:'Rentabilidades',
+      insTitle:'Planificador de seguros', insEyebrow:'Cobertura de vida',
+      taxTitle:'Optimización fiscal', taxEyebrow:'Fiscalidad',
+      crorepatiTitle:'Calculadora de millonario',
+      habitTitle:'Hábito vs. Inversión',
+      compareTitle:'Aportaciones vs. Capital único',
+      shareBtn:'Compartir resultado', imageBtn:'📸 Guardar como imagen',
+    },
+    en: {
+      sipTitle:'Investment Planner', sipEyebrow:'Index Funds · Spain',
+      sipDesc:'Build long-term wealth through regular monthly investments — the Spanish path to financial freedom.',
+      sipParamLabel:'Monthly Investment', sipRateLabel:'Expected Return', sipTenureLabel:'Tenure',
+      sipTaxSectionLabel:'Tax Saving', sipTotalLabel:'Total Wealth', sipInvestedLabel:'Amount Invested',
+      sipGainedLabel:'Wealth Gained', sipShareBtn:'Share Result', sipImageBtn:'📸 Save as Image',
+      emiTitle:'Mortgage Planner', emiEyebrow:'Property Financing',
+      emiDesc:'Calculate monthly payments, total interest and tax benefits on your Spanish mortgage.',
+      fireTitle:'FIRE Retirement Planner', fireEyebrow:'Early Retirement',
+      roiTitle:'ROI & Compound Interest', roiEyebrow:'Returns',
+      insTitle:'Insurance Planner', insEyebrow:'Life Cover',
+      taxTitle:'Tax Optimizer', taxEyebrow:'Taxation',
+      crorepatiTitle:'Millionaire Calculator',
+      habitTitle:'Habit vs. Investment',
+      compareTitle:'Regular vs. Lump Sum',
+      shareBtn:'Share Result', imageBtn:'📸 Save as Image',
+    }
+  }
+};
+
+function setEl(id, prop, val) {
+  var el = document.getElementById(id);
+  if (!el || val === undefined) return;
+  if (prop === 'text') el.textContent = val;
+  else if (prop === 'html') el.innerHTML = val;
+}
+
 function applyLanguage(mode, lang) {
   var strings = (LANG_STRINGS[mode] || {})[lang] || (LANG_STRINGS[mode] || {}).en || {};
-  // Nav items
-  var navSIP = document.getElementById('btn-sip');
-  if (navSIP) navSIP.innerHTML = '📈 ' + (strings.sipLabel || 'Investment Planner');
-  var navEMI = document.getElementById('btn-emi');
-  if (navEMI) navEMI.innerHTML = '🏦 ' + (strings.loanLabel || 'Loan & Mortgage');
-  var navFIRE = document.getElementById('btn-fire');
-  if (navFIRE) navFIRE.innerHTML = '🔥 ' + (strings.fireLabel || 'FIRE Retirement');
-  var navROI = document.getElementById('btn-roi');
-  if (navROI) navROI.innerHTML = '💹 ' + (strings.roiLabel || 'ROI & Compound');
-  var navIns = document.getElementById('btn-insurance');
-  if (navIns) navIns.innerHTML = '🛡️ ' + (strings.insLabel || 'Insurance Planner');
-  var navTax = document.getElementById('btn-tax');
-  if (navTax) navTax.innerHTML = '📋 ' + (strings.taxLabel || 'Tax Optimizer');
-  // Section headers
-  var calcHead = document.getElementById('nav-section-calc');
-  if (calcHead) calcHead.textContent = strings.calcSection || 'Calculators';
-  var viralHead = document.getElementById('nav-section-viral');
-  if (viralHead) viralHead.textContent = strings.viralSection || '🔥 Viral Tools';
-  var goalHead = document.getElementById('nav-section-goal');
-  if (goalHead) goalHead.textContent = strings.goalSection || '🏠 Goal Planners';
-  var learnHead = document.getElementById('nav-section-learn');
-  if (learnHead) learnHead.textContent = strings.learnSection || 'Learn';
-  var mrHead = document.getElementById('nav-market-region-label');
-  if (mrHead) mrHead.textContent = strings.marketRegion || 'Market Region';
+  var cl = (CALC_LABELS[mode] || {})[lang] || (CALC_LABELS[mode] || {}).en || {};
+
+  // ── NAV items ────────────────────────────────────────────
+  setEl('btn-sip','html','📈 ' + (strings.sipLabel || cl.sipTitle || 'Investment Planner'));
+  setEl('btn-emi','html','🏦 ' + (strings.loanLabel || cl.emiTitle || 'Loan & Mortgage'));
+  setEl('btn-fire','html','🔥 ' + (strings.fireLabel || cl.fireTitle || 'FIRE Retirement'));
+  setEl('btn-roi','html','💹 ' + (strings.roiLabel || cl.roiTitle || 'ROI & Compound'));
+  setEl('btn-insurance','html','🛡️ ' + (strings.insLabel || cl.insTitle || 'Insurance Planner'));
+  setEl('btn-tax','html','📋 ' + (strings.taxLabel || cl.taxTitle || 'Tax Optimizer'));
+
+  // ── Section headers ──────────────────────────────────────
+  setEl('nav-section-calc','text', strings.calcSection || 'Calculators');
+  setEl('nav-section-viral','text', strings.viralSection || '🔥 Viral Tools');
+  setEl('nav-section-goal','text', strings.goalSection || '🏠 Goal Planners');
+  setEl('nav-section-learn','text', strings.learnSection || 'Learn');
+  setEl('nav-market-region-label','text', strings.marketRegion || 'Market Region');
+
+  // ── SIP / Investment Planner ─────────────────────────────
+  setEl('sip-eyebrow','text', cl.sipEyebrow || 'Investment Planner');
+  setEl('sip-title','text', cl.sipTitle || 'Investment Planner');
+  setEl('sip-desc','text', cl.sipDesc || '');
+  setEl('sip-p-label','text', cl.sipParamLabel || 'Monthly Investment');
+  setEl('sip-tax-label','text', cl.sipTaxSectionLabel || 'Tax Benefit');
+
+  // Result box labels
+  var labels = document.querySelectorAll('#sip .result-box');
+  if (labels[0]) {
+    var f = labels[0].querySelector('div');
+    if (f) f.textContent = cl.sipTotalLabel || 'Total Corpus';
+  }
+  if (labels[1]) {
+    var f = labels[1].querySelector('div');
+    if (f) f.textContent = cl.sipInvestedLabel || 'Amount Invested';
+  }
+  if (labels[2]) {
+    var f = labels[2].querySelector('div');
+    if (f) f.textContent = cl.sipGainedLabel || 'Wealth Gained';
+  }
+
+  // Share buttons
+  var sipShare = document.querySelector('#sip .btn-outline[onclick*="shareResult"]');
+  if (sipShare) sipShare.innerHTML = '<span>📤</span> ' + (cl.shareBtn || 'Share Result');
+  var sipImg = document.querySelector('#sip .btn-outline[onclick*="generateSIP"]');
+  if (sipImg) sipImg.innerHTML = cl.imageBtn || '📸 Save as Image';
+
+  // ── EMI / Loan Planner ───────────────────────────────────
+  setEl('emi-eyebrow','text', cl.emiEyebrow || 'Loan Planning');
+  setEl('emi-title','text', cl.emiTitle || 'Loan & Mortgage Planner');
+  setEl('emi-desc','text', cl.emiDesc || '');
+
+  // ── FIRE Planner ─────────────────────────────────────────
+  var fireEyebrow = document.querySelector('#fire .section-eyebrow');
+  if (fireEyebrow) fireEyebrow.textContent = cl.fireEyebrow || 'Early Retirement';
+  var fireTitle = document.querySelector('#fire h1');
+  if (fireTitle) fireTitle.textContent = cl.fireTitle || 'FIRE Retirement Planner';
+
+  // ── ROI ──────────────────────────────────────────────────
+  var roiEyebrow = document.querySelector('#roi .section-eyebrow');
+  if (roiEyebrow) roiEyebrow.textContent = cl.roiEyebrow || 'Returns';
+  var roiTitle = document.querySelector('#roi h1');
+  if (roiTitle) roiTitle.textContent = cl.roiTitle || 'ROI & Compound Interest';
+
+  // ── Insurance ────────────────────────────────────────────
+  var insEyebrow = document.querySelector('#insurance .section-eyebrow');
+  if (insEyebrow) insEyebrow.textContent = cl.insEyebrow || 'Life Cover';
+  var insTitle = document.querySelector('#insurance h1');
+  if (insTitle) insTitle.textContent = cl.insTitle || 'Insurance Planner';
+
+  // ── Tax Optimizer ────────────────────────────────────────
+  var taxEyebrow = document.querySelector('#tax .section-eyebrow');
+  if (taxEyebrow) taxEyebrow.textContent = cl.taxEyebrow || 'Tax Planning';
+  var taxTitle = document.querySelector('#tax h1');
+  if (taxTitle) taxTitle.textContent = cl.taxTitle || 'Tax Optimizer';
+
+  // ── Crorepati/Millionaire ────────────────────────────────
+  var crTitle = document.getElementById('cr_title');
+  if (crTitle) crTitle.textContent = cl.crorepatiTitle || 'Millionaire Calculator';
+
+  // ── Habit vs Invest ──────────────────────────────────────
+  var habTitle = document.querySelector('#habit h1');
+  if (habTitle) habTitle.textContent = cl.habitTitle || 'Habit vs Invest';
+
+  // ── Compare ──────────────────────────────────────────────
+  var cmpTitle = document.querySelector('#compare h1');
+  if (cmpTitle) cmpTitle.textContent = cl.compareTitle || 'SIP vs Lump Sum';
+
+  // ── EMI/FIRE share button labels ─────────────────────────
+  var emiShareLbl = document.getElementById('emi-share-btn-label');
+  if (emiShareLbl) emiShareLbl.textContent = cl.shareBtn || 'Share Result';
+  var emiImgLbl = document.getElementById('emi-img-btn-label');
+  if (emiImgLbl) emiImgLbl.textContent = cl.imageBtn || '📸 Save as Image';
+
+  // ── Share card language label (for Instagram cards) ─────
+  var cardLang = document.getElementById('card-lang-label');
+  if (cardLang) cardLang.textContent = lang === 'hi' ? 'मनीवेदा' : lang === 'de' ? 'MoneyVeda' : lang === 'fr' ? 'MoneyVeda' : lang === 'es' ? 'MoneyVeda' : 'MoneyVeda';
+
+  // Re-run active calculator to refresh currency symbols + labels
+  var at = document.querySelector('.tab.active');
+  if (at) {
+    var id = at.id;
+    if (id === 'sip') calcSIP();
+    else if (id === 'emi') calcEMI();
+    else if (id === 'fire') calcFIRE();
+    else if (id === 'roi') calcROI();
+    else if (id === 'insurance') calcInsurance();
+    else if (id === 'tax') { if (typeof renderTax === 'function') renderTax(); }
+  }
 }
 
 function setMode(mode){
@@ -2113,6 +2368,9 @@ function setMode(mode){
   if(discEl) discEl.textContent=disc;
   var sideDisc=document.getElementById('sidebar-disclaimer');
   if(sideDisc) sideDisc.textContent=disc;
+
+  // Render exchange status bar for the new mode
+  if (typeof renderExchangeStatusBar === 'function') renderExchangeStatusBar(mode);
 
   var at=document.querySelector('.tab.active');
   if(at && !isIndia && indiaOnly.indexOf(at.id)>-1){
@@ -4213,6 +4471,38 @@ async function generateSIPShareCard() {
   var mult        = (document.getElementById('sip_xbadge')?.textContent || '0x').replace('x','');
   var invPct = corpusNum > 0 ? Math.round((investedNum / corpusNum) * 100) : 50;
 
+  // Language-aware share card labels
+  var cl = (CALC_LABELS[currentMode] || {})[currentLang] || {};
+  var goalLabels = {
+    hi:'मेरा निवेश लक्ष्य', de:'Mein Anlageziel',
+    fr:'Mon objectif d\u2019investissement', es:'Mi objetivo de inversión', en:'My Investment Goal'
+  };
+  var inYears = {
+    hi:'में', de:'in', fr:'en', es:'en', en:'in'
+  };
+  var investedLabels = {hi:'निवेशित', de:'Investiert', fr:'Investi', es:'Invertido', en:'Invested'};
+  var gainedLabels = {hi:'अर्जित', de:'Gewinn', fr:'Gains', es:'Ganancias', en:'Wealth Gained'};
+  var returnsLabel = {hi:'रिटर्न', de:'Rendite', fr:'Rendement', es:'Rendimiento', en:'Returns'};
+
+  var lbl = currentLang || 'en';
+  var goalEl = document.getElementById('card-goal-label');
+  if (goalEl) goalEl.textContent = goalLabels[lbl] || goalLabels.en;
+
+  var inEl = document.getElementById('card-in-label');
+  if (inEl) inEl.textContent = inYears[lbl] || 'in';
+
+  var invEl2 = document.getElementById('card-inv-label');
+  if (invEl2) invEl2.textContent = investedLabels[lbl] || 'Invested';
+
+  var gainEl2 = document.getElementById('card-gain-label');
+  if (gainEl2) gainEl2.textContent = gainedLabels[lbl] || 'Wealth Gained';
+
+  var retEl = document.getElementById('card-ret-label');
+  if (retEl) retEl.textContent = returnsLabel[lbl] || 'Returns';
+
+  var langEl = document.getElementById('card-lang-label');
+  if (langEl) langEl.textContent = R() ? (R().name || 'MoneyVeda') + ' Finance Suite' : 'Your Finance Suite';
+
   document.getElementById('card-corpus').textContent    = fmtSym(corpusNum);
   document.getElementById('card-years').textContent     = years;
   document.getElementById('card-invested').textContent  = fmtSym(investedNum);
@@ -4263,6 +4553,65 @@ async function generateHabitShareCard() {
     link.click();
     showGoalToast('Image saved! Share on WhatsApp or Instagram.');
   } catch(err) { showGoalToast('Could not generate image. Try Share Result instead.'); }
+}
+
+async function generateEMIShareCard() {
+  if (typeof html2canvas === 'undefined') { showGoalToast('Image library loading, try again in a moment.'); return; }
+  var emi     = document.getElementById('emi_monthly')?.textContent || '—';
+  var interest = document.getElementById('emi_interest')?.textContent || '—';
+  var total   = document.getElementById('emi_total')?.textContent || '—';
+  var amount  = document.getElementById('v_emi_p')?.textContent || '—';
+  var rate    = document.getElementById('v_emi_r')?.textContent || '—';
+  var tenure  = document.getElementById('v_emi_t')?.textContent || '—';
+  var lbl = currentLang || 'en';
+  var titles = {hi:'मेरा ऋण योजना', de:'Mein Kredit', fr:'Mon crédit', es:'Mi hipoteca', en:'My Loan Plan'};
+  var emiLbls = {hi:'मासिक किस्त', de:'Monatliche Rate', fr:'Mensualité', es:'Cuota mensual', en:'Monthly EMI'};
+  var intLbls = {hi:'कुल ब्याज', de:'Gesamtzinsen', fr:'Intérêts totaux', es:'Intereses totales', en:'Total Interest'};
+  var c = document.getElementById('emi-share-card');
+  c.querySelector('#emicard-title').textContent = titles[lbl] || titles.en;
+  c.querySelector('#emicard-emi-lbl').textContent = emiLbls[lbl] || emiLbls.en;
+  c.querySelector('#emicard-int-lbl').textContent = intLbls[lbl] || intLbls.en;
+  c.querySelector('#emicard-monthly').textContent = emi;
+  c.querySelector('#emicard-interest').textContent = interest;
+  c.querySelector('#emicard-total').textContent = total;
+  c.querySelector('#emicard-amount').textContent = amount;
+  c.querySelector('#emicard-rate').textContent = rate + '% × ' + tenure + ' yrs';
+  c.querySelector('#emicard-flag').textContent = (REGIONS[currentMode]||{}).flag || '🌍';
+  showGoalToast('Generating image…');
+  try {
+    await new Promise(function(r){ setTimeout(r,150); });
+    var canvas = await html2canvas(c, { scale:2, useCORS:true, allowTaint:true, backgroundColor:'#0A0A0F', logging:false, width:1080, height:1080 });
+    var link = document.createElement('a');
+    link.download = 'moneyveda-loan-plan.png';
+    link.href = canvas.toDataURL('image/png',1.0);
+    link.click();
+    showGoalToast('Image saved! Share on WhatsApp or Instagram.');
+  } catch(err) { showGoalToast('Could not generate image.'); }
+}
+
+async function generateFIREShareCard() {
+  if (typeof html2canvas === 'undefined') { showGoalToast('Image library loading, try again in a moment.'); return; }
+  var corpus   = document.getElementById('fire_corpus')?.textContent || '—';
+  var years    = document.getElementById('fire_years')?.textContent || '—';
+  var monthly  = document.getElementById('fire_monthly')?.textContent || '—';
+  var lbl = currentLang || 'en';
+  var titles = {hi:'मेरी FIRE संख्या', de:'Meine FIRE-Zahl', fr:'Mon chiffre FIRE', es:'Mi número FIRE', en:'My FIRE Number'};
+  var c = document.getElementById('fire-share-card');
+  c.querySelector('#firecard-title').textContent = titles[lbl] || titles.en;
+  c.querySelector('#firecard-corpus').textContent = corpus;
+  c.querySelector('#firecard-years').textContent = years;
+  c.querySelector('#firecard-monthly').textContent = monthly;
+  c.querySelector('#firecard-flag').textContent = (REGIONS[currentMode]||{}).flag || '🌍';
+  showGoalToast('Generating image…');
+  try {
+    await new Promise(function(r){ setTimeout(r,150); });
+    var canvas = await html2canvas(c, { scale:2, useCORS:true, allowTaint:true, backgroundColor:'#0A0A0F', logging:false, width:1080, height:1080 });
+    var link = document.createElement('a');
+    link.download = 'moneyveda-fire-number.png';
+    link.href = canvas.toDataURL('image/png',1.0);
+    link.click();
+    showGoalToast('Image saved! Share on WhatsApp or Instagram.');
+  } catch(err) { showGoalToast('Could not generate image.'); }
 }
 
 // ============================================================
@@ -4531,16 +4880,99 @@ setMode = function(mode) {
   gpNav.forEach(function(el){ el.style.display = ''; });
 };
 
+
+// ================================================================
+// EXCHANGE STATUS BAR — shows market open/closed for active region
+// ================================================================
+var EXCHANGE_SCHEDULES = {
+  india: [
+    { name:'NSE/BSE', tz:'Asia/Kolkata', open:'09:15', close:'15:30', days:[1,2,3,4,5], color:'#FF8C5A' },
+    { name:'MCX', tz:'Asia/Kolkata', open:'09:00', close:'23:30', days:[1,2,3,4,5], color:'#f59e0b' },
+  ],
+  usa: [
+    { name:'NYSE', tz:'America/New_York', open:'09:30', close:'16:00', days:[1,2,3,4,5], color:'#60a5fa' },
+    { name:'NASDAQ', tz:'America/New_York', open:'09:30', close:'16:00', days:[1,2,3,4,5], color:'#818cf8' },
+    { name:'Pre-Market', tz:'America/New_York', open:'04:00', close:'09:30', days:[1,2,3,4,5], color:'#fde047', isPrePost:true },
+  ],
+  uk: [
+    { name:'LSE', tz:'Europe/London', open:'08:00', close:'16:30', days:[1,2,3,4,5], color:'#a5b4fc' },
+    { name:'FTSE 100', tz:'Europe/London', open:'08:00', close:'16:30', days:[1,2,3,4,5], color:'#c4b5fd' },
+  ],
+  germany: [
+    { name:'XETRA/DAX', tz:'Europe/Berlin', open:'09:00', close:'17:30', days:[1,2,3,4,5], color:'#fca5a5' },
+    { name:'Frankfurt', tz:'Europe/Berlin', open:'08:00', close:'20:00', days:[1,2,3,4,5], color:'#f87171' },
+  ],
+  france: [
+    { name:'Euronext Paris', tz:'Europe/Paris', open:'09:00', close:'17:30', days:[1,2,3,4,5], color:'#93c5fd' },
+    { name:'CAC 40', tz:'Europe/Paris', open:'09:00', close:'17:30', days:[1,2,3,4,5], color:'#60a5fa' },
+  ],
+  spain: [
+    { name:'BME Madrid', tz:'Europe/Madrid', open:'09:00', close:'17:30', days:[1,2,3,4,5], color:'#fde047' },
+    { name:'IBEX 35', tz:'Europe/Madrid', open:'09:00', close:'17:30', days:[1,2,3,4,5], color:'#fbbf24' },
+  ],
+};
+
+function getExchangeStatus(exch) {
+  try {
+    var now = new Date();
+    var tzTime = new Date(now.toLocaleString('en-US', {timeZone: exch.tz}));
+    var day = tzTime.getDay(); // 0=Sun,6=Sat
+    var hh = tzTime.getHours();
+    var mm = tzTime.getMinutes();
+    var nowMins = hh * 60 + mm;
+    var parseTime = function(t) { var p=t.split(':'); return parseInt(p[0])*60+parseInt(p[1]); };
+    var openMins = parseTime(exch.open);
+    var closeMins = parseTime(exch.close);
+    var isWeekday = exch.days.indexOf(day) !== -1;
+    if (!isWeekday) return { status:'closed', label:'CLOSED', nextOpen:'Mon ' + exch.open };
+    if (nowMins >= openMins && nowMins < closeMins) {
+      var minsLeft = closeMins - nowMins;
+      var closeLabel = minsLeft < 60 ? 'Closes in ' + minsLeft + 'm' : 'Open';
+      return { status: exch.isPrePost ? 'pre' : 'open', label: closeLabel };
+    }
+    if (nowMins < openMins) {
+      var minsToOpen = openMins - nowMins;
+      return { status:'closed', label: minsToOpen < 60 ? 'Opens in ' + minsToOpen + 'm' : 'Opens ' + exch.open };
+    }
+    return { status:'closed', label:'CLOSED', nextOpen:'Tomorrow ' + exch.open };
+  } catch(e) {
+    return { status:'closed', label:'—' };
+  }
+}
+
+function renderExchangeStatusBar(mode) {
+  var bar = document.getElementById('exchange-status-bar');
+  if (!bar) return;
+  var exchanges = EXCHANGE_SCHEDULES[mode] || [];
+  if (!exchanges.length) { bar.innerHTML = ''; return; }
+  bar.innerHTML = exchanges.map(function(exch) {
+    var s = getExchangeStatus(exch);
+    var dotColor = s.status === 'open' ? '#4ade80' : s.status === 'pre' ? '#fde047' : '#9090A8';
+    var bgColor = s.status === 'open' ? 'rgba(34,197,94,.1)' : s.status === 'pre' ? 'rgba(234,179,8,.08)' : 'rgba(144,144,168,.06)';
+    var borderColor = s.status === 'open' ? 'rgba(34,197,94,.3)' : s.status === 'pre' ? 'rgba(234,179,8,.25)' : 'rgba(144,144,168,.15)';
+    var textColor = s.status === 'open' ? '#4ade80' : s.status === 'pre' ? '#fde047' : 'var(--muted)';
+    return '<span class="exch-pill ' + s.status + '" style="background:' + bgColor + ';border-color:' + borderColor + ';color:' + textColor + ';">'
+      + '<span class="exch-dot" style="background:' + dotColor + (s.status !== 'closed' ? ';animation:pulse 2s infinite' : '') + ';"></span>'
+      + '<span style="color:' + exch.color + ';font-weight:800;">' + exch.name + '</span>'
+      + '&nbsp;<span style="font-weight:600;">' + s.label + '</span>'
+      + '</span>';
+  }).join('');
+}
+
+// Update exchange bar every minute
+setInterval(function() {
+  if (typeof currentMode !== 'undefined') renderExchangeStatusBar(currentMode);
+}, 60000);
+
 // Initialize on first load
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(function() {
     updateGratuityForRegion();
     updateHomeWizardForRegion();
-    // Initialize language toggle for default mode (india)
-    if (typeof renderLangToggle === 'function') {
-      renderLangToggle('india');
-    }
-  }, 100);
+    if (typeof renderLangToggle === 'function') renderLangToggle('india');
+    if (typeof renderExchangeStatusBar === 'function') renderExchangeStatusBar('india');
+    calcSIP(); // ensure SIP results render on load
+  }, 120);
 });
 
 // Fadeup toast animation
@@ -4561,19 +4993,19 @@ document.addEventListener('DOMContentLoaded', function() {
     <div style="width:56px;height:56px;background:linear-gradient(135deg,#C9A84C,#E8C97A);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;">💰</div>
     <div>
       <div style="font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:#C9A84C;letter-spacing:-1px;">MONEY<span style="color:#E8C97A;">VEDA</span></div>
-      <div style="font-size:14px;color:#9090A8;letter-spacing:3px;text-transform:uppercase;margin-top:4px;">Your Finance Suite</div>
+      <div id="card-lang-label" style="font-size:14px;color:#9090A8;letter-spacing:3px;text-transform:uppercase;margin-top:4px;">Your Finance Suite</div>
     </div>
   </div>
-  <div style="font-size:28px;color:#9090A8;text-transform:uppercase;letter-spacing:4px;margin-bottom:20px;">My SIP Goal</div>
+  <div id="card-goal-label" style="font-size:28px;color:#9090A8;text-transform:uppercase;letter-spacing:4px;margin-bottom:20px;">My Investment Goal</div>
   <div id="card-corpus" style="font-family:'Playfair Display',serif;font-size:110px;font-weight:900;color:#4ade80;line-height:1;margin-bottom:20px;letter-spacing:-4px;">0</div>
-  <div style="font-size:32px;color:#F5F0E8;margin-bottom:60px;">in <span id="card-years" style="color:#C9A84C;font-weight:700;">0</span> years</div>
+  <div style="font-size:32px;color:#F5F0E8;margin-bottom:60px;"><span id="card-in-label">in</span> <span id="card-years" style="color:#C9A84C;font-weight:700;">0</span> years</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-bottom:50px;">
     <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:30px;">
-      <div style="font-size:16px;color:#9090A8;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Invested</div>
+      <div id="card-inv-label" style="font-size:16px;color:#9090A8;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Invested</div>
       <div id="card-invested" style="font-family:'DM Mono',monospace;font-size:36px;color:#F5F0E8;font-weight:600;">0</div>
     </div>
     <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:20px;padding:30px;">
-      <div style="font-size:16px;color:#4ade80;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Wealth Gained</div>
+      <div id="card-gain-label" style="font-size:16px;color:#4ade80;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Wealth Gained</div>
       <div id="card-gains" style="font-family:'DM Mono',monospace;font-size:36px;color:#4ade80;font-weight:600;">0</div>
     </div>
   </div>
@@ -4620,6 +5052,65 @@ document.addEventListener('DOMContentLoaded', function() {
   <div style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,rgba(201,168,76,.15),rgba(201,168,76,.05));border:1px solid rgba(201,168,76,.3);border-radius:16px;padding:24px 32px;">
     <div><div style="font-size:18px;color:#9090A8;margin-bottom:4px;">Calculate yours at</div><div style="font-size:28px;color:#C9A84C;font-weight:700;font-family:'DM Mono',monospace;">moneyveda.org</div></div>
     <div style="width:60px;height:60px;background:#C9A84C;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:32px;">🔗</div>
+  </div>
+</div>
+
+<!-- EMI SHARE CARD -->
+<div id="emi-share-card" style="position:absolute;left:-9999px;top:0;width:1080px;height:1080px;background:linear-gradient(135deg,#0A0A0F 0%,#111118 60%,#0d1117 100%);font-family:'DM Sans',sans-serif;overflow:hidden;box-sizing:border-box;padding:70px 60px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:50px;">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div style="width:52px;height:52px;background:linear-gradient(135deg,#C9A84C,#E8C97A);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;">🏦</div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:#C9A84C;letter-spacing:-1px;">MONEY<span style="color:#E8C97A;">VEDA</span></div>
+        <div style="font-size:13px;color:#9090A8;letter-spacing:3px;text-transform:uppercase;margin-top:2px;">Loan Calculator</div>
+      </div>
+    </div>
+    <span id="emicard-flag" style="font-size:48px;">🌍</span>
+  </div>
+  <div id="emicard-title" style="font-size:26px;color:#9090A8;text-transform:uppercase;letter-spacing:4px;margin-bottom:30px;">My Loan Plan</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-bottom:40px;">
+    <div style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:20px;padding:36px;">
+      <div id="emicard-emi-lbl" style="font-size:14px;color:#9090A8;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Monthly EMI</div>
+      <div id="emicard-monthly" style="font-family:'DM Mono',monospace;font-size:48px;color:#C9A84C;font-weight:700;letter-spacing:-2px;">—</div>
+    </div>
+    <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:20px;padding:36px;">
+      <div id="emicard-int-lbl" style="font-size:14px;color:#f87171;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Total Interest</div>
+      <div id="emicard-interest" style="font-family:'DM Mono',monospace;font-size:48px;color:#f87171;font-weight:700;letter-spacing:-2px;">—</div>
+    </div>
+  </div>
+  <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:28px;margin-bottom:40px;">
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px;"><span style="font-size:16px;color:#9090A8;">Loan Amount</span><span id="emicard-amount" style="font-size:16px;color:#F5F0E8;font-family:'DM Mono',monospace;">—</span></div>
+    <div style="display:flex;justify-content:space-between;"><span style="font-size:16px;color:#9090A8;">Rate × Tenure</span><span id="emicard-rate" style="font-size:16px;color:#F5F0E8;font-family:'DM Mono',monospace;">—</span></div>
+    <div style="margin-top:14px;display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);"><span style="font-size:18px;color:#9090A8;font-weight:700;">Total Payment</span><span id="emicard-total" style="font-size:18px;color:#4ade80;font-family:'DM Mono',monospace;font-weight:700;">—</span></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,rgba(201,168,76,.12),rgba(201,168,76,.04));border:1px solid rgba(201,168,76,.25);border-radius:14px;padding:20px 28px;">
+    <div><div style="font-size:16px;color:#9090A8;margin-bottom:3px;">Calculate yours free at</div><div style="font-size:26px;color:#C9A84C;font-weight:700;font-family:'DM Mono',monospace;">moneyveda.org</div></div>
+    <div style="width:54px;height:54px;background:#C9A84C;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;">🔗</div>
+  </div>
+</div>
+
+<!-- FIRE SHARE CARD -->
+<div id="fire-share-card" style="position:absolute;left:-9999px;top:0;width:1080px;height:1080px;background:linear-gradient(135deg,#0A0A0F 0%,#0d0a00 60%,#111118 100%);font-family:'DM Sans',sans-serif;overflow:hidden;box-sizing:border-box;padding:70px 60px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:50px;">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div style="width:52px;height:52px;background:linear-gradient(135deg,#ef4444,#f97316);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;">🔥</div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:#C9A84C;letter-spacing:-1px;">MONEY<span style="color:#E8C97A;">VEDA</span></div>
+        <div style="font-size:13px;color:#9090A8;letter-spacing:3px;text-transform:uppercase;margin-top:2px;">FIRE Calculator</div>
+      </div>
+    </div>
+    <span id="firecard-flag" style="font-size:48px;">🌍</span>
+  </div>
+  <div id="firecard-title" style="font-size:26px;color:#f97316;text-transform:uppercase;letter-spacing:4px;margin-bottom:24px;">My FIRE Number</div>
+  <div id="firecard-corpus" style="font-family:'Playfair Display',serif;font-size:96px;font-weight:900;color:#fde047;line-height:1;margin-bottom:20px;letter-spacing:-4px;">—</div>
+  <div style="font-size:28px;color:#F5F0E8;margin-bottom:40px;">needed to retire in <span id="firecard-years" style="color:#f97316;font-weight:700;">—</span> years</div>
+  <div style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.25);border-radius:20px;padding:32px;margin-bottom:40px;">
+    <div style="font-size:16px;color:#f97316;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;">Monthly Investment Needed</div>
+    <div id="firecard-monthly" style="font-family:'DM Mono',monospace;font-size:56px;color:#fde047;font-weight:700;">—</div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,rgba(201,168,76,.12),rgba(201,168,76,.04));border:1px solid rgba(201,168,76,.25);border-radius:14px;padding:20px 28px;">
+    <div><div style="font-size:16px;color:#9090A8;margin-bottom:3px;">Calculate yours free at</div><div style="font-size:26px;color:#C9A84C;font-weight:700;font-family:'DM Mono',monospace;">moneyveda.org</div></div>
+    <div style="width:54px;height:54px;background:#C9A84C;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;">🔗</div>
   </div>
 </div>
 
