@@ -1681,7 +1681,7 @@ const REGIONS = {
     emiRateDefault:3.6, emiRateHint:'Taux moyen immobilier ~3.6% (2026)',
     emiTaxLabel:'Avantage fiscal',
     emiTaxNote:'PTZ (Prêt à Taux Zéro) pour primo-accédants',
-    emiDtiLabel:'Taux d'endettement < 35% (règle HCSF)',
+    emiDtiLabel:'Taux d\u2019endettement < 35% (r\u00e8gle HCSF)',
     emiMonthlyLabel:'Mensualité',
     emiDesc:"Calculez vos mensualités, intérêts totaux et avantages fiscaux de votre crédit immobilier. Inclut le PTZ.",
     fireExpDefault:2500, fireExpMin:500, fireExpMax:12000, fireExpStep:250,
@@ -1732,7 +1732,7 @@ const REGIONS = {
     emiRateDefault:3.5, emiRateHint:'Euríbor + spread ~3.5% hipoteca variable (2026)',
     emiTaxLabel:'Beneficio fiscal',
     emiTaxNote:'Deducción hipoteca pre-2013: hasta 15% sobre €9,040',
-    emiDtiLabel:'Cuota < 35% ingresos netos (criterio Banco de España)',
+    emiDtiLabel:'Cuota < 35% ingresos netos (criterio Banco de Espa\u00f1a)',
     emiMonthlyLabel:'Cuota mensual',
     emiDesc:'Calcula tu cuota mensual, intereses totales y ventajas fiscales de tu hipoteca. Incluye orientación sobre hipoteca variable vs fija.',
     fireExpDefault:2000, fireExpMin:500, fireExpMax:10000, fireExpStep:250,
@@ -2366,7 +2366,7 @@ function renderTax(){
   else if(currentMode==='france') { c.innerHTML=buildFranceTax(); setTimeout(calcFranceTax, 50); }
   else if(currentMode==='spain') { c.innerHTML=buildSpainTax(); setTimeout(calcSpainTax, 50); }
   else c.innerHTML=buildUSATax();
-  else c.innerHTML=buildWorldTax();
+  /* world mode removed */
 }
 
 function buildIndiaTax(){
@@ -2743,7 +2743,7 @@ function calcFranceTax() {
   breakdown += 'TMI (Tranche Marginale): <strong style="color:#f87171">' + tmi + '%</strong><br>';
   breakdown += 'Impôt total: <strong style="color:#f87171">' + fmt(totalTax) + '</strong><br>';
   breakdown += 'CSG/CRDS (9.7%): <strong style="color:#f59e0b">' + fmt(csg) + '</strong><br>';
-  breakdown += '<br><strong style="color:var(--gold-light)">Taux d'imposition effectif: ' + ((totalTax/income)*100).toFixed(1) + '%</strong>';
+  breakdown += '<br><strong style="color:var(--gold-light)">Taux d\'imposition effectif: ' + ((totalTax/income)*100).toFixed(1) + '%</strong>';
   
   var bEl = document.getElementById('fr_tax_breakdown');
   if (bEl) bEl.innerHTML = breakdown;
@@ -3991,7 +3991,7 @@ var GOAL_REGIONS = {
     gratTaxFreeLimit: 0,
     gratTaxLabel: 'Tips & gratuity are fully taxable in the US',
     gratRules: [
-      'US has no statutory gratuity law — tips are at the customer's discretion',
+      'US has no statutory gratuity law — tips are at the customer\u2019s discretion',
       'Employer-paid gratuity/tips are subject to <strong style="color:var(--cream)">federal & state income tax</strong>',
       'Tips must be reported to employer if over <strong style="color:var(--gold-light)">$20/month</strong>',
       'IRS Form 4070 is used to report tips to employers',
@@ -4113,7 +4113,7 @@ var GOAL_REGIONS = {
     gratRules: [
       'Indemnité légale: <strong style="color:var(--cream)">1/4 mois × années (≤10 ans)</strong>, puis 1/3 mois × années (>10 ans)',
       "Exonération d'impôt sur le revenu jusqu'au montant légal (ou 2× salaire annuel brut)",
-      'Exonération de cotisations sociales jusqu'à <strong style="color:var(--gold-light)">2× plafond annuel SS (env. €92,736)</strong>',
+      'Exonération de cotisations sociales jusqu\u2019\u00e0 <strong style="color:var(--gold-light)">2\u00d7 plafond annuel SS (env. \u20ac92,736)</strong>',
       'Délai de carence Pôle Emploi: 150 jours maximum pour indemnités supra-légales',
       'Accord de rupture conventionnelle: montant négocié librement avec homologation DREETS'
     ],
@@ -4135,7 +4135,7 @@ var GOAL_REGIONS = {
           "📋 Résidence principale: intérêts d'emprunt <strong style='color:#f87171'>non déductibles</strong>",
           '📋 Investissement locatif (LMNP réel): intérêts 100% déductibles',
           '&nbsp;&nbsp;&nbsp;&nbsp;Intérêts annuels: ' + fmtSym(Math.round(annualInterest)) + ' → Économie (TMI 30%): <strong style="color:#4ade80">' + fmtSym(Math.round(annualInterest * 0.30)) + '/an</strong>',
-          '📋 PTZ: jusqu'à €138,000 sans intérêts pour primo-accédants en zone A'
+          '📋 PTZ: jusqu\'à €138,000 sans intérêts pour primo-accédants en zone A'
         ],
         total: Math.round(annualInterest * 0.30)
       };
