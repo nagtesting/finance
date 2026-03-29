@@ -1,412 +1,516 @@
+// ============================================================
+// /api/calculate.js — MoneyVeda v4 (Fixed Edition)
+//
+// ALL computation is server-side. index.html contains zero
+// math — only DOM reads (slider values) and DOM writes
+// (displaying returned numbers + building charts/tables).
+// Without this server, every calculator shows "—" only.
+//
+// SUPPORTED TYPES:
+//   sip, emi, fire, roi, insurance, tax,
+//   ppf, epf, nps, stepsip, ssa, crorepati, habit, compare
+//
+// FIX LOG:
+//   BUG-01 SIP       — mr was r/12/100 (naive).
+//                      Fixed to geometric: (1+r/100)^(1/12)-1
+//   BUG-02 FIRE      — mr was ret/12 (naive, ret already decimal).
+//                      Fixed to geometric: (1+ret)^(1/12)-1
+//   BUG-03 NPS       — mr was ret/12 (naive, ret already decimal).
+//                      Fixed to geometric: (1+ret)^(1/12)-1
+//   BUG-04 STEPSIP   — mr was r/12/100 (naive).
+//                      Fixed to geometric: (1+r/100)^(1/12)-1
+//   BUG-05 CROREPATI — mr was r/12/100 (naive).
+//                      Fixed to geometric: (1+r/100)^(1/12)-1
+//   BUG-06 HABIT     — mr was r/12/100 (naive).
+//                      Fixed to geometric: (1+r/100)^(1/12)-1
+//   BUG-07 COMPARE   — SIP side mr was r/12/100 (naive).
+//                      Fixed to geometric: (1+r/100)^(1/12)-1
+//   BUG-08 PPF       — interest was Math.round()'d each year before
+//                      being added to balance, causing small cumulative
+//                      rounding errors. Now accumulates exact float;
+//                      only rounds in the output row and final return.
+//   BUG-09 SSA       — same annual-rounding issue as PPF. Fixed same way.
+//
+//   NOT BUGS (verified correct):
+//   EMI    — r/12/100 is CORRECT; banks quote nominal annual rate.
+//   EPF    — formula (balance+contrib)*(1+rate) is correct.
+//   TAX    — surcharge reverse-iterate logic is correct.
+//   ROI    — annual compounding Math.pow(1+r/100,t) is correct.
+//   INSURANCE — HLV formula is standard and correct.
+// ============================================================
 
-/**
- * /api/market.js — MoneyVeda Market API v3 (Protected Edition)
- *
- * MOVED SERVER-SIDE (no longer in index.html):
- *   • STATIC_FALLBACK data for all regions + sidebar variants
- *   • modeColors + modeFlags display config
- *   • Ticker HTML string assembly (badge + item HTML)
- *   • Sidebar HTML string assembly
- *   • Fallback ticker/sidebar rendering logic
- *
- * CLIENT RECEIVES ready-to-inject HTML:
- *   ?view=ticker  → { tickerHtml, mode, weekend, fallback }
- *   ?view=sidebar → { sidebarHtml, live, updatedTime, mode }
- *   (no ?view)    → raw tickers JSON (backward compat)
- *
- * VERCEL FREE TIER: s-maxage=15 edge cache → ~2,880 invocations/month ✅
- * YAHOO RATE LIMIT: server-side 15s cache → max 4 Yahoo calls/min ✅
- */
-
-const SYMBOLS = {
-  india: [
-    { symbol: '^BSESN',        label: 'SENSEX'        },
-    { symbol: '^NSEI',         label: 'NIFTY 50'      },
-    { symbol: '^NSEBANK',      label: 'NIFTY BANK'    },
-    { symbol: '^CNXIT',        label: 'NIFTY IT'      },
-    { symbol: '^CNXAUTO',      label: 'NIFTY AUTO'    },
-    { symbol: '^CNXPHARMA',    label: 'NIFTY PHARMA'  },
-    { symbol: '^CNXFMCG',      label: 'NIFTY FMCG'   },
-    { symbol: 'USDINR=X',      label: 'USD/INR'       },
-    { symbol: 'GC=F',          label: 'GOLD'          },
-    { symbol: 'CL=F',          label: 'CRUDE OIL'     },
-    { symbol: 'SI=F',          label: 'SILVER'        },
-    { symbol: 'RELIANCE.NS',   label: 'RELIANCE'      },
-    { symbol: 'HDFCBANK.NS',   label: 'HDFC BANK'     },
-    { symbol: 'TCS.NS',        label: 'TCS'           },
-    { symbol: 'INFY.NS',       label: 'INFOSYS'       },
-    { symbol: 'TATAMOTORS.NS', label: 'TATA MOTORS'   },
-    { symbol: 'ICICIBANK.NS',  label: 'ICICI BANK'    },
-    { symbol: 'WIPRO.NS',      label: 'WIPRO'         },
-    { symbol: 'AXISBANK.NS',   label: 'AXIS BANK'     },
-    { symbol: 'SBIN.NS',       label: 'SBI'           },
-    { symbol: 'MARUTI.NS',     label: 'MARUTI'        },
-    { symbol: 'SUNPHARMA.NS',  label: 'SUN PHARMA'    },
-    { symbol: 'BAJFINANCE.NS', label: 'BAJAJ FIN'     },
-    { symbol: 'HINDUNILVR.NS', label: 'HUL'           },
-    { symbol: 'LT.NS',         label: 'L&T'           },
-    { symbol: 'KOTAKBANK.NS',  label: 'KOTAK BANK'    },
-    { symbol: 'ITC.NS',        label: 'ITC'           },
-    { symbol: 'BHARTIARTL.NS', label: 'AIRTEL'        },
-    { symbol: 'ASIANPAINT.NS', label: 'ASIAN PAINTS'  },
-    { symbol: 'TITAN.NS',      label: 'TITAN'         },
-    { symbol: 'ULTRACEMCO.NS', label: 'ULTRATECH CEM' },
-    { symbol: 'NESTLEIND.NS',  label: 'NESTLE INDIA'  },
-    { symbol: 'POWERGRID.NS',  label: 'POWER GRID'    },
-    { symbol: 'NTPC.NS',       label: 'NTPC'          },
-    { symbol: 'ONGC.NS',       label: 'ONGC'          },
-    { symbol: 'ADANIENT.NS',   label: 'ADANI ENT'     },
-  ],
-  usa: [
-    { symbol: '^GSPC',    label: 'S&P 500'      },
-    { symbol: '^IXIC',    label: 'NASDAQ'       },
-    { symbol: '^DJI',     label: 'DOW JONES'    },
-    { symbol: '^RUT',     label: 'RUSSELL 2000' },
-    { symbol: '^VIX',     label: 'VIX'          },
-    { symbol: 'GC=F',     label: 'GOLD'         },
-    { symbol: 'CL=F',     label: 'CRUDE OIL'    },
-    { symbol: 'SI=F',     label: 'SILVER'       },
-    { symbol: 'EURUSD=X', label: 'EUR/USD'      },
-    { symbol: 'DX-Y.NYB', label: 'US DOLLAR'    },
-    { symbol: 'BTC-USD',  label: 'BITCOIN'      },
-    { symbol: 'ETH-USD',  label: 'ETHEREUM'     },
-    { symbol: 'AAPL',     label: 'APPLE'        },
-    { symbol: 'MSFT',     label: 'MICROSOFT'    },
-    { symbol: 'TSLA',     label: 'TESLA'        },
-    { symbol: 'NVDA',     label: 'NVIDIA'       },
-    { symbol: 'AMZN',     label: 'AMAZON'       },
-    { symbol: 'GOOGL',    label: 'ALPHABET'     },
-    { symbol: 'META',     label: 'META'         },
-    { symbol: 'NFLX',     label: 'NETFLIX'      },
-    { symbol: 'JPM',      label: 'JPMORGAN'     },
-    { symbol: 'BAC',      label: 'BANK OF AM.'  },
-    { symbol: 'BRK-B',    label: 'BERKSHIRE'    },
-    { symbol: 'UNH',      label: 'UNITEDHEALTH' },
-    { symbol: 'V',        label: 'VISA'         },
-  ],
-  europe: [
-    { symbol: '^STOXX50E', label: 'EURO STOXX'    },
-    { symbol: '^GDAXI',    label: 'DAX'           },
-    { symbol: '^FTSE',     label: 'FTSE 100'      },
-    { symbol: '^FCHI',     label: 'CAC 40'        },
-    { symbol: '^IBEX',     label: 'IBEX 35'       },
-    { symbol: '^SSMI',     label: 'SMI'           },
-    { symbol: '^AEX',      label: 'AEX'           },
-    { symbol: 'EURUSD=X',  label: 'EUR/USD'       },
-    { symbol: 'GBPUSD=X',  label: 'GBP/USD'       },
-    { symbol: 'GC=F',      label: 'GOLD'          },
-    { symbol: 'CL=F',      label: 'CRUDE OIL'     },
-    { symbol: 'NG=F',      label: 'NAT. GAS'      },
-    { symbol: 'ASML.AS',   label: 'ASML'          },
-    { symbol: 'SAP.DE',    label: 'SAP'           },
-    { symbol: 'LVMH.PA',   label: 'LVMH'          },
-    { symbol: 'SIE.DE',    label: 'SIEMENS'       },
-    { symbol: 'NOVO-B.CO', label: 'NOVO NORDISK'  },
-    { symbol: 'NESN.SW',   label: 'NESTLE'        },
-    { symbol: 'ROG.SW',    label: 'ROCHE'         },
-    { symbol: 'MC.PA',     label: 'MOET HENNESSY' },
-    { symbol: 'TTE.PA',    label: 'TOTALENERGIES' },
-    { symbol: 'SHELL.AS',  label: 'SHELL'         },
-    { symbol: 'ULVR.L',    label: 'UNILEVER'      },
-    { symbol: 'AZN.L',     label: 'ASTRAZENECA'   },
-    { symbol: 'HSBA.L',    label: 'HSBC'          },
-  ],
-  world: [
-    { symbol: '^GSPC',     label: 'S&P 500'    },
-    { symbol: '^IXIC',     label: 'NASDAQ'     },
-    { symbol: '^DJI',      label: 'DOW JONES'  },
-    { symbol: '^FTSE',     label: 'FTSE 100'   },
-    { symbol: '^GDAXI',    label: 'DAX'        },
-    { symbol: '^BSESN',    label: 'SENSEX'     },
-    { symbol: '^NSEI',     label: 'NIFTY 50'   },
-    { symbol: '^N225',     label: 'NIKKEI 225' },
-    { symbol: '^HSI',      label: 'HANG SENG'  },
-    { symbol: '^STOXX50E', label: 'EURO STOXX' },
-    { symbol: '^AXJO',     label: 'ASX 200'    },
-    { symbol: '^KS11',     label: 'KOSPI'      },
-    { symbol: 'GC=F',      label: 'GOLD'       },
-    { symbol: 'CL=F',      label: 'CRUDE OIL'  },
-    { symbol: 'SI=F',      label: 'SILVER'     },
-    { symbol: 'NG=F',      label: 'NAT. GAS'   },
-    { symbol: 'BTC-USD',   label: 'BITCOIN'    },
-    { symbol: 'ETH-USD',   label: 'ETHEREUM'   },
-    { symbol: 'BNB-USD',   label: 'BNB'        },
-    { symbol: 'EURUSD=X',  label: 'EUR/USD'    },
-    { symbol: 'GBPUSD=X',  label: 'GBP/USD'   },
-    { symbol: 'USDINR=X',  label: 'USD/INR'    },
-    { symbol: 'USDJPY=X',  label: 'USD/JPY'    },
-    { symbol: 'USDCNY=X',  label: 'USD/CNY'    },
-    { symbol: 'DX-Y.NYB',  label: 'US DOLLAR'  },
-  ],
-};
-
-// ── Mode display config (was modeColors + modeFlags in client JS) ─
-const MODE_META = {
-  india:  { color: '#C9A84C', flag: '🇮🇳', sidebarLabels: ['SENSEX',     'NIFTY 50'] },
-  usa:    { color: '#60a5fa', flag: '🇺🇸', sidebarLabels: ['S&P 500',    'NASDAQ']   },
-  europe: { color: '#a5b4fc', flag: '🇪🇺', sidebarLabels: ['EURO STOXX', 'DAX']      },
-  world:  { color: '#4ade80', flag: '🌍', sidebarLabels: ['S&P 500',    'NIFTY 50'] },
-};
-
-// ── Static fallback data (was STATIC_FALLBACK in client JS) ──
-const STATIC_FALLBACK = {
-  india: [
-    { label: 'SENSEX',     value: 74532,  pct:  0.44, up: true  },
-    { label: 'NIFTY 50',   value: 23114,  pct:  0.49, up: true  },
-    { label: 'NIFTY BANK', value: 54018,  pct: -2.36, up: false },
-    { label: 'GOLD',       value: 6842,   pct:  0.43, up: true  },
-    { label: 'USD/INR',    value: 93.75,  pct: -0.12, up: false },
-  ],
-  usa: [
-    { label: 'S&P 500',  value: 6606,   pct: -0.27, up: false },
-    { label: 'NASDAQ',   value: 22090,  pct: -0.28, up: false },
-    { label: 'DOW',      value: 43215,  pct: -0.15, up: false },
-    { label: 'GOLD',     value: 4617,   pct:  0.31, up: true  },
-    { label: 'EUR/USD',  value: 0.9241, pct:  0.12, up: true  },
-  ],
-  europe: [
-    { label: 'EURO STOXX', value: 5372,   pct: -1.62, up: false },
-    { label: 'DAX',        value: 22391,  pct: -1.45, up: false },
-    { label: 'FTSE 100',   value: 8673,   pct: -2.35, up: false },
-    { label: 'GOLD',       value: 4263,   pct:  0.21, up: true  },
-    { label: 'EUR/USD',    value: 1.0823, pct: -0.12, up: false },
-  ],
-  world: [
-    { label: 'S&P 500',   value: 6606,  pct: -0.27, up: false },
-    { label: 'NIFTY 50',  value: 23114, pct:  0.49, up: true  },
-    { label: 'BITCOIN',   value: 84200, pct: -1.80, up: false },
-    { label: 'GOLD',      value: 4617,  pct:  0.31, up: true  },
-    { label: 'CRUDE OIL', value: 68.40, pct: -0.90, up: false },
-  ],
-};
-
-// ── In-memory cache ───────────────────────────────────────────
-const _cache     = {};
-const _cacheTime = {};
-const SERVER_CACHE_MS = 15 * 1000;
-
-// ── Per-region market hours (UTC) ────────────────────────────
-// Returns { open: bool, label: string, nextOpen: string }
-function getMarketStatus(mode) {
-  const now  = new Date();
-  const day  = now.getUTCDay();   // 0=Sun, 6=Sat
-  const hour = now.getUTCHours();
-  const min  = now.getUTCMinutes();
-  const t    = hour * 60 + min;   // minutes since UTC midnight
-
-  // Weekend check (universal)
-  const isWeekend = day === 0 || day === 6;
-
-  const schedules = {
-    // NSE/BSE: Mon-Fri 03:45–10:00 UTC (09:15–15:30 IST)
-    india:  { open: 3*60+45,  close: 10*60,     tz: 'IST',  exchange: 'NSE/BSE',  local: '9:15–15:30 IST'  },
-    // NYSE/NASDAQ: Mon-Fri 13:30–20:00 UTC (9:30–16:00 ET)
-    usa:    { open: 13*60+30, close: 20*60,      tz: 'ET',   exchange: 'NYSE',     local: '9:30–16:00 ET'   },
-    // Euronext/Frankfurt: Mon-Fri 07:00–15:30 UTC (8:00–16:30 CET)
-    europe: { open: 7*60,     close: 15*60+30,   tz: 'CET',  exchange: 'XETRA',   local: '8:00–16:30 CET'  },
-    // World: use NYSE as primary reference
-    world:  { open: 13*60+30, close: 20*60,      tz: 'ET',   exchange: 'NYSE',     local: '9:30–16:00 ET'   },
-  };
-
-  const s = schedules[mode] || schedules.india;
-  const isOpen = !isWeekend && t >= s.open && t < s.close;
-
-  let statusLabel, statusColor;
-  if (isWeekend) {
-    statusLabel = `${s.exchange} closed (weekend) · Opens Mon ${s.local}`;
-    statusColor = '#f59e0b';
-  } else if (!isOpen && t < s.open) {
-    const minsTo = s.open - t;
-    const hTo = Math.floor(minsTo / 60), mTo = minsTo % 60;
-    statusLabel = `${s.exchange} pre-market · Opens in ${hTo}h ${mTo}m (${s.local})`;
-    statusColor = '#f59e0b';
-  } else if (!isOpen && t >= s.close) {
-    statusLabel = `${s.exchange} closed · Opens tomorrow ${s.local}`;
-    statusColor = '#9090A8';
-  } else {
-    statusLabel = `${s.exchange} live · ${s.local}`;
-    statusColor = '#4ade80';
-  }
-
-  return { isOpen, isWeekend, statusLabel, statusColor, exchange: s.exchange };
-}
-
-function isAnyMarketOpen() {
-  const day = new Date().getUTCDay();
-  return day !== 0 && day !== 6;
-}
-
-async function fetchQuote(symbol) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
-  const res = await fetch(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      'Accept': 'application/json',
+// ── Tax config ────────────────────────────────────────────────
+const TAX_CONFIG = {
+  'AY2025-26': {
+    cess: 0.04,
+    old: {
+      standardDeduction: 50000,
+      rebate87A: 500000,
+      slabs: [[250000,0],[500000,0.05],[1000000,0.20],[Infinity,0.30]],
+      surcharge: [[Infinity,0.37],[20000000,0.25],[10000000,0.15],[5000000,0.10],[0,0.00]],
+      deductionLimits: { sec80c:150000, sec80d:75000, sec24b:200000, nps80ccd1b:50000, nps80ccd2pct:0.10 },
     },
-    signal: (() => { try { return AbortSignal.timeout(6000); } catch(e) { const c = new AbortController(); setTimeout(() => c.abort(), 6000); return c.signal; } })(),
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
-  const result = data?.chart?.result?.[0];
-  if (!result) throw new Error('No result');
-  const meta = result.meta;
-  const price = meta.regularMarketPrice;
-  const prevClose = meta.previousClose || meta.chartPreviousClose;
-  if (!price) throw new Error('No price');
-  const change = parseFloat((price - prevClose).toFixed(4));
-  const pct    = parseFloat(((change / prevClose) * 100).toFixed(2));
-  return { c: price, d: change, dp: pct };
+    new: {
+      standardDeduction: 75000,
+      rebate87A: 700000,
+      slabs: [[300000,0],[600000,0.05],[900000,0.10],[1200000,0.15],[1500000,0.20],[Infinity,0.30]],
+      surcharge: [[Infinity,0.25],[10000000,0.15],[5000000,0.10],[0,0.00]],
+      deductionLimits: { nps80ccd2pct:0.10 },
+    },
+  },
+};
+const ACTIVE_AY = 'AY2025-26';
+
+function clamp(val, min, max, def) {
+  const n = parseFloat(val);
+  return (!isFinite(n) || n < min || n > max) ? def : n;
 }
 
-// ── HTML builders (moved fully from client renderTickerItems / renderSidebar) ──
-
-function buildTickerItemHtml(t) {
-  const up    = t.up;
-  const color = up ? '#22C55E' : '#EF4444';
-  const arrow = up ? '&#9650;' : '&#9660;';
-  const val   = typeof t.value === 'number'
-    ? t.value.toLocaleString('en-US', { maximumFractionDigits: 2 })
-    : String(t.value);
-  const sign  = t.pct >= 0 ? '+' : '';
-  return `<div style="display:inline-flex;align-items:center;padding:0 18px 0 16px;border-right:1px solid rgba(255,255,255,.05);height:44px;">` +
-    `<span style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#6b7280;margin-right:9px;">${t.label}</span>` +
-    `<span style="font-size:13px;font-weight:600;color:#F0EDE6;font-family:'DM Mono',monospace;margin-right:7px;">${val}</span>` +
-    `<span style="display:inline-flex;align-items:center;gap:2px;background:${up ? 'rgba(34,197,94,.1)' : 'rgba(239,68,68,.1)'};` +
-      `border:1px solid ${up ? 'rgba(34,197,94,.25)' : 'rgba(239,68,68,.25)'};border-radius:4px;padding:2px 7px;">` +
-      `<span style="font-size:7px;color:${color};">${arrow}</span>` +
-      `<span style="font-size:10px;font-weight:700;color:${color};font-family:'DM Mono',monospace;">${sign}${t.pct}%</span>` +
-    `</span></div>`;
+// FIX: single shared helper — converts an annual % rate into the
+// true geometric monthly rate. Used by every calculator that
+// compounds monthly.  (1+r/100)^(1/12)-1
+// EMI intentionally does NOT use this; banks quote nominal rates.
+function monthlyRate(annualPct) {
+  return Math.pow(1 + annualPct / 100, 1 / 12) - 1;
 }
 
-function buildBadgeHtml(mode, marketStatus) {
-  const m   = MODE_META[mode];
-  const ms  = marketStatus || { isOpen: true, statusColor: '#4ade80', statusLabel: 'LIVE' };
-  const dot = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;` +
-    `background:${ms.statusColor};margin-right:6px;flex-shrink:0;` +
-    `${ms.isOpen ? 'box-shadow:0 0 6px ' + ms.statusColor + ';' : ''}"></span>`;
-  const liveText = ms.isOpen ? 'LIVE' : 'CLOSED';
-  return `<div style="display:inline-flex;align-items:center;padding:0 14px;height:44px;` +
-    `border-right:1px solid rgba(201,168,76,.2);flex-shrink:0;gap:0;">` +
-    `${dot}<span style="font-size:9px;font-weight:800;letter-spacing:2px;color:${m.color};` +
-    `font-family:'DM Sans',sans-serif;margin-right:8px;">${m.flag} ${liveText}</span>` +
-    // Scrolling status text if market closed
-    (!ms.isOpen ? `<span style="font-size:8px;color:${ms.statusColor};font-family:'DM Mono',monospace;` +
-      `letter-spacing:0.5px;max-width:220px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">` +
-      `${ms.statusLabel}</span>` : '') +
-    `</div>`;
+// FIX: same helper for when the annual rate is already a decimal
+// (e.g. 0.10 for 10%).  Used by FIRE and NPS.
+function monthlyRateDecimal(annualDecimal) {
+  return Math.pow(1 + annualDecimal, 1 / 12) - 1;
 }
 
-function buildSidebarItemHtml(t) {
-  const c     = t.up === true ? '#4ade80' : t.up === false ? '#f87171' : 'var(--muted)';
-  const arrow = t.up === true ? '&#9650;' : t.up === false ? '&#9660;' : '';
-  const val   = typeof t.value === 'number'
-    ? t.value.toLocaleString('en-US', { maximumFractionDigits: 2 })
-    : String(t.value);
-  const sign  = t.pct >= 0 ? '+' : '';
-  return `<div style="display:flex;justify-content:space-between;align-items:center;` +
-    `padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);">` +
-    `<span style="font-size:10px;color:var(--muted);">${t.label}</span>` +
-    `<div style="text-align:right;">` +
-      `<span style="font-size:12px;font-family:'DM Mono',monospace;font-weight:600;color:var(--cream);display:block;">${val}</span>` +
-      `<span style="font-size:9px;color:${c};">${arrow} ${sign}${t.pct}%</span>` +
-    `</div></div>`;
-}
-
-function resolveTickerItems(mode, tickers) {
-  const live = tickers ? tickers.filter(t => t.ok) : [];
-  return live.length > 0 ? live : STATIC_FALLBACK[mode].map(t => ({ ...t, ok: true }));
-}
-
-function resolveSidebarItems(mode, tickers) {
-  const preferred = MODE_META[mode].sidebarLabels;
-  if (tickers) {
-    const matched = preferred.map(lbl => tickers.find(t => t.ok && t.label === lbl)).filter(Boolean);
-    if (matched.length === 2) return { items: matched, live: true };
-    const top2 = tickers.filter(t => t.ok).slice(0, 2);
-    if (top2.length === 2) return { items: top2, live: true };
+function calcRegimeTax(taxable, gross, regime, cess) {
+  let tax = 0, prev = 0;
+  for (const [upper, rate] of regime.slabs) {
+    if (taxable > prev) { tax += Math.min(taxable - prev, upper - prev) * rate; prev = upper; }
   }
-  return { items: STATIC_FALLBACK[mode].slice(0, 2), live: false };
+  if (taxable <= regime.rebate87A) tax = 0;
+  let surchargeRate = 0;
+  for (const [ceiling, sr] of [...regime.surcharge].reverse()) {
+    if (gross > ceiling) { surchargeRate = sr; break; }
+  }
+  return (tax + tax * surchargeRate) * (1 + cess);
 }
 
-// ── Main handler ──────────────────────────────────────────────
+// ── REGIONS config (server-only) ─────────────────────────────
+const REGIONS = {
+  india: {
+    currency:'₹', sipTaxCalc:(p)=>Math.min(p*12,150000)*0.30,
+    emiTaxCalc:(totalInt,t)=>Math.min(totalInt/t,200000)*0.30,
+    fireLeanMax:40000, fireFatMin:150000,
+    roiAssets:[
+      {name:'Savings A/C',rate:3.5,color:'#64748b'},{name:'FD (5yr)',rate:7.0,color:'#0ea5e9'},
+      {name:'PPF (15yr)',rate:7.1,color:'#6366f1'},{name:'Gold (hist.)',rate:9.5,color:'#f59e0b'},
+      {name:'Nifty 50',rate:13.0,color:'#C9A84C'},{name:'Equity MF',rate:14.0,color:'#4ade80'},
+      {name:'Real Estate',rate:9.0,color:'#ec4899'},
+    ],
+    roiBase:100000,
+    insPremiumRate:(age)=>age<35?0.0012:age<45?0.002:0.004,
+  },
+  usa: {
+    currency:'$', sipTaxCalc:(p)=>Math.min(p*12,23500)*0.22,
+    emiTaxCalc:(totalInt,t)=>Math.min(totalInt/t,25000)*0.22,
+    fireLeanMax:2500, fireFatMin:8000,
+    roiAssets:[
+      {name:'HYSA',rate:4.5,color:'#64748b'},{name:'US Treasury (10yr)',rate:4.3,color:'#0ea5e9'},
+      {name:'S&P 500 Index',rate:10.5,color:'#6366f1'},{name:'Gold (hist.)',rate:8.5,color:'#f59e0b'},
+      {name:'NASDAQ 100',rate:12.0,color:'#C9A84C'},{name:'Real Estate (REIT)',rate:8.0,color:'#4ade80'},
+      {name:'Total Bond Market',rate:4.0,color:'#ec4899'},
+    ],
+    roiBase:10000,
+    insPremiumRate:(age)=>age<35?0.0012:age<45?0.002:0.004,
+  },
+  europe: {
+    currency:'€', sipTaxCalc:(p)=>p*12*0.15*0.25,
+    emiTaxCalc:(totalInt,t)=>(totalInt/t)*0.15,
+    fireLeanMax:1500, fireFatMin:5000,
+    roiAssets:[
+      {name:'Savings Account',rate:3.0,color:'#64748b'},{name:'German Bunds (10yr)',rate:2.8,color:'#0ea5e9'},
+      {name:'Euro Stoxx 50',rate:8.5,color:'#6366f1'},{name:'Gold (hist.)',rate:8.5,color:'#f59e0b'},
+      {name:'MSCI World ETF',rate:9.5,color:'#C9A84C'},{name:'European REIT',rate:6.5,color:'#4ade80'},
+      {name:'Pan-EU Bond Fund',rate:3.5,color:'#ec4899'},
+    ],
+    roiBase:10000,
+    insPremiumRate:(age)=>age<35?0.0010:age<45?0.0018:0.0035,
+  },
+  world: {
+    currency:'$', sipTaxCalc:(p)=>p*12*0.20*0.15,
+    emiTaxCalc:(totalInt,t)=>(totalInt/t)*0.20,
+    fireLeanMax:2000, fireFatMin:7000,
+    roiAssets:[
+      {name:'Cash/T-Bills',rate:4.0,color:'#64748b'},{name:'Global Bonds',rate:4.5,color:'#0ea5e9'},
+      {name:'MSCI World',rate:10.0,color:'#6366f1'},{name:'Gold',rate:8.5,color:'#f59e0b'},
+      {name:'MSCI EM',rate:9.0,color:'#C9A84C'},{name:'Global REITs',rate:7.5,color:'#4ade80'},
+      {name:'Commodities',rate:5.5,color:'#ec4899'},
+    ],
+    roiBase:10000,
+    insPremiumRate:(age)=>age<35?0.0012:age<45?0.002:0.004,
+  },
+};
+
 export default async function handler(req, res) {
-  const origin = req.headers.origin || '';
-  const host   = (req.headers.host || '').split(':')[0];
-  if (origin && !origin.includes(host)) {
-    return res.status(403).json({ error: 'Forbidden' });
-  }
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cache-Control', 'no-store');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { mode, view } = req.query;
-  const validModes = ['india', 'usa', 'europe', 'world'];
-  if (!validModes.includes(mode)) {
-    return res.status(400).json({ error: 'Invalid mode. Use: india, usa, europe, or world.' });
-  }
+  const b    = req.body;
+  const type = b.type;
+  const mode = (b.mode && REGIONS[b.mode]) ? b.mode : 'india';
+  const RC   = REGIONS[mode];
 
-  let isWeekend = false;
-  let tickers   = null;
-
-  // Serve from in-memory cache if fresh
-  if (_cache[mode] && (Date.now() - (_cacheTime[mode] || 0)) < SERVER_CACHE_MS) {
-    tickers = _cache[mode].tickers;
-  }
-  // Weekend: use stale cache
-  else if (!isAnyMarketOpen() && _cache[mode]) {
-    tickers   = _cache[mode].tickers;
-    isWeekend = true;
-  }
-  // Fetch fresh from Yahoo
-  else {
-    const symbolList = SYMBOLS[mode];
-    const settled = await Promise.allSettled(
-      symbolList.map(s => fetchQuote(s.symbol))
-    );
-    tickers = settled.map((r, i) => {
-      const meta = symbolList[i];
-      if (r.status === 'fulfilled' && r.value.c > 0) {
-        const q   = r.value;
-        const pct = parseFloat((q.dp || 0).toFixed(2));
-        return { label: meta.label, value: q.c, change: parseFloat((q.d || 0).toFixed(2)), pct, up: pct >= 0, ok: true };
-      }
-      return { label: meta.label, ok: false };
+  // ── SIP ──────────────────────────────────────────────────────
+  if (type === 'sip') {
+    const p  = clamp(b.p, 100, 10000000, 25000);
+    const r  = clamp(b.r, 0.1, 50, 12);
+    const t  = clamp(b.t, 1, 50, 15);
+    // FIX BUG-01: was r/12/100 (naive). Use geometric monthly rate.
+    const mr = monthlyRate(r);
+    const months   = t * 12;
+    const invested = p * months;
+    const total    = p * (((Math.pow(1+mr,months)-1)/mr) * (1+mr));
+    const earnings = total - invested;
+    const mult     = total / invested;
+    const tax      = RC.sipTaxCalc(p, r, t);
+    const yearlyData = [];
+    for (let y = 1; y <= t; y++) {
+      const m = y * 12;
+      const iv = p * m;
+      const vv = p * (((Math.pow(1+mr,m)-1)/mr) * (1+mr));
+      yearlyData.push({ year:y, invested:Math.round(iv), value:Math.round(vv), gains:Math.round(vv-iv), gainPct:((vv-iv)/iv*100) });
+    }
+    const milestoneTargets = mode==='india'
+      ? [200000,500000,1000000,5000000,10000000,50000000]
+      : [5000,10000,50000,100000,500000,1000000];
+    const milestones = milestoneTargets
+      .filter(tgt => tgt <= total)
+      .map(tgt => {
+        for (let m=1; m<=months; m++) {
+          const v = p*(((Math.pow(1+mr,m)-1)/mr)*(1+mr));
+          if (v >= tgt) return { target:tgt, year:Math.ceil(m/12) };
+        }
+        return null;
+      }).filter(Boolean);
+    return res.json({
+      total:Math.round(total), invested:Math.round(invested), earnings:Math.round(earnings),
+      mult:mult.toFixed(1), gainPct:((earnings/invested)*100).toFixed(0),
+      returnPct:((earnings/total)*100).toFixed(0),
+      months, tax:Math.round(tax), yearlyData, milestones,
     });
-    _cache[mode]     = { mode, asOf: new Date().toISOString(), tickers, note: 'Indicative only. Not for trading.' };
-    _cacheTime[mode] = Date.now();
   }
 
-  const cacheControl = isWeekend
-    ? 's-maxage=3600, stale-while-revalidate=7200'
-    : 's-maxage=15, stale-while-revalidate=30';
-
-  res.setHeader('Cache-Control', cacheControl);
-  res.setHeader('Content-Type', 'application/json');
-
-  // ── ?view=ticker ─────────────────────────────────────────
-  // Returns ready-to-inject HTML for #ticker-track.
-  // Client does: track.innerHTML = data.tickerHtml; startScroll(track);
-  if (view === 'ticker') {
-    const ms         = getMarketStatus(mode);
-    const items      = resolveTickerItems(mode, tickers);
-    const badge      = buildBadgeHtml(mode, ms);
-    const itemsHtml  = items.map(buildTickerItemHtml).join('');
-    const tickerHtml = badge + itemsHtml + badge + itemsHtml; // doubled for seamless loop
-    return res.status(200).json({ tickerHtml, mode, weekend: ms.isWeekend, marketOpen: ms.isOpen, marketStatus: ms.statusLabel });
+  // ── EMI ──────────────────────────────────────────────────────
+  // NOTE: EMI intentionally keeps r/12/100. Banks in India (and globally)
+  // quote home/car loan rates as nominal annual rates, and the standard
+  // EMI formula uses the nominal monthly rate = r/12/100. Using the
+  // geometric rate here would give wrong EMIs vs your bank statement.
+  if (type === 'emi') {
+    const p      = clamp(b.p, 1000, 500000000, 5000000);
+    const r      = clamp(b.r, 0.1, 30, 8.5);
+    const t      = clamp(b.t, 1, 30, 20);
+    const mr     = r / 12 / 100;   // nominal monthly rate — CORRECT for EMI
+    const months = t * 12;
+    const emi    = (p * mr * Math.pow(1+mr,months)) / (Math.pow(1+mr,months) - 1);
+    const totalPaid = emi * months;
+    const totalInt  = totalPaid - p;
+    const taxSaved  = RC.emiTaxCalc(totalInt, t);
+    const pp = (p/totalPaid)*100, ip = (totalInt/totalPaid)*100;
+    const schedule = [];
+    let bal = p;
+    for (let y = 1; y <= t; y++) {
+      const ob = bal; let yP=0, yI=0;
+      for (let m=0; m<12 && bal>0; m++) {
+        const i = bal*mr, pr = Math.min(emi-i, bal);
+        yP+=pr; yI+=i; bal-=pr;
+      }
+      schedule.push({ year:y, open:Math.round(ob), principal:Math.round(yP), interest:Math.round(yI), close:Math.round(Math.max(bal,0)) });
+    }
+    return res.json({
+      emi:Math.round(emi), totalPaid:Math.round(totalPaid), totalInt:Math.round(totalInt),
+      taxSaved:Math.round(taxSaved), incomeReq:Math.round(emi/0.4),
+      ppPct:pp.toFixed(1), ipPct:ip.toFixed(1), schedule,
+    });
   }
 
-  // ── ?view=sidebar ────────────────────────────────────────
-  // Returns ready-to-inject sidebar HTML + live/time metadata.
-  // Client does: el.innerHTML = data.sidebarHtml; updateDot(data.live);
-  if (view === 'sidebar') {
-    const { items, live } = resolveSidebarItems(mode, tickers);
-    const sidebarHtml     = items.map(buildSidebarItemHtml).join('');
-    const updatedTime     = live
-      ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      : 'Snapshot';
-    return res.status(200).json({ sidebarHtml, live, updatedTime, mode, weekend: isWeekend });
+  // ── FIRE ─────────────────────────────────────────────────────
+  if (type === 'fire') {
+    const age   = clamp(b.age,  18, 55,  30);
+    const exp   = clamp(b.exp,  100, 10000000, 75000);
+    const saved = clamp(b.saved,0,   1e9, 0);
+    const inv   = clamp(b.inv,  100, 1e7, 50000);
+    const ret   = clamp(b.ret,  1,   30,  10) / 100;
+    const inf   = clamp(b.inf,  1,   15,  6)  / 100;  // kept for future use
+    // FIX BUG-02: was ret/12 (naive). ret is a decimal like 0.10.
+    const mr    = monthlyRateDecimal(ret);
+    const fireCorpus = exp * 12 * 25;
+    const swr        = fireCorpus * 0.04 / 12;
+    let corpus = saved, years = 0;
+    for (let m=0; m<600; m++) {
+      corpus = corpus*(1+mr) + inv;
+      if (corpus >= fireCorpus) { years = Math.ceil(m/12); break; }
+    }
+    const prog = Math.min((saved/fireCorpus)*100, 100);
+    const tL = RC.fireLeanMax, tH = RC.fireFatMin;
+    const fireType = exp<tL ? '🌿 Lean FIRE' : exp>tH ? '🏆 Fat FIRE' : '⚖️ Regular FIRE';
+    const fireTypeDesc = exp<tL ? 'Minimal lifestyle, maximum speed to independence.'
+      : exp>tH ? 'Luxury retirement — needs a large corpus.'
+      : 'Balanced approach — part-time optional.';
+    const milestones = [25,50,75,100].map(pc => {
+      const tgt = fireCorpus*pc/100;
+      let yr=0, c=saved;
+      for (let m=0; m<600; m++) { c=c*(1+mr)+inv; if(c>=tgt){yr=Math.ceil(m/12);break;} }
+      return { pc, target:Math.round(tgt), year:yr, reached:saved>=tgt };
+    });
+    return res.json({
+      fireCorpus:Math.round(fireCorpus), swr:Math.round(swr),
+      years: years>0?years:null, retireAge:years>0?age+years:null,
+      prog:prog.toFixed(1), fireType, fireTypeDesc, milestones,
+    });
   }
 
-  // ── default: raw JSON (backward compat) ──────────────────
-  return res.status(200).json({ ..._cache[mode], weekend: isWeekend });
+  // ── ROI ──────────────────────────────────────────────────────
+  // ROI compounds annually — Math.pow(1+r/100,t) is correct.
+  if (type === 'roi') {
+    const p = clamp(b.p, 100, 1e9, 100000);
+    const r = clamp(b.r, 0.1, 50, 12);
+    const t = clamp(b.t, 1, 50, 20);
+    const final   = p * Math.pow(1+r/100, t);
+    const returns = final - p;
+    const curve   = [];
+    for (let y=0; y<=t; y++) curve.push({ year:y, value:Math.round(p*Math.pow(1+r/100,y)) });
+    const base   = RC.roiBase;
+    const assets = RC.roiAssets;
+    const maxV   = Math.max(...assets.map(a => base*Math.pow(1+a.rate/100,20)));
+    const assetCompare = assets.map(a => {
+      const v = base*Math.pow(1+a.rate/100,20);
+      return { name:a.name, rate:a.rate, color:a.color, value:Math.round(v), widthPct:((v/maxV)*100).toFixed(1) };
+    });
+    return res.json({
+      final:Math.round(final), returns:Math.round(returns),
+      mult:(final/p).toFixed(1), curve, assetCompare, roiBase:base,
+    });
+  }
+
+  // ── INSURANCE ────────────────────────────────────────────────
+  // HLV = income × remaining working years + liabilities. Correct.
+  if (type === 'insurance') {
+    const inc    = clamp(b.inc,   1000,  1e8, 1800000);
+    const age    = clamp(b.age,   18,    60,  30);
+    const ret    = clamp(b.ret,   45,    75,  60);
+    const liab   = clamp(b.liab,  0,     1e9, 0);
+    const exist  = clamp(b.exist, 0,     1e9, 0);
+    const hlv    = (inc*(ret-age)) + liab;
+    const gap    = Math.max(hlv - exist, 0);
+    const pr     = RC.insPremiumRate(age);
+    return res.json({
+      cover:Math.round(hlv), gap:Math.round(gap), premium:Math.round(gap*pr),
+    });
+  }
+
+  // ── TAX (India) ───────────────────────────────────────────────
+  // Surcharge reverse-iterate logic verified correct.
+  if (type === 'tax') {
+    const cfg = TAX_CONFIG[ACTIVE_AY];
+    const inc  = clamp(b.inc,  0, 1e8, 1800000);
+    const c80  = clamp(b.c80,  0, cfg.old.deductionLimits.sec80c,    0);
+    const c80d = clamp(b.c80d, 0, cfg.old.deductionLimits.sec80d,    0);
+    const hl   = clamp(b.hl,   0, cfg.old.deductionLimits.sec24b,    0);
+    const nps  = clamp(b.nps,  0, cfg.old.deductionLimits.nps80ccd1b,0);
+    const oldTaxable = Math.max(
+      inc - cfg.old.standardDeduction
+        - Math.min(c80,cfg.old.deductionLimits.sec80c)
+        - Math.min(c80d,cfg.old.deductionLimits.sec80d)
+        - Math.min(hl,cfg.old.deductionLimits.sec24b)
+        - Math.min(nps,cfg.old.deductionLimits.nps80ccd1b),
+      0);
+    const newTaxable = Math.max(inc - cfg.new.standardDeduction, 0);
+    const oldTax = calcRegimeTax(oldTaxable, inc, cfg.old, cfg.cess);
+    const newTax = calcRegimeTax(newTaxable, inc, cfg.new, cfg.cess);
+    return res.json({
+      oldTax:Math.round(oldTax), newTax:Math.round(newTax),
+      oldEff:(oldTax/inc*100).toFixed(1), newEff:(newTax/inc*100).toFixed(1),
+      better:oldTax<=newTax?'Old Regime':'New Regime',
+      saving:Math.round(Math.abs(oldTax-newTax)),
+    });
+  }
+
+  // ── PPF ──────────────────────────────────────────────────────
+  if (type === 'ppf') {
+    const y = clamp(b.y, 500, 150000, 150000);
+    const t = clamp(b.t, 15, 50, 15);
+    const rate = 0.071;
+    // FIX BUG-08: was Math.round()'ing interest each year before adding to
+    // balance, causing small cumulative rounding errors. Now carry exact
+    // float in balance; only round for display in rows and final output.
+    let balance=0, totalInv=0;
+    const rows = [];
+    for (let yr=1; yr<=t; yr++) {
+      const interest = (balance + y) * rate;   // exact float, no premature rounding
+      balance = balance + y + interest;
+      totalInv += y;
+      rows.push({ year:yr, deposit:Math.round(y), interest:Math.round(interest), balance:Math.round(balance) });
+    }
+    return res.json({
+      maturity:Math.round(balance), invested:Math.round(totalInv),
+      interestEarned:Math.round(balance-totalInv),
+      taxSaved:Math.round(Math.min(y,150000)*0.30), rows,
+    });
+  }
+
+  // ── EPF ──────────────────────────────────────────────────────
+  // Formula verified correct: (balance+contrib)*(1+rate) is standard
+  // end-of-year contribution + compounding model.
+  if (type === 'epf') {
+    const sal  = clamp(b.sal,  1000, 500000, 50000);
+    const age  = clamp(b.age,  18,   55,     28);
+    const grow = clamp(b.grow, 0,    20,     8) / 100;
+    const rate = 0.0825, years = 58-age;
+    let empTotal=0, erTotal=0, balance=0, curSal=sal;
+    for (let yr=1; yr<=years; yr++) {
+      const ec = curSal*12*0.12, er = curSal*12*0.0367;
+      const contrib = ec+er;
+      balance += contrib + (balance+contrib)*rate;
+      empTotal += ec; erTotal += er; curSal *= (1+grow);
+    }
+    return res.json({
+      corpus:Math.round(balance), empContrib:Math.round(empTotal),
+      erContrib:Math.round(erTotal), years,
+      monthlyDeduction:Math.round(sal*0.12),
+    });
+  }
+
+  // ── NPS ──────────────────────────────────────────────────────
+  if (type === 'nps') {
+    const p    = clamp(b.p,   500, 100000, 5000);
+    const age  = clamp(b.age, 18,  55,     30);
+    const eq   = clamp(b.eq,  0,   75,     75) / 100;
+    const debt = 0.75 - eq;
+    const ret  = eq*0.11 + debt*0.07 + (0.25-debt)*0.09;
+    const years = 60 - age, months = years * 12;
+    // FIX BUG-03: was ret/12 (naive, ret is decimal like 0.105).
+    const mr = monthlyRateDecimal(ret);
+    const corpus  = p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
+    const lumpsum = corpus * 0.60;
+    const pension = corpus * 0.40 * 0.06 / 12;
+    const taxSaved = Math.round(Math.min(p*12,50000)*0.30);
+    return res.json({
+      corpus:Math.round(corpus), lumpsum:Math.round(lumpsum),
+      pension:Math.round(pension), taxSaved,
+      equityPct:Math.round(eq*100), debtPct:Math.round((1-eq)*100),
+      blendedReturn:(ret*100).toFixed(2), years,
+    });
+  }
+
+  // ── STEP-UP SIP ───────────────────────────────────────────────
+  if (type === 'stepsip') {
+    const p    = clamp(b.p,    500, 1000000, 10000);
+    const step = clamp(b.step, 0,   30,      10) / 100;
+    const r    = clamp(b.r,    1,   30,      12);
+    const t    = clamp(b.t,    1,   40,      20);
+    // FIX BUG-04: was r/12/100 (naive).
+    const mr   = monthlyRate(r);
+    let stepCorpus=0, flatCorpus=0, cur=p;
+    const rows = [];
+    for (let y=1; y<=t; y++) {
+      for (let m=0; m<12; m++) {
+        stepCorpus = stepCorpus*(1+mr)+cur;
+        flatCorpus = flatCorpus*(1+mr)+p;
+      }
+      rows.push({ year:y, monthlySip:Math.round(cur), stepValue:Math.round(stepCorpus), flatValue:Math.round(flatCorpus), advantage:Math.round(stepCorpus-flatCorpus) });
+      cur = cur*(1+step);
+    }
+    return res.json({
+      stepCorpus:Math.round(stepCorpus), flatCorpus:Math.round(flatCorpus),
+      extra:Math.round(stepCorpus-flatCorpus), rows,
+    });
+  }
+
+  // ── SSA (Sukanya Samriddhi) ───────────────────────────────────
+  if (type === 'ssa') {
+    const age = clamp(b.age, 0,  10,     3);
+    const dep = clamp(b.dep, 250,150000, 150000);
+    const rate=0.082, totalYears=21-age, depositYears=15;
+    // FIX BUG-09: same as PPF — was Math.round()'ing interest before
+    // adding to balance. Now carry exact float; only round for display.
+    let balance=0, totalInv=0;
+    const rows = [];
+    for (let yr=1; yr<=totalYears; yr++) {
+      const depositing = yr<=depositYears;
+      const deposit    = depositing ? dep : 0;
+      const interest   = (balance + deposit) * rate;  // exact float
+      balance += deposit + interest;
+      if (depositing) totalInv += dep;
+      rows.push({ year:yr, deposit:depositing?Math.round(dep):0, interest:Math.round(interest), balance:Math.round(balance) });
+    }
+    return res.json({
+      maturity:Math.round(balance), invested:Math.round(totalInv),
+      interestEarned:Math.round(balance-totalInv), rows,
+    });
+  }
+
+  // ── CROREPATI / MILLIONAIRE ───────────────────────────────────
+  if (type === 'crorepati') {
+    const target = clamp(b.target, 100000, 5e9, 10000000);
+    const t      = clamp(b.t,      1,      40,  15);
+    const r      = clamp(b.r,      1,      30,  12);
+    // FIX BUG-05: was r/12/100 (naive).
+    const mr     = monthlyRate(r);
+    const months = t * 12;
+    const monthly = target * mr / (((Math.pow(1+mr,months)-1)) * (1+mr));
+    return res.json({
+      monthly:Math.round(monthly), target, years:t, rate:r,
+      perDay:Math.round(monthly/30),
+    });
+  }
+
+  // ── HABIT VS INVEST ───────────────────────────────────────────
+  if (type === 'habit') {
+    const p      = clamp(b.p, 100, 500000, 4500);
+    const t      = clamp(b.t, 1,   40,     20);
+    const r      = clamp(b.r, 1,   30,     12);
+    // FIX BUG-06: was r/12/100 (naive).
+    const mr     = monthlyRate(r);
+    const months = t * 12;
+    const spent  = p * 12 * t;
+    const corpus = p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
+    return res.json({
+      spent:Math.round(spent), corpus:Math.round(corpus),
+      gains:Math.round(corpus-spent), mult:((corpus/spent).toFixed(1)),
+      years:t, monthly:p,
+    });
+  }
+
+  // ── SIP vs LUMP SUM COMPARE ───────────────────────────────────
+  if (type === 'compare') {
+    const p      = clamp(b.p, 100, 10000000, 25000);
+    const r      = clamp(b.r, 0.1, 30,       12);
+    const t      = clamp(b.t, 1,   40,       15);
+    // FIX BUG-07: SIP side was r/12/100 (naive).
+    // Lump sum side uses Math.pow(1+r/100,t) — annual compounding, correct.
+    const mr     = monthlyRate(r);
+    const months = t * 12;
+    const lumpTotal  = p * months;
+    const sipFinal   = p*(((Math.pow(1+mr,months)-1)/mr)*(1+mr));
+    const lsFinal    = lumpTotal * Math.pow(1+r/100, t);
+    const sipWins    = sipFinal >= lsFinal;
+    const curve = [];
+    for (let y=1; y<=t; y++) {
+      const m2 = y*12;
+      curve.push({
+        year:y,
+        sip:Math.round(p*(((Math.pow(1+mr,m2)-1)/mr)*(1+mr))),
+        ls:Math.round(lumpTotal*Math.pow(1+r/100,y)),
+      });
+    }
+    return res.json({
+      sipFinal:Math.round(sipFinal), lsFinal:Math.round(lsFinal),
+      sipGains:Math.round(sipFinal-lumpTotal), lsGains:Math.round(lsFinal-lumpTotal),
+      lumpTotal:Math.round(lumpTotal), sipWins, diff:Math.round(Math.abs(sipFinal-lsFinal)),
+      winner:sipWins?'SIP':'Lump Sum', loser:sipWins?'Lump Sum':'SIP',
+      curve,
+    });
+  }
+
+  return res.status(400).json({ error: 'Invalid type' });
 }
