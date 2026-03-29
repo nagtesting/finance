@@ -283,7 +283,7 @@ body{height:100%;background:var(--dark);color:var(--cream);font-family:'DM Sans'
 #sidebar{scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.5) var(--dark3);}
 
 /* ---- DESKTOP LAYOUT ---- */
-.app{display:flex;height:100vh;height:100dvh;}
+.app{display:flex;height:100vh;height:100dvh;overflow:hidden;}
 
 #sidebar{
   width:var(--sidebar-w);min-width:var(--sidebar-w);flex-shrink:0;
@@ -298,6 +298,8 @@ body{height:100%;background:var(--dark);color:var(--cream);font-family:'DM Sans'
   display:flex;flex-direction:column;
   height:100vh;height:100dvh;
   overflow:hidden;
+  /* Ensure main never overlaps sidebar */
+  position:relative;z-index:1;
 }
 #main-scroll{
   flex:1;
@@ -345,7 +347,7 @@ body{height:100%;background:var(--dark);color:var(--cream);font-family:'DM Sans'
 #menu-btn span{display:block;width:22px;height:2px;background:var(--cream);border-radius:2px;transition:all .3s;}
 
 /* ===== MODE SELECTOR — 4 options ===== */
-.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:12px;}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:12px;}
 .mode-btn{
   padding:6px 8px;border-radius:8px;font-size:10px;font-weight:700;
   cursor:pointer;border:1px solid rgba(255,255,255,.08);background:transparent;
@@ -355,28 +357,46 @@ body{height:100%;background:var(--dark);color:var(--cream);font-family:'DM Sans'
 .mode-btn:hover{border-color:rgba(255,255,255,.15);color:var(--cream);}
 .mode-btn.active-india{background:rgba(255,107,53,.15);border-color:rgba(255,107,53,.4);color:#FF8C5A;}
 .mode-btn.active-usa{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4);color:#60a5fa;}
-.mode-btn.active-europe{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4);color:#a5b4fc;}
-.mode-btn.active-world{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3);color:#4ade80;}
+
 
 /* Mobile top-bar mode — compact row */
 .mob-mode-row{display:flex;gap:3px;}
 .mob-mode-btn{
-  padding:4px 7px;border-radius:6px;font-size:9px;font-weight:700;
+  padding:3px 5px;border-radius:6px;font-size:14px;font-weight:700;
   cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;
   color:var(--muted);font-family:'DM Sans',sans-serif;
   -webkit-tap-highlight-color:transparent;touch-action:manipulation;
   user-select:none;-webkit-user-select:none;
+  line-height:1;
 }
 .mob-mode-btn.active-india{background:rgba(255,107,53,.2);border-color:rgba(255,107,53,.5);color:#FF8C5A;}
 .mob-mode-btn.active-usa{background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.5);color:#60a5fa;}
-.mob-mode-btn.active-europe{background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.5);color:#a5b4fc;}
-.mob-mode-btn.active-world{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4);color:#4ade80;}
+
 
 .mode-banner{padding:6px 20px;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:all .4s;flex-shrink:0;}
 .mode-banner.india{background:rgba(255,107,53,.08);border-bottom:1px solid rgba(255,107,53,.15);color:#FF8C5A;}
 .mode-banner.usa{background:rgba(59,130,246,.08);border-bottom:1px solid rgba(59,130,246,.15);color:#60a5fa;}
-.mode-banner.europe{background:rgba(99,102,241,.08);border-bottom:1px solid rgba(99,102,241,.15);color:#a5b4fc;}
-.mode-banner.world{background:rgba(34,197,94,.07);border-bottom:1px solid rgba(34,197,94,.15);color:#4ade80;}
+.mode-banner.uk{background:rgba(99,102,241,.08);border-bottom:1px solid rgba(99,102,241,.15);color:#a5b4fc;}
+.mode-banner.germany{background:rgba(220,38,38,.08);border-bottom:1px solid rgba(220,38,38,.15);color:#fca5a5;}
+.mode-banner.france{background:rgba(59,130,246,.08);border-bottom:1px solid rgba(59,130,246,.15);color:#93c5fd;}
+.mode-banner.spain{background:rgba(234,179,8,.08);border-bottom:1px solid rgba(234,179,8,.15);color:#fde047;}
+/* Mode button active states for new countries */
+.mode-btn.active-uk{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4);color:#a5b4fc;}
+.mode-btn.active-germany{background:rgba(220,38,38,.15);border-color:rgba(220,38,38,.4);color:#fca5a5;}
+.mode-btn.active-france{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4);color:#93c5fd;}
+.mode-btn.active-spain{background:rgba(234,179,8,.12);border-color:rgba(234,179,8,.3);color:#fde047;}
+.mob-mode-btn.active-uk{background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.5);color:#a5b4fc;}
+.mob-mode-btn.active-germany{background:rgba(220,38,38,.2);border-color:rgba(220,38,38,.5);color:#fca5a5;}
+.mob-mode-btn.active-france{background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.5);color:#93c5fd;}
+.mob-mode-btn.active-spain{background:rgba(234,179,8,.15);border-color:rgba(234,179,8,.4);color:#fde047;}
+/* Language toggle */
+#lang-toggle-wrap{padding:10px 18px 2px;display:none;}
+.lang-toggle{display:flex;gap:4px;background:rgba(255,255,255,.04);border-radius:8px;padding:3px;}
+.lang-btn{flex:1;padding:5px 8px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;text-align:center;}
+.lang-btn.active{background:rgba(201,168,76,.15);color:var(--gold-light);}
+/* Sidebar layout fix */
+#sidebar{position:relative;z-index:10;flex-shrink:0;}
+.app{display:flex;height:100vh;height:100dvh;overflow:hidden;}
 
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;border-radius:8px;cursor:pointer;transition:all .2s;font-size:13px;font-weight:500;color:var(--muted);border-left:3px solid transparent;margin:1px 10px;}
 .nav-item:hover{background:rgba(201,168,76,.07);color:var(--cream);}
@@ -640,8 +660,10 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <div class="mob-mode-row">
     <button class="mob-mode-btn active-india" id="mob-btn-india" onclick="setMode('india')">🇮🇳</button>
     <button class="mob-mode-btn" id="mob-btn-usa" onclick="setMode('usa')">🇺🇸</button>
-    <button class="mob-mode-btn" id="mob-btn-europe" onclick="setMode('europe')">🇪🇺</button>
-    <button class="mob-mode-btn" id="mob-btn-world" onclick="setMode('world')">🌍</button>
+    <button class="mob-mode-btn" id="mob-btn-uk" onclick="setMode('uk')">🇬🇧</button>
+    <button class="mob-mode-btn" id="mob-btn-germany" onclick="setMode('germany')">🇩🇪</button>
+    <button class="mob-mode-btn" id="mob-btn-france" onclick="setMode('france')">🇫🇷</button>
+    <button class="mob-mode-btn" id="mob-btn-spain" onclick="setMode('spain')">🇪🇸</button>
   </div>
 </div>
 
@@ -653,14 +675,20 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="display" style="font-size:18px;font-weight:900;letter-spacing:-.5px;">
       MONEY<span style="color:var(--gold);">VEDA</span>
     </div>
-    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:2px;">India's Finance Suite</div>
+    <div id="sidebar-subtitle" style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:2px;">Your Finance Suite</div>
     <div style="margin-top:14px;">
-      <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;">Market Region</div>
+      <div id="nav-market-region-label" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;">Market Region</div>
       <div class="mode-grid">
         <button class="mode-btn active-india" id="desk-btn-india" onclick="setMode('india')">🇮🇳 India</button>
         <button class="mode-btn" id="desk-btn-usa" onclick="setMode('usa')">🇺🇸 USA</button>
-        <button class="mode-btn" id="desk-btn-europe" onclick="setMode('europe')">🇪🇺 Europe</button>
-        <button class="mode-btn" id="desk-btn-world" onclick="setMode('world')">🌍 World</button>
+        <button class="mode-btn" id="desk-btn-uk" onclick="setMode('uk')">🇬🇧 UK</button>
+        <button class="mode-btn" id="desk-btn-germany" onclick="setMode('germany')">🇩🇪 Germany</button>
+        <button class="mode-btn" id="desk-btn-france" onclick="setMode('france')">🇫🇷 France</button>
+        <button class="mode-btn" id="desk-btn-spain" onclick="setMode('spain')">🇪🇸 Spain</button>
+      </div>
+      <!-- Language Toggle (appears for India, Germany, France, Spain) -->
+      <div id="lang-toggle-wrap">
+        <div class="lang-toggle" id="lang-toggle-inner"></div>
       </div>
     </div>
   </div>
@@ -668,7 +696,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <div class="gold-line" style="margin:0 18px;"></div>
 
   <div style="padding:12px 0;flex:1;overflow-y:auto;">
-    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 20px 5px;">Calculators</div>
+    <div id="nav-section-calc" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 20px 5px;">Calculators</div>
     <div class="nav-item active" id="btn-sip"       onclick="navTo('sip')">📈 Investment Planner</div>
     <div class="nav-item"        id="btn-emi"        onclick="navTo('emi')">🏦 Loan & Mortgage</div>
     <div class="nav-item"        id="btn-fire"       onclick="navTo('fire')">🔥 FIRE Retirement</div>
@@ -683,14 +711,14 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="nav-item" id="btn-stepsip" onclick="navTo('stepsip')">📊 Step-Up SIP</div>
     <div class="nav-item" id="btn-ssa"     onclick="navTo('ssa')">👧 Sukanya Samriddhi</div>
     </div>
-    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">🔥 Viral Tools</div>
+    <div id="nav-section-viral" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">🔥 Viral Tools</div>
     <div class="nav-item" id="btn-crorepati" onclick="navTo('crorepati')" style="color:var(--gold-light);"><span id="nav-crorepati-label">🏆 Crorepati Calc</span></div>
     <div class="nav-item" id="btn-habit"     onclick="navTo('habit')"     style="color:var(--gold-light);">☕ Habit vs Invest</div>
     <div class="nav-item" id="btn-compare"   onclick="navTo('compare')"   style="color:var(--gold-light);">⚖️ SIP vs Lump Sum</div>
-    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">🏠 Goal Planners</div>
+    <div id="nav-section-goal" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">🏠 Goal Planners</div>
     <div class="nav-item" id="btn-gratuity" onclick="navTo('gratuity')">🤝 Gratuity Calc</div>
     <div class="nav-item" id="btn-homegoal" onclick="navTo('homegoal')">🏠 Buy a Home</div>
-    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">Learn</div>
+    <div id="nav-section-learn" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">Learn</div>
     <div class="nav-item" id="btn-edu"      onclick="navTo('edu')">🎓 Financial Academy</div>
     <div class="nav-item" id="btn-glossary" onclick="navTo('glossary')">📖 Glossary</div>
     <div class="nav-item" id="btn-contact"  onclick="navTo('contact')">✉️ Write to Us</div>
@@ -720,29 +748,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
   </div>
 
 
-  <!-- ====== MARKET PULSE — compact ticker strip ====== -->
-  <div id="news-strip" style="display:flex;">
-    <!-- Label -->
-    <div class="news-label">
-      <span class="live-dot" id="news-live-dot" style="width:5px;height:5px;"></span>
-      📰 Pulse
-    </div>
-    <!-- Scrolling ticker (collapsed default) -->
-    <div id="news-ticker-row">
-      <div id="news-ticker-inner">
-        <!-- Skeleton while loading -->
-        <span class="news-skel" style="width:300px;"></span>
-        <span class="news-pill-sep">◆</span>
-        <span class="news-skel" style="width:260px;margin-left:10px;"></span>
-        <span class="news-pill-sep">◆</span>
-        <span class="news-skel" style="width:320px;margin-left:10px;"></span>
-      </div>
-    </div>
-    <!-- Expand toggle -->
-    <button class="news-toggle" onclick="toggleNewsExpand()" id="news-toggle-btn">⊞ Expand</button>
-    <!-- Expanded grid (hidden by default) -->
-    <div id="news-expanded-grid"></div>
-  </div>
+<!-- News feed removed -->
 
   <div id="main-scroll">
 
@@ -1457,7 +1463,6 @@ const REGIONS = {
     currency:'₹', code:'INR',
     bannerClass:'india',
     bannerText:'🇮🇳 &nbsp;India — INR · NSE/BSE · Indian Tax Laws',
-    // SIP
     sipLabel:'Monthly SIP',
     sipDefault:25000, sipMin:500, sipMax:200000, sipStep:500,
     sipRateHint:'Nifty 50 hist. avg ~13%',
@@ -1467,7 +1472,6 @@ const REGIONS = {
     sipEdu1:'₹5,000/month at 25 = ₹2.76 Cr by 60. At 35, same SIP = only ₹0.85 Cr. Start early.',
     sipEdu3:'Rupee Cost Averaging',
     sipEdu3Desc:'SIPs buy more units when markets fall and fewer when high — automatically lowering average cost.',
-    // EMI
     emiLabel:'Loan Amount',
     emiDefault:5000000, emiMin:100000, emiMax:20000000, emiStep:100000,
     emiRateDefault:8.5, emiRateHint:'SBI Home Loan ~8.25% (2026)',
@@ -1476,12 +1480,10 @@ const REGIONS = {
     emiDtiLabel:'EMI <40% of gross income',
     emiMonthlyLabel:'Monthly EMI',
     emiDesc:'Calculate EMI, total interest and Section 24(b) tax benefits on your home loan.',
-    // FIRE
     fireExpDefault:75000, fireExpMin:10000, fireExpMax:500000, fireExpStep:5000,
     fireSavedDefault:2500000, fireSavedMin:0, fireSavedMax:50000000, fireSavedStep:100000,
     fireInvDefault:50000, fireInvMin:5000, fireInvMax:300000, fireInvStep:5000,
     fireLeanMax:40000, fireFatMin:150000,
-    // ROI
     roiDefault:1000000, roiMin:10000, roiMax:10000000, roiStep:10000,
     roiAssets:[
       {name:'Savings A/C',rate:3.5,color:'#64748b'},{name:'FD (5yr)',rate:7.0,color:'#0ea5e9'},
@@ -1491,7 +1493,6 @@ const REGIONS = {
     ],
     roiBase:100000,
     roiCompareSub:'Historical averages · Base: ₹1 Lakh',
-    // Insurance
     insIncDefault:1800000, insIncMin:300000, insIncMax:10000000, insIncStep:100000,
     insRetDefault:60,
     insLiabDefault:3000000, insLiabMin:0, insLiabMax:20000000, insLiabStep:100000,
@@ -1506,8 +1507,7 @@ const REGIONS = {
       {name:'Star Health (Family Floater)',detail:'Cashless at 14,000+ hospitals. No co-pay. Includes AYUSH treatment.'},
       {name:'Niva Bupa Reassure 2.0',detail:'No room rent cap. Unlimited recharge. Mental health coverage included.'},
     ],
-    // Tax
-    taxDesc:'Compare Old vs New regime (FY2025-26) and maximize deductions.',
+    taxDesc:'Compare Old vs New regime (FY2025-26) and maximize deductions under Indian Income Tax Act.',
   },
   usa: {
     flag:'🇺🇸', name:'USA',
@@ -1560,108 +1560,210 @@ const REGIONS = {
     ],
     taxDesc:'Calculate federal income tax, understand brackets and maximize deductions (FY2026).',
   },
-  europe: {
-    flag:'🇪🇺', name:'Europe',
-    currency:'€', code:'EUR',
-    bannerClass:'europe',
-    bannerText:'🇪🇺 &nbsp;Europe — EUR · Euro Stoxx · EU Tax Overview',
+  uk: {
+    flag:'🇬🇧', name:'United Kingdom',
+    currency:'£', code:'GBP',
+    bannerClass:'uk',
+    bannerText:'🇬🇧 &nbsp;UK — GBP · FTSE 100 · HMRC Tax 2025-26',
     sipLabel:'Monthly Investment',
-    sipDefault:500, sipMin:50, sipMax:10000, sipStep:50,
-    sipRateHint:'Euro Stoxx 50 hist. avg ~8.5%',
-    sipTaxLabel:'Tax-Advantaged Saving (est.)',
-    sipTaxNote:'Varies by country',
-    sipDesc:'Build wealth through diversified Euro-denominated ETFs and tax-advantaged European savings vehicles.',
-    sipEdu1:'€300/month at 25 invested in a pan-European ETF = ~€830K at 60 at 8.5% avg. Use your country\'s ISA equivalent first.',
-    sipEdu3:'Euro Cost Averaging',
-    sipEdu3Desc:'Investing a fixed euro amount regularly means buying more units when markets fall — naturally lowering your average cost.',
+    sipDefault:500, sipMin:25, sipMax:10000, sipStep:25,
+    sipRateHint:'FTSE All-Share hist. avg ~7.5%',
+    sipTaxLabel:'ISA Tax Saving (est.)',
+    sipTaxNote:'£20,000/yr ISA allowance — tax-free',
+    sipDesc:'Build long-term wealth through Stocks & Shares ISAs and diversified UK and global index funds.',
+    sipEdu1:'£300/month at 25 in a Stocks & Shares ISA = ~£620K by 60 at 7.5%. Use your £20K annual ISA allowance first.',
+    sipEdu3:'Pound Cost Averaging',
+    sipEdu3Desc:'Investing a fixed pound amount regularly means buying more units when markets fall — lowering your average cost per unit.',
     emiLabel:'Loan Amount',
-    emiDefault:250000, emiMin:20000, emiMax:1500000, emiStep:10000,
-    emiRateDefault:4.5, emiRateHint:'ECB rate ~3.65% · avg mortgage ~4.5% (2026)',
+    emiDefault:250000, emiMin:25000, emiMax:1500000, emiStep:5000,
+    emiRateDefault:4.5, emiRateHint:'Avg 2yr fixed mortgage ~4.5% (2026)',
     emiTaxLabel:'Mortgage Interest Relief',
-    emiTaxNote:'Varies by EU country',
-    emiDtiLabel:'DTI ratio below 40% recommended',
+    emiTaxNote:'Buy-to-Let: 20% tax credit on interest',
+    emiDtiLabel:'Lenders prefer DTI below 43% (stress-tested)',
     emiMonthlyLabel:'Monthly Payment',
-    emiDesc:'Calculate monthly repayments and total interest on your European mortgage.',
+    emiDesc:'Calculate monthly mortgage repayments and total interest. Includes Stamp Duty and buy-to-let tax credit guidance.',
     fireExpDefault:2500, fireExpMin:500, fireExpMax:15000, fireExpStep:250,
     fireSavedDefault:80000, fireSavedMin:0, fireSavedMax:1000000, fireSavedStep:5000,
     fireInvDefault:1000, fireInvMin:100, fireInvMax:10000, fireInvStep:100,
-    fireLeanMax:1500, fireFatMin:5000,
+    fireLeanMax:1800, fireFatMin:5500,
     roiDefault:50000, roiMin:1000, roiMax:500000, roiStep:1000,
     roiAssets:[
-      {name:'Savings Account',rate:3.0,color:'#64748b'},{name:'German Bunds (10yr)',rate:2.8,color:'#0ea5e9'},
-      {name:'Euro Stoxx 50',rate:8.5,color:'#6366f1'},{name:'Gold (hist.)',rate:8.5,color:'#f59e0b'},
-      {name:'MSCI World ETF',rate:9.5,color:'#C9A84C'},{name:'European REIT',rate:6.5,color:'#4ade80'},
-      {name:'Pan-EU Bond Fund',rate:3.5,color:'#ec4899'},
+      {name:'Cash ISA',rate:4.8,color:'#64748b'},{name:'UK Gilts (10yr)',rate:4.2,color:'#0ea5e9'},
+      {name:'FTSE 100',rate:7.5,color:'#6366f1'},{name:'Gold (hist.)',rate:8.5,color:'#f59e0b'},
+      {name:'MSCI World ETF',rate:9.5,color:'#C9A84C'},{name:'UK REITs',rate:6.5,color:'#4ade80'},
+      {name:'NS&I Premium Bonds',rate:4.4,color:'#ec4899'},
     ],
     roiBase:10000,
-    roiCompareSub:'Historical averages · Base: €10,000',
+    roiCompareSub:'Historical averages · Base: £10,000',
+    insIncDefault:50000, insIncMin:15000, insIncMax:300000, insIncStep:2500,
+    insRetDefault:67,
+    insLiabDefault:150000, insLiabMin:0, insLiabMax:1000000, insLiabStep:10000,
+    insExistMin:0, insExistMax:1500000, insExistStep:25000,
+    insPremiumRate:(age)=>age<35?0.0010:age<45?0.0018:0.0035,
+    insDesc:'Calculate recommended life cover supplementing UK State Pension and workplace pension (auto-enrolment).',
+    insLocalTitle:'Popular UK Insurance & Investment Products',
+    insLocalItems:[
+      {name:'Stocks & Shares ISA',detail:'£20,000/yr tax-free investment allowance. Capital gains and dividends within ISA are tax-free. Available from most platforms.'},
+      {name:'SIPP (Self-Invested Personal Pension)',detail:'Tax relief at your marginal rate on contributions. £60,000/yr annual allowance. Funds accessible from age 57 (2028).'},
+      {name:'Term Life Insurance',detail:'Pure death benefit. £500K cover for 25yr old ~£10-15/mo. Compare via MoneySuperMarket. Write in trust to avoid IHT.'},
+      {name:'Critical Illness Cover',detail:'Pays lump sum on diagnosis of serious illness. Separate from life cover — covers 7 core conditions plus ABI definitions.'},
+      {name:'Income Protection',detail:'Replaces 50-70% of income if unable to work. Deferred period of 4-13 weeks. Essential for self-employed UK workers.'},
+    ],
+    taxDesc:'UK Income Tax and National Insurance Contributions (NICs) for 2025-26. Includes personal allowance and higher-rate thresholds.',
+  },
+  germany: {
+    flag:'🇩🇪', name:'Germany',
+    currency:'€', code:'EUR',
+    bannerClass:'germany',
+    bannerText:'🇩🇪 &nbsp;Deutschland — EUR · DAX · Einkommensteuer 2026',
+    sipLabel:'Monatliche Investition',
+    sipDefault:500, sipMin:25, sipMax:10000, sipStep:25,
+    sipRateHint:'DAX hist. avg ~8.0% / MSCI World ~9.5%',
+    sipTaxLabel:'Steuerersparnis (est.)',
+    sipTaxNote:'Sparerpauschbetrag: €1,000/yr (single)',
+    sipDesc:'Langfristig Vermögen aufbauen durch ETF-Sparpläne und steueroptimierte Altersvorsorge in Deutschland.',
+    sipEdu1:'€300/Monat mit 25 Jahren in einen MSCI World ETF = ~€730K bis 60 bei 9.5%. Nutze zuerst deinen Sparerpauschbetrag.',
+    sipEdu3:'Cost-Average-Effekt',
+    sipEdu3Desc:'Regelmäßige Investitionen kaufen mehr Anteile wenn Kurse fallen — der Durchschnittskosteneffekt senkt deinen mittleren Einstandskurs.',
+    emiLabel:'Darlehensbetrag',
+    emiDefault:300000, emiMin:20000, emiMax:1500000, emiStep:10000,
+    emiRateDefault:3.8, emiRateHint:'Durchschn. Sollzins ~3.8% (2026)',
+    emiTaxLabel:'Steuerlicher Vorteil',
+    emiTaxNote:'Schuldzinsen i.d.R. nicht absetzbar (Eigenheim)',
+    emiDtiLabel:'Schuldenquote unter 40% empfohlen',
+    emiMonthlyLabel:'Monatliche Rate',
+    emiDesc:'Berechne monatliche Raten, Gesamtzinsen und steuerliche Aspekte deiner Immobilienfinanzierung.',
+    fireExpDefault:2500, fireExpMin:500, fireExpMax:12000, fireExpStep:250,
+    fireSavedDefault:80000, fireSavedMin:0, fireSavedMax:1000000, fireSavedStep:5000,
+    fireInvDefault:1000, fireInvMin:100, fireInvMax:10000, fireInvStep:100,
+    fireLeanMax:1800, fireFatMin:5000,
+    roiDefault:50000, roiMin:1000, roiMax:500000, roiStep:1000,
+    roiAssets:[
+      {name:'Tagesgeld',rate:3.5,color:'#64748b'},{name:'Bundesanleihen (10J)',rate:2.8,color:'#0ea5e9'},
+      {name:'DAX Index',rate:8.0,color:'#6366f1'},{name:'Gold (hist.)',rate:8.5,color:'#f59e0b'},
+      {name:'MSCI World ETF',rate:9.5,color:'#C9A84C'},{name:'Deutsche REITs',rate:5.5,color:'#4ade80'},
+      {name:'Riester/Rürup',rate:4.0,color:'#ec4899'},
+    ],
+    roiBase:10000,
+    roiCompareSub:'Historische Durchschnitte · Basis: €10.000',
     insIncDefault:60000, insIncMin:15000, insIncMax:300000, insIncStep:5000,
     insRetDefault:67,
     insLiabDefault:150000, insLiabMin:0, insLiabMax:800000, insLiabStep:10000,
     insExistMin:0, insExistMax:1000000, insExistStep:25000,
     insPremiumRate:(age)=>age<35?0.0010:age<45?0.0018:0.0035,
-    insDesc:'Calculate recommended life cover — supplementing European social security systems.',
-    insLocalTitle:'European Insurance Overview',
+    insDesc:'Empfohlene Lebensversicherungssumme auf Basis des Humankapitalwerts — ergänzend zur gesetzlichen Rentenversicherung.',
+    insLocalTitle:'Beliebte deutsche Versicherungs- & Altersvorsorgeprodukte',
     insLocalItems:[
-      {name:'Germany — Risikolebensversicherung',detail:'Pure term life. Very competitive rates. Separate Berufsunfähigkeitsversicherung (BU) for disability — critical in Germany.'},
-      {name:'France — Assurance Vie',detail:'Tax-advantaged investment wrapper after 8 years. €152,500 inheritance exemption per beneficiary. Very popular.'},
-      {name:'UK — ISA + Term Life',detail:'Stocks & Shares ISA (£20K/yr tax-free). Separate term life outside your estate for clean IHT planning.'},
-      {name:'Netherlands — Lijfrente',detail:'Annuity product with tax deductibility. Jaarruimte calculation determines max annual deduction.'},
-      {name:'Spain — Plan de Pensiones',detail:'Pension plan with deductible contributions up to €1,500/yr (individual). Employer contributions up to €8,500.'},
+      {name:'Risikolebensversicherung',detail:'Reiner Todesfallschutz. Sehr günstige Prämien. Für 30-Jährige: ~€200K Deckung ab ~€8/Monat. Unbedingt separat abschließen.'},
+      {name:'Berufsunfähigkeitsversicherung (BU)',detail:'Essentiell in Deutschland — zahlt bei dauerhafter Berufsunfähigkeit. BU abschließen vor dem 35. Lebensjahr für günstige Beiträge.'},
+      {name:'Riester-Rente',detail:'Staatlich gefördert: bis €175 Zulagen/Jahr + Kinderzulagen. Sinnvoll bei mittlerem Einkommen und Kindern. Beitragsgarantie ab 2025.'},
+      {name:'Rürup-Rente (Basisrente)',detail:'Für Selbstständige ideal. Beiträge bis €27,566 (2026) zu 100% absetzbar. Keine Kündigung möglich — lebenslange Rente.'},
+      {name:'ETF-Sparplan (Depot)',detail:'Günstigste und flexibelste Altersvorsorge. Sparerpauschbetrag €1,000 (single) / €2,000 (Verheiratete) steuerfrei pro Jahr.'},
     ],
-    taxDesc:'Overview of major European tax systems — income tax, VAT, and investment taxation.',
+    taxDesc:'Einkommensteuer 2026 mit progressivem Stufentarif, Solidaritätszuschlag und Kirchensteuer. Grundfreibetrag: €11,784.',
   },
-  world: {
-    flag:'🌍', name:'Global',
-    currency:'$', code:'USD',
-    bannerClass:'world',
-    bannerText:'🌍 &nbsp;Global — Multi-Currency · World Markets',
-    sipLabel:'Monthly Investment',
-    sipDefault:1000, sipMin:100, sipMax:10000, sipStep:100,
-    sipRateHint:'MSCI World hist. avg ~10%',
-    sipTaxLabel:'Tax-Deferred Estimate',
-    sipTaxNote:'Varies by jurisdiction',
-    sipDesc:'Build a globally diversified portfolio across world-class markets and asset classes.',
-    sipEdu1:'Consistent global investing over 30+ years in low-cost MSCI World ETFs has historically outperformed most active strategies.',
-    sipEdu3:'Global Diversification',
-    sipEdu3Desc:'Spreading investments across geographies reduces single-country risk. Currency diversification adds another layer of protection.',
-    emiLabel:'Loan Amount',
-    emiDefault:300000, emiMin:10000, emiMax:2000000, emiStep:10000,
-    emiRateDefault:6.0, emiRateHint:'Global avg mortgage ~5–7% (2026)',
-    emiTaxLabel:'Interest Deduction (est.)',
-    emiTaxNote:'Varies by jurisdiction',
-    emiDtiLabel:'DTI ratio below 43% recommended',
-    emiMonthlyLabel:'Monthly Payment',
-    emiDesc:'Calculate loan repayments for any currency and region.',
-    fireExpDefault:3000, fireExpMin:500, fireExpMax:20000, fireExpStep:250,
-    fireSavedDefault:100000, fireSavedMin:0, fireSavedMax:2000000, fireSavedStep:10000,
-    fireInvDefault:1500, fireInvMin:100, fireInvMax:15000, fireInvStep:100,
-    fireLeanMax:2000, fireFatMin:7000,
+  france: {
+    flag:'🇫🇷', name:'France',
+    currency:'€', code:'EUR',
+    bannerClass:'france',
+    bannerText:'🇫🇷 &nbsp;France — EUR · CAC 40 · Impôt sur le Revenu 2026',
+    sipLabel:'Investissement mensuel',
+    sipDefault:500, sipMin:25, sipMax:10000, sipStep:25,
+    sipRateHint:'CAC 40 moy. hist. ~7.5% / MSCI World ~9.5%',
+    sipTaxLabel:'Économie fiscale (est.)',
+    sipTaxNote:'Abattement PEA: gains exonérés après 5 ans',
+    sipDesc:"Construisez votre patrimoine à long terme via le PEA et l'assurance-vie — les enveloppes fiscales phares de l'épargne française.",
+    sipEdu1:"€300/mois à 25 ans dans un PEA MSCI World = ~€700K à 60 ans à 9.5%. Utilisez d'abord votre plafond PEA de €150,000.",
+    sipEdu3:'Effet de lissage des cours',
+    sipEdu3Desc:"Investir un montant fixe régulièrement achète plus de parts quand les marchés baissent — réduisant automatiquement votre coût moyen d'achat.",
+    emiLabel:'Montant du prêt',
+    emiDefault:250000, emiMin:20000, emiMax:1500000, emiStep:10000,
+    emiRateDefault:3.6, emiRateHint:'Taux moyen immobilier ~3.6% (2026)',
+    emiTaxLabel:'Avantage fiscal',
+    emiTaxNote:'PTZ (Prêt à Taux Zéro) pour primo-accédants',
+    emiDtiLabel:'Taux d'endettement < 35% (règle HCSF)',
+    emiMonthlyLabel:'Mensualité',
+    emiDesc:"Calculez vos mensualités, intérêts totaux et avantages fiscaux de votre crédit immobilier. Inclut le PTZ.",
+    fireExpDefault:2500, fireExpMin:500, fireExpMax:12000, fireExpStep:250,
+    fireSavedDefault:80000, fireSavedMin:0, fireSavedMax:1000000, fireSavedStep:5000,
+    fireInvDefault:1000, fireInvMin:100, fireInvMax:10000, fireInvStep:100,
+    fireLeanMax:1800, fireFatMin:5000,
     roiDefault:50000, roiMin:1000, roiMax:500000, roiStep:1000,
     roiAssets:[
-      {name:'Cash/T-Bills',rate:4.0,color:'#64748b'},{name:'Global Bonds',rate:4.5,color:'#0ea5e9'},
-      {name:'MSCI World',rate:10.0,color:'#6366f1'},{name:'Gold',rate:8.5,color:'#f59e0b'},
-      {name:'MSCI EM',rate:9.0,color:'#C9A84C'},{name:'Global REITs',rate:7.5,color:'#4ade80'},
-      {name:'Commodities',rate:5.5,color:'#ec4899'},
+      {name:'Livret A',rate:3.0,color:'#64748b'},{name:'OAT France (10ans)',rate:3.2,color:'#0ea5e9'},
+      {name:'CAC 40',rate:7.5,color:'#6366f1'},{name:'Or (hist.)',rate:8.5,color:'#f59e0b'},
+      {name:'MSCI World ETF',rate:9.5,color:'#C9A84C'},{name:'SCPI Immobilier',rate:5.5,color:'#4ade80'},
+      {name:'Fonds Euros (Assurance-Vie)',rate:2.5,color:'#ec4899'},
     ],
     roiBase:10000,
-    roiCompareSub:'Historical averages · Base: $10,000',
-    insIncDefault:70000, insIncMin:15000, insIncMax:500000, insIncStep:5000,
-    insRetDefault:65,
-    insLiabDefault:150000, insLiabMin:0, insLiabMax:1000000, insLiabStep:10000,
-    insExistMin:0, insExistMax:2000000, insExistStep:25000,
-    insPremiumRate:(age)=>age<35?0.0012:age<45?0.002:0.004,
-    insDesc:'Calculate your recommended life insurance cover based on global best practices.',
-    insLocalTitle:'Global Insurance Principles',
+    roiCompareSub:'Moyennes historiques · Base : €10 000',
+    insIncDefault:50000, insIncMin:15000, insIncMax:300000, insIncStep:5000,
+    insRetDefault:64,
+    insLiabDefault:150000, insLiabMin:0, insLiabMax:800000, insLiabStep:10000,
+    insExistMin:0, insExistMax:1000000, insExistStep:25000,
+    insPremiumRate:(age)=>age<35?0.0010:age<45?0.0018:0.0035,
+    insDesc:"Calculez la couverture vie recommandée — en complément des régimes de retraite obligatoires et de l'assurance-vie.",
+    insLocalTitle:"Produits d'épargne et d'assurance populaires en France",
     insLocalItems:[
-      {name:'Human Life Value (HLV)',detail:'Cover = Annual income × years to retirement + liabilities. Widely used in India, UK, and SE Asia.'},
-      {name:'DIME Method',detail:'Debt + Income (10yr) + Mortgage + Education costs. Popular in USA and Canada for comprehensive coverage.'},
-      {name:'10× Income Rule',detail:'Simple rule of thumb: cover = 10× annual gross income. Good starting point for most markets.'},
-      {name:'Income Replacement Ratio',detail:'Most planners target 70–80% income replacement in retirement. Ensure your corpus supports this after inflation.'},
-      {name:'Critical Illness + Disability',detail:'Often overlooked — disability is 3× more likely than death during working years. Add a rider or standalone policy.'},
+      {name:'Assurance-Vie',detail:"Enveloppe fiscale très avantageuse après 8 ans (abattement €152,500/bénéficiaire). Fonds euros garantis + unités de compte. Incontournable."},
+      {name:'PEA (Plan Épargne Actions)',detail:"Plafond €150,000. Exonération d'impôt sur les plus-values après 5 ans (hors prélèvements sociaux 17.2%). Idéal pour ETF."},
+      {name:'PER (Plan Épargne Retraite)',detail:"Déduction des versements du revenu imposable. Fiscal optimisé pour hauts revenus (tranche 30-45%). Sortie en rente ou capital."},
+      {name:'Livret A & LDDS',detail:"Taux 3.0%. Plafonds €22,950 (Livret A) + €12,000 (LDDS). Totalement exonérés d'impôts. Pour l'épargne de précaution."},
+      {name:'SCPI (Pierre-Papier)',detail:"Investissement immobilier collectif. Rendement ~5-6%/an. Accessible dès €1,000. Revenus imposables comme fonciers."},
     ],
-    taxDesc:'Tax systems around the world — compare rates and structures across major economies.',
-  }
+    taxDesc:"Impôt sur le revenu 2026 avec barème progressif (0% à 45%), CSG-CRDS et prélèvements sociaux. Quotient familial inclus.",
+  },
+  spain: {
+    flag:'🇪🇸', name:'Spain',
+    currency:'€', code:'EUR',
+    bannerClass:'spain',
+    bannerText:'🇪🇸 &nbsp;España — EUR · IBEX 35 · IRPF 2026',
+    sipLabel:'Inversión mensual',
+    sipDefault:500, sipMin:25, sipMax:10000, sipStep:25,
+    sipRateHint:'IBEX 35 prom. hist. ~7.0% / MSCI World ~9.5%',
+    sipTaxLabel:'Ahorro fiscal (est.)',
+    sipTaxNote:'Plan de Pensiones: hasta €1,500/año deducible',
+    sipDesc:'Construya su patrimonio a largo plazo mediante fondos indexados y los Planes de Pensiones españoles.',
+    sipEdu1:'€300/mes a los 25 años en un fondo MSCI World = ~€680K a los 60 al 9.5%. Aprovecha primero la deducción del Plan de Pensiones.',
+    sipEdu3:'Efecto del coste medio',
+    sipEdu3Desc:'Invertir una cantidad fija mensual compra más participaciones cuando los mercados caen — reduciendo automáticamente tu coste medio.',
+    emiLabel:'Importe del préstamo',
+    emiDefault:200000, emiMin:20000, emiMax:1200000, emiStep:10000,
+    emiRateDefault:3.5, emiRateHint:'Euríbor + spread ~3.5% hipoteca variable (2026)',
+    emiTaxLabel:'Beneficio fiscal',
+    emiTaxNote:'Deducción hipoteca pre-2013: hasta 15% sobre €9,040',
+    emiDtiLabel:'Cuota < 35% ingresos netos (criterio Banco de España)',
+    emiMonthlyLabel:'Cuota mensual',
+    emiDesc:'Calcula tu cuota mensual, intereses totales y ventajas fiscales de tu hipoteca. Incluye orientación sobre hipoteca variable vs fija.',
+    fireExpDefault:2000, fireExpMin:500, fireExpMax:10000, fireExpStep:250,
+    fireSavedDefault:60000, fireSavedMin:0, fireSavedMax:800000, fireSavedStep:5000,
+    fireInvDefault:800, fireInvMin:100, fireInvMax:8000, fireInvStep:100,
+    fireLeanMax:1500, fireFatMin:4500,
+    roiDefault:50000, roiMin:1000, roiMax:500000, roiStep:1000,
+    roiAssets:[
+      {name:'Cuenta de Ahorro',rate:3.0,color:'#64748b'},{name:'Bono España (10 años)',rate:3.4,color:'#0ea5e9'},
+      {name:'IBEX 35',rate:7.0,color:'#6366f1'},{name:'Oro (hist.)',rate:8.5,color:'#f59e0b'},
+      {name:'MSCI World ETF',rate:9.5,color:'#C9A84C'},{name:'Fondos Inmobiliarios',rate:5.0,color:'#4ade80'},
+      {name:'Renta Fija (Fondos)',rate:3.0,color:'#ec4899'},
+    ],
+    roiBase:10000,
+    roiCompareSub:'Medias históricas · Base: €10.000',
+    insIncDefault:40000, insIncMin:12000, insIncMax:250000, insIncStep:5000,
+    insRetDefault:65,
+    insLiabDefault:120000, insLiabMin:0, insLiabMax:600000, insLiabStep:10000,
+    insExistMin:0, insExistMax:800000, insExistStep:25000,
+    insPremiumRate:(age)=>age<35?0.0010:age<45?0.0018:0.0035,
+    insDesc:'Calcula la cobertura de vida recomendada — complementando la Seguridad Social y la pensión de jubilación española.',
+    insLocalTitle:'Productos de ahorro y seguros populares en España',
+    insLocalItems:[
+      {name:'Plan de Pensiones Individual',detail:'Reducción de la base imponible del IRPF hasta €1,500/año (individual). Rescate en jubilación, invalidez o desempleo de larga duración.'},
+      {name:'Fondos de Inversión (UCITS)',detail:'Traspaso entre fondos sin tributar — ventaja fiscal única en España. TER bajo con fondos indexados. Tributación al rescate (19-28% IRPF).'},
+      {name:'Seguro de Vida Riesgo',detail:'Cobertura muerte/invalidez. €300K para persona de 30 años ~€10-15/mes. Primas deducibles si están vinculadas a hipoteca.'},
+      {name:'PIAS (Plan Individual de Ahorro Sistemático)',detail:'Ahorro con exención de plusvalías si se percibe como renta vitalicia. Aportación máxima €8,000/año. Sin garantía de capital.'},
+      {name:'Cuenta de Ahorro (Alta Remuneración)',detail:'Cuentas remuneradas al 3%+. Fácilmente liquidables. Para fondo de emergencia de 3-6 meses de gastos. Sin riesgo de mercado.'},
+    ],
+    taxDesc:'IRPF 2026 con escala progresiva (19% a 47%), deducción por rendimientos del trabajo y mínimo personal y familiar.',
+  },
 };
 
 // ================================================================
@@ -1805,23 +1907,156 @@ function navTo(id){
 // ================================================================
 // SET MODE
 // ================================================================
+// Language strings for multi-language countries
+var LANG_STRINGS = {
+  india: {
+    en: {
+      sipLabel:'Monthly Investment', fireLabel:'FIRE Retirement', loanLabel:'Loan & Mortgage',
+      taxLabel:'Tax Optimizer', roiLabel:'ROI & Compound', insLabel:'Insurance Planner',
+      calcSection:'Calculators', indiaSection:'🇮🇳 India Schemes', viralSection:'🔥 Viral Tools',
+      goalSection:'🏠 Goal Planners', learnSection:'Learn',
+      marketRegion:'Market Region'
+    },
+    hi: {
+      sipLabel:'मासिक निवेश', fireLabel:'FIRE सेवानिवृत्ति', loanLabel:'ऋण और मॉर्गेज',
+      taxLabel:'कर अनुकूलक', roiLabel:'ROI और चक्रवृद्धि', insLabel:'बीमा योजनाकार',
+      calcSection:'कैलकुलेटर', indiaSection:'🇮🇳 भारतीय योजनाएं', viralSection:'🔥 वायरल टूल्स',
+      goalSection:'🏠 लक्ष्य योजनाकार', learnSection:'सीखें',
+      marketRegion:'बाज़ार क्षेत्र'
+    }
+  },
+  germany: {
+    de: {
+      sipLabel:'Monatliche Investition', fireLabel:'Frühzeitige Rente', loanLabel:'Kredit & Darlehen',
+      taxLabel:'Steueroptimierung', roiLabel:'Rendite & Zinseszins', insLabel:'Versicherungsplaner',
+      calcSection:'Rechner', viralSection:'🔥 Beliebte Tools',
+      goalSection:'🏠 Zielplaner', learnSection:'Lernen',
+      marketRegion:'Marktregion'
+    },
+    en: {
+      sipLabel:'Monthly Investment', fireLabel:'FIRE Retirement', loanLabel:'Loan & Mortgage',
+      taxLabel:'Tax Optimizer', roiLabel:'ROI & Compound', insLabel:'Insurance Planner',
+      calcSection:'Calculators', viralSection:'🔥 Viral Tools',
+      goalSection:'🏠 Goal Planners', learnSection:'Learn',
+      marketRegion:'Market Region'
+    }
+  },
+  france: {
+    fr: {
+      sipLabel:'Investissement mensuel', fireLabel:'Retraite anticipée', loanLabel:'Crédit immobilier',
+      taxLabel:'Optimisation fiscale', roiLabel:'Rendement & Intérêts', insLabel:'Planificateur assurance',
+      calcSection:'Calculateurs', viralSection:'🔥 Outils populaires',
+      goalSection:'🏠 Objectifs', learnSection:'Apprendre',
+      marketRegion:'Région de marché'
+    },
+    en: {
+      sipLabel:'Monthly Investment', fireLabel:'FIRE Retirement', loanLabel:'Loan & Mortgage',
+      taxLabel:'Tax Optimizer', roiLabel:'ROI & Compound', insLabel:'Insurance Planner',
+      calcSection:'Calculators', viralSection:'🔥 Viral Tools',
+      goalSection:'🏠 Goal Planners', learnSection:'Learn',
+      marketRegion:'Market Region'
+    }
+  },
+  spain: {
+    es: {
+      sipLabel:'Inversión mensual', fireLabel:'Jubilación anticipada', loanLabel:'Hipoteca y Créditos',
+      taxLabel:'Optimización fiscal', roiLabel:'Rentabilidad e Interés', insLabel:'Planificador de seguros',
+      calcSection:'Calculadoras', viralSection:'🔥 Herramientas populares',
+      goalSection:'🏠 Objetivos', learnSection:'Aprender',
+      marketRegion:'Región de mercado'
+    },
+    en: {
+      sipLabel:'Monthly Investment', fireLabel:'FIRE Retirement', loanLabel:'Loan & Mortgage',
+      taxLabel:'Tax Optimizer', roiLabel:'ROI & Compound', insLabel:'Insurance Planner',
+      calcSection:'Calculators', viralSection:'🔥 Viral Tools',
+      goalSection:'🏠 Goal Planners', learnSection:'Learn',
+      marketRegion:'Market Region'
+    }
+  }
+};
+
+var LANG_CONFIG = {
+  india:   { langs: [{code:'en',label:'EN'},{code:'hi',label:'हि'}], default:'en' },
+  germany: { langs: [{code:'de',label:'DE'},{code:'en',label:'EN'}], default:'de' },
+  france:  { langs: [{code:'fr',label:'FR'},{code:'en',label:'EN'}], default:'fr' },
+  spain:   { langs: [{code:'es',label:'ES'},{code:'en',label:'EN'}], default:'es' },
+};
+
+var currentLang = 'en';
+
+function renderLangToggle(mode) {
+  var wrap = document.getElementById('lang-toggle-wrap');
+  var inner = document.getElementById('lang-toggle-inner');
+  if (!wrap || !inner) return;
+  var cfg = LANG_CONFIG[mode];
+  if (!cfg) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  inner.innerHTML = cfg.langs.map(function(l) {
+    var isActive = l.code === currentLang;
+    return '<button class="lang-btn' + (isActive ? ' active' : '') + '" onclick="setLang(\'' + l.code + '\')">' + l.label + '</button>';
+  }).join('');
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  applyLanguage(currentMode, lang);
+  renderLangToggle(currentMode);
+}
+
+function applyLanguage(mode, lang) {
+  var strings = (LANG_STRINGS[mode] || {})[lang] || (LANG_STRINGS[mode] || {}).en || {};
+  // Nav items
+  var navSIP = document.getElementById('btn-sip');
+  if (navSIP) navSIP.innerHTML = '📈 ' + (strings.sipLabel || 'Investment Planner');
+  var navEMI = document.getElementById('btn-emi');
+  if (navEMI) navEMI.innerHTML = '🏦 ' + (strings.loanLabel || 'Loan & Mortgage');
+  var navFIRE = document.getElementById('btn-fire');
+  if (navFIRE) navFIRE.innerHTML = '🔥 ' + (strings.fireLabel || 'FIRE Retirement');
+  var navROI = document.getElementById('btn-roi');
+  if (navROI) navROI.innerHTML = '💹 ' + (strings.roiLabel || 'ROI & Compound');
+  var navIns = document.getElementById('btn-insurance');
+  if (navIns) navIns.innerHTML = '🛡️ ' + (strings.insLabel || 'Insurance Planner');
+  var navTax = document.getElementById('btn-tax');
+  if (navTax) navTax.innerHTML = '📋 ' + (strings.taxLabel || 'Tax Optimizer');
+  // Section headers
+  var calcHead = document.getElementById('nav-section-calc');
+  if (calcHead) calcHead.textContent = strings.calcSection || 'Calculators';
+  var viralHead = document.getElementById('nav-section-viral');
+  if (viralHead) viralHead.textContent = strings.viralSection || '🔥 Viral Tools';
+  var goalHead = document.getElementById('nav-section-goal');
+  if (goalHead) goalHead.textContent = strings.goalSection || '🏠 Goal Planners';
+  var learnHead = document.getElementById('nav-section-learn');
+  if (learnHead) learnHead.textContent = strings.learnSection || 'Learn';
+  var mrHead = document.getElementById('nav-market-region-label');
+  if (mrHead) mrHead.textContent = strings.marketRegion || 'Market Region';
+}
+
 function setMode(mode){
   currentMode=mode;
-  // Update all mode buttons
-  ['india','usa','europe','world'].forEach(m=>{
-    ['desk-btn-','mob-btn-'].forEach(pfx=>{
-      const el=document.getElementById(pfx+m);
+  // Set default language for this mode
+  var langCfg = LANG_CONFIG[mode];
+  currentLang = langCfg ? langCfg.default : 'en';
+
+  // Update all mode buttons (6 countries now)
+  ['india','usa','uk','germany','france','spain'].forEach(function(m){
+    ['desk-btn-','mob-btn-'].forEach(function(pfx){
+      var el=document.getElementById(pfx+m);
       if(!el)return;
       el.className=(pfx==='desk-btn-'?'mode-btn':'mob-mode-btn')+(m===mode?' active-'+m:'');
     });
   });
-  const b=document.getElementById('mode-banner');
+  var b=document.getElementById('mode-banner');
   b.className='mode-banner '+R().bannerClass;
   b.innerHTML=R().bannerText;
   loadTickerData(mode);
   startSidebarRefresh();
   updateSliderRanges();
   updateStaticLabels();
+
+  // Language toggle: show for india/germany/france/spain, hide for usa/uk
+  renderLangToggle(mode);
+  // Apply language labels
+  applyLanguage(mode, currentLang);
 
   // India-only: show/hide nav section and bottom nav buttons
   var indiaOnly=['ppf','epf','nps','stepsip','ssa'];
@@ -1834,12 +2069,18 @@ function setMode(mode){
   });
 
   // Update Crorepati/Millionaire label
-  var WEALTH_LABELS={india:'🏆 Crorepati',usa:'💰 Millionaire',europe:'🏰 Millionaire',world:'🌍 Millionaire'};
+  var WEALTH_LABELS={
+    india:'🏆 Crorepati', usa:'💰 Millionaire',
+    uk:'💰 Millionaire', germany:'💰 Millionär',
+    france:'💰 Millionnaire', spain:'💰 Millonario'
+  };
   var WEALTH_TARGETS={
     india:{targets:[10000000,50000000,100000000,250000000],labels:['₹1Cr','₹5Cr','₹10Cr','₹25Cr'],def:10000000,max:500000000,step:10000000},
     usa:  {targets:[1000000,5000000,10000000,25000000],  labels:['$1M','$5M','$10M','$25M'],    def:1000000, max:50000000, step:1000000},
-    europe:{targets:[1000000,5000000,10000000,25000000], labels:['€1M','€5M','€10M','€25M'],    def:1000000, max:50000000, step:1000000},
-    world:{targets:[1000000,5000000,10000000,25000000],  labels:['$1M','$5M','$10M','$25M'],    def:1000000, max:50000000, step:1000000}
+    uk:   {targets:[1000000,5000000,10000000,25000000],  labels:['£1M','£5M','£10M','£25M'],    def:1000000, max:50000000, step:1000000},
+    germany:{targets:[1000000,5000000,10000000,25000000],labels:['€1M','€5M','€10M','€25M'],    def:1000000, max:50000000, step:1000000},
+    france:{targets:[1000000,5000000,10000000,25000000], labels:['€1M','€5M','€10M','€25M'],    def:1000000, max:50000000, step:1000000},
+    spain:{targets:[1000000,5000000,10000000,25000000],  labels:['€1M','€5M','€10M','€25M'],    def:1000000, max:50000000, step:1000000}
   };
   var wl=WEALTH_LABELS[mode]||WEALTH_LABELS.india;
   var wt=WEALTH_TARGETS[mode]||WEALTH_TARGETS.india;
@@ -1850,11 +2091,9 @@ function setMode(mode){
   var crTitleEl=document.getElementById('cr_title');
   if(crTitleEl) crTitleEl.textContent=wl+' Calculator';
   var crDescEl=document.getElementById('cr_desc');
-  if(crDescEl) crDescEl.textContent='How much to invest monthly to become a '+wl.replace(/[^a-zA-Z ]/g,'').trim()+'?';
-  // Update slider range
+  if(crDescEl) crDescEl.textContent='How much to invest monthly to reach your goal?';
   var crSlider=document.getElementById('cr_target');
   if(crSlider){crSlider.min=wt.def/10;crSlider.max=wt.max;crSlider.step=wt.step;crSlider.value=wt.def;}
-  // Update quick-target buttons
   var qtWrap=document.getElementById('cr_quick_targets');
   if(qtWrap) qtWrap.innerHTML=wt.labels.map(function(lbl,i){
     return '<button class="btn-outline" onclick="setCrorepatiTarget('+wt.targets[i]+')" style="font-size:11px;padding:6px 14px;">'+lbl+'</button>';
@@ -1864,27 +2103,16 @@ function setMode(mode){
   var DISCLAIMERS={
     india:'⚠️ Educational only. Not SEBI-registered. Consult a SEBI-registered investment adviser.',
     usa:'⚠️ Educational only. Not SEC/FINRA registered. Consult a licensed CFP/RIA.',
-    europe:'⚠️ Educational only. Not ESMA regulated. Consult a MiFID II-authorised adviser.',
-    world:'⚠️ Educational only. Not regulated by any authority. Consult a licensed professional in your country.'
+    uk:'⚠️ Educational only. Not FCA-authorised. Consult a qualified financial adviser regulated by the FCA.',
+    germany:'⚠️ Nur zu Bildungszwecken. Nicht BaFin-reguliert. Konsultieren Sie einen zugelassenen Finanzberater.',
+    france:"⚠️ À titre éducatif uniquement. Non agréé AMF. Consultez un conseiller financier agréé CIF.",
+    spain:'⚠️ Solo con fines educativos. No regulado por la CNMV. Consulte con un asesor financiero autorizado.'
   };
   var disc=DISCLAIMERS[mode]||DISCLAIMERS.india;
   var discEl=document.getElementById('contact_disclaimer');
   if(discEl) discEl.textContent=disc;
   var sideDisc=document.getElementById('sidebar-disclaimer');
   if(sideDisc) sideDisc.textContent=disc;
-
-  // News: clear cache for new region and force fresh fetch
-  // Keeps other regions' caches intact for fast switching back
-  // FIX-3: show fallback for new region instantly, then fetch live
-  if (typeof NEWS_CLIENT_FALLBACK !== 'undefined' && typeof renderNews === 'function') {
-    var fb = NEWS_CLIENT_FALLBACK[mode] || NEWS_CLIENT_FALLBACK.india;
-    renderNews(fb);
-  }
-  if (typeof fetchNews === 'function') {
-    delete _newsCache[mode];
-    delete _newsCacheTime[mode];
-    fetchNews(true);
-  }
 
   var at=document.querySelector('.tab.active');
   if(at && !isIndia && indiaOnly.indexOf(at.id)>-1){
@@ -2132,8 +2360,12 @@ function calcInsurance(){
 function renderTax(){
   const c=document.getElementById('tax-content');
   if(currentMode==='india'){c.innerHTML=buildIndiaTax();wireIndiaTax();}
-  else if(currentMode==='usa') c.innerHTML=buildUSATax();
-  else if(currentMode==='europe') c.innerHTML=buildEuropeTax();
+  else if(currentMode==='usa') { c.innerHTML=buildUSATax(); }
+  else if(currentMode==='uk') { c.innerHTML=buildUKTax(); setTimeout(calcUKTax, 50); }
+  else if(currentMode==='germany') { c.innerHTML=buildGermanyTax(); setTimeout(calcGermanyTax, 50); }
+  else if(currentMode==='france') { c.innerHTML=buildFranceTax(); setTimeout(calcFranceTax, 50); }
+  else if(currentMode==='spain') { c.innerHTML=buildSpainTax(); setTimeout(calcSpainTax, 50); }
+  else c.innerHTML=buildUSATax();
   else c.innerHTML=buildWorldTax();
 }
 
@@ -2186,6 +2418,452 @@ function _calcIndiaTax(){
 
 function buildUSATax(){return`<div class="grid-2" style="margin-bottom:20px;"><div class="card"><div style="font-size:22px;margin-bottom:10px;">📊</div><h4 style="font-weight:700;margin-bottom:10px;font-size:14px;">Federal Tax Brackets 2026</h4><table><thead><tr><th>Rate</th><th>Single</th><th>Married Filing Jointly</th></tr></thead><tbody><tr><td><span class="badge-gold">10%</span></td><td>$0 – $11,925</td><td>$0 – $23,850</td></tr><tr><td><span class="badge-gold">12%</span></td><td>$11,925 – $48,475</td><td>$23,850 – $96,950</td></tr><tr><td><span class="badge-gold">22%</span></td><td>$48,475 – $103,350</td><td>$96,950 – $206,700</td></tr><tr><td><span class="badge-gold">24%</span></td><td>$103,350 – $197,300</td><td>$206,700 – $394,600</td></tr><tr><td><span class="badge-gold">32%</span></td><td>$197,300 – $250,525</td><td>$394,600 – $501,050</td></tr><tr><td><span class="badge-gold">35%</span></td><td>$250,525 – $626,350</td><td>$501,050 – $751,600</td></tr><tr><td><span class="badge-red">37%</span></td><td>$626,350+</td><td>$751,600+</td></tr></tbody></table></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🏦</div><h4 style="font-weight:700;margin-bottom:10px;font-size:14px;">Key Limits (2026)</h4><div style="display:flex;flex-direction:column;gap:10px;"><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">Standard Deduction (Single)</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$15,000</span></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">401(k) Contribution Limit</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$23,500</span></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);"><span style="font-size:12px;color:var(--muted);">IRA Contribution Limit</span><span class="mono" style="font-size:12px;color:var(--gold-light);">$7,000</span></div><div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="font-size:12px;color:var(--muted);">LTCG Rate</span><span class="mono" style="font-size:12px;color:var(--gold-light);">0% / 15% / 20%</span></div></div></div></div>`;}
 function buildEuropeTax(){return`<div class="grid-2" style="margin-bottom:20px;"><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇩🇪</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Germany</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 0%–45%. Basic allowance: €11,784. Capital gains: 25% flat. Sparerpauschbetrag: €1,000 allowance.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇫🇷</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">France</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">11%–45% + social charges 17.2%. PFU: 30% flat on investments. PEA: tax-free EU gains after 5 years.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇬🇧</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">United Kingdom</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Personal allowance £12,570. Basic 20%, Higher 40%, Additional 45%. ISA: £20,000/yr tax-free.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇳🇱</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Netherlands</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Box 1 up to 49.5%. Box 3 notional yield tax under reform. Mortgage interest deductible at 36.97%.</p></div></div>`;}
+
+// ================================================================
+// UK TAX CALCULATOR
+// ================================================================
+function buildUKTax() {
+  return `
+  <div class="section-eyebrow">UK TAXATION · 2025-26</div>
+  <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">UK Income Tax & NI Calculator</h1>
+  <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Calculate your Income Tax and National Insurance Contributions (NICs) for 2025-26. Includes personal allowance and higher-rate thresholds.</p>
+  <div class="card" style="margin-bottom:20px;">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">YOUR INCOME</div>
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <label style="font-size:12px;color:var(--muted);">Annual Gross Income (£)</label>
+        <span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="uk_income_val">£50,000</span>
+      </div>
+      <input type="range" id="uk_income" min="12570" max="200000" step="1000" value="50000" oninput="calcUKTax()">
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="font-size:12px;color:var(--muted);">Pension Contributions (£/yr)</label>
+      <input type="number" id="uk_pension" class="num-input" style="margin-top:8px;" value="3000" oninput="calcUKTax()">
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px;">
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;">
+        <input type="checkbox" id="uk_scottish" onchange="calcUKTax()" style="accent-color:var(--gold);"> Scottish Taxpayer
+      </label>
+    </div>
+  </div>
+  <div class="grid-3" style="margin-bottom:20px;">
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Income Tax</div><div class="big-number" id="uk_tax_amount">—</div></div>
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">NI Contributions</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="uk_ni_amount">—</div></div>
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Net Take-Home</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="uk_net_amount">—</div></div>
+  </div>
+  <div class="card" style="margin-bottom:20px;">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">TAX BREAKDOWN</div>
+    <div id="uk_tax_breakdown" style="font-size:12px;line-height:2;"></div>
+  </div>
+  <div class="card">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">KEY UK TAX RULES 2025-26</div>
+    <div style="font-size:12px;line-height:2;color:var(--muted);">
+      🏦 Personal Allowance: <strong style="color:var(--cream)">£12,570</strong> (tapers at £100K income)<br>
+      📊 Basic Rate (20%): <strong style="color:var(--cream)">£12,571 – £50,270</strong><br>
+      📊 Higher Rate (40%): <strong style="color:var(--cream)">£50,271 – £125,140</strong><br>
+      📊 Additional Rate (45%): <strong style="color:var(--cream)">Over £125,140</strong><br>
+      🛡️ NI Class 1 (employee): 8% on £12,570–£50,270 · 2% above<br>
+      💰 ISA Allowance: <strong style="color:var(--gold-light)">£20,000/year</strong> (tax-free)<br>
+      🏠 SIPP: Tax relief at marginal rate · £60,000 annual allowance<br>
+      📋 Capital Gains: £3,000 annual exempt amount (2025-26)
+    </div>
+  </div>`;
+}
+
+function calcUKTax() {
+  var income = parseFloat(document.getElementById('uk_income')?.value || 50000);
+  var pension = parseFloat(document.getElementById('uk_pension')?.value || 0);
+  var isScottish = document.getElementById('uk_scottish')?.checked;
+  var iEl = document.getElementById('uk_income_val');
+  if (iEl) iEl.textContent = '£' + Math.round(income).toLocaleString();
+  
+  // Adjust for pension contributions
+  var taxableIncome = Math.max(0, income - pension);
+  
+  // Personal allowance (tapers above £100K)
+  var personalAllowance = 12570;
+  if (taxableIncome > 100000) {
+    personalAllowance = Math.max(0, 12570 - (taxableIncome - 100000) / 2);
+  }
+  
+  var taxable = Math.max(0, taxableIncome - personalAllowance);
+  var tax = 0;
+  var breakdown = '';
+  
+  if (isScottish) {
+    // Scottish rates 2025-26
+    var bands = [
+      {name:'Starter (19%)', from:0, to:2306, rate:0.19},
+      {name:'Basic (20%)', from:2306, to:13991, rate:0.20},
+      {name:'Intermediate (21%)', from:13991, to:31092, rate:0.21},
+      {name:'Higher (42%)', from:31092, to:62430, rate:0.42},
+      {name:'Advanced (45%)', from:62430, to:125140, rate:0.45},
+      {name:'Top (48%)', from:125140, to:Infinity, rate:0.48},
+    ];
+    bands.forEach(function(b) {
+      var bandIncome = Math.max(0, Math.min(taxable, b.to) - b.from);
+      if (bandIncome > 0) {
+        var bandTax = bandIncome * b.rate;
+        tax += bandTax;
+        breakdown += b.name + ': £' + Math.round(bandIncome).toLocaleString() + ' @ ' + (b.rate*100) + '% = <strong style="color:#f87171">£' + Math.round(bandTax).toLocaleString() + '</strong><br>';
+      }
+    });
+  } else {
+    // England/Wales/NI rates
+    var basic = Math.min(taxable, 37700); // up to £50,270 total (£37,700 after PA)
+    var higher = Math.min(Math.max(0, taxable - 37700), 74870); // up to £125,140
+    var additional = Math.max(0, taxable - 112570);
+    if (basic > 0) { tax += basic * 0.20; breakdown += 'Basic Rate (20%): £' + Math.round(basic).toLocaleString() + ' = <strong style="color:#f87171">£' + Math.round(basic*0.20).toLocaleString() + '</strong><br>'; }
+    if (higher > 0) { tax += higher * 0.40; breakdown += 'Higher Rate (40%): £' + Math.round(higher).toLocaleString() + ' = <strong style="color:#f87171">£' + Math.round(higher*0.40).toLocaleString() + '</strong><br>'; }
+    if (additional > 0) { tax += additional * 0.45; breakdown += 'Additional Rate (45%): £' + Math.round(additional).toLocaleString() + ' = <strong style="color:#f87171">£' + Math.round(additional*0.45).toLocaleString() + '</strong><br>'; }
+  }
+  
+  // National Insurance (Class 1 employee)
+  var ni = 0;
+  var niPrimary = Math.min(Math.max(0, income - 12570), 37700) * 0.08;
+  var niSecondary = Math.max(0, income - 50270) * 0.02;
+  ni = niPrimary + niSecondary;
+  breakdown += 'NI (8%): £' + Math.round(Math.min(Math.max(0,income-12570),37700)).toLocaleString() + ' = <strong style="color:#f59e0b">£' + Math.round(niPrimary).toLocaleString() + '</strong><br>';
+  if (niSecondary > 0) breakdown += 'NI (2% above £50,270) = <strong style="color:#f59e0b">£' + Math.round(niSecondary).toLocaleString() + '</strong><br>';
+  
+  var net = income - tax - ni - pension;
+  var fmt = function(n) { return '£' + Math.round(n).toLocaleString(); };
+  
+  var taxEl = document.getElementById('uk_tax_amount');
+  if (taxEl) taxEl.textContent = fmt(tax);
+  var niEl = document.getElementById('uk_ni_amount');
+  if (niEl) niEl.textContent = fmt(ni);
+  var netEl = document.getElementById('uk_net_amount');
+  if (netEl) netEl.textContent = fmt(net);
+  var bEl = document.getElementById('uk_tax_breakdown');
+  if (bEl) bEl.innerHTML = breakdown + '<br><strong style="color:var(--gold-light)">Effective Tax Rate: ' + ((tax/income)*100).toFixed(1) + '%</strong>';
+}
+
+// ================================================================
+// GERMANY TAX CALCULATOR
+// ================================================================
+function buildGermanyTax() {
+  return `
+  <div class="section-eyebrow">STEUER · DEUTSCHLAND 2026</div>
+  <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">Einkommensteuer-Rechner</h1>
+  <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Berechne deine Einkommensteuer, Solidaritätszuschlag und Kirchensteuer für 2026. Progressiver Steuertarif mit Grundfreibetrag €11,784.</p>
+  <div class="card" style="margin-bottom:20px;">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">EINKOMMEN & ABZÜGE</div>
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <label style="font-size:12px;color:var(--muted);">Zu versteuerndes Einkommen (€/Jahr)</label>
+        <span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="de_income_val">€60.000</span>
+      </div>
+      <input type="range" id="de_income" min="0" max="300000" step="1000" value="60000" oninput="calcGermanyTax()">
+    </div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;">
+        <input type="checkbox" id="de_church" onchange="calcGermanyTax()" style="accent-color:var(--gold);"> Kirchensteuer (8/9%)
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;">
+        <input type="checkbox" id="de_married" onchange="calcGermanyTax()" style="accent-color:var(--gold);"> Ehegattensplitting
+      </label>
+    </div>
+  </div>
+  <div class="grid-3" style="margin-bottom:20px;">
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Einkommensteuer</div><div class="big-number" id="de_tax_amount">—</div></div>
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Soli + Kirchenst.</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="de_soli_amount">—</div></div>
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Nettoeinkommen</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="de_net_amount">—</div></div>
+  </div>
+  <div class="card" style="margin-bottom:20px;"><div id="de_tax_breakdown" style="font-size:12px;line-height:2;"></div></div>
+  <div class="card">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">WICHTIGE STEUERREGELN 2026</div>
+    <div style="font-size:12px;line-height:2;color:var(--muted);">
+      🏦 Grundfreibetrag: <strong style="color:var(--cream)">€11,784</strong> (steuerfrei)<br>
+      📊 Eingangssteuersatz: <strong style="color:var(--cream)">14%</strong> bis progressiv <strong style="color:var(--cream)">42%</strong><br>
+      📊 Spitzensteuersatz 42%: ab <strong style="color:var(--cream)">€68,430</strong> (2026)<br>
+      📊 Reichensteuersatz 45%: ab <strong style="color:var(--cream)">€277,826</strong><br>
+      💰 Sparerpauschbetrag: <strong style="color:var(--gold-light)">€1,000</strong> (Single) / €2,000 (verheiratet)<br>
+      🛡️ Solidaritätszuschlag: 5.5% auf Steuer (ab ca. €18K Steuerschuld)<br>
+      🏦 Riester/Rürup: bis €27,566 absetzbar als Sonderausgaben<br>
+      🏠 Arbeitnehmer-Pauschbetrag: <strong style="color:var(--gold-light)">€1,230</strong>
+    </div>
+  </div>`;
+}
+
+function calcGermanyTax() {
+  var income = parseFloat(document.getElementById('de_income')?.value || 60000);
+  var isMarried = document.getElementById('de_married')?.checked;
+  var hasChurch = document.getElementById('de_church')?.checked;
+  var iEl = document.getElementById('de_income_val');
+  if (iEl) iEl.textContent = '€' + Math.round(income).toLocaleString('de-DE');
+  
+  // Ehegattensplitting: tax on half, then double
+  var taxBase = isMarried ? income / 2 : income;
+  
+  // German progressive formula (simplified)
+  function germanyTaxFormula(x) {
+    if (x <= 11784) return 0;
+    if (x <= 17005) {
+      var y = (x - 11784) / 10000;
+      return Math.round((932.3 * y + 1400) * y);
+    }
+    if (x <= 66760) {
+      var y = (x - 17005) / 10000;
+      return Math.round((179.74 * y + 2397) * y + 1025);
+    }
+    if (x <= 277825) {
+      return Math.round(0.42 * x - 10908);
+    }
+    return Math.round(0.45 * x - 19239);
+  }
+  
+  var tax = isMarried ? germanyTaxFormula(taxBase) * 2 : germanyTaxFormula(taxBase);
+  
+  // Solidaritätszuschlag (5.5% if income tax > ~€18K, with mitigation zone)
+  var soli = 0;
+  var soliThreshold = isMarried ? 36260 : 18130;
+  if (tax > soliThreshold) {
+    soli = tax * 0.055;
+  } else if (tax > (isMarried ? 34190 : 17095)) {
+    soli = (tax - (isMarried ? 34190 : 17095)) * 0.119;
+  }
+  
+  // Kirchensteuer (8% Bayern/BW, 9% others)
+  var kirchensteuer = hasChurch ? tax * 0.09 : 0;
+  
+  var totalDeductions = tax + soli + kirchensteuer;
+  var net = income - totalDeductions;
+  var fmt = function(n) { return '€' + Math.round(n).toLocaleString('de-DE'); };
+  
+  var taxEl = document.getElementById('de_tax_amount');
+  if (taxEl) taxEl.textContent = fmt(tax);
+  var soliEl = document.getElementById('de_soli_amount');
+  if (soliEl) soliEl.textContent = fmt(soli + kirchensteuer);
+  var netEl = document.getElementById('de_net_amount');
+  if (netEl) netEl.textContent = fmt(net);
+  
+  var breakdown = 'Einkommensteuer: <strong style="color:#f87171">' + fmt(tax) + '</strong><br>';
+  if (soli > 0) breakdown += 'Solidaritätszuschlag: <strong style="color:#f59e0b">' + fmt(soli) + '</strong><br>';
+  if (kirchensteuer > 0) breakdown += 'Kirchensteuer (9%): <strong style="color:#f59e0b">' + fmt(kirchensteuer) + '</strong><br>';
+  breakdown += 'Nettoeinkommen: <strong style="color:#4ade80">' + fmt(net) + '</strong><br>';
+  breakdown += '<br><strong style="color:var(--gold-light)">Durchschnittssteuersatz: ' + ((totalDeductions/income)*100).toFixed(1) + '%</strong>';
+  if (isMarried) breakdown += ' <span style="color:var(--muted)">(mit Ehegattensplitting)</span>';
+  
+  var bEl = document.getElementById('de_tax_breakdown');
+  if (bEl) bEl.innerHTML = breakdown;
+}
+
+// ================================================================
+// FRANCE TAX CALCULATOR
+// ================================================================
+function buildFranceTax() {
+  return `
+  <div class="section-eyebrow">FISCALITÉ · FRANCE 2026</div>
+  <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">Calculateur Impôt sur le Revenu</h1>
+  <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Calculez votre impôt sur le revenu 2026 avec le barème progressif, le quotient familial et les prélèvements sociaux.</p>
+  <div class="card" style="margin-bottom:20px;">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">REVENUS & SITUATION</div>
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <label style="font-size:12px;color:var(--muted);">Revenu brut annuel (€)</label>
+        <span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="fr_income_val">€50 000</span>
+      </div>
+      <input type="range" id="fr_income" min="0" max="300000" step="1000" value="50000" oninput="calcFranceTax()">
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px;color:var(--muted);">Nombre de parts fiscales</label>
+      <select id="fr_parts" onchange="calcFranceTax()" style="width:100%;margin-top:6px;background:var(--dark4);border:1px solid rgba(201,168,76,.2);border-radius:8px;color:var(--cream);padding:8px 12px;font-size:13px;">
+        <option value="1">1 part (célibataire)</option>
+        <option value="2" selected>2 parts (couple marié/pacsé)</option>
+        <option value="2.5">2,5 parts (1 enfant)</option>
+        <option value="3">3 parts (2 enfants)</option>
+        <option value="4">4 parts (3 enfants)</option>
+      </select>
+    </div>
+  </div>
+  <div class="grid-3" style="margin-bottom:20px;">
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Impôt sur le Revenu</div><div class="big-number" id="fr_tax_amount">—</div></div>
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Prél. Sociaux (CSG+)</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="fr_csg_amount">—</div></div>
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Revenu Net</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="fr_net_amount">—</div></div>
+  </div>
+  <div class="card" style="margin-bottom:20px;"><div id="fr_tax_breakdown" style="font-size:12px;line-height:2;"></div></div>
+  <div class="card">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">RÈGLES FISCALES CLÉS 2026</div>
+    <div style="font-size:12px;line-height:2;color:var(--muted);">
+      📊 Tranche 0%: jusqu'à <strong style="color:var(--cream)">€11,294</strong><br>
+      📊 Tranche 11%: <strong style="color:var(--cream)">€11,295 – €28,797</strong><br>
+      📊 Tranche 30%: <strong style="color:var(--cream)">€28,798 – €82,341</strong><br>
+      📊 Tranche 41%: <strong style="color:var(--cream)">€82,342 – €177,106</strong><br>
+      📊 Tranche 45%: <strong style="color:var(--cream)">plus de €177,106</strong><br>
+      🛡️ CSG/CRDS: <strong style="color:var(--gold-light)">9.7%</strong> sur revenus d'activité<br>
+      💰 Abattement 10% sur salaires (max €14,426/an)<br>
+      🏠 PEA: gains exonérés d'IR après 5 ans (prél. sociaux dus)
+    </div>
+  </div>`;
+}
+
+function calcFranceTax() {
+  var income = parseFloat(document.getElementById('fr_income')?.value || 50000);
+  var parts = parseFloat(document.getElementById('fr_parts')?.value || 2);
+  var iEl = document.getElementById('fr_income_val');
+  if (iEl) iEl.textContent = '€' + Math.round(income).toLocaleString('fr-FR');
+  
+  // Abattement 10% (salary deduction), max €14,426
+  var abattement = Math.min(income * 0.10, 14426);
+  var revenuNet = income - abattement;
+  
+  // Quotient familial
+  var revenuParPart = revenuNet / parts;
+  
+  // French tax brackets 2026 (approximate)
+  function frTaxOnPart(x) {
+    var tax = 0;
+    if (x > 11294) tax += Math.min(x - 11294, 17503) * 0.11;
+    if (x > 28797) tax += Math.min(x - 28797, 53544) * 0.30;
+    if (x > 82341) tax += Math.min(x - 82341, 94765) * 0.41;
+    if (x > 177106) tax += (x - 177106) * 0.45;
+    return tax;
+  }
+  
+  var taxPerPart = frTaxOnPart(revenuParPart);
+  var totalTax = taxPerPart * parts;
+  
+  // Prélèvements sociaux (CSG 9.2% + CRDS 0.5% = 9.7%)
+  var csg = income * 0.097;
+  
+  var net = income - totalTax - csg;
+  var fmt = function(n) { return '€' + Math.round(n).toLocaleString('fr-FR'); };
+  
+  var taxEl = document.getElementById('fr_tax_amount');
+  if (taxEl) taxEl.textContent = fmt(totalTax);
+  var csgEl = document.getElementById('fr_csg_amount');
+  if (csgEl) csgEl.textContent = fmt(csg);
+  var netEl = document.getElementById('fr_net_amount');
+  if (netEl) netEl.textContent = fmt(net);
+  
+  var tmi = revenuParPart > 177106 ? 45 : revenuParPart > 82341 ? 41 : revenuParPart > 28797 ? 30 : revenuParPart > 11294 ? 11 : 0;
+  var breakdown = 'Abattement 10%: ' + fmt(abattement) + '<br>';
+  breakdown += 'Revenu imposable: ' + fmt(revenuNet) + ' ÷ ' + parts + ' parts = ' + fmt(revenuParPart) + '/part<br>';
+  breakdown += 'TMI (Tranche Marginale): <strong style="color:#f87171">' + tmi + '%</strong><br>';
+  breakdown += 'Impôt total: <strong style="color:#f87171">' + fmt(totalTax) + '</strong><br>';
+  breakdown += 'CSG/CRDS (9.7%): <strong style="color:#f59e0b">' + fmt(csg) + '</strong><br>';
+  breakdown += '<br><strong style="color:var(--gold-light)">Taux d'imposition effectif: ' + ((totalTax/income)*100).toFixed(1) + '%</strong>';
+  
+  var bEl = document.getElementById('fr_tax_breakdown');
+  if (bEl) bEl.innerHTML = breakdown;
+}
+
+// ================================================================
+// SPAIN TAX CALCULATOR
+// ================================================================
+function buildSpainTax() {
+  return `
+  <div class="section-eyebrow">FISCALIDAD · ESPAÑA 2026</div>
+  <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">Calculadora IRPF 2026</h1>
+  <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Calcula tu Impuesto sobre la Renta de las Personas Físicas (IRPF) 2026 con las deducciones del trabajo y el mínimo personal y familiar.</p>
+  <div class="card" style="margin-bottom:20px;">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">INGRESOS Y SITUACIÓN</div>
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <label style="font-size:12px;color:var(--muted);">Rendimiento bruto del trabajo (€/año)</label>
+        <span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="es_income_val">€40.000</span>
+      </div>
+      <input type="range" id="es_income" min="0" max="200000" step="1000" value="40000" oninput="calcSpainTax()">
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px;color:var(--muted);">Comunidad Autónoma (tipo autonómico)</label>
+      <select id="es_ccaa" onchange="calcSpainTax()" style="width:100%;margin-top:6px;background:var(--dark4);border:1px solid rgba(201,168,76,.2);border-radius:8px;color:var(--cream);padding:8px 12px;font-size:13px;">
+        <option value="0.095">Madrid (autonómico más bajo)</option>
+        <option value="0.105" selected>Cataluña / tipo medio</option>
+        <option value="0.115">Andalucía / Valencia</option>
+        <option value="0.125">País Vasco / Navarra</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;">
+        <input type="checkbox" id="es_discapacidad" onchange="calcSpainTax()" style="accent-color:var(--gold);"> Discapacidad ≥33%
+      </label>
+    </div>
+  </div>
+  <div class="grid-3" style="margin-bottom:20px;">
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Cuota IRPF</div><div class="big-number" id="es_tax_amount">—</div></div>
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Seg. Social (est.)</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="es_ss_amount">—</div></div>
+    <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Salario Neto</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="es_net_amount">—</div></div>
+  </div>
+  <div class="card" style="margin-bottom:20px;"><div id="es_tax_breakdown" style="font-size:12px;line-height:2;"></div></div>
+  <div class="card">
+    <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">ESCALA IRPF ESTATAL 2026</div>
+    <div style="font-size:12px;line-height:2;color:var(--muted);">
+      📊 Tramo 19%: <strong style="color:var(--cream)">€0 – €12,450</strong><br>
+      📊 Tramo 24%: <strong style="color:var(--cream)">€12,451 – €20,200</strong><br>
+      📊 Tramo 30%: <strong style="color:var(--cream)">€20,201 – €35,200</strong><br>
+      📊 Tramo 37%: <strong style="color:var(--cream)">€35,201 – €60,000</strong><br>
+      📊 Tramo 45%: <strong style="color:var(--cream)">€60,001 – €300,000</strong><br>
+      📊 Tramo 47%: <strong style="color:var(--cream)">Más de €300,000</strong><br>
+      🛡️ Seg. Social trabajador: <strong style="color:var(--gold-light)">~6.35%</strong> del salario bruto<br>
+      💰 Reducción por rendimientos del trabajo: hasta €5,565/año
+    </div>
+  </div>`;
+}
+
+function calcSpainTax() {
+  var income = parseFloat(document.getElementById('es_income')?.value || 40000);
+  var ccaaRate = parseFloat(document.getElementById('es_ccaa')?.value || 0.105);
+  var discapacidad = document.getElementById('es_discapacidad')?.checked;
+  var iEl = document.getElementById('es_income_val');
+  if (iEl) iEl.textContent = '€' + Math.round(income).toLocaleString('es-ES');
+  
+  // Reducción por rendimientos del trabajo
+  var reduccion = 0;
+  if (income <= 14852) reduccion = 5565;
+  else if (income <= 17673) reduccion = 5565 - 1.5 * (income - 14852);
+  
+  // Discapacidad bonus
+  if (discapacidad) reduccion += 3500;
+  
+  // Mínimo personal
+  var minPersonal = 5550;
+  
+  var baseImponible = Math.max(0, income - reduccion - minPersonal);
+  
+  // IRPF estatal scale
+  function irpfEstatal(x) {
+    var tax = 0;
+    if (x > 0) tax += Math.min(x, 12450) * 0.095;
+    if (x > 12450) tax += Math.min(x - 12450, 7750) * 0.12;
+    if (x > 20200) tax += Math.min(x - 20200, 15000) * 0.15;
+    if (x > 35200) tax += Math.min(x - 35200, 24800) * 0.185;
+    if (x > 60000) tax += Math.min(x - 60000, 240000) * 0.225;
+    if (x > 300000) tax += (x - 300000) * 0.235;
+    return tax;
+  }
+  
+  // Autonómico: similar scale but at ccaaRate level
+  var estatal = irpfEstatal(baseImponible);
+  var autonomico = baseImponible * ccaaRate * 0.6; // simplified
+  var totalTax = estatal + autonomico;
+  
+  // Seguridad Social (trabajador): ~6.35% of income
+  var ssContribucion = income * 0.0635;
+  
+  var net = income - totalTax - ssContribucion;
+  var fmt = function(n) { return '€' + Math.round(n).toLocaleString('es-ES'); };
+  
+  var taxEl = document.getElementById('es_tax_amount');
+  if (taxEl) taxEl.textContent = fmt(totalTax);
+  var ssEl = document.getElementById('es_ss_amount');
+  if (ssEl) ssEl.textContent = fmt(ssContribucion);
+  var netEl = document.getElementById('es_net_amount');
+  if (netEl) netEl.textContent = fmt(net);
+  
+  var breakdown = 'Reducción rendimientos trabajo: ' + fmt(reduccion) + '<br>';
+  breakdown += 'Base liquidable: ' + fmt(baseImponible) + '<br>';
+  breakdown += 'Cuota estatal: <strong style="color:#f87171">' + fmt(estatal) + '</strong><br>';
+  breakdown += 'Cuota autonómica (est.): <strong style="color:#f87171">' + fmt(autonomico) + '</strong><br>';
+  breakdown += 'Seg. Social (6.35%): <strong style="color:#f59e0b">' + fmt(ssContribucion) + '</strong><br>';
+  breakdown += '<br><strong style="color:var(--gold-light)">Tipo efectivo IRPF: ' + ((totalTax/income)*100).toFixed(1) + '%</strong>';
+  
+  var bEl = document.getElementById('es_tax_breakdown');
+  if (bEl) bEl.innerHTML = breakdown;
+}
+
+
 function buildWorldTax(){return`<div class="grid-2" style="margin-bottom:20px;"><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇸🇬</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Singapore</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Progressive 0%–24%. No capital gains tax. No dividend tax. CPF: 20% employee + 17% employer.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇦🇺</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Australia</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">19%–45% + 2% Medicare levy. Super: 11.5% employer. 50% CGT discount for assets held 12+ months.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇦🇪</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">UAE</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">No personal income tax. No capital gains tax. Corporate tax: 9% above AED 375K. VAT: 5%.</p></div><div class="card"><div style="font-size:22px;margin-bottom:10px;">🇨🇦</div><h4 style="font-weight:700;margin-bottom:7px;font-size:13px;">Canada</h4><p style="font-size:11px;color:var(--muted);line-height:1.7;">Federal 15%–33% + provincial. RRSP deductible. TFSA: C$7,000/yr completely tax-free.</p></div></div>`;}
 
 // ── PPF ──────────────────────────────────────────────────────
@@ -3234,7 +3912,7 @@ function toggleNewsExpand() {
   if (btn) btn.textContent = _newsExpanded ? '⊟ Collapse' : '⊞ Expand';
 }
 
-setInterval(function() { if (typeof fetchNews === 'function') fetchNews(false); }, NEWS_CACHE_MS);
+// News feed removed — interval disabled
 
 // Add SEBI disclaimer to sidebar bottom panel
 (function(){
@@ -3259,38 +3937,7 @@ setInterval(function() { if (typeof fetchNews === 'function') fetchNews(false); 
 // ============================================================
 // NEWS CLIENT FALLBACK (shown instantly before API responds)
 // ============================================================
-var NEWS_CLIENT_FALLBACK = {
-  india: [
-    { title:'RBI Monetary Policy: Latest rate decision and outlook',         source:'RBI',            emoji:'🏦', color:'#C9A84C', timeLabel:'Latest', link:'https://rbi.org.in',                   tab:'emi'  },
-    { title:'SEBI: New mutual fund regulation update',                       source:'SEBI',           emoji:'📋', color:'#6366F1', timeLabel:'Latest', link:'https://sebi.gov.in',                  tab:'sip'  },
-    { title:'Economic Times: India markets top stories',                     source:'Economic Times', emoji:'📰', color:'#F97316', timeLabel:'Latest', link:'https://economictimes.indiatimes.com', tab:null   },
-    { title:'Budget 2025-26: Income tax slab announcements',                 source:'PIB',            emoji:'🇮🇳', color:'#EC4899', timeLabel:'Latest', link:'https://pib.gov.in',                  tab:'tax'  },
-    { title:'Nifty 50 & Sensex: Market movement and outlook',                source:'ET Markets',     emoji:'📈', color:'#C9A84C', timeLabel:'Latest', link:'https://economictimes.indiatimes.com/markets', tab:'sip' },
-    { title:'PPF, NPS, EPF: Latest interest rates and rule changes',         source:'ET Wealth',      emoji:'💰', color:'#22C55E', timeLabel:'Latest', link:'https://economictimes.indiatimes.com/wealth', tab:'ppf' },
-    { title:'Fed Reserve: Latest monetary policy statement',                 source:'Fed Reserve',    emoji:'💵', color:'#22C55E', timeLabel:'Latest', link:'https://federalreserve.gov',           tab:'emi'  },
-    { title:'IMF: Global growth and emerging markets outlook 2026',          source:'IMF',            emoji:'🌍', color:'#3B82F6', timeLabel:'Latest', link:'https://imf.org/en/News',              tab:'fire' },
-  ],
-  usa: [
-    { title:'Federal Reserve: Latest monetary policy decision',              source:'Fed Reserve',    emoji:'🏛️', color:'#3B82F6', timeLabel:'Latest', link:'https://federalreserve.gov',           tab:'emi'  },
-    { title:'FOMC: Interest rate decision and economic projections',         source:'FOMC',           emoji:'💵', color:'#22C55E', timeLabel:'Latest', link:'https://federalreserve.gov',           tab:'emi'  },
-    { title:'MarketWatch: S&P 500, Dow and Nasdaq market update',            source:'MarketWatch',    emoji:'📈', color:'#F97316', timeLabel:'Latest', link:'https://marketwatch.com',              tab:'sip'  },
-    { title:'Nasdaq: Technology stocks and market update',                   source:'Nasdaq',         emoji:'💹', color:'#22C55E', timeLabel:'Latest', link:'https://nasdaq.com',                   tab:'sip'  },
-    { title:'IMF: US and global economic outlook 2026',                      source:'IMF',            emoji:'🌍', color:'#3B82F6', timeLabel:'Latest', link:'https://imf.org/en/News',              tab:'fire' },
-  ],
-  europe: [
-    { title:'ECB: Interest rate decision and monetary policy statement',     source:'ECB',            emoji:'🏦', color:'#6366F1', timeLabel:'Latest', link:'https://ecb.europa.eu',                tab:'emi'  },
-    { title:'ESMA: Investment regulation and sustainable finance update',    source:'ESMA',           emoji:'📋', color:'#EC4899', timeLabel:'Latest', link:'https://esma.europa.eu',               tab:null   },
-    { title:'IMF: Euro area economic assessment and growth forecast',        source:'IMF',            emoji:'🌍', color:'#3B82F6', timeLabel:'Latest', link:'https://imf.org/en/News',              tab:'fire' },
-    { title:'MarketWatch: Euro Stoxx, DAX and FTSE market update',           source:'MarketWatch',    emoji:'📈', color:'#F97316', timeLabel:'Latest', link:'https://marketwatch.com',              tab:'sip'  },
-  ],
-  world: [
-    { title:'Fed Reserve: Latest monetary policy statement',                 source:'Fed Reserve',    emoji:'💵', color:'#22C55E', timeLabel:'Latest', link:'https://federalreserve.gov',           tab:'emi'  },
-    { title:'ECB: Euro area rate decision and economic outlook',             source:'ECB',            emoji:'🇪🇺', color:'#6366F1', timeLabel:'Latest', link:'https://ecb.europa.eu',                tab:'emi'  },
-    { title:'IMF: Global growth outlook and emerging markets 2026',          source:'IMF',            emoji:'🌍', color:'#3B82F6', timeLabel:'Latest', link:'https://imf.org/en/News',              tab:'fire' },
-    { title:'Nasdaq: Global technology and equity market update',            source:'Nasdaq',         emoji:'💹', color:'#22C55E', timeLabel:'Latest', link:'https://nasdaq.com',                   tab:'sip'  },
-    { title:'MarketWatch: Global markets S&P 500, Nifty, DAX round-up',     source:'MarketWatch',    emoji:'📈', color:'#F97316', timeLabel:'Latest', link:'https://marketwatch.com',              tab:'sip'  },
-  ],
-};
+var NEWS_CLIENT_FALLBACK = {}; // news feed removed
 
 // ============================================================
 // GOAL PLANNER REGION CONFIG
@@ -3300,7 +3947,7 @@ var GOAL_REGIONS = {
   india: {
     sym: '₹',
     gratSalMin: 10000, gratSalMax: 500000, gratSalStep: 5000, gratSalDefault: 50000,
-    gratTaxFreeLimit: 2000000,  // ₹20L
+    gratTaxFreeLimit: 2000000,
     gratTaxLabel: 'Tax-free up to ₹20L (Gratuity Act limit)',
     gratRules: [
       'Eligible after <strong style="color:var(--cream)">5 continuous years</strong> of service',
@@ -3313,12 +3960,10 @@ var GOAL_REGIONS = {
       { id: 'govt', label: '🏛️ Govt / PSU', div: 30 },
       { id: 'pvt',  label: '🏢 Private (Act)', div: 26 }
     ],
-    hwIncomeMin: 25000,    hwIncomeMax: 1000000,  hwIncomeStep: 5000,   hwIncomeDefault: 100000,
-    hwPriceMin:  500000,   hwPriceMax:  50000000, hwPriceStep:  500000, hwPriceDefault:  10000000,
-    hwRate: 8.5,           // typical home loan rate %
-    hwRateLabel: '@ 8.5% (SBI home loan rate)',
-    hwSIPRate: 12,         // SIP return %
-    hwSIPRateLabel: 'At 12% annual SIP return',
+    hwIncomeMin: 25000, hwIncomeMax: 1000000, hwIncomeStep: 5000, hwIncomeDefault: 100000,
+    hwPriceMin: 500000, hwPriceMax: 50000000, hwPriceStep: 500000, hwPriceDefault: 10000000,
+    hwRate: 8.5, hwRateLabel: '@ 8.5% (SBI home loan rate)',
+    hwSIPRate: 12, hwSIPRateLabel: 'At 12% annual SIP return',
     hwStep3Heading: 'ANNUAL TAX SAVINGS ON HOME LOAN',
     hwBenefitLabel: '💰 TOTAL ANNUAL TAX SAVING',
     hwBenefitNote: 'Under Old Tax Regime',
@@ -3336,41 +3981,36 @@ var GOAL_REGIONS = {
         total: Math.round((sec24b + sec80c) * 0.30)
       };
     },
-    hwTitle: '🏠 Buy a Home',
-    hwSubtitle: 'Complete home-buying plan — EMI eligibility, down payment SIP, and tax savings.',
-    hwIncomeLabel: 'Monthly Take-Home Salary',
-    hwPriceLabel: 'Home Price',
-    hwCtaLabel: 'Open EMI Calculator →',
-    hwCtaTab: 'emi',
+    hwTitle: '🏠 Buy a Home', hwSubtitle: 'Complete home-buying plan — EMI eligibility, down payment SIP, and tax savings.',
+    hwIncomeLabel: 'Monthly Take-Home Salary', hwPriceLabel: 'Home Price',
+    hwCtaLabel: 'Open EMI Calculator →', hwCtaTab: 'emi',
   },
   usa: {
     sym: '$',
-    gratSalMin: 1000,  gratSalMax: 30000, gratSalStep: 500, gratSalDefault: 5000,
-    gratTaxFreeLimit: 0,   // US gratuity (tips) fully taxable
+    gratSalMin: 1000, gratSalMax: 30000, gratSalStep: 500, gratSalDefault: 5000,
+    gratTaxFreeLimit: 0,
     gratTaxLabel: 'Tips & gratuity are fully taxable in the US',
     gratRules: [
-      'US has no statutory gratuity law — tips are at the customer\'s discretion',
+      'US has no statutory gratuity law — tips are at the customer's discretion',
       'Employer-paid gratuity/tips are subject to <strong style="color:var(--cream)">federal & state income tax</strong>',
-      'Use this tool to estimate tip income and plan tax withholding',
-      'Keep records — tips must be reported to employer if over <strong style="color:var(--gold-light)">$20/month</strong>',
-      'IRS Form 4070 is used to report tips to employers'
+      'Tips must be reported to employer if over <strong style="color:var(--gold-light)">$20/month</strong>',
+      'IRS Form 4070 is used to report tips to employers',
+      'Keep detailed records — the IRS can audit unreported tips'
     ],
     gratTypes: [
       { id: 'restaurant', label: '🍽️ Restaurant / Service', div: 1, rate: 0.18 },
       { id: 'hotel',      label: '🏨 Hotel / Hospitality',  div: 1, rate: 0.15 }
     ],
-    hwIncomeMin: 2000,     hwIncomeMax: 50000,    hwIncomeStep: 500,    hwIncomeDefault: 8000,
-    hwPriceMin:  50000,    hwPriceMax:  3000000,  hwPriceStep:  25000,  hwPriceDefault:  400000,
-    hwRate: 6.8,
-    hwRateLabel: '@ 6.8% (30yr fixed avg)',
-    hwSIPRate: 10,
-    hwSIPRateLabel: 'At 10% annual return (S&P 500 avg)',
+    hwIncomeMin: 2000, hwIncomeMax: 50000, hwIncomeStep: 500, hwIncomeDefault: 8000,
+    hwPriceMin: 50000, hwPriceMax: 3000000, hwPriceStep: 25000, hwPriceDefault: 400000,
+    hwRate: 6.8, hwRateLabel: '@ 6.8% (30yr fixed avg)',
+    hwSIPRate: 10, hwSIPRateLabel: 'At 10% annual return (S&P 500 avg)',
     hwStep3Heading: 'MORTGAGE TAX BENEFITS',
     hwBenefitLabel: '💰 ESTIMATED ANNUAL TAX DEDUCTION',
     hwBenefitNote: 'If itemizing deductions (Schedule A)',
     hwTab3Label: 'Tax Benefits',
     hwTaxCalc: function(annualInterest, annualPrincipal) {
-      var mortgageInterest = Math.min(annualInterest, 16500); // $750k loan limit × ~2.2%
+      var mortgageInterest = Math.min(annualInterest, 16500);
       return {
         lines: [
           '📋 Mortgage Interest Deduction — interest on loans up to <strong style="color:var(--gold-light)">$750K</strong>',
@@ -3381,107 +4021,169 @@ var GOAL_REGIONS = {
         total: Math.round(mortgageInterest * 0.22 + Math.min(5000, 10000))
       };
     },
-    hwTitle: '🏠 Buy a Home',
-    hwSubtitle: 'Complete home-buying plan — loan eligibility, down payment savings, and mortgage tax benefits.',
-    hwIncomeLabel: 'Monthly Gross Income',
-    hwPriceLabel: 'Home Price',
-    hwCtaLabel: 'Open Loan Calculator →',
-    hwCtaTab: 'emi',
+    hwTitle: '🏠 Buy a Home', hwSubtitle: 'Complete home-buying plan — loan eligibility, down payment savings, and mortgage tax benefits.',
+    hwIncomeLabel: 'Monthly Gross Income', hwPriceLabel: 'Home Price',
+    hwCtaLabel: 'Open Loan Calculator →', hwCtaTab: 'emi',
   },
-  europe: {
+  uk: {
+    sym: '£',
+    gratSalMin: 1000, gratSalMax: 20000, gratSalStep: 250, gratSalDefault: 3500,
+    gratTaxFreeLimit: 0,
+    gratTaxLabel: 'Statutory Redundancy Pay — consult ACAS for exact entitlement',
+    gratRules: [
+      'UK Statutory Redundancy Pay: <strong style="color:var(--cream)">1.5 weeks pay × year (age 41+)</strong>, 1 week (22-40), 0.5 week (under 22)',
+      'Weekly pay capped at <strong style="color:var(--gold-light)">£643/week (2025-26)</strong>',
+      'Maximum statutory redundancy: <strong style="color:var(--gold-light)">£19,290</strong> (30 weeks × £643)',
+      'Payments up to £30,000 are tax-free under ITEPA 2003 Section 401',
+      'Employment Rights Act 1996 applies after 2 years continuous service'
+    ],
+    gratTypes: [
+      { id: 'under22', label: '👶 Under 22', div: 2, weeksMult: 0.5 },
+      { id: 'adult',   label: '👤 Age 22-40', div: 1, weeksMult: 1.0 },
+      { id: 'senior',  label: '🧓 Age 41+',   div: 1, weeksMult: 1.5 }
+    ],
+    hwIncomeMin: 1500, hwIncomeMax: 20000, hwIncomeStep: 250, hwIncomeDefault: 4000,
+    hwPriceMin: 50000, hwPriceMax: 2000000, hwPriceStep: 25000, hwPriceDefault: 350000,
+    hwRate: 4.5, hwRateLabel: '@ 4.5% (avg 2yr fixed mortgage)',
+    hwSIPRate: 7.5, hwSIPRateLabel: 'At 7.5% annual return (FTSE All-Share avg)',
+    hwStep3Heading: 'STAMP DUTY & MORTGAGE RELIEF',
+    hwBenefitLabel: '💰 ESTIMATED ANNUAL BENEFIT',
+    hwBenefitNote: 'HMRC rules apply. First-time buyers may qualify for SDLT relief.',
+    hwTab3Label: 'Tax & SDLT',
+    hwTaxCalc: function(annualInterest, annualPrincipal) {
+      var mortgageInterest = Math.min(annualInterest, 5000);
+      return {
+        lines: [
+          '📋 Buy-to-Let: 20% tax credit on mortgage interest (Section 24)',
+          '&nbsp;&nbsp;&nbsp;&nbsp;Interest: ' + fmtSym(Math.round(annualInterest)) + ' → Tax credit: <strong style="color:#4ade80">' + fmtSym(Math.round(annualInterest * 0.20)) + '/yr</strong>',
+          '📋 First-time buyer SDLT relief on homes up to <strong style="color:var(--gold-light)">£500,000</strong>',
+          '&nbsp;&nbsp;&nbsp;&nbsp;Standard SDLT: 0% up to £250K, 5% on £250K-£925K portion',
+        ],
+        total: Math.round(annualInterest * 0.20)
+      };
+    },
+    hwTitle: '🏠 Buy a Home in the UK', hwSubtitle: 'UK home-buying plan — mortgage eligibility, deposit savings, SDLT and tax relief.',
+    hwIncomeLabel: 'Monthly Net Income', hwPriceLabel: 'Property Price',
+    hwCtaLabel: 'Open Mortgage Calculator →', hwCtaTab: 'emi',
+  },
+  germany: {
     sym: '€',
-    gratSalMin: 1000,  gratSalMax: 20000, gratSalStep: 250,  gratSalDefault: 3500,
+    gratSalMin: 1000, gratSalMax: 15000, gratSalStep: 250, gratSalDefault: 3500,
     gratTaxFreeLimit: 0,
-    gratTaxLabel: 'Severance rules vary by country — consult a local adviser',
+    gratTaxLabel: 'Abfindung ist steuerpflichtig — Fünftelregelung kann Steuerlast reduzieren',
     gratRules: [
-      'EU has no single statutory gratuity law — rules vary by country',
-      'Germany: <strong style="color:var(--cream)">½ month salary × years</strong> (standard severance)',
-      'France: 1/4 month × years (up to 10yr), then 1/3 month × years (above 10yr)',
-      'UK: 1.5 weeks pay × year (statutory redundancy pay)',
-      'Spain: 20 days × year up to 12 months (unfair dismissal)',
-      'Always check your specific country\'s labour code'
+      'Kein gesetzlicher Anspruch auf Abfindung in Deutschland (außer bei Sozialplan)',
+      'Übliche Formel: <strong style="color:var(--cream)">½ Monatsgehalt × Beschäftigungsjahre</strong>',
+      'Fünftelregelung (§34 EStG) reduziert Steuerlast auf Abfindungen erheblich',
+      'Bei Kündigungsschutzklage: Abfindung oft 0.5–1.5 Monatsgehälter pro Jahr üblich',
+      'Sozialversicherungsfrei — nur Lohnsteuer und Solidaritätszuschlag anfallen'
     ],
     gratTypes: [
-      { id: 'germany', label: '🇩🇪 Germany',   div: 2 },
-      { id: 'france',  label: '🇫🇷 France',    div: 3 },
-      { id: 'uk',      label: '🇬🇧 UK',         div: 2, useWeeks: true },
-      { id: 'other',   label: '🌍 Other EU',   div: 2 }
+      { id: 'standard', label: '🏢 Standard (½ × Jahre)', div: 2 },
+      { id: 'generous', label: '⭐ Großzügig (1 × Jahre)', div: 1 }
     ],
-    hwIncomeMin: 1500,  hwIncomeMax: 20000,  hwIncomeStep: 250, hwIncomeDefault: 4000,
-    hwPriceMin:  50000, hwPriceMax:  2000000, hwPriceStep: 25000, hwPriceDefault: 350000,
-    hwRate: 3.5,
-    hwRateLabel: '@ 3.5% (avg EU variable rate)',
-    hwSIPRate: 8.5,
-    hwSIPRateLabel: 'At 8.5% annual return (MSCI World avg)',
-    hwStep3Heading: 'MORTGAGE INTEREST DEDUCTION',
-    hwBenefitLabel: '💰 ESTIMATED ANNUAL BENEFIT',
-    hwBenefitNote: 'Rules vary by country — indicative only',
-    hwTab3Label: 'Benefits',
+    hwIncomeMin: 1500, hwIncomeMax: 15000, hwIncomeStep: 250, hwIncomeDefault: 3500,
+    hwPriceMin: 50000, hwPriceMax: 1500000, hwPriceStep: 25000, hwPriceDefault: 350000,
+    hwRate: 3.8, hwRateLabel: '@ 3.8% (durchschn. Sollzins 2026)',
+    hwSIPRate: 8.0, hwSIPRateLabel: 'Bei 8% jährlicher Rendite (DAX/MSCI World)',
+    hwStep3Heading: 'STEUERLICHE ASPEKTE',
+    hwBenefitLabel: '💰 GESCHÄTZTER JÄHRLICHER VORTEIL',
+    hwBenefitNote: 'Schuldzinsen für Eigenheim i.d.R. nicht absetzbar. Für Vermietung: voll abzugsfähig.',
+    hwTab3Label: 'Steuer & Kosten',
     hwTaxCalc: function(annualInterest, annualPrincipal) {
-      var deductible = Math.min(annualInterest, 3630); // Dutch/typical EU cap ~€3,630
       return {
         lines: [
-          '📋 Mortgage interest deduction (varies by country)',
-          '&nbsp;&nbsp;&nbsp;&nbsp;Est. deductible: ' + fmtSym(Math.round(deductible)) + ' @ ~37% marginal rate → <strong style="color:#4ade80">' + fmtSym(Math.round(deductible * 0.37)) + '/yr</strong>',
-          '📋 Note: Netherlands allows full deduction; Germany generally does not',
-          '&nbsp;&nbsp;&nbsp;&nbsp;Always verify with a local tax adviser for your country',
+          '📋 Eigennutzung: Schuldzinsen <strong style="color:#f87171">nicht absetzbar</strong> (§ 12 EStG)',
+          '📋 Vermietung: Zinsen zu 100% als Werbungskosten absetzbar',
+          '&nbsp;&nbsp;&nbsp;&nbsp;Jährliche Zinsen: ' + fmtSym(Math.round(annualInterest)) + ' → Steuerersparnis (42%): <strong style="color:#4ade80">' + fmtSym(Math.round(annualInterest * 0.42)) + '/yr</strong>',
+          '📋 Grunderwerbsteuer: 3.5%–6.5% je nach Bundesland (einmalig)'
         ],
-        total: Math.round(deductible * 0.37)
+        total: Math.round(annualInterest * 0.42)
       };
     },
-    hwTitle: '🏠 Buy a Home in Europe',
-    hwSubtitle: 'Home-buying plan for European markets — loan eligibility, down payment, and tax benefits.',
-    hwIncomeLabel: 'Monthly Net Income',
-    hwPriceLabel: 'Property Price',
-    hwCtaLabel: 'Open Loan Calculator →',
-    hwCtaTab: 'emi',
+    hwTitle: '🏠 Immobilienkauf in Deutschland', hwSubtitle: 'Immobilienplanung: Finanzierungsrahmen, Eigenkapital-Sparplan und steuerliche Aspekte.',
+    hwIncomeLabel: 'Monatliches Nettoeinkommen', hwPriceLabel: 'Immobilienpreis',
+    hwCtaLabel: 'Zum Kreditrechner →', hwCtaTab: 'emi',
   },
-  world: {
-    sym: '$',
-    gratSalMin: 500,   gratSalMax: 20000, gratSalStep: 250,  gratSalDefault: 3000,
+  france: {
+    sym: '€',
+    gratSalMin: 1000, gratSalMax: 15000, gratSalStep: 250, gratSalDefault: 3000,
     gratTaxFreeLimit: 0,
-    gratTaxLabel: 'Gratuity rules vary by country — see key rules below',
+    gratTaxLabel: "Indemnité de licenciement: exonérée d'impôt dans certaines limites légales",
     gratRules: [
-      'UAE: 21 days basic salary × years (up to 5yr), 30 days × years (above 5yr)',
-      'Saudi Arabia: half month salary × years (first 5yr), 1 month × years (above 5yr)',
-      'Singapore: No statutory gratuity — discretionary by employer',
-      'Australia: Superannuation (11%) is mandatory retirement contribution',
-      'Always consult local labour law for exact entitlements'
+      'Indemnité légale: <strong style="color:var(--cream)">1/4 mois × années (≤10 ans)</strong>, puis 1/3 mois × années (>10 ans)',
+      "Exonération d'impôt sur le revenu jusqu'au montant légal (ou 2× salaire annuel brut)",
+      'Exonération de cotisations sociales jusqu'à <strong style="color:var(--gold-light)">2× plafond annuel SS (env. €92,736)</strong>',
+      'Délai de carence Pôle Emploi: 150 jours maximum pour indemnités supra-légales',
+      'Accord de rupture conventionnelle: montant négocié librement avec homologation DREETS'
     ],
     gratTypes: [
-      { id: 'uae',       label: '🇦🇪 UAE',        div: 1, uaeDays: 21 },
-      { id: 'saudi',     label: '🇸🇦 Saudi Arabia', div: 2 },
-      { id: 'australia', label: '🇦🇺 Australia',   div: 1, superPct: 0.11 },
-      { id: 'other',     label: '🌍 Other',        div: 2 }
+      { id: 'legal', label: '⚖️ Légal (1/4 + 1/3)', div: 3 },
+      { id: 'conv',  label: '🤝 Rupture conventionnelle', div: 2 }
     ],
-    hwIncomeMin: 1000,  hwIncomeMax: 30000,  hwIncomeStep: 500, hwIncomeDefault: 5000,
-    hwPriceMin:  50000, hwPriceMax:  3000000, hwPriceStep: 25000, hwPriceDefault: 400000,
-    hwRate: 5.5,
-    hwRateLabel: '@ 5.5% (global avg mortgage rate)',
-    hwSIPRate: 9,
-    hwSIPRateLabel: 'At 9% annual return (global equity avg)',
-    hwStep3Heading: 'MORTGAGE & INVESTMENT BENEFIT',
-    hwBenefitLabel: '💰 ESTIMATED ANNUAL BENEFIT',
-    hwBenefitNote: 'Consult a local adviser for exact tax treatment',
-    hwTab3Label: 'Benefits',
+    hwIncomeMin: 1500, hwIncomeMax: 15000, hwIncomeStep: 250, hwIncomeDefault: 3500,
+    hwPriceMin: 50000, hwPriceMax: 1500000, hwPriceStep: 25000, hwPriceDefault: 250000,
+    hwRate: 3.6, hwRateLabel: '@ 3.6% (taux moyen 2026)',
+    hwSIPRate: 7.5, hwSIPRateLabel: 'À 7.5% de rendement annuel (CAC 40 / MSCI World)',
+    hwStep3Heading: "AVANTAGES FISCAUX DE L'IMMOBILIER",
+    hwBenefitLabel: '💰 AVANTAGE ANNUEL ESTIMÉ',
+    hwBenefitNote: 'PTZ pour primo-accédants. Intérêts non déductibles pour résidence principale.',
+    hwTab3Label: 'Fiscalité',
     hwTaxCalc: function(annualInterest, annualPrincipal) {
-      var benefit = Math.round(annualInterest * 0.20); // rough 20% avg global tax saving
       return {
         lines: [
-          '📋 Mortgage interest benefit (varies by country)',
-          '&nbsp;&nbsp;&nbsp;&nbsp;Est. annual interest: ' + fmtSym(Math.round(annualInterest)) + ' × ~20% avg tax rate → <strong style="color:#4ade80">' + fmtSym(benefit) + '/yr</strong>',
-          '📋 Down payment invested: down payment SIP return over tenure',
-          '&nbsp;&nbsp;&nbsp;&nbsp;Building equity is the primary wealth benefit in most markets',
+          "📋 Résidence principale: intérêts d'emprunt <strong style='color:#f87171'>non déductibles</strong>",
+          '📋 Investissement locatif (LMNP réel): intérêts 100% déductibles',
+          '&nbsp;&nbsp;&nbsp;&nbsp;Intérêts annuels: ' + fmtSym(Math.round(annualInterest)) + ' → Économie (TMI 30%): <strong style="color:#4ade80">' + fmtSym(Math.round(annualInterest * 0.30)) + '/an</strong>',
+          '📋 PTZ: jusqu'à €138,000 sans intérêts pour primo-accédants en zone A'
         ],
-        total: benefit
+        total: Math.round(annualInterest * 0.30)
       };
     },
-    hwTitle: '🏠 Buy a Home',
-    hwSubtitle: 'Home-buying plan — loan eligibility, down payment savings, and mortgage benefits.',
-    hwIncomeLabel: 'Monthly Net Income',
-    hwPriceLabel: 'Property Price',
-    hwCtaLabel: 'Open Loan Calculator →',
-    hwCtaTab: 'emi',
+    hwTitle: "🏠 Acheter en France", hwSubtitle: "Plan d'achat immobilier: capacité d'emprunt, épargne apport et avantages fiscaux.",
+    hwIncomeLabel: 'Revenus mensuels nets', hwPriceLabel: 'Prix du bien',
+    hwCtaLabel: 'Ouvrir le calculateur de crédit →', hwCtaTab: 'emi',
+  },
+  spain: {
+    sym: '€',
+    gratSalMin: 800, gratSalMax: 10000, gratSalStep: 200, gratSalDefault: 2500,
+    gratTaxFreeLimit: 0,
+    gratTaxLabel: 'Indemnización exenta hasta el importe obligatorio del Estatuto de los Trabajadores',
+    gratRules: [
+      'Despido improcedente: <strong style="color:var(--cream)">33 días de salario × año (desde 2012)</strong>, máx. 24 mensualidades',
+      'Despido procedente: 20 días × año, máx. 12 mensualidades',
+      'Exención de IRPF hasta el importe obligatorio según ET (Art. 7.e LIRPF)',
+      'Exención de cotizaciones a la Seguridad Social en la parte exenta de IRPF',
+      'ERE/ERTE: indemnización negociada en Convenio Colectivo o Acuerdo de Empresa'
+    ],
+    gratTypes: [
+      { id: 'improcedente', label: '⚖️ Despido Improcedente (33d)', div: 1, daysPerYear: 33, maxMonths: 24 },
+      { id: 'procedente',   label: '📋 Despido Procedente (20d)',   div: 1, daysPerYear: 20, maxMonths: 12 }
+    ],
+    hwIncomeMin: 1000, hwIncomeMax: 10000, hwIncomeStep: 200, hwIncomeDefault: 3000,
+    hwPriceMin: 50000, hwPriceMax: 1200000, hwPriceStep: 10000, hwPriceDefault: 200000,
+    hwRate: 3.5, hwRateLabel: '@ 3.5% (Euríbor + spread hipoteca variable)',
+    hwSIPRate: 7.0, hwSIPRateLabel: 'Al 7% de rentabilidad anual (IBEX/MSCI World)',
+    hwStep3Heading: 'BENEFICIOS FISCALES DE LA HIPOTECA',
+    hwBenefitLabel: '💰 AHORRO FISCAL ANUAL ESTIMADO',
+    hwBenefitNote: 'Deducción hipoteca solo para contratos anteriores a 01/01/2013 (DT 18ª LIRPF).',
+    hwTab3Label: 'Fiscalidad',
+    hwTaxCalc: function(annualInterest, annualPrincipal) {
+      var base = Math.min(annualInterest + annualPrincipal, 9040);
+      var deduction = base * 0.15;
+      return {
+        lines: [
+          '📋 Deducción por inversión en vivienda habitual <strong style="color:#f87171">(solo contratos pre-2013)</strong>',
+          '&nbsp;&nbsp;&nbsp;&nbsp;Base máxima: €9,040/año → Deducción: <strong style="color:#4ade80">' + fmtSym(Math.round(deduction)) + '/año (15%)</strong>',
+          '📋 Arrendamiento: intereses 100% deducibles como gasto en IRPF',
+          '&nbsp;&nbsp;&nbsp;&nbsp;ITP (compraventa): 6%–10% del precio según Comunidad Autónoma'
+        ],
+        total: Math.round(deduction)
+      };
+    },
+    hwTitle: '🏠 Comprar en España', hwSubtitle: 'Planificación de compra: capacidad hipotecaria, ahorro para entrada y ventajas fiscales.',
+    hwIncomeLabel: 'Ingresos mensuales netos', hwPriceLabel: 'Precio de la vivienda',
+    hwCtaLabel: 'Abrir calculadora de hipoteca →', hwCtaTab: 'emi',
   }
 };
 
@@ -3615,9 +4317,11 @@ function calcGratuity() {
   document.getElementById('v_grat_sal').textContent = fmtSym(sal);
   document.getElementById('v_grat_yrs').textContent = yrs;
 
-  if (yrs < 5) {
+  // UK requires 2 years min, others 5 years
+  var minYrs = (currentMode === 'uk') ? 2 : 5;
+  if (yrs < minYrs) {
     document.getElementById('grat_amount').textContent     = 'Not Eligible';
-    document.getElementById('grat_amount_sub').textContent = 'Minimum 5 years required';
+    document.getElementById('grat_amount_sub').textContent = 'Minimum ' + minYrs + ' years required';
     document.getElementById('grat_formula').innerHTML      = '';
     document.getElementById('grat_tax_status').textContent = '—';
     document.getElementById('grat_tax_sub').textContent    = '—';
@@ -3628,17 +4332,22 @@ function calcGratuity() {
   var typeConf = (cfg.gratTypes || []).find(function(t){ return t.id === _gratType; }) || cfg.gratTypes[0];
   var gratuity = 0;
 
-  if (currentMode === 'world' && _gratType === 'uae') {
-    // UAE: 21 days/year for first 5yr, 30 days/year above 5yr (daily = monthly/30)
-    var daily = sal / 30;
-    gratuity = yrs <= 5 ? daily * 21 * yrs : daily * 21 * 5 + daily * 30 * (yrs - 5);
-  } else if (currentMode === 'world' && _gratType === 'australia') {
-    gratuity = sal * 12 * yrs * (typeConf.superPct || 0.11);
-  } else if (currentMode === 'usa') {
+  if (currentMode === 'usa') {
     // Tips estimate: % of monthly salary
     gratuity = sal * (typeConf.rate || 0.18) * 12 * yrs;
+  } else if (currentMode === 'uk') {
+    // Statutory Redundancy Pay: weekly pay × weeks multiplier × years
+    var weeklyPay = Math.min(sal * 12 / 52, 643); // capped at £643/week
+    var weeksMult = typeConf.weeksMult || 1.0;
+    gratuity = weeklyPay * weeksMult * Math.min(yrs, 20); // max 20 years
+  } else if (currentMode === 'spain') {
+    // Spain: days per year calculation
+    var daysPerYear = typeConf.daysPerYear || 33;
+    var maxMonths = typeConf.maxMonths || 24;
+    var dailySal = sal / 30;
+    gratuity = Math.min(dailySal * daysPerYear * yrs, sal * maxMonths);
   } else {
-    // Generic: (sal × 15 × years) / divisor
+    // Generic: (sal × 15 × years) / divisor (India, Germany, France)
     gratuity = (sal * 15 * yrs) / (typeConf.div || 26);
   }
 
@@ -3665,16 +4374,22 @@ function calcGratuity() {
 
   // Formula display
   var formulaHtml = '';
-  if (currentMode === 'world' && _gratType === 'uae') {
-    formulaHtml = 'Daily Wage = ' + fmtSym(Math.round(sal/30)) + '/day<br>'
-      + 'Years ≤ 5: Daily × 21 × Years<br>'
-      + 'Years > 5: Daily × 30 × extra years<br>'
-      + '<br><strong style="color:var(--gold-light)">' + fmtSym(Math.round(gratuity)) + '</strong>';
-  } else if (currentMode === 'world' && _gratType === 'australia') {
-    formulaHtml = 'Annual Salary = ' + fmtSym(sal * 12) + '<br>'
-      + 'Super rate = ' + Math.round((typeConf.superPct||0.11)*100) + '%<br>'
+  if (currentMode === 'usa') {
+    formulaHtml = 'Monthly Salary = ' + fmtSym(sal) + '<br>'
+      + 'Tip Rate (' + typeConf.label + ') = ' + Math.round((typeConf.rate||0.18)*100) + '%<br>'
       + 'Over ' + yrs + ' years<br>'
-      + '<br><strong style="color:var(--gold-light)">Total Super: ' + fmtSym(Math.round(gratuity)) + '</strong>';
+      + '<br><strong style="color:var(--gold-light)">Annual Tips: ' + fmtSym(Math.round(gratuity)) + '</strong>';
+  } else if (currentMode === 'uk') {
+    var weeklyPay = Math.min(sal * 12 / 52, 643);
+    formulaHtml = 'Weekly Pay (capped at £643) = ' + fmtSym(Math.round(weeklyPay)) + '<br>'
+      + 'Multiplier (' + typeConf.label + ') = ×' + typeConf.weeksMult + '<br>'
+      + 'Years counted = ' + Math.min(yrs, 20) + '<br>'
+      + '<br><strong style="color:var(--gold-light)">' + fmtSym(Math.round(weeklyPay)) + ' × ' + typeConf.weeksMult + ' × ' + Math.min(yrs, 20) + ' = ' + fmtSym(Math.round(gratuity)) + '</strong>';
+  } else if (currentMode === 'spain') {
+    formulaHtml = 'Daily Salary = ' + fmtSym(Math.round(sal/30)) + '/day<br>'
+      + 'Days per Year (' + typeConf.label + ') = ' + (typeConf.daysPerYear||33) + '<br>'
+      + 'Years of Service = ' + yrs + '<br>'
+      + '<br><strong style="color:var(--gold-light)">' + fmtSym(Math.round(sal/30)) + ' × ' + (typeConf.daysPerYear||33) + ' × ' + yrs + ' = ' + fmtSym(Math.round(gratuity)) + '</strong>';
   } else {
     formulaHtml = 'Monthly Salary = ' + fmtSym(sal) + '<br>'
       + 'Years of Service = ' + yrs + '<br>'
@@ -3805,7 +4520,6 @@ function calcHomeWizard() {
 var _origSetModeGoal = setMode;
 setMode = function(mode) {
   _origSetModeGoal(mode);
-  // Update goal planners for new region (only if already rendered)
   if (document.getElementById('grat_sal')) {
     updateGratuityForRegion();
   }
@@ -3813,19 +4527,19 @@ setMode = function(mode) {
     updateHomeWizardForRegion();
     hwGoTo(1);
   }
-  // Show/hide goal planners based on mode
-  // Gratuity: show for all modes (world-aware rules)
-  // HomeGoal: show for all modes (world-aware)
   var gpNav = document.querySelectorAll('#btn-gratuity, #btn-homegoal');
   gpNav.forEach(function(el){ el.style.display = ''; });
 };
 
 // Initialize on first load
 document.addEventListener('DOMContentLoaded', function() {
-  // Use setTimeout to ensure all functions from main script are defined
   setTimeout(function() {
     updateGratuityForRegion();
     updateHomeWizardForRegion();
+    // Initialize language toggle for default mode (india)
+    if (typeof renderLangToggle === 'function') {
+      renderLangToggle('india');
+    }
   }, 100);
 });
 
