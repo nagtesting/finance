@@ -565,16 +565,11 @@ window.calcHabit          = calcHabit;
     num.min=slider.min; num.max=slider.max; num.step=slider.step||1;
     num.value=slider.value; num.title='Type exact value';
 
-    const parent = slider.parentNode;
-    if (parent && !parent.classList.contains('ft-wrap')) {
-      const wrap = document.createElement('div');
-      wrap.className = 'ft-wrap';
-      parent.insertBefore(wrap, slider);
-      wrap.appendChild(slider);
-      wrap.appendChild(num);
-    } else {
-      slider.insertAdjacentElement('afterend', num);
-    }
+    // Insert the number input directly after the slider — never move the slider
+    // itself, because re-parenting a visible slider breaks the SIP tab layout.
+    slider.insertAdjacentElement('afterend', num);
+    // Mark the slider's parent so we don't double-attach
+    if (slider.parentNode) slider.parentNode.classList.add('ft-wrap');
 
     slider.addEventListener('input', () => { num.value = slider.value; });
     num.addEventListener('input', () => {
