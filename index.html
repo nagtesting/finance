@@ -302,9 +302,10 @@ body{height:100%;background:var(--dark);color:var(--cream);font-family:'DM Sans'
   position:relative;z-index:1;
 }
 #main-scroll{
-  flex:1;
+  flex:1 1 0;
   overflow-y:auto;overflow-x:hidden;
   min-width:0;width:100%;
+  contain:paint;
 }
 
 /* ---- TOPBAR (mobile only, hidden on desktop) ---- */
@@ -414,8 +415,8 @@ body{height:100%;background:var(--dark);color:var(--cream);font-family:'DM Sans'
 
 .big-number{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:900;color:var(--gold-light);line-height:1;letter-spacing:-1px;}
 
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.grid-2-1{display:grid;grid-template-columns:1.2fr 0.8fr;gap:18px;min-width:0;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}.grid-3>*{min-width:0;}
+.grid-2-1{display:grid;grid-template-columns:1.2fr 0.8fr;gap:18px;min-width:0;}.grid-2-1>*{min-width:0;overflow:hidden;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--dark4);border-radius:2px;outline:none;margin-top:10px;}
@@ -453,7 +454,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 .milestone:last-child{border-bottom:none;}
 .milestone-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);margin-top:4px;flex-shrink:0;box-shadow:0 0 7px rgba(201,168,76,.5);}
 
-.tab{display:none;padding:24px 20px 40px;max-width:1100px;width:100%;box-sizing:border-box;}.tab.active{display:block;}
+.tab{display:none;padding:24px 20px 40px;max-width:1100px;width:100%;box-sizing:border-box;overflow-x:hidden;}.tab.active{display:block;}
 
 .accordion-content{max-height:0;overflow:hidden;transition:max-height .4s ease;}
 .accordion-content.open{max-height:500px;}
@@ -734,16 +735,11 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="nav-item" id="btn-contact"  onclick="navTo('contact')">✉️ Write to Us</div>
   </div>
 
-  <div style="padding:8px 18px;border-top:1px solid rgba(201,168,76,.1);flex-shrink:0;">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <div style="display:flex;align-items:center;gap:5px;">
-        <span class="live-dot" id="sidebar-live-dot"></span>
-        <span style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Live Markets</span>
-      </div>
-      <span style="font-size:8px;color:var(--muted);" id="sidebar-updated">—</span>
-    </div>
+  <div style="padding:6px 18px;border-top:1px solid rgba(201,168,76,.08);flex-shrink:0;">
+    <div id="sidebar-disclaimer" style="font-size:8px;color:rgba(144,144,168,.5);line-height:1.4;">⚠️ Educational only. Not SEBI-registered. Consult a qualified adviser.</div>
     <div id="sidebar-market" style="display:none;"></div>
-    <div id="sidebar-disclaimer" style="font-size:8px;color:rgba(144,144,168,.6);margin-top:4px;line-height:1.4;">⚠️ Educational only. Not SEBI-registered. Consult a qualified adviser.</div>
+    <span id="sidebar-live-dot" style="display:none;"></span>
+    <span id="sidebar-updated" style="display:none;"></span>
   </div>
 </nav>
 
@@ -1270,11 +1266,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">☕ Habit vs Investing</h1>
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">What if you invested the money you spend on daily habits? The numbers will shock you.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;" id="habit_pills">
-      <button onclick="setHabit('coffee',4500)"    id="hp-coffee"    style="padding:7px 14px;border-radius:100px;font-size:11px;font-weight:700;cursor:pointer;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.4);color:var(--gold-light);font-family:'DM Sans',sans-serif;">☕ Coffee ₹150/day</button>
-      <button onclick="setHabit('swiggy',12000)"   id="hp-swiggy"   style="padding:7px 14px;border-radius:100px;font-size:11px;font-weight:700;cursor:pointer;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--muted);font-family:'DM Sans',sans-serif;">🛵 Swiggy ₹400/day</button>
-      <button onclick="setHabit('cigarette',6000)" id="hp-cigarette" style="padding:7px 14px;border-radius:100px;font-size:11px;font-weight:700;cursor:pointer;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--muted);font-family:'DM Sans',sans-serif;">🚬 Cigarette ₹200/day</button>
-      <button onclick="setHabit('ott',2000)"       id="hp-ott"      style="padding:7px 14px;border-radius:100px;font-size:11px;font-weight:700;cursor:pointer;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--muted);font-family:'DM Sans',sans-serif;">📺 OTT ₹2,000/mo</button>
-      <button onclick="setHabit('custom',0)"       id="hp-custom"   style="padding:7px 14px;border-radius:100px;font-size:11px;font-weight:700;cursor:pointer;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--muted);font-family:'DM Sans',sans-serif;">✏️ Custom</button>
+      <!-- Populated dynamically by updateHabitPresets() -->
     </div>
     <div class="card" style="margin-bottom:20px;">
       <div class="grid-3" style="gap:20px;">
@@ -1901,7 +1893,7 @@ function navTo(id){
   else if(id==='stepsip') calcStepSIP();
   else if(id==='ssa') calcSSA();
   else if(id==='crorepati') calcCrorepati();
-  else if(id==='habit') calcHabit();
+  else if(id==='habit') { updateHabitPresets(currentMode); calcHabit(); }
   else if(id==='contact') renderContact();
   else if(id==='gratuity') calcGratuity();
   else if(id==='homegoal') { calcHomeWizard(); hwGoTo(1); }
@@ -2310,6 +2302,8 @@ function setMode(mode){
 
   // Language toggle: show for india/germany/france/spain, hide for usa/uk
   renderLangToggle(mode);
+  // Update habit presets for the new region
+  if (typeof updateHabitPresets === 'function' && document.getElementById('habit_pills')) updateHabitPresets(mode);
   // Apply language labels
   applyLanguage(mode, currentLang);
 
@@ -2509,7 +2503,12 @@ function calcSIP(){
       rows+=`<tr><td><span class="badge-gold">${y.year}</span></td><td class="mono">${fmtSym(y.invested)}</td><td class="mono" style="color:var(--gold-light);">${fmtSym(y.value)}</td><td class="mono" style="color:#4ade80;">${fmtSym(y.gains)}</td><td><span class="badge-${parseFloat(y.gainPct)>0?'green':'red'}">${parseFloat(y.gainPct).toFixed(1)}%</span></td><td style="min-width:80px;"><div class="progress-bar"><div class="progress-fill" style="width:${prog}%;"></div></div></td></tr>`;
     });
     document.getElementById('sip_tbody').innerHTML=rows;
-    const lbls=currentMode==='india'?['₹2L','₹5L','₹10L','₹50L','₹1Cr','₹5Cr']:['5K','10K','50K','100K','500K','1M'].map(l=>sym()+l);
+    var _sym = sym();
+    var lbls;
+    if(currentMode==='india'){lbls=['₹2L','₹5L','₹10L','₹50L','₹1Cr','₹5Cr'];}
+    else if(currentMode==='uk'){lbls=['£5K','£10K','£50K','£100K','£500K','£1M'];}
+    else if(currentMode==='germany'||currentMode==='france'||currentMode==='spain'){lbls=['€5K','€10K','€50K','€100K','€500K','€1M'];}
+    else{lbls=['5K','10K','50K','100K','500K','1M'].map(function(l){return _sym+l;});}
     let mhtml='';
     (d.milestones||[]).forEach((m,i)=>{
       mhtml+=`<div class="milestone"><div class="milestone-dot"></div><div><div style="font-weight:600;color:var(--cream);font-size:11px;">${lbls[i]||fmtSym(m.target)}</div><div style="color:var(--muted);font-size:10px;">Year ${m.year}</div></div></div>`;
@@ -2832,9 +2831,9 @@ function buildGermanyTax() {
   <div class="card">
     <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">WICHTIGE STEUERREGELN 2026</div>
     <div style="font-size:12px;line-height:2;color:var(--muted);">
-      🏦 Grundfreibetrag: <strong style="color:var(--cream)">€11,784</strong> (steuerfrei)<br>
+      🏦 Grundfreibetrag: <strong style="color:var(--cream)">€12,096</strong> (steuerfrei, 2026)<br>
       📊 Eingangssteuersatz: <strong style="color:var(--cream)">14%</strong> bis progressiv <strong style="color:var(--cream)">42%</strong><br>
-      📊 Spitzensteuersatz 42%: ab <strong style="color:var(--cream)">€68,430</strong> (2026)<br>
+      📊 Spitzensteuersatz 42%: ab <strong style="color:var(--cream)">€68,480</strong> (2026)<br>
       📊 Reichensteuersatz 45%: ab <strong style="color:var(--cream)">€277,826</strong><br>
       💰 Sparerpauschbetrag: <strong style="color:var(--gold-light)">€1,000</strong> (Single) / €2,000 (verheiratet)<br>
       🛡️ Solidaritätszuschlag: 5.5% auf Steuer (ab ca. €18K Steuerschuld)<br>
@@ -2856,9 +2855,9 @@ function calcGermanyTax() {
   
   // German progressive formula (simplified)
   function germanyTaxFormula(x) {
-    if (x <= 11784) return 0;
-    if (x <= 17005) {
-      var y = (x - 11784) / 10000;
+    if (x <= 12096) return 0;
+    if (x <= 17443) {
+      var y = (x - 12096) / 10000;
       return Math.round((932.3 * y + 1400) * y);
     }
     if (x <= 66760) {
@@ -2875,7 +2874,7 @@ function calcGermanyTax() {
   
   // Solidaritätszuschlag (5.5% if income tax > ~€18K, with mitigation zone)
   var soli = 0;
-  var soliThreshold = isMarried ? 36260 : 18130;
+  var soliThreshold = isMarried ? 36350 : 18175;
   if (tax > soliThreshold) {
     soli = tax * 0.055;
   } else if (tax > (isMarried ? 34190 : 17095)) {
@@ -3048,12 +3047,12 @@ function buildSpainTax() {
   <div class="card">
     <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:14px;">ESCALA IRPF ESTATAL 2026</div>
     <div style="font-size:12px;line-height:2;color:var(--muted);">
-      📊 Tramo 19%: <strong style="color:var(--cream)">€0 – €12,450</strong><br>
-      📊 Tramo 24%: <strong style="color:var(--cream)">€12,451 – €20,200</strong><br>
-      📊 Tramo 30%: <strong style="color:var(--cream)">€20,201 – €35,200</strong><br>
-      📊 Tramo 37%: <strong style="color:var(--cream)">€35,201 – €60,000</strong><br>
-      📊 Tramo 45%: <strong style="color:var(--cream)">€60,001 – €300,000</strong><br>
-      📊 Tramo 47%: <strong style="color:var(--cream)">Más de €300,000</strong><br>
+      📊 Tipo estatal+autonómico aproximado:<br>
+      📊 Hasta €12,450: <strong style="color:var(--cream)">~19%</strong> (9.5% estatal + autonómico)<br>
+      📊 €12,451–€20,200: <strong style="color:var(--cream)">~24%</strong><br>
+      📊 €20,201–€35,200: <strong style="color:var(--cream)">~30%</strong><br>
+      📊 €35,201–€60,000: <strong style="color:var(--cream)">~37%</strong><br>
+      📊 €60,001–€300,000: <strong style="color:var(--cream)">~45–47%</strong><br>
       🛡️ Seg. Social trabajador: <strong style="color:var(--gold-light)">~6.35%</strong> del salario bruto<br>
       💰 Reducción por rendimientos del trabajo: hasta €5,565/año
     </div>
@@ -3081,20 +3080,39 @@ function calcSpainTax() {
   var baseImponible = Math.max(0, income - reduccion - minPersonal);
   
   // IRPF estatal scale
+  // IRPF estatal 2026 (escala general del Estado) — Art. 63 LIRPF
+  // Each tramo: cuota íntegra + tipo marginal sobre exceso
   function irpfEstatal(x) {
     var tax = 0;
-    if (x > 0) tax += Math.min(x, 12450) * 0.095;
+    if (x <= 0) return 0;
+    // Tramo 1: €0–€12,450 @ 9.5% (tipo estatal)
+    tax += Math.min(x, 12450) * 0.095;
+    // Tramo 2: €12,450–€20,200 @ 12%
     if (x > 12450) tax += Math.min(x - 12450, 7750) * 0.12;
+    // Tramo 3: €20,200–€35,200 @ 15%
     if (x > 20200) tax += Math.min(x - 20200, 15000) * 0.15;
+    // Tramo 4: €35,200–€60,000 @ 18.5%
     if (x > 35200) tax += Math.min(x - 35200, 24800) * 0.185;
+    // Tramo 5: €60,000–€300,000 @ 22.5%
     if (x > 60000) tax += Math.min(x - 60000, 240000) * 0.225;
+    // Tramo 6: >€300,000 @ 23.5%
     if (x > 300000) tax += (x - 300000) * 0.235;
     return tax;
   }
-  
-  // Autonómico: similar scale but at ccaaRate level
+  // Escala autonómica aproximada (varía por CCAA)
+  function irpfAutonomico(x, ccaaRate) {
+    var tax = 0;
+    if (x <= 0) return 0;
+    tax += Math.min(x, 12450) * (ccaaRate * 0.42);
+    if (x > 12450) tax += Math.min(x - 12450, 7750) * (ccaaRate * 0.53);
+    if (x > 20200) tax += Math.min(x - 20200, 15000) * (ccaaRate * 0.67);
+    if (x > 35200) tax += Math.min(x - 35200, 24800) * (ccaaRate * 0.82);
+    if (x > 60000) tax += Math.min(x - 60000, 240000) * ccaaRate;
+    if (x > 300000) tax += (x - 300000) * (ccaaRate * 1.04);
+    return tax;
+  }
   var estatal = irpfEstatal(baseImponible);
-  var autonomico = baseImponible * ccaaRate * 0.6; // simplified
+  var autonomico = irpfAutonomico(baseImponible, ccaaRate); // progressive autonomic
   var totalTax = estatal + autonomico;
   
   // Seguridad Social (trabajador): ~6.35% of income
@@ -3221,21 +3239,105 @@ function setCrorepatiTarget(val){const el=document.getElementById('cr_target');i
 
 // ── HABIT ─────────────────────────────────────────────────────
 var _currentHabit='coffee';
-function setHabit(type,monthly){
-  _currentHabit=type;
-  ['coffee','swiggy','cigarette','ott','custom'].forEach(h=>{
-    const el=document.getElementById('hp-'+h);
-    if(el){el.style.background='transparent';el.style.borderColor='rgba(255,255,255,.1)';el.style.color='var(--muted)';}
+
+// Region-specific habit presets. 'id' must be CSS-safe (no spaces).
+var HABIT_PRESETS = {
+  india: [
+    {id:'coffee',    emoji:'☕', label:'Coffee',        sublabel:'₹150/day',  monthly:4500},
+    {id:'swiggy',    emoji:'🛵', label:'Food Delivery', sublabel:'₹400/day',  monthly:12000},
+    {id:'cigarette', emoji:'🚬', label:'Cigarettes',    sublabel:'₹200/day',  monthly:6000},
+    {id:'ott',       emoji:'📺', label:'OTT Sub',       sublabel:'₹2,000/mo', monthly:2000},
+    {id:'custom',    emoji:'✏️', label:'Custom',         sublabel:'',          monthly:0},
+  ],
+  usa: [
+    {id:'coffee',    emoji:'☕', label:'Starbucks',     sublabel:'$7/day',    monthly:210},
+    {id:'dining',    emoji:'🍔', label:'Dining Out',    sublabel:'$15/day',   monthly:450},
+    {id:'cigarette', emoji:'🚬', label:'Cigarettes',    sublabel:'$12/day',   monthly:360},
+    {id:'streaming', emoji:'📺', label:'Streaming',     sublabel:'$50/mo',    monthly:50},
+    {id:'custom',    emoji:'✏️', label:'Custom',         sublabel:'',          monthly:0},
+  ],
+  uk: [
+    {id:'coffee',    emoji:'☕', label:'Coffee',        sublabel:'£4/day',    monthly:120},
+    {id:'dining',    emoji:'🍻', label:'Pub / Dining',  sublabel:'£15/day',   monthly:450},
+    {id:'cigarette', emoji:'🚬', label:'Cigarettes',    sublabel:'£12/day',   monthly:360},
+    {id:'streaming', emoji:'📺', label:'Streaming',     sublabel:'£30/mo',    monthly:30},
+    {id:'custom',    emoji:'✏️', label:'Custom',         sublabel:'',          monthly:0},
+  ],
+  germany: [
+    {id:'coffee',    emoji:'☕', label:'Kaffee',        sublabel:'€3/Tag',    monthly:90},
+    {id:'dining',    emoji:'🍺', label:'Ausgehen',      sublabel:'€15/Tag',   monthly:450},
+    {id:'cigarette', emoji:'🚬', label:'Zigaretten',    sublabel:'€8/Tag',    monthly:240},
+    {id:'streaming', emoji:'📺', label:'Streaming',     sublabel:'€20/Monat', monthly:20},
+    {id:'custom',    emoji:'✏️', label:'Sonstiges',     sublabel:'',          monthly:0},
+  ],
+  france: [
+    {id:'coffee',    emoji:'☕', label:'Café',          sublabel:'€2/jour',   monthly:60},
+    {id:'dining',    emoji:'🥐', label:'Restaurant',    sublabel:'€15/jour',  monthly:450},
+    {id:'cigarette', emoji:'🚬', label:'Cigarettes',    sublabel:'€11/jour',  monthly:330},
+    {id:'streaming', emoji:'📺', label:'Streaming',     sublabel:'€15/mois',  monthly:15},
+    {id:'custom',    emoji:'✏️', label:'Personnalisé',  sublabel:'',          monthly:0},
+  ],
+  spain: [
+    {id:'coffee',    emoji:'☕', label:'Café',          sublabel:'€1.5/día',  monthly:45},
+    {id:'dining',    emoji:'🥘', label:'Restaurante',   sublabel:'€12/día',   monthly:360},
+    {id:'cigarette', emoji:'🚬', label:'Cigarrillos',   sublabel:'€5/día',    monthly:150},
+    {id:'streaming', emoji:'📺', label:'Streaming',     sublabel:'€13/mes',   monthly:13},
+    {id:'custom',    emoji:'✏️', label:'Personalizado', sublabel:'',          monthly:0},
+  ],
+};
+
+function updateHabitPresets(mode) {
+  var presets = HABIT_PRESETS[mode] || HABIT_PRESETS.india;
+  var wrap = document.getElementById('habit_pills');
+  if (!wrap) return;
+  var btnStyle = 'padding:7px 14px;border-radius:100px;font-size:11px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;';
+  var pills = presets.map(function(p, i) {
+    var lbl = p.label + (p.sublabel ? ' ' + p.sublabel : '');
+    var activeSty = i === 0 
+      ? (btnStyle + 'background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.4);color:var(--gold-light);')
+      : (btnStyle + 'background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--muted);');
+    var btn = document.createElement('button');
+    btn.id = 'hp-' + p.id;
+    btn.style.cssText = activeSty;
+    btn.textContent = p.emoji + ' ' + lbl;
+    btn.onclick = (function(pid, pmonthly){ return function(){ setHabit(pid, pmonthly); }; })(p.id, p.monthly);
+    return btn;
   });
-  const active=document.getElementById('hp-'+type);
-  if(active){active.style.background='rgba(201,168,76,.12)';active.style.borderColor='rgba(201,168,76,.4)';active.style.color='var(--gold-light)';}
-  if(monthly>0){const el=document.getElementById('hab_p');if(el)el.value=monthly;}
+  wrap.innerHTML = '';
+  pills.forEach(function(btn){ wrap.appendChild(btn); });
+  if (presets.length > 0 && presets[0].monthly > 0) {
+    var firstEl = document.getElementById('hab_p');
+    if (firstEl) firstEl.value = presets[0].monthly;
+    _currentHabit = presets[0].id;
+  }
   calcHabit();
 }
+
+function setHabit(type, monthly) {
+  var presets = HABIT_PRESETS[currentMode] || HABIT_PRESETS.india;
+  _currentHabit = type;
+  presets.forEach(function(p) {
+    var el = document.getElementById('hp-' + p.id);
+    if (!el) return;
+    if (p.id === type) {
+      el.style.background = 'rgba(201,168,76,.12)';
+      el.style.borderColor = 'rgba(201,168,76,.4)';
+      el.style.color = 'var(--gold-light)';
+    } else {
+      el.style.background = 'transparent';
+      el.style.borderColor = 'rgba(255,255,255,.1)';
+      el.style.color = 'var(--muted)';
+    }
+  });
+  if (monthly > 0) { var el = document.getElementById('hab_p'); if (el) el.value = monthly; }
+  calcHabit();
+}
+
 function calcHabit(){
   const p=+document.getElementById('hab_p').value, t=+document.getElementById('hab_t').value, r=+document.getElementById('hab_r').value;
-  const names={coffee:'Daily Coffee',swiggy:'Food Delivery',cigarette:'Cigarettes',ott:'OTT Subscriptions',custom:'This Habit'};
-  const name=names[_currentHabit]||'This Habit';
+  var presets = HABIT_PRESETS[currentMode] || HABIT_PRESETS.india;
+  var found = presets.find(function(pr) { return pr.id === _currentHabit; });
+  const name = found ? found.label : 'This Habit';
   document.getElementById('v_hab_p').textContent=fmtSym(p);
   document.getElementById('v_hab_t').textContent=t;
   document.getElementById('v_hab_r').textContent=r.toFixed(1);
@@ -4971,7 +5073,8 @@ document.addEventListener('DOMContentLoaded', function() {
     updateHomeWizardForRegion();
     if (typeof renderLangToggle === 'function') renderLangToggle('india');
     if (typeof renderExchangeStatusBar === 'function') renderExchangeStatusBar('india');
-    calcSIP(); // ensure SIP results render on load
+    if (typeof updateHabitPresets === 'function') updateHabitPresets('india');
+    calcSIP();
   }, 120);
 });
 
