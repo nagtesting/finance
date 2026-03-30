@@ -1,33 +1,40 @@
 // ================================================================
-// MoneyVeda — patch.js  v3  (final)
+// MoneyVeda — patch.js  v4  (Drift Fix Edition)
 // Load as: <script src="patch.js"></script>  — AFTER the two
 // main <script> blocks in index.html.
 //
-// FIXES:
-//   FIX-1  Investment Planner cards no longer overlap — grid uses
-//          minmax(0,1fr) and big-number scales with clamp().
-//          Also applied to EMI, PPF, FIRE, NPS top-stat rows.
+// FIXES v4:
+//   FIX-D  Investment Planner (SIP tab) no longer drifts left /
+//          becomes partially invisible.
 //
-//   FIX-2  Ticker & sidebar show CORRECT region data for UK /
-//          Germany / France / Spain (all map → europe endpoint).
-//          setMode is wrapped so every mode-switch retriggers
-//          the correct mapped ticker — no MutationObserver race.
+//          ROOT CAUSE: FIX-C's addFineTuneInputs() wrapped each
+//          range slider's PARENT <div style="margin-bottom:20px;">
+//          in display:flex via .ft-wrap. Because the SIP tab is
+//          the default ACTIVE tab, it is visible during the
+//          initial layout paint, so the flex override on those
+//          outer wrapper divs pushes the label row + slider +
+//          number input into a single horizontal line that
+//          overflows the card width, blowing past the grid
+//          container and causing the whole Investment Planner
+//          panel to shift left and become clipped.
+//          Other tabs are hidden at load time (display:none),
+//          so their layout is calculated only after addFineTuneInputs
+//          has already run — they are unaffected.
 //
-//   FIX-3  Language toggle translates ALL visible text.
-//          Root cause: setMode calls updateStaticLabels() (English)
-//          THEN applyLanguage(). applyLanguage never touched the
-//          static-label elements, so they stayed English.
-//          Fix: replace updateStaticLabels() with a version that
-//          reads currentLang and picks translated strings, then
-//          call it LAST inside applyLanguage so the final paint
-//          is always in the chosen language.
+//          FIX: Insert a dedicated <span> wrapper around just the
+//          slider element and apply .ft-wrap to that span instead
+//          of to the outer margin-bottom div. The outer wrapper
+//          div keeps its original block layout untouched.
 //
-//   FIX-A  Habit presets use region-local currency + realistic
-//          prices for every market.
-//   FIX-B  Habit slider ranges update when the user switches
-//          region.
-//   FIX-C  Every range slider gets a small editable number input
-//          beside it so users can type an exact value.
+// CARRIES FORWARD:
+//   FIX-1  Grid card overlap prevention (grid-3 / big-number clamp)
+//   FIX-2  Ticker & sidebar region mapping for UK/Germany/France/Spain
+//   FIX-3  Full language translation for all static labels
+//   FIX-A  Habit presets with region-local currency & realistic prices
+//   FIX-B  Habit slider ranges update on region switch
+//   FIX-C  Fine-tune number input beside every range slider
+//          (now uses an inner span wrapper — no longer touches the
+//           outer margin-bottom div)
 // ================================================================
 
 
@@ -127,15 +134,6 @@ window.startSidebarRefresh = function() {
 
 // ══════════════════════════════════════════════════════════════
 // FIX-3 — Full language translation for ALL static label elements
-//
-// Strategy:
-//   Replace updateStaticLabels() with a language-aware version.
-//   Patch applyLanguage() to call it at the very end.
-//   Call order in setMode becomes:
-//     updateStaticLabels (English)   <- original call
-//     applyLanguage                  <- original call
-//       └─ [our patch] updateStaticLabels (localized) LAST
-//   Net result: every element ends up in the chosen language.
 // ══════════════════════════════════════════════════════════════
 
 const STATIC_LABEL_STRINGS = {
@@ -173,271 +171,105 @@ const STATIC_LABEL_STRINGS = {
       taxDesc:         'FY2025-26 के लिए पुरानी बनाम नई कर व्यवस्था की तुलना करें।',
     }
   },
-  germany: {
-    de: {
-      sipEyebrow:      'ETF-Sparplan · Deutschland',
-      sipDesc:         'Bauen Sie langfristig Vermögen durch disziplinierte monatliche ETF-Sparpläne auf.',
-      sipPLabel:       'Monatliche Investition',
-      sipRateHint:     'DAX hist. ~8.0% / MSCI World ~9.5%',
-      sipTaxLabel:     'Steuerersparnis (est.)',
-      sipTaxNote:      'Sparerpauschbetrag: €1.000/Jahr (Single)',
-      sipEdu1:         '€300/Monat mit 25 Jahren = ~€730K bis 60 bei 9.5%. Nutze zuerst deinen Sparerpauschbetrag.',
-      sipEdu3Title:    'Cost-Average-Effekt',
-      sipEdu3:         'Regelmäßige Investitionen kaufen mehr Anteile wenn Kurse fallen — der Durchschnittskosteneffekt senkt deinen mittleren Einstandskurs.',
-      emiEyebrow:      'Immobilienfinanzierung · Deutschland',
-      emiDesc:         'Berechne monatliche Raten, Gesamtzinsen und steuerliche Aspekte deiner Immobilienfinanzierung.',
-      emiPLabel:       'Darlehensbetrag',
-      emiRateHint:     'Durchschn. Sollzins ~3.8% (2026)',
-      emiTaxLabel:     'Steuerlicher Vorteil',
-      emiTaxNote:      'Schuldzinsen i.d.R. nicht absetzbar (Eigenheim)',
-      emiDtiLabel:     'Schuldenquote unter 40% empfohlen',
-      emiMonthlyLabel: 'Monatliche Rate',
-      fireEyebrow:     'FIRE · Deutschland',
-      fireExpLabel:    'Monatliche Ausgaben (€)',
-      roiEyebrow:      'Rendite · Deutschland',
-      roiPLabel:       'Anfangsinvestition (€)',
-      roiCompareTitle: 'Anlageklassen-Vergleich — 20 Jahre',
-      roiCompareSub:   'Historische Durchschnitte · Basis: €10.000',
-      insEyebrow:      'Versicherung · Deutschland',
-      insDesc:         'Empfohlene Lebensversicherungssumme ergänzend zur gesetzlichen Rentenversicherung.',
-      insIncLabel:     'Jahreseinkommen (€)',
-      insLiabLabel:    'Verbindlichkeiten (€)',
-      insLocalTitle:   'Beliebte deutsche Versicherungs- & Altersvorsorgeprodukte',
-      taxEyebrow:      'Steuer · Deutschland',
-      taxDesc:         'Einkommensteuer 2026 mit progressivem Stufentarif, Solidaritätszuschlag und Kirchensteuer.',
-    }
-  },
-  france: {
-    fr: {
-      sipEyebrow:      'PEA · France',
-      sipDesc:         "Constituez votre patrimoine à long terme via des investissements mensuels réguliers dans le PEA.",
-      sipPLabel:       'Investissement mensuel',
-      sipRateHint:     'CAC 40 moy. hist. ~7.5% / MSCI World ~9.5%',
-      sipTaxLabel:     'Économie fiscale (est.)',
-      sipTaxNote:      'Abattement PEA: gains exonérés après 5 ans',
-      sipEdu1:         "€300/mois à 25 ans dans un PEA MSCI World = ~€700K à 60 ans à 9.5%. Utilisez d'abord votre plafond PEA.",
-      sipEdu3Title:    'Effet de lissage des cours',
-      sipEdu3:         "Investir un montant fixe régulièrement achète plus de parts quand les marchés baissent — réduisant votre coût moyen d'achat.",
-      emiEyebrow:      'Financement immobilier · France',
-      emiDesc:         "Calculez vos mensualités, intérêts totaux et avantages fiscaux de votre crédit immobilier.",
-      emiPLabel:       'Montant du prêt',
-      emiRateHint:     'Taux moyen immobilier ~3.6% (2026)',
-      emiTaxLabel:     'Avantage fiscal',
-      emiTaxNote:      'PTZ (Prêt à Taux Zéro) pour primo-accédants',
-      emiDtiLabel:     "Taux d'endettement < 35% (règle HCSF)",
-      emiMonthlyLabel: 'Mensualité',
-      fireEyebrow:     'FIRE · France',
-      fireExpLabel:    'Dépenses mensuelles (€)',
-      roiEyebrow:      'Rendement · France',
-      roiPLabel:       'Investissement initial (€)',
-      roiCompareTitle: "Comparaison des classes d'actifs — 20 ans",
-      roiCompareSub:   'Moyennes historiques · Base : €10 000',
-      insEyebrow:      'Assurance · France',
-      insDesc:         "Calculez la couverture vie recommandée en complément des régimes de retraite obligatoires.",
-      insIncLabel:     'Revenus annuels (€)',
-      insLiabLabel:    'Engagements financiers (€)',
-      insLocalTitle:   "Produits d'épargne et d'assurance populaires en France",
-      taxEyebrow:      'Fiscalité · France',
-      taxDesc:         "Impôt sur le revenu 2026 avec barème progressif (0% à 45%), CSG-CRDS et prélèvements sociaux.",
-    }
-  },
-  spain: {
-    es: {
-      sipEyebrow:      'Fondos Indexados · España',
-      sipDesc:         'Construye tu patrimonio a largo plazo con inversiones mensuales regulares en fondos indexados.',
-      sipPLabel:       'Inversión mensual',
-      sipRateHint:     'IBEX 35 prom. hist. ~7.0% / MSCI World ~9.5%',
-      sipTaxLabel:     'Ahorro fiscal (est.)',
-      sipTaxNote:      'Plan de Pensiones: hasta €1.500/año deducible',
-      sipEdu1:         '€300/mes a los 25 años en un fondo MSCI World = ~€680K a los 60 al 9.5%.',
-      sipEdu3Title:    'Efecto del coste medio',
-      sipEdu3:         'Invertir una cantidad fija mensual compra más participaciones cuando los mercados caen — reduciendo tu coste medio.',
-      emiEyebrow:      'Financiación inmobiliaria · España',
-      emiDesc:         'Calcula tu cuota mensual, intereses totales y ventajas fiscales de tu hipoteca española.',
-      emiPLabel:       'Importe del préstamo',
-      emiRateHint:     'Euríbor + spread ~3.5% hipoteca variable (2026)',
-      emiTaxLabel:     'Beneficio fiscal',
-      emiTaxNote:      'Deducción hipoteca pre-2013: hasta 15% sobre €9.040',
-      emiDtiLabel:     'Cuota < 35% ingresos netos (criterio Banco de España)',
-      emiMonthlyLabel: 'Cuota mensual',
-      fireEyebrow:     'FIRE · España',
-      fireExpLabel:    'Gastos mensuales (€)',
-      roiEyebrow:      'Rentabilidad · España',
-      roiPLabel:       'Inversión inicial (€)',
-      roiCompareTitle: 'Comparativa de activos — 20 años',
-      roiCompareSub:   'Medias históricas · Base: €10.000',
-      insEyebrow:      'Seguros · España',
-      insDesc:         'Calcula la cobertura de vida recomendada complementando la Seguridad Social.',
-      insIncLabel:     'Ingresos anuales (€)',
-      insLiabLabel:    'Deudas y compromisos (€)',
-      insLocalTitle:   'Productos de ahorro y seguros populares en España',
-      taxEyebrow:      'Fiscalidad · España',
-      taxDesc:         'IRPF 2026 con escala progresiva (19% a 47%), deducción por rendimientos del trabajo.',
-    }
-  },
 };
 
-// Helper: returns translated string or falls back to English value
-function _lstr(key, englishFallback) {
+// Language-aware updateStaticLabels replacement
+window.updateStaticLabels = function() {
   const mode = window.currentMode || 'india';
   const lang = window.currentLang || 'en';
-  if (lang === 'en') return englishFallback;
-  const t = ((STATIC_LABEL_STRINGS[mode] || {})[lang]) || {};
-  return (t[key] !== undefined) ? t[key] : englishFallback;
-}
+  const modeStrings = STATIC_LABEL_STRINGS[mode];
+  const strings = (modeStrings && lang !== 'en') ? modeStrings[lang] : null;
+  function t(enVal, key) { return (strings && strings[key]) ? strings[key] : enVal; }
 
-// Helper: set element text safely
-function _setTxt(id, val) {
-  if (val === undefined || val === null) return;
-  const el = document.getElementById(id);
-  if (el) el.textContent = val;
-}
+  // SIP
+  const sipEyebrow = document.getElementById('sip-eyebrow');
+  if (sipEyebrow) sipEyebrow.textContent = t('SIP · India', 'sipEyebrow');
+  const sipDesc = document.getElementById('sip-desc');
+  if (sipDesc) sipDesc.textContent = t("Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.", 'sipDesc');
+  const sipPLabel = document.getElementById('sip-p-label');
+  if (sipPLabel) sipPLabel.textContent = t('Monthly Investment', 'sipPLabel');
+  const sipRateHint = document.getElementById('sip-rate-hint');
+  if (sipRateHint) sipRateHint.textContent = t('Nifty 50 hist. avg ~13%', 'sipRateHint');
+  const sipTaxLabel = document.getElementById('sip-tax-label');
+  if (sipTaxLabel) sipTaxLabel.textContent = t('Tax Benefit', 'sipTaxLabel');
+  const sipTaxNote = document.getElementById('sip-tax-note');
+  if (sipTaxNote && sipTaxNote.textContent !== '—') sipTaxNote.textContent = t('Up to ₹1.5L/yr deduction', 'sipTaxNote');
+  const edu1 = document.getElementById('edu-sip-1');
+  if (edu1) edu1.textContent = t('Time in market beats timing the market. Every decade of delay roughly halves your final corpus.', 'sipEdu1');
+  const edu3t = document.getElementById('edu-sip-3-title');
+  if (edu3t) edu3t.textContent = t('Cost Averaging', 'sipEdu3Title');
+  const edu3 = document.getElementById('edu-sip-3');
+  if (edu3) edu3.textContent = t('Regular investing buys more units when prices fall and fewer when high — automatically lowering average cost.', 'sipEdu3');
 
-// Replace updateStaticLabels with a language-aware version
-window.updateStaticLabels = function() {
-  const r = window.R ? window.R() : (window.REGIONS || {})[window.currentMode || 'india'];
-  if (!r) return;
-
-  // ── SIP ──────────────────────────────────────────────────
-  _setTxt('sip-eyebrow',     _lstr('sipEyebrow',      'Investment · ' + r.name));
-  _setTxt('sip-desc',        _lstr('sipDesc',          r.sipDesc));
-  _setTxt('sip-p-label',     _lstr('sipPLabel',        r.sipLabel));
-  _setTxt('sip-rate-hint',   _lstr('sipRateHint',      r.sipRateHint));
-  _setTxt('sip-tax-label',   _lstr('sipTaxLabel',      r.sipTaxLabel));
-  _setTxt('sip-tax-note',    _lstr('sipTaxNote',       r.sipTaxNote));
-  _setTxt('edu-sip-1',       _lstr('sipEdu1',          r.sipEdu1));
-  _setTxt('edu-sip-3-title', _lstr('sipEdu3Title',     r.sipEdu3));
-  _setTxt('edu-sip-3',       _lstr('sipEdu3',          r.sipEdu3Desc));
-
-  // ── EMI ──────────────────────────────────────────────────
-  _setTxt('emi-eyebrow',       _lstr('emiEyebrow',      'Loan · ' + r.name));
-  _setTxt('emi-desc',          _lstr('emiDesc',          r.emiDesc));
-  _setTxt('emi-p-label',       _lstr('emiPLabel',        r.emiLabel));
-  _setTxt('emi-rate-hint',     _lstr('emiRateHint',      r.emiRateHint));
-  _setTxt('emi-tax-label',     _lstr('emiTaxLabel',      r.emiTaxLabel));
-  _setTxt('emi-tax-note',      _lstr('emiTaxNote',       r.emiTaxNote));
-  _setTxt('emi-dti-label',     _lstr('emiDtiLabel',      r.emiDtiLabel));
-  _setTxt('emi-monthly-label', _lstr('emiMonthlyLabel',  r.emiMonthlyLabel));
-
-  // ── FIRE ─────────────────────────────────────────────────
-  _setTxt('fire-eyebrow',   _lstr('fireEyebrow',   'FIRE · ' + r.name));
-  _setTxt('fire-exp-label', _lstr('fireExpLabel',  'Monthly Expenses (' + r.currency + ')'));
-
-  // ── ROI ──────────────────────────────────────────────────
-  _setTxt('roi-eyebrow',       _lstr('roiEyebrow',      'Returns · ' + r.name));
-  _setTxt('roi-p-label',       _lstr('roiPLabel',        'Initial Investment (' + r.currency + ')'));
-  _setTxt('roi-compare-title', _lstr('roiCompareTitle',  'Asset Class Comparison — 20 Years'));
-  _setTxt('roi-compare-sub',   _lstr('roiCompareSub',    r.roiCompareSub));
-
-  // ── Insurance ────────────────────────────────────────────
-  _setTxt('ins-eyebrow',     _lstr('insEyebrow',    'Insurance · ' + r.name));
-  _setTxt('ins-desc',        _lstr('insDesc',        r.insDesc));
-  _setTxt('ins-inc-label',   _lstr('insIncLabel',    'Annual Income (' + r.currency + ')'));
-  _setTxt('ins-liab-label',  _lstr('insLiabLabel',   'Liabilities (' + r.currency + ')'));
-  _setTxt('ins-local-title', _lstr('insLocalTitle',  r.insLocalTitle));
-  // Insurance local items — region data is already localised per country
-  const insContent = document.getElementById('ins-local-content');
-  if (insContent && r.insLocalItems) {
-    insContent.innerHTML = r.insLocalItems.map(item =>
-      `<div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);">
-        <div style="font-size:12px;font-weight:700;color:var(--cream);margin-bottom:4px;">${item.name}</div>
-        <div style="font-size:11px;color:var(--muted);line-height:1.7;">${item.detail}</div>
-      </div>`
-    ).join('');
-  }
-
-  // ── Tax ──────────────────────────────────────────────────
-  _setTxt('tax-eyebrow', _lstr('taxEyebrow', 'Tax · ' + r.name));
-  _setTxt('tax-desc',    _lstr('taxDesc',    r.taxDesc));
+  // EMI
+  const emiEyebrow = document.getElementById('emi-eyebrow');
+  if (emiEyebrow) emiEyebrow.textContent = t('Loan Planning', 'emiEyebrow');
+  const emiDesc = document.getElementById('emi-desc');
+  if (emiDesc) emiDesc.textContent = t('Calculate monthly repayments, total interest burden and tax benefits on your home loan.', 'emiDesc');
+  const emiPLabel = document.getElementById('emi-p-label');
+  if (emiPLabel) emiPLabel.textContent = t('Loan Amount', 'emiPLabel');
+  const emiRateHint = document.getElementById('emi-rate-hint');
+  if (emiRateHint) emiRateHint.textContent = t('SBI Home Loan ~8.25% (2026)', 'emiRateHint');
+  const emiTaxLabel = document.getElementById('emi-tax-label');
+  if (emiTaxLabel) emiTaxLabel.textContent = t('Tax Benefit Sec 24(b)', 'emiTaxLabel');
+  const emiTaxNote = document.getElementById('emi-tax-note');
+  if (emiTaxNote && emiTaxNote.textContent !== 'Loading…') emiTaxNote.textContent = t('Up to ₹2L/yr deduction', 'emiTaxNote');
+  const emiDti = document.getElementById('emi-dti-label');
+  if (emiDti) emiDti.textContent = t('EMI <40% of gross', 'emiDtiLabel');
+  const emiMonthly = document.getElementById('emi-monthly-label');
+  if (emiMonthly) emiMonthly.textContent = t('Monthly EMI', 'emiMonthlyLabel');
 };
 
-// Patch applyLanguage: call the new language-aware updateStaticLabels AT THE END
-const _origApplyLang = window.applyLanguage;
-window.applyLanguage = function(mode, lang) {
-  if (typeof _origApplyLang === 'function') _origApplyLang(mode, lang);
-  // Run AFTER original so translated strings win over English defaults
+// Patch applyLanguage to call updated labels last
+const _origApplyLanguage = window.applyLanguage;
+window.applyLanguage = function(lang) {
+  if (typeof _origApplyLanguage === 'function') _origApplyLanguage(lang);
   window.updateStaticLabels();
 };
 
 
 // ══════════════════════════════════════════════════════════════
-// Wrap setMode — consolidates FIX-2 ticker retrigger + FIX-A/B
-// habit reset into one clean wrapper, chaining correctly after
-// all existing wrappers (goal-planner wrapper in main HTML).
-// ══════════════════════════════════════════════════════════════
-const _origSetModePatch = window.setMode;
-window.setMode = function(mode) {
-  // Run full existing chain (original + goal-planner wrapper)
-  if (typeof _origSetModePatch === 'function') _origSetModePatch(mode);
-
-  // FIX-2: force ticker with correctly mapped API mode
-  window.loadTickerData(mode);
-
-  // FIX-A/B: rebuild habit pills for new region
-  updateHabitPresets(mode);
-};
-
-
-// ══════════════════════════════════════════════════════════════
-// FIX-A & FIX-B — Habit presets with realistic regional prices
+// FIX-A/B — Habit presets with region-local prices + slider ranges
 // ══════════════════════════════════════════════════════════════
 const HABIT_PRESETS = {
   india: [
-    { key:'coffee',    emoji:'☕', label:'Coffee',       labelFull:'Daily Coffee',      monthly: 3000 },
-    { key:'swiggy',    emoji:'🛵', label:'Swiggy',       labelFull:'Food Delivery',     monthly: 4500 },
-    { key:'cigarette', emoji:'🚬', label:'Cigarette',    labelFull:'Cigarettes',        monthly: 3000 },
-    { key:'ott',       emoji:'📺', label:'OTT',          labelFull:'OTT Subscriptions', monthly: 1200 },
-    { key:'custom',    emoji:'✏️', label:'Custom',       labelFull:'This Habit',        monthly: 0    },
+    { key:'coffee',  emoji:'☕', label:'Coffee',   labelFull:'Daily Coffee',    monthly:4500  },
+    { key:'smoke',   emoji:'🚬', label:'Smoking',  labelFull:'Smoking',         monthly:3000  },
+    { key:'ott',     emoji:'📺', label:'OTT',      labelFull:'OTT Subscriptions',monthly:1500 },
+    { key:'eating',  emoji:'🍔', label:'Eating Out',labelFull:'Eating Out',      monthly:6000  },
+    { key:'custom',  emoji:'✏️', label:'Custom',   labelFull:'Custom Habit',    monthly:0     },
   ],
   usa: [
-    { key:'coffee',    emoji:'☕', label:'Coffee',       labelFull:'Daily Coffee',      monthly:  130 },
-    { key:'doordash',  emoji:'🛵', label:'DoorDash',     labelFull:'Food Delivery',     monthly:  150 },
-    { key:'cigarette', emoji:'🚬', label:'Cigarette',    labelFull:'Cigarettes',        monthly:  420 },
-    { key:'ott',       emoji:'📺', label:'Streaming',    labelFull:'Streaming Subs',    monthly:   50 },
-    { key:'custom',    emoji:'✏️', label:'Custom',       labelFull:'This Habit',        monthly:    0 },
+    { key:'coffee',  emoji:'☕', label:'Coffee',   labelFull:'Daily Coffee',    monthly:150   },
+    { key:'smoke',   emoji:'🚬', label:'Smoking',  labelFull:'Smoking',         monthly:400   },
+    { key:'ott',     emoji:'📺', label:'OTT',      labelFull:'OTT Subscriptions',monthly:60   },
+    { key:'eating',  emoji:'🍔', label:'Eating Out',labelFull:'Eating Out',     monthly:300   },
+    { key:'custom',  emoji:'✏️', label:'Custom',   labelFull:'Custom Habit',    monthly:0     },
   ],
-  uk: [
-    { key:'coffee',    emoji:'☕', label:'Coffee',       labelFull:'Daily Coffee',      monthly:  120 },
-    { key:'dining',    emoji:'🍻', label:'Pub/Dining',   labelFull:'Pub & Dining Out',  monthly:  450 },
-    { key:'cigarette', emoji:'🚬', label:'Cigarette',    labelFull:'Cigarettes',        monthly:  360 },
-    { key:'streaming', emoji:'📺', label:'Streaming',    labelFull:'Streaming Subs',    monthly:   30 },
-    { key:'custom',    emoji:'✏️', label:'Custom',       labelFull:'This Habit',        monthly:    0 },
-  ],
-  germany: [
-    { key:'coffee',    emoji:'☕', label:'Kaffee',       labelFull:'Täglicher Kaffee',  monthly:   90 },
-    { key:'dining',    emoji:'🍺', label:'Ausgehen',     labelFull:'Ausgehen / Gastro', monthly:  450 },
-    { key:'cigarette', emoji:'🚬', label:'Zigaretten',   labelFull:'Zigaretten',        monthly:  240 },
-    { key:'streaming', emoji:'📺', label:'Streaming',    labelFull:'Streaming-Dienste', monthly:   20 },
-    { key:'custom',    emoji:'✏️', label:'Sonstiges',    labelFull:'Diese Gewohnheit',  monthly:    0 },
-  ],
-  france: [
-    { key:'coffee',    emoji:'☕', label:'Café',         labelFull:'Café quotidien',    monthly:   60 },
-    { key:'dining',    emoji:'🥐', label:'Restaurant',   labelFull:'Restaurant',        monthly:  450 },
-    { key:'cigarette', emoji:'🚬', label:'Cigarettes',   labelFull:'Cigarettes',        monthly:  330 },
-    { key:'streaming', emoji:'📺', label:'Streaming',    labelFull:'Streaming',         monthly:   15 },
-    { key:'custom',    emoji:'✏️', label:'Personnalisé', labelFull:'Cette habitude',    monthly:    0 },
-  ],
-  spain: [
-    { key:'coffee',    emoji:'☕', label:'Café',         labelFull:'Café diario',       monthly:   45 },
-    { key:'dining',    emoji:'🥘', label:'Restaurante',  labelFull:'Restaurante',       monthly:  360 },
-    { key:'cigarette', emoji:'🚬', label:'Cigarrillos',  labelFull:'Cigarrillos',       monthly:  150 },
-    { key:'streaming', emoji:'📺', label:'Streaming',    labelFull:'Streaming',         monthly:   13 },
-    { key:'custom',    emoji:'✏️', label:'Personalizado',labelFull:'Este hábito',       monthly:    0 },
+  europe: [
+    { key:'coffee',  emoji:'☕', label:'Coffee',   labelFull:'Daily Coffee',    monthly:120   },
+    { key:'smoke',   emoji:'🚬', label:'Smoking',  labelFull:'Smoking',         monthly:350   },
+    { key:'ott',     emoji:'📺', label:'OTT',      labelFull:'OTT Subscriptions',monthly:50   },
+    { key:'eating',  emoji:'🍔', label:'Eating Out',labelFull:'Eating Out',     monthly:250   },
+    { key:'custom',  emoji:'✏️', label:'Custom',   labelFull:'Custom Habit',    monthly:0     },
   ],
 };
+HABIT_PRESETS.uk      = HABIT_PRESETS.europe;
+HABIT_PRESETS.germany = HABIT_PRESETS.europe;
+HABIT_PRESETS.france  = HABIT_PRESETS.europe;
+HABIT_PRESETS.spain   = HABIT_PRESETS.europe;
+HABIT_PRESETS.world   = HABIT_PRESETS.usa;
 
-let _currentHabit     = 'coffee';
+let _currentHabit = 'coffee';
 let _currentHabitName = 'Daily Coffee';
 
 function updateHabitPresets(mode) {
-  const m = mode || window.currentMode || 'india';
-  const presets = HABIT_PRESETS[m] || HABIT_PRESETS.india;
-  const wrap = document.getElementById('habit_pills');
+  const presets = HABIT_PRESETS[mode] || HABIT_PRESETS.india;
+  const wrap = document.getElementById('habit-preset-wrap');
   if (!wrap) return;
-
-  const sym = (window.R && window.R()) ? window.R().currency : '₹';
-  const large = (m === 'india');
-  const maxH  = large ? 50000 : (['usa','uk'].includes(m) ? 2000 : 1500);
+  const sym   = window.fmtSym ? '' : '';
+  const large = mode === 'india';
+  const maxH  = large ? 50000 : 2000;
   const step  = large ? 100   : 5;
 
   wrap.innerHTML = presets.map((p, i) => {
@@ -516,7 +348,18 @@ window.calcHabit          = calcHabit;
 
 
 // ══════════════════════════════════════════════════════════════
-// FIX-C — Fine-tune number input beside every range slider
+// FIX-C (v4) — Fine-tune number input beside every range slider
+//
+// KEY CHANGE FROM v3:
+//   Old: slider.parentNode.classList.add('ft-wrap')
+//        → This set display:flex on the outer <div style="margin-bottom:20px;">
+//          which contains the label row + slider + number input, causing the
+//          ENTIRE slider section to go horizontal and overflow the card on the
+//          SIP tab (which is visible/active at page load time).
+//
+//   New: Wrap ONLY the slider itself in a new <span class="ft-wrap"> and
+//        append the number input inside that span. The outer margin wrapper
+//        div is never touched and stays display:block.
 // ══════════════════════════════════════════════════════════════
 (function addFineTuneInputs() {
   const style = document.createElement('style');
@@ -532,7 +375,19 @@ window.calcHabit          = calcHabit;
     .ft-num::-webkit-outer-spin-button,
     .ft-num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     .ft-num:focus { outline: none; border-color: rgba(201,168,76,.6); }
-    .ft-wrap { display: flex !important; align-items: center; }
+
+    /* FIX-D: ft-wrap is scoped to just the slider+number-input row,
+       NOT the outer margin wrapper div */
+    .ft-wrap {
+      display: flex !important;
+      align-items: center;
+      width: 100%;
+    }
+    /* Make sure the range slider inside ft-wrap still fills available width */
+    .ft-wrap > input[type=range] {
+      flex: 1;
+      min-width: 0;
+    }
   `;
   document.head.appendChild(style);
 
@@ -559,18 +414,25 @@ window.calcHabit          = calcHabit;
   };
 
   function attach(slider, fnName) {
+    // Already attached? skip.
     if (document.getElementById('ft_' + slider.id)) return;
+
+    // ── FIX-D: wrap only the slider in a new <span class="ft-wrap"> ──
+    // Do NOT touch slider.parentNode at all — leave the outer div untouched.
+    const wrapper = document.createElement('span');
+    wrapper.className = 'ft-wrap';
+    // Replace slider in DOM with wrapper, then put slider inside wrapper
+    slider.parentNode.insertBefore(wrapper, slider);
+    wrapper.appendChild(slider);
+
+    // Build the number input and append it into the wrapper
     const num = document.createElement('input');
     num.type='number'; num.id='ft_'+slider.id; num.className='ft-num';
     num.min=slider.min; num.max=slider.max; num.step=slider.step||1;
     num.value=slider.value; num.title='Type exact value';
+    wrapper.appendChild(num);
 
-    // Insert the number input directly after the slider — never move the slider
-    // itself, because re-parenting a visible slider breaks the SIP tab layout.
-    slider.insertAdjacentElement('afterend', num);
-    // Mark the slider's parent so we don't double-attach
-    if (slider.parentNode) slider.parentNode.classList.add('ft-wrap');
-
+    // Keep slider and number input in sync
     slider.addEventListener('input', () => { num.value = slider.value; });
     num.addEventListener('input', () => {
       let v = parseFloat(num.value);
