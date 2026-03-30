@@ -396,9 +396,7 @@ body{height:100%;background:var(--dark);color:var(--cream);font-family:'DM Sans'
 .lang-toggle{display:flex;gap:4px;background:rgba(255,255,255,.04);border-radius:8px;padding:3px;}
 .lang-btn{flex:1;padding:5px 8px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;text-align:center;}
 .lang-btn.active{background:rgba(201,168,76,.15);color:var(--gold-light);}
-/* Sidebar layout fix */
-#sidebar{position:relative;z-index:10;flex-shrink:0;}
-.app{display:flex;height:100vh;height:100dvh;overflow:hidden;}
+/* Sidebar layout fix — kept in desktop block only, not duplicated here */
 
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;border-radius:8px;cursor:pointer;transition:all .2s;font-size:13px;font-weight:500;color:var(--muted);border-left:3px solid transparent;margin:1px 10px;}
 .nav-item:hover{background:rgba(201,168,76,.07);color:var(--cream);}
