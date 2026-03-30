@@ -416,7 +416,7 @@ body{height:100%;background:var(--dark);color:var(--cream);font-family:'DM Sans'
 .big-number{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:900;color:var(--gold-light);line-height:1;letter-spacing:-1px;}
 
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}.grid-3>*{min-width:0;}
-.grid-2-1{display:grid;grid-template-columns:1.2fr 0.8fr;gap:18px;min-width:0;}.grid-2-1>*{min-width:0;overflow:hidden;}
+.grid-2-1{display:grid;grid-template-columns:1.2fr 0.8fr;gap:18px;min-width:0;width:100%;}.grid-2-1>*{min-width:0;overflow:hidden;max-width:100%;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--dark4);border-radius:2px;outline:none;margin-top:10px;}
@@ -454,7 +454,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 .milestone:last-child{border-bottom:none;}
 .milestone-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);margin-top:4px;flex-shrink:0;box-shadow:0 0 7px rgba(201,168,76,.5);}
 
-.tab{display:none;padding:24px 20px 40px;max-width:1100px;width:100%;box-sizing:border-box;overflow-x:hidden;}.tab.active{display:block;}
+.tab{display:none;padding:24px 20px 40px;max-width:1100px;width:100%;box-sizing:border-box;overflow-x:hidden;min-width:0;}.tab.active{display:block;}
 
 .accordion-content{max-height:0;overflow:hidden;transition:max-height .4s ease;}
 .accordion-content.open{max-height:500px;}
@@ -878,7 +878,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div class="card">
         <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">LOAN PARAMETERS</div>
         <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="emi-p-label">Loan Amount</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_p">—</span></div><input type="range" id="emi_p" min="10000" max="20000000" step="10000" value="5000000"></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Interest Rate</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_r">8.5</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="emi_r" min="1" max="20" step="0.25" value="8.5"><div style="font-size:9px;color:var(--muted);margin-top:3px;text-align:center;" id="emi-rate-hint">SBI Home Loan ~8.25% (2026)</div></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="emi-rate-label" style="font-size:12px;color:var(--muted);">Interest Rate</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_r">8.5</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="emi_r" min="1" max="20" step="0.25" value="8.5"><div style="font-size:9px;color:var(--muted);margin-top:3px;text-align:center;" id="emi-rate-hint">SBI Home Loan ~8.25% (2026)</div></div>
         <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Tenure</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_t">20</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div><input type="range" id="emi_t" min="1" max="30" step="1" value="20"></div>
         <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15);border-radius:10px;padding:12px;">
           <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;" id="emi-tax-label">Tax Benefit</div>
@@ -927,20 +927,20 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="fire-desc">Find your <strong style="color:var(--cream);">FIRE Number</strong> — the corpus that funds your lifestyle forever.</p>
 
     <div class="grid-3" style="margin-bottom:20px;">
-      <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">🎯 FIRE Corpus</div><div class="big-number" id="fire_corpus">—</div></div>
+      <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div id="fire-corpus-label" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">🎯 FIRE Corpus</div><div class="big-number" id="fire_corpus">—</div></div>
       <div class="result-box"><div id="fire-years-label" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Years to FIRE</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="fire_years">0 yrs</div><div style="font-size:11px;margin-top:5px;color:var(--muted);" id="fire_year_label">—</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Safe Withdrawal/mo</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="fire_swr">—</div></div>
+      <div class="result-box"><div id="fire-swr-label" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Safe Withdrawal/mo</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="fire_swr">—</div></div>
     </div>
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
         <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">FIRE INPUTS</div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_age">30</span></div><input type="range" id="fire_age" min="20" max="55" value="30"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="fire-age-label" style="font-size:12px;color:var(--muted);">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_age">30</span></div><input type="range" id="fire_age" min="20" max="55" value="30"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="fire-exp-label" style="font-size:12px;color:var(--muted);">Monthly Expenses</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_exp">—</span></div><input type="range" id="fire_exp" min="500" max="30000" step="100" value="5000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Savings</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_saved">—</span></div><input type="range" id="fire_saved" min="0" max="2000000" step="5000" value="100000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Monthly Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inv">—</span></div><input type="range" id="fire_inv" min="100" max="20000" step="100" value="2000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Portfolio Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_ret">10</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_ret" min="4" max="20" step="0.5" value="10"></div>
-        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Inflation</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inf">6</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_inf" min="1" max="12" step="0.5" value="6"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="fire-saved-label" style="font-size:12px;color:var(--muted);">Current Savings</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_saved">—</span></div><input type="range" id="fire_saved" min="0" max="2000000" step="5000" value="100000"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="fire-inv-label" style="font-size:12px;color:var(--muted);">Monthly Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inv">—</span></div><input type="range" id="fire_inv" min="100" max="20000" step="100" value="2000"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="fire-ret-label" style="font-size:12px;color:var(--muted);">Portfolio Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_ret">10</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_ret" min="4" max="20" step="0.5" value="10"></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="fire-inf-label" style="font-size:12px;color:var(--muted);">Inflation</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inf">6</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_inf" min="1" max="12" step="0.5" value="6"></div>
       </div>
       <div class="card">
         <div id="fire-journey-label" class="section-eyebrow" style="margin-bottom:12px;">FIRE Journey</div>
@@ -971,8 +971,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div class="card">
         <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">LUMP SUM CALCULATOR</div>
         <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="roi-p-label">Initial Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_p">—</span></div><input type="range" id="roi_p" min="1000" max="1000000" step="1000" value="100000"></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Annual Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_r">12</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="roi_r" min="1" max="30" step="0.5" value="12"></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Period</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_t">20</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div><input type="range" id="roi_t" min="1" max="50" step="1" value="20"></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="roi-return-label" style="font-size:12px;color:var(--muted);">Annual Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_r">12</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="roi_r" min="1" max="30" step="0.5" value="12"></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="roi-period-label" style="font-size:12px;color:var(--muted);">Period</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_t">20</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div><input type="range" id="roi_t" min="1" max="50" step="1" value="20"></div>
         <div class="grid-3" style="margin-top:20px;gap:8px;">
           <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Final</div><div style="font-size:1.1rem;font-weight:800;color:var(--gold-light);font-family:'Playfair Display',serif;" id="roi_final">—</div></div>
           <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Returns</div><div style="font-size:1.1rem;font-weight:800;color:#4ade80;font-family:'Playfair Display',serif;" id="roi_returns">—</div></div>
@@ -1011,8 +1011,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
         <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Existing Cover</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_exist">—</span></div><input type="range" id="ins_exist" min="0" max="500000" step="5000" value="0"></div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;gap:12px;">
-        <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Recommended Cover</div><div class="big-number" id="ins_cover">—</div></div>
-        <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Coverage Gap</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="ins_gap">—</div></div>
+        <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div id="ins-cover-label" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Recommended Cover</div><div class="big-number" id="ins_cover">—</div></div>
+        <div class="result-box"><div id="ins-gap-label" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Coverage Gap</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="ins_gap">—</div></div>
         <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:12px;">
           <div style="font-size:9px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:1px;" id="ins-premium-label">Est. Premium/yr</div>
           <div style="font-size:1.2rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--gold-light);" id="ins_premium">—</div>
@@ -2109,6 +2109,12 @@ var UI_STRINGS = {
       habSpentLabel:'💸 आदत पर खर्च', habInvestLabel:'📈 अगर निवेश किया होता',
       habShareBtn:'📤 WhatsApp पर साझा करें', habImageBtn:'📸 छवि सहेजें',
       compareEyebrow:'तुलनात्मक विश्लेषण', compareTitle:'SIP बनाम एकमुश्त',
+      lblExpectedReturn:'अपेक्षित रिटर्न', lblTenure:'अवधि', lblCurrentAge:'वर्तमान आयु',
+      lblCurrentSavings:'वर्तमान बचत', lblMonthlyInv:'मासिक निवेश',
+      lblPortfolioRet:'पोर्टफोलियो रिटर्न', lblInflation:'महंगाई',
+      lblLoanAmount:'ऋण राशि', lblInterestRate:'ब्याज दर',
+      lblAnnualReturn:'वार्षिक रिटर्न', lblPeriod:'अवधि',
+      lblYears:'वर्ष',
     }
   },
   // ── GERMANY ──────────────────────────────────────────────
@@ -2147,6 +2153,16 @@ var UI_STRINGS = {
       habSpentLabel:'💸 FÜR GEWOHNHEIT AUSGEGEBEN', habInvestLabel:'📈 WENN STATTDESSEN INVESTIERT',
       habShareBtn:'📤 Auf WhatsApp teilen', habImageBtn:'📸 Als Bild speichern',
       compareEyebrow:'Direktvergleich', compareTitle:'Sparplan vs. Einmalanlage',
+      // Slider labels
+      lblExpectedReturn:'Erwartete Rendite', lblTenure:'Laufzeit', lblCurrentAge:'Aktuelles Alter',
+      lblCurrentSavings:'Aktuelles Erspartes', lblMonthlyInv:'Monatliche Investition',
+      lblPortfolioRet:'Portfolio-Rendite', lblInflation:'Inflation',
+      lblLoanAmount:'Darlehensbetrag', lblInterestRate:'Zinssatz',
+      lblAnnualReturn:'Jährliche Rendite', lblPeriod:'Zeitraum',
+      lblYears:'Jahre', lblSafeWithdrawal:'Sichere Entnahme/Monat',
+      lblFireCorpus:'FIRE-Kapital', lblYearsToFire:'Jahre bis FIRE',
+      lblProgress:'Fortschritt zum FIRE', lblRecommendedCover:'Empfohlener Schutz',
+      lblCoverageGap:'Deckungslücke',
     },
     en: {
       navSIP:'📈 Investment Planner', navEMI:'🏦 Loan & Mortgage', navFIRE:'🔥 FIRE Retirement',
@@ -2220,6 +2236,12 @@ var UI_STRINGS = {
       habSpentLabel:'💸 DÉPENSÉ EN HABITUDES', habInvestLabel:'📈 SI INVESTI À LA PLACE',
       habShareBtn:'📤 Partager sur WhatsApp', habImageBtn:'📸 Enregistrer en image',
       compareEyebrow:'Analyse comparative', compareTitle:'Versements réguliers vs Capital unique',
+      lblExpectedReturn:'Rendement attendu', lblTenure:'Dur\u00e9e', lblCurrentAge:'\u00c2ge actuel',
+      lblCurrentSavings:'Épargne actuelle', lblMonthlyInv:'Investissement mensuel',
+      lblPortfolioRet:'Rendement du portefeuille', lblInflation:'Inflation',
+      lblLoanAmount:'Montant du pr\u00eat', lblInterestRate:'Taux d\u2019int\u00e9r\u00eat',
+      lblAnnualReturn:'Rendement annuel', lblPeriod:'Période',
+      lblYears:'Ans',
     },
     en: {
       navSIP:'📈 Investment Planner', navEMI:'🏦 Mortgage Planner', navFIRE:'🔥 FIRE Retirement',
@@ -2293,6 +2315,12 @@ var UI_STRINGS = {
       habSpentLabel:'💸 GASTADO EN HÁBITOS', habInvestLabel:'📈 SI HUBIERA INVERTIDO',
       habShareBtn:'📤 Compartir en WhatsApp', habImageBtn:'📸 Guardar como imagen',
       compareEyebrow:'Análisis comparativo', compareTitle:'Aportaciones vs Capital único',
+      lblExpectedReturn:'Rentabilidad esperada', lblTenure:'Plazo', lblCurrentAge:'Edad actual',
+      lblCurrentSavings:'Ahorros actuales', lblMonthlyInv:'Inversión mensual',
+      lblPortfolioRet:'Rentabilidad cartera', lblInflation:'Inflación',
+      lblLoanAmount:'Importe del préstamo', lblInterestRate:'Tipo de interés',
+      lblAnnualReturn:'Rentabilidad anual', lblPeriod:'Periodo',
+      lblYears:'Años',
     },
     en: {
       navSIP:'📈 Investment Planner', navEMI:'🏦 Mortgage Planner', navFIRE:'🔥 FIRE Retirement',
@@ -2607,6 +2635,8 @@ function setMode(mode){
   } else if(at){
     navTo(at.id);
   }
+  // Re-apply language AFTER navTo (which may re-render and overwrite labels)
+  setTimeout(function(){ applyLanguage(currentMode, currentLang); }, 20);
 }
 
 function updateSliderRanges(){
@@ -2635,34 +2665,47 @@ function setSlider(id,min,max,step,val){
 
 function updateStaticLabels(){
   const r=R();
-  document.getElementById('sip-eyebrow').textContent='Investment · '+r.name;
-  document.getElementById('sip-desc').textContent=r.sipDesc;
-  document.getElementById('sip-p-label').textContent=r.sipLabel;
+  var lang = currentLang || 'en';
+  var s = ((UI_STRINGS[currentMode] || {})[lang]) || ((UI_STRINGS[currentMode] || {}).en) || {};
+  
+  // --- SIP ---
+  // Only use REGIONS-based fallback if no translation string exists
+  document.getElementById('sip-eyebrow').textContent = s.sipEyebrow || ('Investment · '+r.name);
+  document.getElementById('sip-desc').textContent = s.sipDesc || r.sipDesc;
+  document.getElementById('sip-p-label').textContent = s.sipParamLabel || r.sipLabel;
   document.getElementById('sip-rate-hint').textContent=r.sipRateHint;
-  document.getElementById('sip-tax-label').textContent=r.sipTaxLabel;
+  document.getElementById('sip-tax-label').textContent = s.sipTaxLabel || r.sipTaxLabel;
   document.getElementById('sip-tax-note').textContent=r.sipTaxNote;
   document.getElementById('edu-sip-1').textContent=r.sipEdu1;
   document.getElementById('edu-sip-3-title').textContent=r.sipEdu3;
   document.getElementById('edu-sip-3').textContent=r.sipEdu3Desc;
 
-  document.getElementById('emi-eyebrow').textContent='Loan · '+r.name;
-  document.getElementById('emi-desc').textContent=r.emiDesc;
+  // --- EMI ---
+  document.getElementById('emi-eyebrow').textContent = s.emiEyebrow || ('Loan · '+r.name);
+  document.getElementById('emi-desc').textContent = s.emiDesc || r.emiDesc;
   document.getElementById('emi-p-label').textContent=r.emiLabel;
   document.getElementById('emi-rate-hint').textContent=r.emiRateHint;
   document.getElementById('emi-tax-label').textContent=r.emiTaxLabel;
   document.getElementById('emi-tax-note').textContent=r.emiTaxNote;
   document.getElementById('emi-dti-label').textContent=r.emiDtiLabel;
-  document.getElementById('emi-monthly-label').textContent=r.emiMonthlyLabel;
+  document.getElementById('emi-monthly-label').textContent = s.emiMonthlyLabel || r.emiMonthlyLabel;
+  document.getElementById('emi-breakdown-label').textContent = s.emiBreakdownLabel || 'Payment Breakdown';
 
-  document.getElementById('fire-eyebrow').textContent='FIRE · '+r.name;
-  document.getElementById('fire-exp-label').textContent='Monthly Expenses ('+r.currency+')';
+  // --- FIRE ---
+  document.getElementById('fire-eyebrow').textContent = s.fireEyebrow || ('FIRE · '+r.name);
+  document.getElementById('fire-exp-label').textContent = s.fireExpLabel || ('Monthly Expenses ('+r.currency+')');
+  document.getElementById('fire-years-label').textContent = s.fireYearsLabel || 'Years to FIRE';
+  document.getElementById('fire-journey-label').textContent = s.fireJourneyLabel || 'FIRE Journey';
 
-  document.getElementById('roi-eyebrow').textContent='Returns · '+r.name;
+  // --- ROI ---
+  document.getElementById('roi-eyebrow').textContent = s.roiEyebrow || ('Returns · '+r.name);
   document.getElementById('roi-p-label').textContent='Initial Investment ('+r.currency+')';
-  document.getElementById('roi-compare-title').textContent='Asset Class Comparison — 20 Years';
+  document.getElementById('roi-compare-title').textContent = s.roiCompareTitle || 'Asset Class Comparison — 20 Years';
   document.getElementById('roi-compare-sub').textContent=r.roiCompareSub;
 
-  document.getElementById('ins-eyebrow').textContent='Insurance · '+r.name;
+  // --- Insurance ---
+  document.getElementById('ins-eyebrow').textContent = s.insEyebrow || ('Insurance · '+r.name);
+  document.getElementById('ins-title').textContent = s.insTitle || 'Life Insurance Planner';
   document.getElementById('ins-desc').textContent=r.insDesc;
   document.getElementById('ins-inc-label').textContent='Annual Income ('+r.currency+')';
   document.getElementById('ins-liab-label').textContent='Liabilities ('+r.currency+')';
@@ -2674,8 +2717,93 @@ function updateStaticLabels(){
     </div>`
   ).join('');
 
-  document.getElementById('tax-eyebrow').textContent='Tax · '+r.name;
+  // --- Tax ---
+  document.getElementById('tax-eyebrow').textContent = s.taxEyebrow || ('Tax · '+r.name);
+  document.getElementById('tax-title').textContent = s.taxTitle || 'Tax Optimizer';
   document.getElementById('tax-desc').textContent=r.taxDesc;
+  
+  // --- Nav items ---
+  if (s.navSIP) document.getElementById('btn-sip').innerHTML = s.navSIP;
+  if (s.navEMI) document.getElementById('btn-emi').innerHTML = s.navEMI;
+  if (s.navFIRE) document.getElementById('btn-fire').innerHTML = s.navFIRE;
+  if (s.navROI) document.getElementById('btn-roi').innerHTML = s.navROI;
+  if (s.navIns) document.getElementById('btn-insurance').innerHTML = s.navIns;
+  if (s.navTax) document.getElementById('btn-tax').innerHTML = s.navTax;
+  if (s.navHabit) { var nh=document.getElementById('nav-habit-label'); if(nh) nh.textContent=s.navHabit; }
+  if (s.navCompare) { var nc=document.getElementById('nav-compare-label'); if(nc) nc.textContent=s.navCompare; }
+  if (s.navHome) { var nhg=document.getElementById('nav-homegoal-label'); if(nhg) nhg.textContent=s.navHome; }
+  if (s.navGratuity) { var ng=document.getElementById('nav-gratuity-label'); if(ng) ng.textContent=s.navGratuity; }
+  if (s.navEdu) { var ne=document.getElementById('nav-edu-label'); if(ne) ne.textContent=s.navEdu; }
+  if (s.navGlossary) { var ngl=document.getElementById('nav-glossary-label'); if(ngl) ngl.textContent=s.navGlossary; }
+  if (s.navContact) { var nco=document.getElementById('nav-contact-label'); if(nco) nco.textContent=s.navContact; }
+  if (s.calcSection) { var nsc=document.getElementById('nav-section-calc'); if(nsc) nsc.textContent=s.calcSection; }
+  if (s.viralSection) { var nsv=document.getElementById('nav-section-viral'); if(nsv) nsv.textContent=s.viralSection; }
+  if (s.goalSection) { var nsg=document.getElementById('nav-section-goal'); if(nsg) nsg.textContent=s.goalSection; }
+  if (s.learnSection) { var nsl=document.getElementById('nav-section-learn'); if(nsl) nsl.textContent=s.learnSection; }
+  if (s.marketRegion) { var nmr=document.getElementById('nav-market-region-label'); if(nmr) nmr.textContent=s.marketRegion; }
+  
+  // --- Habit tab ---
+  if (s.habitEyebrow) { var he=document.getElementById('habit-eyebrow'); if(he) he.textContent=s.habitEyebrow; }
+  if (s.habitTitle) { var ht=document.getElementById('habit-title'); if(ht) ht.textContent=s.habitTitle; }
+  if (s.habitDesc) { var hd=document.getElementById('habit-desc'); if(hd) hd.textContent=s.habitDesc; }
+  if (s.habCostLabel) { var hc=document.getElementById('hab-cost-label'); if(hc) hc.textContent=s.habCostLabel; }
+  if (s.habReturnLabel) { var hr2=document.getElementById('hab-return-label'); if(hr2) hr2.textContent=s.habReturnLabel; }
+  if (s.habSpentLabel) { var hs=document.getElementById('hab-spent-label'); if(hs) hs.textContent=s.habSpentLabel; }
+  if (s.habInvestLabel) { var hi=document.getElementById('hab-invest-label'); if(hi) hi.textContent=s.habInvestLabel; }
+  if (s.habShareBtn) { var hsb=document.getElementById('hab-share-btn'); if(hsb) hsb.textContent=s.habShareBtn; }
+  if (s.habImageBtn) { var hib=document.getElementById('hab-img-btn'); if(hib) hib.textContent=s.habImageBtn; }
+  
+  // --- Compare tab ---
+  if (s.compareEyebrow) { var ce=document.getElementById('compare-eyebrow'); if(ce) ce.textContent=s.compareEyebrow; }
+  if (s.compareTitle) { var ct=document.getElementById('compare-title'); if(ct) ct.textContent=s.compareTitle; }
+  
+  // --- Crorepati/Millionaire ---
+  if (s.crEyebrow) { var cre=document.getElementById('cr-eyebrow'); if(cre) cre.textContent=s.crEyebrow; }
+  if (s.crDesc) { var crd=document.getElementById('cr_desc'); if(crd) crd.textContent=s.crDesc; }
+  if (s.crShareBtn) { var crsb=document.getElementById('cr-share-btn'); if(crsb) crsb.textContent=s.crShareBtn; }
+  
+  // --- SIP result box labels ---
+  var sipBoxes = document.querySelectorAll('#sip .grid-3 .result-box > div:first-child');
+  if (sipBoxes[0] && s.sipTotalLabel) sipBoxes[0].textContent = s.sipTotalLabel;
+  if (sipBoxes[1] && s.sipInvestedLabel) sipBoxes[1].textContent = s.sipInvestedLabel;
+  if (sipBoxes[2] && s.sipGainedLabel) sipBoxes[2].textContent = s.sipGainedLabel;
+  
+  // --- SIP share/projection labels ---
+  if (s.sipBreakdownLabel) { var sbl=document.getElementById('sip-breakdown-label'); if(sbl) sbl.textContent=s.sipBreakdownLabel; }
+  if (s.sipProjectionLabel) { var spl=document.getElementById('sip-projection-label'); if(spl) spl.textContent=s.sipProjectionLabel; }
+  if (s.sipVsLumpLabel) { var svl=document.getElementById('sip-vs-lump-label'); if(svl) svl.textContent=s.sipVsLumpLabel; }
+  if (s.sipShareBtn) { var ssbl=document.getElementById('sip-share-btn-label'); if(ssbl) ssbl.textContent=s.sipShareBtn.replace('📤 ','').replace('📤',''); }
+  if (s.sipImageBtn) { var sibl=document.getElementById('sip-img-btn-label'); if(sibl) sibl.textContent=s.sipImageBtn.replace('📸 ','').replace('📸',''); }
+  
+  // --- Slider labels (translated for non-English modes) ---
+  var _rl = s.lblExpectedReturn; if(_rl){var el2=document.getElementById('sip-return-label');if(el2)el2.textContent=_rl;}
+  var _tl = s.lblTenure; if(_tl){
+    var t1=document.getElementById('sip-tenure-label');if(t1)t1.textContent=_tl;
+    var t2=document.getElementById('emi-tenure-label');if(t2)t2.textContent=_tl;
+  }
+  if(s.lblCurrentAge){var ca=document.getElementById('fire-age-label');if(ca)ca.textContent=s.lblCurrentAge;}
+  if(s.lblCurrentSavings){var cs=document.getElementById('fire-saved-label');if(cs)cs.textContent=s.lblCurrentSavings;}
+  if(s.lblMonthlyInv){
+    var mi1=document.getElementById('fire-inv-label');if(mi1)mi1.textContent=s.lblMonthlyInv;
+  }
+  if(s.lblPortfolioRet){var pr=document.getElementById('fire-ret-label');if(pr)pr.textContent=s.lblPortfolioRet;}
+  if(s.lblInflation){var inf=document.getElementById('fire-inf-label');if(inf)inf.textContent=s.lblInflation;}
+  if(s.lblInterestRate){var ir=document.getElementById('emi-rate-label');if(ir)ir.textContent=s.lblInterestRate;}
+  if(s.lblAnnualReturn){var ar=document.getElementById('roi-return-label');if(ar)ar.textContent=s.lblAnnualReturn;}
+  if(s.lblPeriod){var pe=document.getElementById('roi-period-label');if(pe)pe.textContent=s.lblPeriod;}
+  
+  // --- FIRE result labels ---
+  if(s.fireYearsLabel){var fyl=document.getElementById('fire-years-label');if(fyl)fyl.textContent=s.fireYearsLabel;}
+  if(s.fireJourneyLabel){var fjl=document.getElementById('fire-journey-label');if(fjl)fjl.textContent=s.fireJourneyLabel;}
+  
+  // --- ROI result labels ---
+  if(s.roiCurveLabel){var rcl=document.getElementById('roi-curve-label');if(rcl)rcl.textContent=s.roiCurveLabel;}
+  if(s.roiTitle){var rtl=document.getElementById('roi-title');if(rtl)rtl.textContent=s.roiTitle;}
+  if(s.fireTitle){var ftl=document.getElementById('fire-title');if(ftl)ftl.textContent=s.fireTitle;}
+  
+  // --- roi-compare-sub (ROI description) ---
+  var rcSub = document.getElementById('roi-compare-sub');
+  if(rcSub) rcSub.textContent = r.roiCompareSub || 'Historical averages';
 }
 
 // ── API HELPER — debounced, all calc logic lives in /api/calculate ──
@@ -3800,7 +3928,9 @@ function safeAbortSignal(ms) {
 }
 async function loadSidebarLive() {
   try {
-    const res  = await fetch('/api/market?mode=' + currentMode + '&view=sidebar', { signal: safeAbortSignal(5000) });
+    var _sidebarApiMode = currentMode;
+  if (_sidebarApiMode === 'uk' || _sidebarApiMode === 'germany' || _sidebarApiMode === 'france' || _sidebarApiMode === 'spain') _sidebarApiMode = 'europe';
+  const res  = await fetch('/api/market?mode=' + _sidebarApiMode + '&view=sidebar', { signal: safeAbortSignal(5000) });
     if (!res.ok) throw new Error('non-200');
     const data = await res.json();
     const el   = document.getElementById('sidebar-market');
@@ -3820,8 +3950,11 @@ function startSidebarRefresh() {
 // FIX-1: loadTickerData now retries automatically on failure, and
 //        also triggers a 5s retry on page load for cold-start latency.
 async function loadTickerData(mode) {
+  // Map new country modes to market API modes (API only accepts india/usa/europe/world)
+  var apiMode = mode;
+  if (mode === 'uk' || mode === 'germany' || mode === 'france' || mode === 'spain') apiMode = 'europe';
   try {
-    const res  = await fetch('/api/market?mode=' + mode + '&view=ticker', { signal: safeAbortSignal(12000) });
+    const res  = await fetch('/api/market?mode=' + apiMode + '&view=ticker', { signal: safeAbortSignal(12000) });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     const track = document.getElementById('ticker-track');
@@ -4809,7 +4942,7 @@ async function generateSIPShareCard() {
   var invPct = corpusNum > 0 ? Math.round((investedNum / corpusNum) * 100) : 50;
 
   // Language-aware share card labels
-  var cl = (CALC_LABELS[currentMode] || {})[currentLang] || {};
+  var cl = ((UI_STRINGS[currentMode] || {})[currentLang]) || {};
   var goalLabels = {
     hi:'मेरा निवेश लक्ष्य', de:'Mein Anlageziel',
     fr:'Mon objectif d\u2019investissement', es:'Mi objetivo de inversión', en:'My Investment Goal'
