@@ -724,15 +724,15 @@ tr:hover td{background:rgba(255,255,255,.02);}
     </div>
     <div id="nav-section-viral" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">🔥 Viral Tools</div>
     <div class="nav-item" id="btn-crorepati" onclick="navTo('crorepati')" style="color:var(--gold-light);"><span id="nav-crorepati-label">🏆 Crorepati Calc</span></div>
-    <div class="nav-item" id="btn-habit"     onclick="navTo('habit')"     style="color:var(--gold-light);">☕ Habit vs Invest</div>
-    <div class="nav-item" id="btn-compare"   onclick="navTo('compare')"   style="color:var(--gold-light);">⚖️ SIP vs Lump Sum</div>
+    <div class="nav-item" id="btn-habit"     onclick="navTo('habit')"     style="color:var(--gold-light);"><span id="nav-habit-label">☕ Habit vs Invest</span></div>
+    <div class="nav-item" id="btn-compare"   onclick="navTo('compare')"   style="color:var(--gold-light);"><span id="nav-compare-label">⚖️ SIP vs Lump Sum</span></div>
     <div id="nav-section-goal" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">🏠 Goal Planners</div>
-    <div class="nav-item" id="btn-gratuity" onclick="navTo('gratuity')">🤝 Gratuity Calc</div>
-    <div class="nav-item" id="btn-homegoal" onclick="navTo('homegoal')">🏠 Buy a Home</div>
+    <div class="nav-item" id="btn-gratuity" onclick="navTo('gratuity')"><span id="nav-gratuity-label">🤝 Gratuity Calc</span></div>
+    <div class="nav-item" id="btn-homegoal" onclick="navTo('homegoal')"><span id="nav-homegoal-label">🏠 Buy a Home</span></div>
     <div id="nav-section-learn" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">Learn</div>
-    <div class="nav-item" id="btn-edu"      onclick="navTo('edu')">🎓 Financial Academy</div>
-    <div class="nav-item" id="btn-glossary" onclick="navTo('glossary')">📖 Glossary</div>
-    <div class="nav-item" id="btn-contact"  onclick="navTo('contact')">✉️ Write to Us</div>
+    <div class="nav-item" id="btn-edu"      onclick="navTo('edu')"><span id="nav-edu-label">🎓 Financial Academy</span></div>
+    <div class="nav-item" id="btn-glossary" onclick="navTo('glossary')"><span id="nav-glossary-label">📖 Glossary</span></div>
+    <div class="nav-item" id="btn-contact"  onclick="navTo('contact')"><span id="nav-contact-label">✉️ Write to Us</span></div>
   </div>
 
   <div style="padding:6px 18px;border-top:1px solid rgba(201,168,76,.08);flex-shrink:0;">
@@ -819,7 +819,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
         </div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
-        <div class="section-eyebrow" style="text-align:center;">Corpus Breakdown</div>
+        <div id="sip-breakdown-label" class="section-eyebrow" style="text-align:center;">Corpus Breakdown</div>
         <div class="chart-wrap">
           <canvas id="sipChart" width="160" height="160"></canvas>
           <div class="chart-center">
@@ -839,14 +839,14 @@ tr:hover td{background:rgba(255,255,255,.02);}
     </div>
 
     <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
-      <button class="btn-outline" onclick="shareResult('sip')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;"><span>📤</span> Share Result</button>
+      <button id="sip-share-btn" class="btn-outline" onclick="shareResult('sip')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;"><span>📤</span> <span id="sip-share-btn-label">Share Result</span></button>
       <button class="btn-outline" onclick="generateSIPShareCard()" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.3);"><span>📸</span> Save as Image</button>
-      <button class="btn-outline" onclick="navTo('compare')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;background:rgba(201,168,76,.08);"><span>⚖️</span> SIP vs Lump Sum</button>
+      <button id="sip-compare-btn" class="btn-outline" onclick="navTo('compare')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;background:rgba(201,168,76,.08);"><span>⚖️</span> <span id="sip-vs-lump-label">SIP vs Lump Sum</span></button>
     </div>
 
     <div class="card" style="margin-bottom:20px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
-        <h3 style="font-size:14px;font-weight:700;">Year-by-Year Projection</h3>
+        <h3 id="sip-projection-label" style="font-size:14px;font-weight:700;">Year-by-Year Projection</h3>
         <button class="btn-outline" onclick="downloadSIPCSV()">⬇ Export CSV</button>
       </div>
       <div class="table-wrap" style="max-height:280px;overflow-y:auto;">
@@ -887,7 +887,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
         </div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
-        <div class="section-eyebrow" style="text-align:center;">Payment Breakdown</div>
+        <div id="emi-breakdown-label" class="section-eyebrow" style="text-align:center;">Payment Breakdown</div>
         <div class="chart-wrap"><canvas id="emiChart" width="160" height="160"></canvas><div class="chart-center"><div style="font-size:8px;color:var(--muted);">Interest</div><div style="font-size:1.1rem;font-weight:700;font-family:'Playfair Display',serif;color:#f87171;" id="emi_interest_pct_center">0%</div></div></div>
         <div style="width:100%;">
           <div class="compare-row"><span class="compare-label">Principal</span><div class="compare-bar"><div class="compare-fill" id="emi_bar_p" style="width:50%;background:#4f46e5;"></div></div><span class="compare-val" id="emi_pct_p">50%</span></div>
@@ -923,12 +923,12 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <!-- ====== FIRE TAB ====== -->
   <div id="fire" class="tab">
     <div class="section-eyebrow" id="fire-eyebrow">Financial Independence</div>
-    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">🔥 FIRE Calculator</h1>
+    <h1 class="display" id="fire-title" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">🔥 FIRE Calculator</h1>
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="fire-desc">Find your <strong style="color:var(--cream);">FIRE Number</strong> — the corpus that funds your lifestyle forever.</p>
 
     <div class="grid-3" style="margin-bottom:20px;">
       <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">🎯 FIRE Corpus</div><div class="big-number" id="fire_corpus">—</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Years to FIRE</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="fire_years">0 yrs</div><div style="font-size:11px;margin-top:5px;color:var(--muted);" id="fire_year_label">—</div></div>
+      <div class="result-box"><div id="fire-years-label" style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Years to FIRE</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="fire_years">0 yrs</div><div style="font-size:11px;margin-top:5px;color:var(--muted);" id="fire_year_label">—</div></div>
       <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Safe Withdrawal/mo</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="fire_swr">—</div></div>
     </div>
 
@@ -936,14 +936,14 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div class="card">
         <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">FIRE INPUTS</div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_age">30</span></div><input type="range" id="fire_age" min="20" max="55" value="30"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="fire-exp-label">Monthly Expenses</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_exp">—</span></div><input type="range" id="fire_exp" min="500" max="30000" step="100" value="5000"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="fire-exp-label" style="font-size:12px;color:var(--muted);">Monthly Expenses</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_exp">—</span></div><input type="range" id="fire_exp" min="500" max="30000" step="100" value="5000"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Savings</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_saved">—</span></div><input type="range" id="fire_saved" min="0" max="2000000" step="5000" value="100000"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Monthly Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inv">—</span></div><input type="range" id="fire_inv" min="100" max="20000" step="100" value="2000"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Portfolio Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_ret">10</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_ret" min="4" max="20" step="0.5" value="10"></div>
         <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Inflation</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inf">6</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_inf" min="1" max="12" step="0.5" value="6"></div>
       </div>
       <div class="card">
-        <div class="section-eyebrow" style="margin-bottom:12px;">FIRE Journey</div>
+        <div id="fire-journey-label" class="section-eyebrow" style="margin-bottom:12px;">FIRE Journey</div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:11px;color:var(--muted);">Progress to FIRE</span><span style="font-size:11px;color:var(--gold-light);font-weight:600;" id="fire_progress_pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="fire_progress_bar" style="width:0%;"></div></div></div>
         <div id="fire_milestones" style="font-size:11px;"></div>
         <div style="margin-top:14px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:12px;">
@@ -964,7 +964,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <!-- ====== ROI TAB ====== -->
   <div id="roi" class="tab">
     <div class="section-eyebrow" id="roi-eyebrow">Returns Analysis</div>
-    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">ROI & Compound Growth</h1>
+    <h1 class="display" id="roi-title" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">ROI & Compound Growth</h1>
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Compare investment vehicles and understand compound growth.</p>
 
     <div class="grid-2-1" style="margin-bottom:20px;">
@@ -979,11 +979,11 @@ tr:hover td{background:rgba(255,255,255,.02);}
           <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Multiplier</div><div style="font-size:1.1rem;font-weight:800;font-family:'Playfair Display',serif;" id="roi_mult">0x</div></div>
         </div>
       </div>
-      <div class="card"><div class="section-eyebrow" style="text-align:center;margin-bottom:12px;">Growth Curve</div><canvas id="roiChart" height="200"></canvas></div>
+      <div class="card"><div id="roi-curve-label" class="section-eyebrow" style="text-align:center;margin-bottom:12px;">Growth Curve</div><canvas id="roiChart" height="200"></canvas></div>
     </div>
 
     <div class="card">
-      <h3 style="font-size:14px;font-weight:700;margin-bottom:5px;" id="roi-compare-title">Asset Class Comparison — 20 Years</h3>
+      <h3 id="roi-compare-title" style="font-size:14px;font-weight:700;margin-bottom:5px;">Asset Class Comparison — 20 Years</h3>
       <p style="font-size:11px;color:var(--muted);margin-bottom:16px;" id="roi-compare-sub">Historical averages</p>
       <div id="asset_compare"></div>
     </div>
@@ -997,7 +997,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
   <!-- ====== INSURANCE TAB ====== -->
   <div id="insurance" class="tab">
-    <div class="section-eyebrow" id="ins-eyebrow">Protection Planning</div>
+    <div id="ins-eyebrow" class="section-eyebrow">Protection Planning</div>
     <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;" id="ins-title">Life Insurance Planner</h1>
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="ins-desc">Calculate recommended cover and explore local insurance products.</p>
 
@@ -1066,8 +1066,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
   <!-- ====== COMPARE TAB ====== -->
   <div id="compare" class="tab">
-    <div class="section-eyebrow">Side-by-Side Analysis</div>
-    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">SIP vs Lump Sum</h1>
+    <div id="compare-eyebrow" class="section-eyebrow">Side-by-Side Analysis</div>
+    <h1 id="compare-title" class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">SIP vs Lump Sum</h1>
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">Same money, same return, same duration — which strategy wins?</p>
 
     <div class="card" style="margin-bottom:20px;">
@@ -1237,7 +1237,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
   <!-- ====== CROREPATI / MILLIONAIRE TAB ====== -->
   <div id="crorepati" class="tab">
-    <div class="section-eyebrow" style="color:var(--gold);">Viral Calculator</div>
+    <div id="cr-eyebrow" class="section-eyebrow" style="color:var(--gold);">Viral Calculator</div>
     <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;" id="cr_title">🏆 Crorepati Calculator</h1>
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="cr_desc">How much do you need to invest every month to become a Crorepati?</p>
     <div class="card" style="margin-bottom:20px;background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.02));border-color:rgba(201,168,76,.3);">
@@ -1250,7 +1250,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
         <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">YOU NEED TO INVEST</div>
         <div class="big-number" style="font-size:3.5rem;" id="cr_monthly">—</div>
         <div style="font-size:14px;color:var(--muted);margin-top:8px;">per month to reach <span id="cr_target_label" style="color:var(--gold-light);font-weight:700;">—</span> in <span id="cr_t_label" style="color:var(--cream);">15 years</span></div>
-        <button class="btn-outline" onclick="shareResult('crorepati')" style="margin-top:16px;padding:10px 24px;font-size:13px;">📤 Share on WhatsApp</button>
+        <button id="cr-share-btn" class="btn-outline" onclick="shareResult('crorepati')" style="margin-top:16px;padding:10px 24px;font-size:13px;">📤 Share on WhatsApp</button>
       </div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
@@ -1262,25 +1262,25 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
   <!-- ====== HABIT VS INVEST TAB ====== -->
   <div id="habit" class="tab">
-    <div class="section-eyebrow" style="color:var(--gold);">Viral Tool</div>
-    <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">☕ Habit vs Investing</h1>
-    <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;">What if you invested the money you spend on daily habits? The numbers will shock you.</p>
+    <div class="section-eyebrow" id="habit-eyebrow" style="color:var(--gold);">Viral Tool</div>
+    <h1 class="display" id="habit-title" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;">☕ Habit vs Investing</h1>
+    <p id="habit-desc" style="color:var(--muted);line-height:1.7;margin-bottom:24px;">What if you invested the money you spend on daily habits? The numbers will shock you.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;" id="habit_pills">
       <!-- Populated dynamically by updateHabitPresets() -->
     </div>
     <div class="card" style="margin-bottom:20px;">
       <div class="grid-3" style="gap:20px;">
-        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Monthly Habit Cost</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_hab_p">—</span></div><input type="range" id="hab_p" min="100" max="50000" step="100" value="4500" oninput="calcHabit()"></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="hab-cost-label" style="font-size:12px;color:var(--muted);">Monthly Habit Cost</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_hab_p">—</span></div><input type="range" id="hab_p" min="100" max="50000" step="100" value="4500" oninput="calcHabit()"></div>
         <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Years</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_hab_t">20</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div><input type="range" id="hab_t" min="1" max="40" step="1" value="20" oninput="calcHabit()"></div>
-        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Return if Invested</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_hab_r">12</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="hab_r" min="4" max="20" step="0.5" value="12" oninput="calcHabit()"></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label id="hab-return-label" style="font-size:12px;color:var(--muted);">Return if Invested</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_hab_r">12</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="hab_r" min="4" max="20" step="0.5" value="12" oninput="calcHabit()"></div>
       </div>
     </div>
     <div class="grid-2" style="margin-bottom:20px;">
-      <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:14px;padding:24px;text-align:center;"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#f87171;margin-bottom:8px;">💸 SPENT ON HABIT</div><div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:#f87171;" id="hab_spent">—</div><div style="font-size:11px;color:var(--muted);margin-top:6px;" id="hab_spent_sub">—</div></div>
-      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:14px;padding:24px;text-align:center;"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#4ade80;margin-bottom:8px;">📈 IF INVESTED INSTEAD</div><div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:#4ade80;" id="hab_corpus">—</div><div style="font-size:11px;color:var(--muted);margin-top:6px;" id="hab_corpus_sub">—</div></div>
+      <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:14px;padding:24px;text-align:center;"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#f87171;margin-bottom:8px;"><span id="hab-spent-label">💸 SPENT ON HABIT</span></div><div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:#f87171;" id="hab_spent">—</div><div style="font-size:11px;color:var(--muted);margin-top:6px;" id="hab_spent_sub">—</div></div>
+      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:14px;padding:24px;text-align:center;"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#4ade80;margin-bottom:8px;"><span id="hab-invest-label">📈 IF INVESTED INSTEAD</span></div><div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:#4ade80;" id="hab_corpus">—</div><div style="font-size:11px;color:var(--muted);margin-top:6px;" id="hab_corpus_sub">—</div></div>
     </div>
-    <div class="card" style="background:rgba(201,168,76,.06);border-color:rgba(201,168,76,.2);margin-bottom:20px;"><div id="hab_verdict" style="font-size:14px;line-height:1.9;color:var(--cream);"></div><button class="btn-outline" onclick="shareResult('habit')" style="margin-top:16px;">📤 Share on WhatsApp</button>
-<button class="btn-outline" onclick="generateHabitShareCard()" style="margin-top:10px;width:100%;background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.3);">📸 Save as Image</button></div>
+    <div class="card" style="background:rgba(201,168,76,.06);border-color:rgba(201,168,76,.2);margin-bottom:20px;"><div id="hab_verdict" style="font-size:14px;line-height:1.9;color:var(--cream);"></div><button id="hab-share-btn" class="btn-outline" onclick="shareResult('habit')" style="margin-top:16px;">📤 Share on WhatsApp</button>
+<button id="hab-img-btn" class="btn-outline" onclick="generateHabitShareCard()" style="margin-top:10px;width:100%;background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.3);">📸 Save as Image</button></div>
   </div>
 
   <!-- ====== CONTACT TAB ====== -->
@@ -2012,270 +2012,505 @@ function setLang(lang) {
   renderLangToggle(currentMode);
 }
 
-// ─── FULL CALCULATOR LABEL TRANSLATIONS ─────────────────────
-var CALC_LABELS = {
-  india: {
-    en: {
-      sipTitle:'Investment Planner', sipEyebrow:'SIP · India',
-      sipDesc:"Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.",
-      sipParamLabel:'Monthly Investment', sipRateLabel:'Expected Return', sipTenureLabel:'Tenure',
-      sipTaxSectionLabel:'Tax Benefit', sipTotalLabel:'Total Corpus', sipInvestedLabel:'Amount Invested',
-      sipGainedLabel:'Wealth Gained', sipShareBtn:'Share Result', sipImageBtn:'Save as Image',
-      emiTitle:'Loan & Mortgage Planner', emiEyebrow:'Loan Planning',
-      emiDesc:'Calculate monthly repayments, total interest burden and tax benefits on your home loan.',
-      fireTitle:'FIRE Retirement Planner', fireEyebrow:'Early Retirement',
-      roiTitle:'ROI & Compound Interest', roiEyebrow:'Returns',
-      insTitle:'Insurance Planner', insEyebrow:'Life Cover',
-      taxTitle:'Tax Optimizer', taxEyebrow:'Tax Planning',
-      crorepatiTitle:'Crorepati Calculator',
-      habitTitle:'Habit vs Invest',
-      compareTitle:'SIP vs Lump Sum',
-      shareBtn:'Share Result', imageBtn:'📸 Save as Image',
-    },
-    hi: {
-      sipTitle:'निवेश योजनाकार', sipEyebrow:'SIP · भारत',
-      sipDesc:'अनुशासित मासिक SIP के माध्यम से चक्रवृद्धि का लाभ उठाएं — भारत का सबसे शक्तिशाली धन-सृजन उपकरण।',
-      sipParamLabel:'मासिक निवेश', sipRateLabel:'अपेक्षित रिटर्न', sipTenureLabel:'अवधि',
-      sipTaxSectionLabel:'कर लाभ', sipTotalLabel:'कुल कोष', sipInvestedLabel:'निवेशित राशि',
-      sipGainedLabel:'अर्जित संपदा', sipShareBtn:'परिणाम साझा करें', sipImageBtn:'📸 छवि सहेजें',
-      emiTitle:'ऋण और मॉर्गेज योजनाकार', emiEyebrow:'ऋण योजना',
-      emiDesc:'अपने गृह ऋण पर मासिक किस्त, कुल ब्याज और धारा 24(b) कर लाभ की गणना करें।',
-      fireTitle:'FIRE सेवानिवृत्ति योजनाकार', fireEyebrow:'जल्दी सेवानिवृत्ति',
-      roiTitle:'ROI और चक्रवृद्धि ब्याज', roiEyebrow:'रिटर्न',
-      insTitle:'बीमा योजनाकार', insEyebrow:'जीवन कवर',
-      taxTitle:'कर अनुकूलक', taxEyebrow:'कर योजना',
-      crorepatiTitle:'करोड़पति कैलकुलेटर',
-      habitTitle:'आदत बनाम निवेश',
-      compareTitle:'SIP बनाम एकमुश्त',
-      shareBtn:'परिणाम साझा करें', imageBtn:'📸 छवि सहेजें',
-    }
-  },
-  germany: {
-    de: {
-      sipTitle:'Investitionsplaner', sipEyebrow:'ETF-Sparplan · DE',
-      sipDesc:'Bauen Sie langfristig Vermögen durch disziplinierte monatliche ETF-Sparpläne auf — der deutsche Weg zur finanziellen Freiheit.',
-      sipParamLabel:'Monatliche Investition', sipRateLabel:'Erwartete Rendite', sipTenureLabel:'Laufzeit',
-      sipTaxSectionLabel:'Steuerersparnis', sipTotalLabel:'Gesamtvermögen', sipInvestedLabel:'Investierter Betrag',
-      sipGainedLabel:'Gewinn', sipShareBtn:'Ergebnis teilen', sipImageBtn:'📸 Als Bild speichern',
-      emiTitle:'Kredit- & Darlehensplaner', emiEyebrow:'Finanzierung',
-      emiDesc:'Berechne monatliche Raten, Gesamtzinsen und steuerliche Aspekte deiner Immobilienfinanzierung.',
-      fireTitle:'FIRE Ruhestandsplaner', fireEyebrow:'Frühzeitige Rente',
-      roiTitle:'Rendite & Zinseszins', roiEyebrow:'Renditen',
-      insTitle:'Versicherungsplaner', insEyebrow:'Lebensschutz',
-      taxTitle:'Steueroptimierung', taxEyebrow:'Steuern',
-      crorepatiTitle:'Millionär-Rechner',
-      habitTitle:'Gewohnheit vs. Investition',
-      compareTitle:'Sparplan vs. Einmalanlage',
-      shareBtn:'Ergebnis teilen', imageBtn:'📸 Als Bild speichern',
-    },
-    en: {
-      sipTitle:'Investment Planner', sipEyebrow:'ETF Savings Plan · DE',
-      sipDesc:'Build long-term wealth through disciplined monthly ETF savings plans — the German way to financial freedom.',
-      sipParamLabel:'Monthly Investment', sipRateLabel:'Expected Return', sipTenureLabel:'Tenure',
-      sipTaxSectionLabel:'Tax Saving', sipTotalLabel:'Total Wealth', sipInvestedLabel:'Amount Invested',
-      sipGainedLabel:'Wealth Gained', sipShareBtn:'Share Result', sipImageBtn:'📸 Save as Image',
-      emiTitle:'Loan & Mortgage Planner', emiEyebrow:'Financing',
-      emiDesc:'Calculate monthly repayments, total interest and tax aspects of your property financing.',
-      fireTitle:'FIRE Retirement Planner', fireEyebrow:'Early Retirement',
-      roiTitle:'ROI & Compound Interest', roiEyebrow:'Returns',
-      insTitle:'Insurance Planner', insEyebrow:'Life Cover',
-      taxTitle:'Tax Optimizer', taxEyebrow:'Taxes',
-      crorepatiTitle:'Millionaire Calculator',
-      habitTitle:'Habit vs. Investment',
-      compareTitle:'Savings Plan vs. Lump Sum',
-      shareBtn:'Share Result', imageBtn:'📸 Save as Image',
-    }
-  },
-  france: {
-    fr: {
-      sipTitle:'Planificateur d\u2019investissement', sipEyebrow:'PEA · France',
-      sipDesc:'Constituez votre patrimoine à long terme gr\u00e2ce \u00e0 des investissements mensuels r\u00e9guliers \u2014 l\u2019approche fran\u00e7aise de la libert\u00e9 financi\u00e8re.',
-      sipParamLabel:'Investissement mensuel', sipRateLabel:'Rendement attendu', sipTenureLabel:'Durée',
-      sipTaxSectionLabel:'Économie fiscale', sipTotalLabel:'Patrimoine total', sipInvestedLabel:'Montant investi',
-      sipGainedLabel:'Gains', sipShareBtn:'Partager le résultat', sipImageBtn:'📸 Enregistrer en image',
-      emiTitle:'Planificateur crédit immobilier', emiEyebrow:'Financement immobilier',
-      emiDesc:'Calculez vos mensualités, intérêts totaux et avantages fiscaux de votre crédit immobilier.',
-      fireTitle:'Planificateur retraite anticipée', fireEyebrow:'Retraite anticipée',
-      roiTitle:'Rendement & Intérêts composés', roiEyebrow:'Rendements',
-      insTitle:'Planificateur assurance', insEyebrow:'Couverture vie',
-      taxTitle:'Optimisation fiscale', taxEyebrow:'Fiscalité',
-      crorepatiTitle:'Calculateur millionnaire',
-      habitTitle:'Habitude vs. Investissement',
-      compareTitle:'Versements r\u00e9guliers vs. Capital unique',
-      shareBtn:'Partager le r\u00e9sultat', imageBtn:'\U0001f4f8 Enregistrer en image',
-    },
-    en: {
-      sipTitle:'Investment Planner', sipEyebrow:'PEA · France',
-      sipDesc:'Build long-term wealth through regular monthly investments — the French path to financial freedom.',
-      sipParamLabel:'Monthly Investment', sipRateLabel:'Expected Return', sipTenureLabel:'Tenure',
-      sipTaxSectionLabel:'Tax Saving', sipTotalLabel:'Total Wealth', sipInvestedLabel:'Amount Invested',
-      sipGainedLabel:'Wealth Gained', sipShareBtn:'Share Result', sipImageBtn:'📸 Save as Image',
-      emiTitle:'Mortgage Planner', emiEyebrow:'Property Financing',
-      emiDesc:'Calculate monthly payments, total interest and tax benefits on your French mortgage.',
-      fireTitle:'FIRE Retirement Planner', fireEyebrow:'Early Retirement',
-      roiTitle:'ROI & Compound Interest', roiEyebrow:'Returns',
-      insTitle:'Insurance Planner', insEyebrow:'Life Cover',
-      taxTitle:'Tax Optimizer', taxEyebrow:'Taxation',
-      crorepatiTitle:'Millionaire Calculator',
-      habitTitle:'Habit vs. Investment',
-      compareTitle:'Regular vs. Lump Sum',
-      shareBtn:'Share Result', imageBtn:'📸 Save as Image',
-    }
-  },
-  spain: {
-    es: {
-      sipTitle:'Planificador de inversión', sipEyebrow:'Fondos Indexados · España',
-      sipDesc:'Construye tu patrimonio a largo plazo con inversiones mensuales regulares — el camino español hacia la libertad financiera.',
-      sipParamLabel:'Inversión mensual', sipRateLabel:'Rentabilidad esperada', sipTenureLabel:'Plazo',
-      sipTaxSectionLabel:'Ahorro fiscal', sipTotalLabel:'Patrimonio total', sipInvestedLabel:'Importe invertido',
-      sipGainedLabel:'Ganancias', sipShareBtn:'Compartir resultado', sipImageBtn:'📸 Guardar como imagen',
-      emiTitle:'Calculadora de hipoteca', emiEyebrow:'Financiación inmobiliaria',
-      emiDesc:'Calcula tu cuota mensual, intereses totales y ventajas fiscales de tu hipoteca española.',
-      fireTitle:'Planificador jubilación anticipada', fireEyebrow:'Jubilación anticipada',
-      roiTitle:'Rentabilidad e interés compuesto', roiEyebrow:'Rentabilidades',
-      insTitle:'Planificador de seguros', insEyebrow:'Cobertura de vida',
-      taxTitle:'Optimización fiscal', taxEyebrow:'Fiscalidad',
-      crorepatiTitle:'Calculadora de millonario',
-      habitTitle:'Hábito vs. Inversión',
-      compareTitle:'Aportaciones vs. Capital único',
-      shareBtn:'Compartir resultado', imageBtn:'📸 Guardar como imagen',
-    },
-    en: {
-      sipTitle:'Investment Planner', sipEyebrow:'Index Funds · Spain',
-      sipDesc:'Build long-term wealth through regular monthly investments — the Spanish path to financial freedom.',
-      sipParamLabel:'Monthly Investment', sipRateLabel:'Expected Return', sipTenureLabel:'Tenure',
-      sipTaxSectionLabel:'Tax Saving', sipTotalLabel:'Total Wealth', sipInvestedLabel:'Amount Invested',
-      sipGainedLabel:'Wealth Gained', sipShareBtn:'Share Result', sipImageBtn:'📸 Save as Image',
-      emiTitle:'Mortgage Planner', emiEyebrow:'Property Financing',
-      emiDesc:'Calculate monthly payments, total interest and tax benefits on your Spanish mortgage.',
-      fireTitle:'FIRE Retirement Planner', fireEyebrow:'Early Retirement',
-      roiTitle:'ROI & Compound Interest', roiEyebrow:'Returns',
-      insTitle:'Insurance Planner', insEyebrow:'Life Cover',
-      taxTitle:'Tax Optimizer', taxEyebrow:'Taxation',
-      crorepatiTitle:'Millionaire Calculator',
-      habitTitle:'Habit vs. Investment',
-      compareTitle:'Regular vs. Lump Sum',
-      shareBtn:'Share Result', imageBtn:'📸 Save as Image',
-    }
-  }
-};
+// ================================================================
+// COMPREHENSIVE TRANSLATION SYSTEM
+// ================================================================
 
+// Helper: set element text/html safely
 function setEl(id, prop, val) {
   var el = document.getElementById(id);
-  if (!el || val === undefined) return;
+  if (!el || val === undefined || val === null) return;
   if (prop === 'text') el.textContent = val;
   else if (prop === 'html') el.innerHTML = val;
+  else if (prop === 'placeholder') el.placeholder = val;
 }
 
-function applyLanguage(mode, lang) {
-  var strings = (LANG_STRINGS[mode] || {})[lang] || (LANG_STRINGS[mode] || {}).en || {};
-  var cl = (CALC_LABELS[mode] || {})[lang] || (CALC_LABELS[mode] || {}).en || {};
+// Full translations: every UI string per mode per language
+var UI_STRINGS = {
+  // ── INDIA ────────────────────────────────────────────────
+  india: {
+    en: {
+      // Nav
+      navSIP:'📈 Investment Planner', navEMI:'🏦 Loan & Mortgage', navFIRE:'🔥 FIRE Retirement',
+      navROI:'💹 ROI & Compound', navIns:'🛡️ Insurance Planner', navTax:'📋 Tax Optimizer',
+      navHabit:'☕ Habit vs Invest', navCompare:'⚖️ SIP vs Lump Sum', navHome:'🏠 Buy a Home',
+      navGratuity:'🤝 Gratuity Calc', navEdu:'🎓 Financial Academy', navGlossary:'📖 Glossary',
+      navContact:'✉️ Write to Us',
+      // Section headers
+      calcSection:'Calculators', viralSection:'🔥 Viral Tools', goalSection:'🏠 Goal Planners',
+      learnSection:'Learn', marketRegion:'Market Region',
+      // SIP
+      sipEyebrow:'SIP · India', sipTitle:'Investment Planner',
+      sipDesc:"Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.",
+      sipParamLabel:'Monthly Investment', sipBreakdownLabel:'Corpus Breakdown',
+      sipTotalLabel:'Total Corpus', sipInvestedLabel:'Amount Invested', sipGainedLabel:'Wealth Gained',
+      sipProjectionLabel:'Year-by-Year Projection', sipVsLumpLabel:'SIP vs Lump Sum',
+      sipTaxLabel:'Tax Saved (80C/ELSS)', sipShareBtn:'📤 Share Result', sipImageBtn:'📸 Save as Image',
+      // EMI
+      emiEyebrow:'Loan Planning', emiTitle:'Loan & Mortgage Planner',
+      emiDesc:'Calculate monthly repayments, total interest burden and tax benefits on your home loan.',
+      emiBreakdownLabel:'Payment Breakdown', emiMonthlyLabel:'Monthly EMI',
+      emiShareLabel:'Share Result', emiImageLabel:'📸 Save as Image',
+      // FIRE
+      fireEyebrow:'Financial Independence', fireTitle:'🔥 FIRE Calculator',
+      fireYearsLabel:'Years to FIRE', fireExpLabel:'Monthly Expenses',
+      fireJourneyLabel:'FIRE Journey', fireShareBtn:'📤 Share Result', fireImageBtn:'📸 Save as Image',
+      // ROI
+      roiEyebrow:'Returns Analysis', roiTitle:'ROI & Compound Growth',
+      roiCurveLabel:'Growth Curve', roiCompareTitle:'Asset Class Comparison — 20 Years',
+      // Insurance
+      insEyebrow:'Protection Planning', insTitle:'Life Insurance Planner',
+      // Tax
+      taxEyebrow:'Tax Optimization', taxTitle:'Tax Optimizer',
+      // Crorepati
+      crEyebrow:'Viral Calculator', crTitle:'🏆 Crorepati Calculator',
+      crDesc:'How much do you need to invest every month to become a Crorepati?',
+      crShareBtn:'📤 Share on WhatsApp',
+      // Habit
+      habitEyebrow:'Viral Tool', habitTitle:'☕ Habit vs Investing',
+      habitDesc:'What if you invested the money you spend on daily habits? The numbers will shock you.',
+      habCostLabel:'Monthly Habit Cost', habReturnLabel:'Return if Invested',
+      habSpentLabel:'💸 SPENT ON HABIT', habInvestLabel:'📈 IF INVESTED INSTEAD',
+      habShareBtn:'📤 Share on WhatsApp', habImageBtn:'📸 Save as Image',
+      // Compare
+      compareEyebrow:'Side-by-Side Analysis', compareTitle:'SIP vs Lump Sum',
+    },
+    hi: {
+      navSIP:'📈 निवेश योजनाकार', navEMI:'🏦 ऋण और मॉर्गेज', navFIRE:'🔥 FIRE सेवानिवृत्ति',
+      navROI:'💹 ROI और चक्रवृद्धि', navIns:'🛡️ बीमा योजनाकार', navTax:'📋 कर अनुकूलक',
+      navHabit:'☕ आदत बनाम निवेश', navCompare:'⚖️ SIP बनाम एकमुश्त', navHome:'🏠 घर खरीदें',
+      navGratuity:'🤝 ग्रेच्युटी कैलकुलेटर', navEdu:'🎓 वित्तीय अकादमी', navGlossary:'📖 शब्दावली',
+      navContact:'✉️ हमसे लिखें',
+      calcSection:'कैलकुलेटर', viralSection:'🔥 वायरल टूल्स', goalSection:'🏠 लक्ष्य योजनाकार',
+      learnSection:'सीखें', marketRegion:'बाज़ार क्षेत्र',
+      sipEyebrow:'SIP · भारत', sipTitle:'निवेश योजनाकार',
+      sipDesc:'अनुशासित मासिक SIP के माध्यम से चक्रवृद्धि — भारत का सबसे शक्तिशाली धन-सृजन उपकरण।',
+      sipParamLabel:'मासिक निवेश', sipBreakdownLabel:'कोष विश्लेषण',
+      sipTotalLabel:'कुल कोष', sipInvestedLabel:'निवेशित राशि', sipGainedLabel:'अर्जित संपदा',
+      sipProjectionLabel:'वर्ष-दर-वर्ष अनुमान', sipVsLumpLabel:'SIP बनाम एकमुश्त',
+      sipTaxLabel:'कर बचत (80C/ELSS)', sipShareBtn:'📤 परिणाम साझा करें', sipImageBtn:'📸 छवि सहेजें',
+      emiEyebrow:'ऋण योजना', emiTitle:'ऋण और मॉर्गेज योजनाकार',
+      emiDesc:'अपने गृह ऋण पर मासिक किस्त, कुल ब्याज और धारा 24(b) कर लाभ की गणना करें।',
+      emiBreakdownLabel:'भुगतान विश्लेषण', emiMonthlyLabel:'मासिक EMI',
+      emiShareLabel:'परिणाम साझा करें', emiImageLabel:'📸 छवि सहेजें',
+      fireEyebrow:'वित्तीय स्वतंत्रता', fireTitle:'🔥 FIRE कैलकुलेटर',
+      fireYearsLabel:'FIRE तक वर्ष', fireExpLabel:'मासिक खर्च',
+      fireJourneyLabel:'FIRE यात्रा', fireShareBtn:'📤 परिणाम साझा करें', fireImageBtn:'📸 छवि सहेजें',
+      roiEyebrow:'रिटर्न विश्लेषण', roiTitle:'ROI और चक्रवृद्धि वृद्धि',
+      roiCurveLabel:'वृद्धि वक्र', roiCompareTitle:'परिसंपत्ति वर्ग तुलना — 20 वर्ष',
+      insEyebrow:'सुरक्षा योजना', insTitle:'जीवन बीमा योजनाकार',
+      taxEyebrow:'कर योजना', taxTitle:'कर अनुकूलक',
+      crEyebrow:'वायरल कैलकुलेटर', crTitle:'🏆 करोड़पति कैलकुलेटर',
+      crDesc:'करोड़पति बनने के लिए आपको हर महीने कितना निवेश करना होगा?',
+      crShareBtn:'📤 WhatsApp पर साझा करें',
+      habitEyebrow:'वायरल टूल', habitTitle:'☕ आदत बनाम निवेश',
+      habitDesc:'अगर आप रोज़ की आदतों पर खर्च करने के बजाय निवेश करें? नंबर आपको चौंका देंगे।',
+      habCostLabel:'मासिक आदत खर्च', habReturnLabel:'निवेश पर रिटर्न',
+      habSpentLabel:'💸 आदत पर खर्च', habInvestLabel:'📈 अगर निवेश किया होता',
+      habShareBtn:'📤 WhatsApp पर साझा करें', habImageBtn:'📸 छवि सहेजें',
+      compareEyebrow:'तुलनात्मक विश्लेषण', compareTitle:'SIP बनाम एकमुश्त',
+    }
+  },
+  // ── GERMANY ──────────────────────────────────────────────
+  germany: {
+    de: {
+      navSIP:'📈 Monatliche Investition', navEMI:'🏦 Kredit & Darlehen', navFIRE:'🔥 Frühzeitige Rente',
+      navROI:'💹 Rendite & Zinseszins', navIns:'🛡️ Versicherungsplaner', navTax:'📋 Steueroptimierung',
+      navHabit:'☕ Gewohnheit vs. Investition', navCompare:'⚖️ Sparplan vs. Einmalanlage',
+      navHome:'🏠 Immobilienkauf', navGratuity:'🤝 Abfindungsrechner',
+      navEdu:'🎓 Finanzakademie', navGlossary:'📖 Glossar', navContact:'✉️ Schreib uns',
+      calcSection:'Rechner', viralSection:'🔥 Beliebte Tools', goalSection:'🏠 Zielplaner',
+      learnSection:'Lernen', marketRegion:'Marktregion',
+      sipEyebrow:'ETF-Sparplan · DE', sipTitle:'Investitionsplaner',
+      sipDesc:'Bauen Sie langfristig Vermögen durch disziplinierte monatliche ETF-Sparpläne auf.',
+      sipParamLabel:'Monatliche Investition', sipBreakdownLabel:'Vermögensanalyse',
+      sipTotalLabel:'Gesamtvermögen', sipInvestedLabel:'Investierter Betrag', sipGainedLabel:'Gewinn',
+      sipProjectionLabel:'Jahr-für-Jahr-Projektion', sipVsLumpLabel:'Sparplan vs. Einmalanlage',
+      sipTaxLabel:'Steuerersparnis (Sparerpauschbetrag)', sipShareBtn:'📤 Ergebnis teilen', sipImageBtn:'📸 Als Bild speichern',
+      emiEyebrow:'Immobilienfinanzierung', emiTitle:'Kredit- & Darlehensplaner',
+      emiDesc:'Berechne monatliche Raten, Gesamtzinsen und steuerliche Aspekte deiner Immobilienfinanzierung.',
+      emiBreakdownLabel:'Zahlungsanalyse', emiMonthlyLabel:'Monatliche Rate',
+      emiShareLabel:'Ergebnis teilen', emiImageLabel:'📸 Als Bild speichern',
+      fireEyebrow:'Finanzielle Unabhängigkeit', fireTitle:'🔥 FIRE-Rechner',
+      fireYearsLabel:'Jahre bis FIRE', fireExpLabel:'Monatliche Ausgaben',
+      fireJourneyLabel:'FIRE-Reise', fireShareBtn:'📤 Ergebnis teilen', fireImageBtn:'📸 Als Bild speichern',
+      roiEyebrow:'Renditenanalyse', roiTitle:'Rendite & Zinseszinswachstum',
+      roiCurveLabel:'Wachstumskurve', roiCompareTitle:'Anlageklassen-Vergleich — 20 Jahre',
+      insEyebrow:'Absicherung', insTitle:'Lebensversicherungsplaner',
+      taxEyebrow:'Steueroptimierung', taxTitle:'Steuerrechner',
+      crEyebrow:'Viraler Rechner', crTitle:'💰 Millionär-Rechner',
+      crDesc:'Wie viel musst du monatlich investieren, um Millionär zu werden?',
+      crShareBtn:'📤 Auf WhatsApp teilen',
+      habitEyebrow:'Virales Tool', habitTitle:'☕ Gewohnheit vs. Investition',
+      habitDesc:'Was wäre, wenn du das Geld, das du für tägliche Gewohnheiten ausgibst, investieren würdest? Die Zahlen werden dich schockieren.',
+      habCostLabel:'Monatliche Gewohnheitskosten', habReturnLabel:'Rendite bei Investition',
+      habSpentLabel:'💸 FÜR GEWOHNHEIT AUSGEGEBEN', habInvestLabel:'📈 WENN STATTDESSEN INVESTIERT',
+      habShareBtn:'📤 Auf WhatsApp teilen', habImageBtn:'📸 Als Bild speichern',
+      compareEyebrow:'Direktvergleich', compareTitle:'Sparplan vs. Einmalanlage',
+    },
+    en: {
+      navSIP:'📈 Investment Planner', navEMI:'🏦 Loan & Mortgage', navFIRE:'🔥 FIRE Retirement',
+      navROI:'💹 ROI & Compound', navIns:'🛡️ Insurance Planner', navTax:'📋 Tax Optimizer',
+      navHabit:'☕ Habit vs Invest', navCompare:'⚖️ Savings Plan vs Lump Sum',
+      navHome:'🏠 Buy a Home', navGratuity:'🤝 Severance Calc',
+      navEdu:'🎓 Finance Academy', navGlossary:'📖 Glossary', navContact:'✉️ Contact Us',
+      calcSection:'Calculators', viralSection:'🔥 Viral Tools', goalSection:'🏠 Goal Planners',
+      learnSection:'Learn', marketRegion:'Market Region',
+      sipEyebrow:'ETF Savings Plan · DE', sipTitle:'Investment Planner',
+      sipDesc:'Build long-term wealth through disciplined monthly ETF savings plans — the German way.',
+      sipParamLabel:'Monthly Investment', sipBreakdownLabel:'Portfolio Breakdown',
+      sipTotalLabel:'Total Wealth', sipInvestedLabel:'Amount Invested', sipGainedLabel:'Gains',
+      sipProjectionLabel:'Year-by-Year Projection', sipVsLumpLabel:'Savings Plan vs Lump Sum',
+      sipTaxLabel:'Tax Saving (Sparerpauschbetrag)', sipShareBtn:'📤 Share Result', sipImageBtn:'📸 Save as Image',
+      emiEyebrow:'Property Financing', emiTitle:'Loan & Mortgage Planner',
+      emiDesc:'Calculate monthly repayments, total interest and tax aspects of your property financing.',
+      emiBreakdownLabel:'Payment Breakdown', emiMonthlyLabel:'Monthly Rate',
+      emiShareLabel:'Share Result', emiImageLabel:'📸 Save as Image',
+      fireEyebrow:'Financial Independence', fireTitle:'🔥 FIRE Calculator',
+      fireYearsLabel:'Years to FIRE', fireExpLabel:'Monthly Expenses',
+      fireJourneyLabel:'FIRE Journey', fireShareBtn:'📤 Share Result', fireImageBtn:'📸 Save as Image',
+      roiEyebrow:'Returns Analysis', roiTitle:'ROI & Compound Growth',
+      roiCurveLabel:'Growth Curve', roiCompareTitle:'Asset Class Comparison — 20 Years',
+      insEyebrow:'Protection Planning', insTitle:'Life Insurance Planner',
+      taxEyebrow:'Tax Optimization', taxTitle:'Tax Calculator',
+      crEyebrow:'Viral Calculator', crTitle:'💰 Millionaire Calculator',
+      crDesc:'How much do you need to invest monthly to become a millionaire?',
+      crShareBtn:'📤 Share on WhatsApp',
+      habitEyebrow:'Viral Tool', habitTitle:'☕ Habit vs Investing',
+      habitDesc:'What if you invested the money you spend on daily habits? The numbers will shock you.',
+      habCostLabel:'Monthly Habit Cost', habReturnLabel:'Return if Invested',
+      habSpentLabel:'💸 SPENT ON HABIT', habInvestLabel:'📈 IF INVESTED INSTEAD',
+      habShareBtn:'📤 Share on WhatsApp', habImageBtn:'📸 Save as Image',
+      compareEyebrow:'Side-by-Side Analysis', compareTitle:'Savings Plan vs Lump Sum',
+    }
+  },
+  // ── FRANCE ───────────────────────────────────────────────
+  france: {
+    fr: {
+      navSIP:'📈 Investissement mensuel', navEMI:'🏦 Crédit immobilier', navFIRE:'🔥 Retraite anticipée',
+      navROI:'💹 Rendement & Intérêts', navIns:'🛡️ Assurance vie', navTax:'📋 Optimisation fiscale',
+      navHabit:'☕ Habitude vs Investissement', navCompare:'⚖️ Versements vs Capital unique',
+      navHome:'🏠 Acheter un bien', navGratuity:'🤝 Indemnité de départ',
+      navEdu:'🎓 Académie financière', navGlossary:'📖 Glossaire', navContact:'✉️ Contactez-nous',
+      calcSection:'Calculateurs', viralSection:'🔥 Outils populaires', goalSection:'🏠 Objectifs',
+      learnSection:'Apprendre', marketRegion:'Région de marché',
+      sipEyebrow:'PEA · France', sipTitle:'Planificateur d\u2019investissement',
+      sipDesc:"Constituez votre patrimoine à long terme grâce à des investissements mensuels réguliers via le PEA.",
+      sipParamLabel:'Investissement mensuel', sipBreakdownLabel:'Répartition du patrimoine',
+      sipTotalLabel:'Patrimoine total', sipInvestedLabel:'Montant investi', sipGainedLabel:'Gains',
+      sipProjectionLabel:'Projection année par année', sipVsLumpLabel:'Versements vs Capital unique',
+      sipTaxLabel:'Économie fiscale (PEA)', sipShareBtn:'📤 Partager le résultat', sipImageBtn:'📸 Enregistrer en image',
+      emiEyebrow:'Financement immobilier', emiTitle:'Planificateur crédit immobilier',
+      emiDesc:'Calculez vos mensualités, intérêts totaux et avantages fiscaux de votre crédit immobilier.',
+      emiBreakdownLabel:'Analyse du paiement', emiMonthlyLabel:'Mensualité',
+      emiShareLabel:'Partager le résultat', emiImageLabel:'📸 Enregistrer en image',
+      fireEyebrow:'Indépendance financière', fireTitle:'🔥 Calculateur FIRE',
+      fireYearsLabel:'Ann\u00e9es jusqu\u2019au FIRE', fireExpLabel:'Dépenses mensuelles',
+      fireJourneyLabel:'Parcours FIRE', fireShareBtn:'📤 Partager le résultat', fireImageBtn:'📸 Enregistrer en image',
+      roiEyebrow:'Analyse des rendements', roiTitle:'Rendement & Intérêts composés',
+      roiCurveLabel:'Courbe de croissance', roiCompareTitle:'Comparaison des classes d\u2019actifs \u2014 20 ans',
+      insEyebrow:'Protection patrimoniale', insTitle:'Planificateur assurance vie',
+      taxEyebrow:'Optimisation fiscale', taxTitle:'Calculateur d\u2019imp\u00f4t',
+      crEyebrow:'Outil viral', crTitle:'💰 Calculateur millionnaire',
+      crDesc:'Combien devez-vous investir chaque mois pour devenir millionnaire ?',
+      crShareBtn:'📤 Partager sur WhatsApp',
+      habitEyebrow:'Outil viral', habitTitle:'☕ Habitude vs Investissement',
+      habitDesc:'Et si vous investissiez l\u2019argent d\u00e9pens\u00e9 en habitudes quotidiennes ? Les chiffres vous surprendront.',
+      habCostLabel:'Co\u00fbt mensuel de l\u2019habitude', habReturnLabel:'Rendement si investi',
+      habSpentLabel:'💸 DÉPENSÉ EN HABITUDES', habInvestLabel:'📈 SI INVESTI À LA PLACE',
+      habShareBtn:'📤 Partager sur WhatsApp', habImageBtn:'📸 Enregistrer en image',
+      compareEyebrow:'Analyse comparative', compareTitle:'Versements réguliers vs Capital unique',
+    },
+    en: {
+      navSIP:'📈 Investment Planner', navEMI:'🏦 Mortgage Planner', navFIRE:'🔥 FIRE Retirement',
+      navROI:'💹 ROI & Compound', navIns:'🛡️ Insurance Planner', navTax:'📋 Tax Optimizer',
+      navHabit:'☕ Habit vs Invest', navCompare:'⚖️ Regular vs Lump Sum',
+      navHome:'🏠 Buy a Home', navGratuity:'🤝 Severance Calc',
+      navEdu:'🎓 Finance Academy', navGlossary:'📖 Glossary', navContact:'✉️ Contact Us',
+      calcSection:'Calculators', viralSection:'🔥 Viral Tools', goalSection:'🏠 Goal Planners',
+      learnSection:'Learn', marketRegion:'Market Region',
+      sipEyebrow:'PEA · France', sipTitle:'Investment Planner',
+      sipDesc:'Build long-term wealth through regular monthly investments via the PEA.',
+      sipParamLabel:'Monthly Investment', sipBreakdownLabel:'Portfolio Breakdown',
+      sipTotalLabel:'Total Wealth', sipInvestedLabel:'Amount Invested', sipGainedLabel:'Gains',
+      sipProjectionLabel:'Year-by-Year Projection', sipVsLumpLabel:'Regular vs Lump Sum',
+      sipTaxLabel:'Tax Saving (PEA)', sipShareBtn:'📤 Share Result', sipImageBtn:'📸 Save as Image',
+      emiEyebrow:'Property Financing', emiTitle:'Mortgage Planner',
+      emiDesc:'Calculate monthly payments, total interest and tax benefits on your French mortgage.',
+      emiBreakdownLabel:'Payment Breakdown', emiMonthlyLabel:'Monthly Payment',
+      emiShareLabel:'Share Result', emiImageLabel:'📸 Save as Image',
+      fireEyebrow:'Financial Independence', fireTitle:'🔥 FIRE Calculator',
+      fireYearsLabel:'Years to FIRE', fireExpLabel:'Monthly Expenses',
+      fireJourneyLabel:'FIRE Journey', fireShareBtn:'📤 Share Result', fireImageBtn:'📸 Save as Image',
+      roiEyebrow:'Returns Analysis', roiTitle:'ROI & Compound Growth',
+      roiCurveLabel:'Growth Curve', roiCompareTitle:'Asset Class Comparison — 20 Years',
+      insEyebrow:'Protection Planning', insTitle:'Life Insurance Planner',
+      taxEyebrow:'Tax Optimization', taxTitle:'Tax Calculator',
+      crEyebrow:'Viral Tool', crTitle:'💰 Millionaire Calculator',
+      crDesc:'How much do you need to invest monthly to become a millionaire?',
+      crShareBtn:'📤 Share on WhatsApp',
+      habitEyebrow:'Viral Tool', habitTitle:'☕ Habit vs Investing',
+      habitDesc:'What if you invested the money you spend on daily habits? The numbers will shock you.',
+      habCostLabel:'Monthly Habit Cost', habReturnLabel:'Return if Invested',
+      habSpentLabel:'💸 SPENT ON HABIT', habInvestLabel:'📈 IF INVESTED INSTEAD',
+      habShareBtn:'📤 Share on WhatsApp', habImageBtn:'📸 Save as Image',
+      compareEyebrow:'Comparative Analysis', compareTitle:'Regular vs Lump Sum',
+    }
+  },
+  // ── SPAIN ────────────────────────────────────────────────
+  spain: {
+    es: {
+      navSIP:'📈 Inversión mensual', navEMI:'🏦 Hipoteca y créditos', navFIRE:'🔥 Jubilación anticipada',
+      navROI:'💹 Rentabilidad e interés', navIns:'🛡️ Planificador de seguros', navTax:'📋 Optimización fiscal',
+      navHabit:'☕ Hábito vs Inversión', navCompare:'⚖️ Aportaciones vs Capital único',
+      navHome:'🏠 Comprar una vivienda', navGratuity:'🤝 Indemnización por despido',
+      navEdu:'🎓 Academia financiera', navGlossary:'📖 Glosario', navContact:'✉️ Contáctanos',
+      calcSection:'Calculadoras', viralSection:'🔥 Herramientas virales', goalSection:'🏠 Objetivos',
+      learnSection:'Aprender', marketRegion:'Región de mercado',
+      sipEyebrow:'Fondos Indexados · España', sipTitle:'Planificador de inversión',
+      sipDesc:'Construye tu patrimonio a largo plazo con inversiones mensuales regulares en fondos indexados.',
+      sipParamLabel:'Inversión mensual', sipBreakdownLabel:'Desglose del patrimonio',
+      sipTotalLabel:'Patrimonio total', sipInvestedLabel:'Importe invertido', sipGainedLabel:'Ganancias',
+      sipProjectionLabel:'Proyección año a año', sipVsLumpLabel:'Aportaciones vs Capital único',
+      sipTaxLabel:'Ahorro fiscal (Plan de Pensiones)', sipShareBtn:'📤 Compartir resultado', sipImageBtn:'📸 Guardar como imagen',
+      emiEyebrow:'Financiación inmobiliaria', emiTitle:'Calculadora de hipoteca',
+      emiDesc:'Calcula tu cuota mensual, intereses totales y ventajas fiscales de tu hipoteca española.',
+      emiBreakdownLabel:'Análisis del pago', emiMonthlyLabel:'Cuota mensual',
+      emiShareLabel:'Compartir resultado', emiImageLabel:'📸 Guardar como imagen',
+      fireEyebrow:'Independencia financiera', fireTitle:'🔥 Calculadora FIRE',
+      fireYearsLabel:'Años hasta FIRE', fireExpLabel:'Gastos mensuales',
+      fireJourneyLabel:'Camino al FIRE', fireShareBtn:'📤 Compartir resultado', fireImageBtn:'📸 Guardar como imagen',
+      roiEyebrow:'Análisis de rentabilidad', roiTitle:'Rentabilidad e interés compuesto',
+      roiCurveLabel:'Curva de crecimiento', roiCompareTitle:'Comparativa de activos — 20 años',
+      insEyebrow:'Planificación de seguros', insTitle:'Planificador de seguros de vida',
+      taxEyebrow:'Optimización fiscal', taxTitle:'Calculadora IRPF',
+      crEyebrow:'Herramienta viral', crTitle:'💰 Calculadora de millonario',
+      crDesc:'¿Cuánto necesitas invertir cada mes para convertirte en millonario?',
+      crShareBtn:'📤 Compartir en WhatsApp',
+      habitEyebrow:'Herramienta viral', habitTitle:'☕ Hábito vs Inversión',
+      habitDesc:'¿Y si invirtieras el dinero que gastas en hábitos diarios? Las cifras te sorprenderán.',
+      habCostLabel:'Coste mensual del hábito', habReturnLabel:'Rentabilidad si se invierte',
+      habSpentLabel:'💸 GASTADO EN HÁBITOS', habInvestLabel:'📈 SI HUBIERA INVERTIDO',
+      habShareBtn:'📤 Compartir en WhatsApp', habImageBtn:'📸 Guardar como imagen',
+      compareEyebrow:'Análisis comparativo', compareTitle:'Aportaciones vs Capital único',
+    },
+    en: {
+      navSIP:'📈 Investment Planner', navEMI:'🏦 Mortgage Planner', navFIRE:'🔥 FIRE Retirement',
+      navROI:'💹 ROI & Compound', navIns:'🛡️ Insurance Planner', navTax:'📋 Tax Optimizer',
+      navHabit:'☕ Habit vs Invest', navCompare:'⚖️ Contributions vs Lump Sum',
+      navHome:'🏠 Buy a Home', navGratuity:'🤝 Severance Calc',
+      navEdu:'🎓 Finance Academy', navGlossary:'📖 Glossary', navContact:'✉️ Contact Us',
+      calcSection:'Calculators', viralSection:'🔥 Viral Tools', goalSection:'🏠 Goal Planners',
+      learnSection:'Learn', marketRegion:'Market Region',
+      sipEyebrow:'Index Funds · Spain', sipTitle:'Investment Planner',
+      sipDesc:'Build long-term wealth with regular monthly investments in index funds.',
+      sipParamLabel:'Monthly Investment', sipBreakdownLabel:'Portfolio Breakdown',
+      sipTotalLabel:'Total Wealth', sipInvestedLabel:'Amount Invested', sipGainedLabel:'Gains',
+      sipProjectionLabel:'Year-by-Year Projection', sipVsLumpLabel:'Contributions vs Lump Sum',
+      sipTaxLabel:'Tax Saving (Pension Plan)', sipShareBtn:'📤 Share Result', sipImageBtn:'📸 Save as Image',
+      emiEyebrow:'Property Financing', emiTitle:'Mortgage Calculator',
+      emiDesc:'Calculate monthly payments, total interest and tax benefits on your Spanish mortgage.',
+      emiBreakdownLabel:'Payment Breakdown', emiMonthlyLabel:'Monthly Payment',
+      emiShareLabel:'Share Result', emiImageLabel:'📸 Save as Image',
+      fireEyebrow:'Financial Independence', fireTitle:'🔥 FIRE Calculator',
+      fireYearsLabel:'Years to FIRE', fireExpLabel:'Monthly Expenses',
+      fireJourneyLabel:'FIRE Journey', fireShareBtn:'📤 Share Result', fireImageBtn:'📸 Save as Image',
+      roiEyebrow:'Returns Analysis', roiTitle:'ROI & Compound Growth',
+      roiCurveLabel:'Growth Curve', roiCompareTitle:'Asset Class Comparison — 20 Years',
+      insEyebrow:'Protection Planning', insTitle:'Life Insurance Planner',
+      taxEyebrow:'Tax Optimization', taxTitle:'IRPF Calculator',
+      crEyebrow:'Viral Tool', crTitle:'💰 Millionaire Calculator',
+      crDesc:'How much do you need to invest monthly to become a millionaire?',
+      crShareBtn:'📤 Share on WhatsApp',
+      habitEyebrow:'Viral Tool', habitTitle:'☕ Habit vs Investing',
+      habitDesc:'What if you invested the money you spend on daily habits? The numbers will shock you.',
+      habCostLabel:'Monthly Habit Cost', habReturnLabel:'Return if Invested',
+      habSpentLabel:'💸 SPENT ON HABIT', habInvestLabel:'📈 IF INVESTED INSTEAD',
+      habShareBtn:'📤 Share on WhatsApp', habImageBtn:'📸 Save as Image',
+      compareEyebrow:'Comparative Analysis', compareTitle:'Contributions vs Lump Sum',
+    }
+  },
+  // ── UK & USA (English only, no toggle) ──────────────────
+  uk: { en: {
+      navSIP:'📈 Investment Planner', navEMI:'🏦 Mortgage Planner', navFIRE:'🔥 FIRE Retirement',
+      navROI:'💹 ROI & Compound', navIns:'🛡️ Insurance Planner', navTax:'📋 Tax Calculator',
+      navHabit:'☕ Habit vs Invest', navCompare:'⚖️ ISA vs Lump Sum',
+      navHome:'🏠 Buy a Home', navGratuity:'🤝 Redundancy Calc',
+      navEdu:'🎓 Finance Academy', navGlossary:'📖 Glossary', navContact:'✉️ Contact Us',
+      calcSection:'Calculators', viralSection:'🔥 Viral Tools', goalSection:'🏠 Goal Planners',
+      learnSection:'Learn', marketRegion:'Market Region',
+      sipEyebrow:'ISA · United Kingdom', sipTitle:'Investment Planner',
+      sipDesc:'Build long-term wealth through Stocks & Shares ISAs and diversified index funds.',
+      sipParamLabel:'Monthly Investment', sipBreakdownLabel:'Portfolio Breakdown',
+      sipTotalLabel:'Total Wealth', sipInvestedLabel:'Amount Invested', sipGainedLabel:'Gains',
+      sipProjectionLabel:'Year-by-Year Projection', sipVsLumpLabel:'ISA vs Lump Sum',
+      sipTaxLabel:'ISA Tax Saving', sipShareBtn:'📤 Share Result', sipImageBtn:'📸 Save as Image',
+      emiEyebrow:'Mortgage Planning', emiTitle:'Mortgage Planner',
+      emiDesc:'Calculate monthly repayments, total interest and mortgage tax relief on your UK home loan.',
+      emiBreakdownLabel:'Payment Breakdown', emiMonthlyLabel:'Monthly Payment',
+      emiShareLabel:'Share Result', emiImageLabel:'📸 Save as Image',
+      fireEyebrow:'Financial Independence', fireTitle:'🔥 FIRE Calculator',
+      fireYearsLabel:'Years to FIRE', fireExpLabel:'Monthly Expenses',
+      fireJourneyLabel:'FIRE Journey', fireShareBtn:'📤 Share Result', fireImageBtn:'📸 Save as Image',
+      roiEyebrow:'Returns Analysis', roiTitle:'ROI & Compound Growth',
+      roiCurveLabel:'Growth Curve', roiCompareTitle:'Asset Class Comparison — 20 Years',
+      insEyebrow:'Protection Planning', insTitle:'Life Insurance Planner',
+      taxEyebrow:'HMRC Tax', taxTitle:'UK Income Tax Calculator',
+      crEyebrow:'Viral Calculator', crTitle:'💰 Millionaire Calculator',
+      crDesc:'How much do you need to invest monthly to become a millionaire?',
+      crShareBtn:'📤 Share on WhatsApp',
+      habitEyebrow:'Viral Tool', habitTitle:'☕ Habit vs Investing',
+      habitDesc:'What if you invested the money you spend on daily habits? The numbers will shock you.',
+      habCostLabel:'Monthly Habit Cost', habReturnLabel:'Return if Invested',
+      habSpentLabel:'💸 SPENT ON HABIT', habInvestLabel:'📈 IF INVESTED INSTEAD',
+      habShareBtn:'📤 Share on WhatsApp', habImageBtn:'📸 Save as Image',
+      compareEyebrow:'Side-by-Side Analysis', compareTitle:'ISA vs Lump Sum',
+  }},
+  usa: { en: {
+      navSIP:'📈 Wealth Builder', navEMI:'🏦 Mortgage Planner', navFIRE:'🔥 FIRE Retirement',
+      navROI:'💹 ROI & Compound', navIns:'🛡️ Insurance Planner', navTax:'📋 Tax Calculator',
+      navHabit:'☕ Habit vs Invest', navCompare:'⚖️ DCA vs Lump Sum',
+      navHome:'🏠 Buy a Home', navGratuity:'🤝 Tips & Gratuity',
+      navEdu:'🎓 Finance Academy', navGlossary:'📖 Glossary', navContact:'✉️ Contact Us',
+      calcSection:'Calculators', viralSection:'🔥 Viral Tools', goalSection:'🏠 Goal Planners',
+      learnSection:'Learn', marketRegion:'Market Region',
+      sipEyebrow:'401(k) · USA', sipTitle:'Wealth Builder',
+      sipDesc:'Build long-term wealth through consistent 401(k) and index fund investing.',
+      sipParamLabel:'Monthly Contribution', sipBreakdownLabel:'Portfolio Breakdown',
+      sipTotalLabel:'Total Wealth', sipInvestedLabel:'Amount Invested', sipGainedLabel:'Gains',
+      sipProjectionLabel:'Year-by-Year Projection', sipVsLumpLabel:'DCA vs Lump Sum',
+      sipTaxLabel:'401(k) Tax Saving', sipShareBtn:'📤 Share Result', sipImageBtn:'📸 Save as Image',
+      emiEyebrow:'Mortgage Planning', emiTitle:'Mortgage Planner',
+      emiDesc:'Calculate monthly payments, total interest and mortgage interest deduction.',
+      emiBreakdownLabel:'Payment Breakdown', emiMonthlyLabel:'Monthly Payment',
+      emiShareLabel:'Share Result', emiImageLabel:'📸 Save as Image',
+      fireEyebrow:'Financial Independence', fireTitle:'🔥 FIRE Calculator',
+      fireYearsLabel:'Years to FIRE', fireExpLabel:'Monthly Expenses',
+      fireJourneyLabel:'FIRE Journey', fireShareBtn:'📤 Share Result', fireImageBtn:'📸 Save as Image',
+      roiEyebrow:'Returns Analysis', roiTitle:'ROI & Compound Growth',
+      roiCurveLabel:'Growth Curve', roiCompareTitle:'Asset Class Comparison — 20 Years',
+      insEyebrow:'Protection Planning', insTitle:'Life Insurance Planner',
+      taxEyebrow:'Federal Tax', taxTitle:'Income Tax Calculator',
+      crEyebrow:'Viral Calculator', crTitle:'💰 Millionaire Calculator',
+      crDesc:'How much do you need to invest monthly to become a millionaire?',
+      crShareBtn:'📤 Share on WhatsApp',
+      habitEyebrow:'Viral Tool', habitTitle:'☕ Habit vs Investing',
+      habitDesc:'What if you invested the money you spend on daily habits? The numbers will shock you.',
+      habCostLabel:'Monthly Habit Cost', habReturnLabel:'Return if Invested',
+      habSpentLabel:'💸 SPENT ON HABIT', habInvestLabel:'📈 IF INVESTED INSTEAD',
+      habShareBtn:'📤 Share on WhatsApp', habImageBtn:'📸 Save as Image',
+      compareEyebrow:'Side-by-Side Analysis', compareTitle:'DCA vs Lump Sum',
+  }},
+};
 
-  // ── NAV items ────────────────────────────────────────────
-  setEl('btn-sip','html','📈 ' + (strings.sipLabel || cl.sipTitle || 'Investment Planner'));
-  setEl('btn-emi','html','🏦 ' + (strings.loanLabel || cl.emiTitle || 'Loan & Mortgage'));
-  setEl('btn-fire','html','🔥 ' + (strings.fireLabel || cl.fireTitle || 'FIRE Retirement'));
-  setEl('btn-roi','html','💹 ' + (strings.roiLabel || cl.roiTitle || 'ROI & Compound'));
-  setEl('btn-insurance','html','🛡️ ' + (strings.insLabel || cl.insTitle || 'Insurance Planner'));
-  setEl('btn-tax','html','📋 ' + (strings.taxLabel || cl.taxTitle || 'Tax Optimizer'));
+function applyLanguage(mode, lang) {
+  var s = ((UI_STRINGS[mode] || {})[lang]) || ((UI_STRINGS[mode] || {}).en) || {};
+
+  // ── NAV ─────────────────────────────────────────────────
+  setEl('btn-sip','html', s.navSIP || '📈 Investment Planner');
+  setEl('btn-emi','html', s.navEMI || '🏦 Loan & Mortgage');
+  setEl('btn-fire','html', s.navFIRE || '🔥 FIRE Retirement');
+  setEl('btn-roi','html', s.navROI || '💹 ROI & Compound');
+  setEl('btn-insurance','html', s.navIns || '🛡️ Insurance Planner');
+  setEl('btn-tax','html', s.navTax || '📋 Tax Optimizer');
+  setEl('nav-habit-label','text', s.navHabit || '☕ Habit vs Invest');
+  setEl('nav-compare-label','text', s.navCompare || '⚖️ SIP vs Lump Sum');
+  setEl('nav-homegoal-label','text', s.navHome || '🏠 Buy a Home');
+  setEl('nav-gratuity-label','text', s.navGratuity || '🤝 Gratuity Calc');
+  setEl('nav-edu-label','text', s.navEdu || '🎓 Financial Academy');
+  setEl('nav-glossary-label','text', s.navGlossary || '📖 Glossary');
+  setEl('nav-contact-label','text', s.navContact || '✉️ Write to Us');
+  setEl('nav-crorepati-label','text', (s.crTitle || '🏆 Millionaire Calc') + ' Calc');
 
   // ── Section headers ──────────────────────────────────────
-  setEl('nav-section-calc','text', strings.calcSection || 'Calculators');
-  setEl('nav-section-viral','text', strings.viralSection || '🔥 Viral Tools');
-  setEl('nav-section-goal','text', strings.goalSection || '🏠 Goal Planners');
-  setEl('nav-section-learn','text', strings.learnSection || 'Learn');
-  setEl('nav-market-region-label','text', strings.marketRegion || 'Market Region');
+  setEl('nav-section-calc','text', s.calcSection || 'Calculators');
+  setEl('nav-section-viral','text', s.viralSection || '🔥 Viral Tools');
+  setEl('nav-section-goal','text', s.goalSection || '🏠 Goal Planners');
+  setEl('nav-section-learn','text', s.learnSection || 'Learn');
+  setEl('nav-market-region-label','text', s.marketRegion || 'Market Region');
 
-  // ── SIP / Investment Planner ─────────────────────────────
-  setEl('sip-eyebrow','text', cl.sipEyebrow || 'Investment Planner');
-  setEl('sip-title','text', cl.sipTitle || 'Investment Planner');
-  setEl('sip-desc','text', cl.sipDesc || '');
-  setEl('sip-p-label','text', cl.sipParamLabel || 'Monthly Investment');
-  setEl('sip-tax-label','text', cl.sipTaxSectionLabel || 'Tax Benefit');
+  // ── SIP ─────────────────────────────────────────────────
+  setEl('sip-eyebrow','text', s.sipEyebrow || 'Investment');
+  setEl('sip-title','text', s.sipTitle || 'Investment Planner');
+  setEl('sip-desc','text', s.sipDesc || '');
+  setEl('sip-p-label','text', s.sipParamLabel || 'Monthly Investment');
+  setEl('sip-breakdown-label','text', s.sipBreakdownLabel || 'Corpus Breakdown');
+  setEl('sip-tax-label','text', s.sipTaxLabel || 'Tax Benefit');
+  setEl('sip-projection-label','text', s.sipProjectionLabel || 'Year-by-Year Projection');
+  setEl('sip-vs-lump-label','text', s.sipVsLumpLabel || 'SIP vs Lump Sum');
+  // SIP result box labels (first child divs)
+  var sipBoxes = document.querySelectorAll('#sip .grid-3 .result-box > div:first-child');
+  if (sipBoxes[0]) sipBoxes[0].textContent = s.sipTotalLabel || 'Total Corpus';
+  if (sipBoxes[1]) sipBoxes[1].textContent = s.sipInvestedLabel || 'Amount Invested';
+  if (sipBoxes[2]) sipBoxes[2].textContent = s.sipGainedLabel || 'Wealth Gained';
+  // SIP share buttons — handled via setEl with IDs
 
-  // Result box labels
-  var labels = document.querySelectorAll('#sip .result-box');
-  if (labels[0]) {
-    var f = labels[0].querySelector('div');
-    if (f) f.textContent = cl.sipTotalLabel || 'Total Corpus';
-  }
-  if (labels[1]) {
-    var f = labels[1].querySelector('div');
-    if (f) f.textContent = cl.sipInvestedLabel || 'Amount Invested';
-  }
-  if (labels[2]) {
-    var f = labels[2].querySelector('div');
-    if (f) f.textContent = cl.sipGainedLabel || 'Wealth Gained';
-  }
+  // ── EMI ─────────────────────────────────────────────────
+  setEl('emi-eyebrow','text', s.emiEyebrow || 'Loan Planning');
+  setEl('emi-title','text', s.emiTitle || 'Loan & Mortgage Planner');
+  setEl('emi-desc','text', s.emiDesc || '');
+  setEl('emi-breakdown-label','text', s.emiBreakdownLabel || 'Payment Breakdown');
+  setEl('emi-monthly-label','text', s.emiMonthlyLabel || 'Monthly EMI');
+  setEl('emi-share-btn-label','text', s.emiShareLabel || 'Share Result');
+  setEl('emi-img-btn-label','text', s.emiImageLabel || '📸 Save as Image');
 
-  // Share buttons
-  var sipShare = document.querySelector('#sip .btn-outline[onclick*="shareResult"]');
-  if (sipShare) sipShare.innerHTML = '<span>📤</span> ' + (cl.shareBtn || 'Share Result');
-  var sipImg = document.querySelector('#sip .btn-outline[onclick*="generateSIP"]');
-  if (sipImg) sipImg.innerHTML = cl.imageBtn || '📸 Save as Image';
+  // ── FIRE ────────────────────────────────────────────────
+  setEl('fire-eyebrow','text', s.fireEyebrow || 'Financial Independence');
+  setEl('fire-title','text', s.fireTitle || '🔥 FIRE Calculator');
+  setEl('fire-years-label','text', s.fireYearsLabel || 'Years to FIRE');
+  setEl('fire-exp-label','text', s.fireExpLabel || 'Monthly Expenses');
+  setEl('fire-journey-label','text', s.fireJourneyLabel || 'FIRE Journey');
 
-  // ── EMI / Loan Planner ───────────────────────────────────
-  setEl('emi-eyebrow','text', cl.emiEyebrow || 'Loan Planning');
-  setEl('emi-title','text', cl.emiTitle || 'Loan & Mortgage Planner');
-  setEl('emi-desc','text', cl.emiDesc || '');
-
-  // ── FIRE Planner ─────────────────────────────────────────
-  var fireEyebrow = document.querySelector('#fire .section-eyebrow');
-  if (fireEyebrow) fireEyebrow.textContent = cl.fireEyebrow || 'Early Retirement';
-  var fireTitle = document.querySelector('#fire h1');
-  if (fireTitle) fireTitle.textContent = cl.fireTitle || 'FIRE Retirement Planner';
-
-  // ── ROI ──────────────────────────────────────────────────
-  var roiEyebrow = document.querySelector('#roi .section-eyebrow');
-  if (roiEyebrow) roiEyebrow.textContent = cl.roiEyebrow || 'Returns';
-  var roiTitle = document.querySelector('#roi h1');
-  if (roiTitle) roiTitle.textContent = cl.roiTitle || 'ROI & Compound Interest';
+  // ── ROI ─────────────────────────────────────────────────
+  setEl('roi-eyebrow','text', s.roiEyebrow || 'Returns Analysis');
+  setEl('roi-title','text', s.roiTitle || 'ROI & Compound Growth');
+  setEl('roi-curve-label','text', s.roiCurveLabel || 'Growth Curve');
+  setEl('roi-compare-title','text', s.roiCompareTitle || 'Asset Class Comparison — 20 Years');
 
   // ── Insurance ────────────────────────────────────────────
-  var insEyebrow = document.querySelector('#insurance .section-eyebrow');
-  if (insEyebrow) insEyebrow.textContent = cl.insEyebrow || 'Life Cover';
-  var insTitle = document.querySelector('#insurance h1');
-  if (insTitle) insTitle.textContent = cl.insTitle || 'Insurance Planner';
+  setEl('ins-eyebrow','text', s.insEyebrow || 'Protection Planning');
+  setEl('ins-title','text', s.insTitle || 'Life Insurance Planner');
 
-  // ── Tax Optimizer ────────────────────────────────────────
-  var taxEyebrow = document.querySelector('#tax .section-eyebrow');
-  if (taxEyebrow) taxEyebrow.textContent = cl.taxEyebrow || 'Tax Planning';
-  var taxTitle = document.querySelector('#tax h1');
-  if (taxTitle) taxTitle.textContent = cl.taxTitle || 'Tax Optimizer';
+  // ── Tax ──────────────────────────────────────────────────
+  setEl('tax-eyebrow','text', s.taxEyebrow || 'Tax Optimization');
+  setEl('tax-title','text', s.taxTitle || 'Tax Optimizer');
 
   // ── Crorepati/Millionaire ────────────────────────────────
-  var crTitle = document.getElementById('cr_title');
-  if (crTitle) crTitle.textContent = cl.crorepatiTitle || 'Millionaire Calculator';
+  setEl('cr-eyebrow','text', s.crEyebrow || 'Viral Calculator');
+  setEl('cr_title','text', s.crTitle || '🏆 Millionaire Calculator');
+  setEl('cr_desc','text', s.crDesc || '');
+  setEl('cr-share-btn','text', s.crShareBtn || '📤 Share on WhatsApp');
 
-  // ── Habit vs Invest ──────────────────────────────────────
-  var habTitle = document.querySelector('#habit h1');
-  if (habTitle) habTitle.textContent = cl.habitTitle || 'Habit vs Invest';
+  // ── Habit ────────────────────────────────────────────────
+  setEl('habit-eyebrow','text', s.habitEyebrow || 'Viral Tool');
+  setEl('habit-title','text', s.habitTitle || '☕ Habit vs Investing');
+  setEl('habit-desc','text', s.habitDesc || '');
+  setEl('hab-cost-label','text', s.habCostLabel || 'Monthly Habit Cost');
+  setEl('hab-return-label','text', s.habReturnLabel || 'Return if Invested');
+  setEl('hab-spent-label','text', s.habSpentLabel || '💸 SPENT ON HABIT');
+  setEl('hab-invest-label','text', s.habInvestLabel || '📈 IF INVESTED INSTEAD');
+  setEl('hab-share-btn','text', s.habShareBtn || '📤 Share on WhatsApp');
+  setEl('hab-img-btn','text', s.habImageBtn || '📸 Save as Image');
 
   // ── Compare ──────────────────────────────────────────────
-  var cmpTitle = document.querySelector('#compare h1');
-  if (cmpTitle) cmpTitle.textContent = cl.compareTitle || 'SIP vs Lump Sum';
+  setEl('compare-eyebrow','text', s.compareEyebrow || 'Side-by-Side Analysis');
+  setEl('compare-title','text', s.compareTitle || 'SIP vs Lump Sum');
 
-  // ── EMI/FIRE share button labels ─────────────────────────
-  var emiShareLbl = document.getElementById('emi-share-btn-label');
-  if (emiShareLbl) emiShareLbl.textContent = cl.shareBtn || 'Share Result';
-  var emiImgLbl = document.getElementById('emi-img-btn-label');
-  if (emiImgLbl) emiImgLbl.textContent = cl.imageBtn || '📸 Save as Image';
-
-  // ── Share card language label (for Instagram cards) ─────
-  var cardLang = document.getElementById('card-lang-label');
-  if (cardLang) cardLang.textContent = lang === 'hi' ? 'मनीवेदा' : lang === 'de' ? 'MoneyVeda' : lang === 'fr' ? 'MoneyVeda' : lang === 'es' ? 'MoneyVeda' : 'MoneyVeda';
-
-  // Re-run active calculator to refresh currency symbols + labels
-  var at = document.querySelector('.tab.active');
-  if (at) {
+  // ── Re-trigger active calculator ─────────────────────────
+  setTimeout(function() {
+    var at = document.querySelector('.tab.active');
+    if (!at) return;
     var id = at.id;
-    if (id === 'sip') calcSIP();
-    else if (id === 'emi') calcEMI();
-    else if (id === 'fire') calcFIRE();
-    else if (id === 'roi') calcROI();
-    else if (id === 'insurance') calcInsurance();
-    else if (id === 'tax') { if (typeof renderTax === 'function') renderTax(); }
-  }
+    try {
+      if (id === 'sip') calcSIP();
+      else if (id === 'emi') calcEMI();
+      else if (id === 'fire') calcFIRE();
+      else if (id === 'roi') calcROI();
+      else if (id === 'insurance') calcInsurance();
+      else if (id === 'tax') { if (typeof renderTax === 'function') renderTax(); }
+      else if (id === 'habit') calcHabit();
+    } catch(e) {}
+  }, 50);
 }
 
 function setMode(mode){
