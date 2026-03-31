@@ -768,13 +768,14 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <!-- ====== SIP TAB ====== -->
   <div id="sip" class="tab active">
 
-    <div class="fade-in">
+    <!-- HEADING — matches Loan & Mortgage style -->
+    <div style="margin-bottom:24px;">
       <div class="section-eyebrow" id="sip-eyebrow">Investment · India</div>
       <h1 class="display" style="font-size:2.2rem;font-weight:900;margin-bottom:6px;" id="sip-title">Investment Planner</h1>
-      <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;max-width:520px;" id="sip-desc">Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.</p>
+      <p style="color:var(--muted);line-height:1.7;max-width:520px;" id="sip-desc">Harness compounding through disciplined monthly SIPs — India's most powerful wealth-creation tool.</p>
     </div>
 
-    <!-- RESULTS ROW -->
+    <!-- RESULTS ROW — stacks to 1 col on mobile via CSS -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
       <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);">
         <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Corpus</div>
@@ -793,76 +794,78 @@ tr:hover td{background:rgba(255,255,255,.02);}
       </div>
     </div>
 
-    <!-- PARAMETERS + CHART ROW — pure inline flex, no class names that patch.js targets -->
-    <div style="display:flex;gap:18px;margin-bottom:20px;align-items:stretch;flex-wrap:wrap;">
+    <!-- PARAMETERS CARD — full width, no side-by-side layout that can drift -->
+    <div class="card" style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;margin-bottom:18px;">PARAMETERS</div>
 
-      <!-- LEFT: Parameters card -->
-      <div class="card" style="flex:1.2;min-width:260px;">
-        <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;margin-bottom:18px;">PARAMETERS</div>
-
-        <!-- Monthly SIP -->
-        <div style="margin-bottom:20px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <label style="font-size:12px;color:var(--muted);" id="sip-p-label">Monthly Investment</label>
-            <span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_p">—</span>
-          </div>
-          <input type="range" id="sip_p" min="500" max="200000" step="500" value="25000" style="width:100%;">
+      <!-- Monthly SIP -->
+      <div style="margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+          <label style="font-size:12px;color:var(--muted);" id="sip-p-label">Monthly Investment</label>
+          <span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_p">—</span>
         </div>
+        <input type="range" id="sip_p" min="500" max="200000" step="500" value="25000" style="width:100%;display:block;">
+      </div>
 
-        <!-- Expected Return -->
-        <div style="margin-bottom:20px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <label style="font-size:12px;color:var(--muted);">Expected Return</label>
-            <span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_r">12.0</span><span style="font-size:10px;color:var(--muted);">%</span></span>
-          </div>
-          <input type="range" id="sip_r" min="1" max="30" step="0.5" value="12" style="width:100%;">
-          <div style="font-size:9px;color:var(--muted);margin-top:3px;text-align:center;" id="sip-rate-hint">Nifty 50 hist. avg ~13%</div>
+      <!-- Expected Return -->
+      <div style="margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+          <label style="font-size:12px;color:var(--muted);">Expected Return</label>
+          <span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_r">12.0</span><span style="font-size:10px;color:var(--muted);">%</span></span>
         </div>
+        <input type="range" id="sip_r" min="1" max="30" step="0.5" value="12" style="width:100%;display:block;">
+        <div style="font-size:9px;color:var(--muted);margin-top:3px;text-align:center;" id="sip-rate-hint">Nifty 50 hist. avg ~13%</div>
+      </div>
 
-        <!-- Tenure -->
-        <div style="margin-bottom:20px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <label style="font-size:12px;color:var(--muted);">Tenure</label>
-            <span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_t">15</span><span style="font-size:10px;color:var(--muted);">yrs</span></span>
-          </div>
-          <input type="range" id="sip_t" min="1" max="40" step="1" value="15" style="width:100%;">
+      <!-- Tenure -->
+      <div style="margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+          <label style="font-size:12px;color:var(--muted);">Tenure</label>
+          <span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_t">15</span><span style="font-size:10px;color:var(--muted);">yrs</span></span>
         </div>
+        <input type="range" id="sip_t" min="1" max="40" step="1" value="15" style="width:100%;display:block;">
+      </div>
 
-        <!-- Tax benefit box -->
-        <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:12px;">
+      <!-- Tax benefit + Chart side by side on desktop, stacked on mobile -->
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;">
+
+        <!-- Tax box -->
+        <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:12px;flex:1;min-width:160px;">
           <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;" id="sip-tax-label">Tax Benefit</div>
           <div style="font-size:1.3rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--gold-light);" id="sip_tax">—</div>
           <div style="font-size:10px;color:var(--muted);margin-top:3px;" id="sip-tax-note">—</div>
         </div>
-      </div>
 
-      <!-- RIGHT: Chart card -->
-      <div class="card" style="flex:0.8;min-width:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
-        <div class="section-eyebrow" style="text-align:center;">Corpus Breakdown</div>
-        <div class="chart-wrap">
-          <canvas id="sipChart" width="160" height="160"></canvas>
-          <div class="chart-center">
-            <div style="font-size:8px;color:var(--muted);">Returns</div>
-            <div style="font-size:1.1rem;font-weight:700;font-family:'Playfair Display',serif;color:var(--gold-light);" id="sip_return_pct_center">0%</div>
+        <!-- Corpus breakdown chart -->
+        <div style="flex:1;min-width:160px;display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <div class="section-eyebrow" style="text-align:center;">Corpus Breakdown</div>
+          <div class="chart-wrap">
+            <canvas id="sipChart" width="160" height="160"></canvas>
+            <div class="chart-center">
+              <div style="font-size:8px;color:var(--muted);">Returns</div>
+              <div style="font-size:1.1rem;font-weight:700;font-family:'Playfair Display',serif;color:var(--gold-light);" id="sip_return_pct_center">0%</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;">
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:#334155;"></div><span style="font-size:10px;color:var(--muted);">Invested</span></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:var(--gold);"></div><span style="font-size:10px;color:var(--muted);">Earnings</span></div>
           </div>
         </div>
-        <div style="display:flex;gap:12px;">
-          <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:#334155;"></div><span style="font-size:10px;color:var(--muted);">Invested</span></div>
-          <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:var(--gold);"></div><span style="font-size:10px;color:var(--muted);">Earnings</span></div>
-        </div>
-        <div style="width:100%;">
-          <div style="font-size:10px;color:var(--muted);margin-bottom:6px;text-align:center;">Milestones</div>
-          <div id="sip_milestones" style="font-size:11px;"></div>
-        </div>
-      </div>
 
-    </div><!-- end parameters+chart row -->
+      </div>
+    </div><!-- end parameters card -->
+
+    <!-- MILESTONES -->
+    <div class="card" style="margin-bottom:20px;">
+      <div style="font-size:10px;color:var(--muted);margin-bottom:10px;font-weight:600;letter-spacing:.5px;">MILESTONES</div>
+      <div id="sip_milestones" style="font-size:11px;"></div>
+    </div>
 
     <!-- ACTION BUTTONS -->
     <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
-      <button class="btn-outline" onclick="shareResult('sip')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;"><span>📤</span> Share Result</button>
-      <button class="btn-outline" onclick="generateSIPShareCard()" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.3);"><span>📸</span> Save as Image</button>
-      <button class="btn-outline" onclick="navTo('compare')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;background:rgba(201,168,76,.08);"><span>⚖️</span> SIP vs Lump Sum</button>
+      <button class="btn-outline" onclick="shareResult('sip')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;min-width:120px;"><span>📤</span> Share Result</button>
+      <button class="btn-outline" onclick="generateSIPShareCard()" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;min-width:120px;background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.3);"><span>📸</span> Save as Image</button>
+      <button class="btn-outline" onclick="navTo('compare')" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;min-width:120px;background:rgba(201,168,76,.08);"><span>⚖️</span> SIP vs Lump Sum</button>
     </div>
 
     <!-- YEAR-BY-YEAR TABLE -->
