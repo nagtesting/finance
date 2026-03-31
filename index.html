@@ -954,27 +954,27 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <p style="color:var(--muted);line-height:1.7;margin-bottom:24px;" id="fire-desc">Find your <strong style="color:var(--cream);">FIRE Number</strong> — the corpus that funds your lifestyle forever.</p>
 
     <div class="grid-3" style="margin-bottom:20px;">
-      <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">🎯 FIRE Corpus</div><div class="big-number" id="fire_corpus">—</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Years to FIRE</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="fire_years">0 yrs</div><div style="font-size:11px;margin-top:5px;color:var(--muted);" id="fire_year_label">—</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Safe Withdrawal/mo</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="fire_swr">—</div></div>
+      <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" id="fire-corpus-label">🎯 FIRE Corpus</div><div class="big-number" id="fire_corpus">—</div></div>
+      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" id="fire-years-label">Years to FIRE</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="fire_years">0 yrs</div><div style="font-size:11px;margin-top:5px;color:var(--muted);" id="fire_year_label">—</div></div>
+      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" id="fire-swr-label">Safe Withdrawal/mo</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#4ade80;" id="fire_swr">—</div></div>
     </div>
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
-        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">FIRE INPUTS</div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_age">30</span></div><input type="range" id="fire_age" min="20" max="55" value="30"></div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;" id="fire-inputs-heading">FIRE INPUTS</div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="fire-age-label">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_age">30</span></div><input type="range" id="fire_age" min="20" max="55" value="30"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="fire-exp-label">Monthly Expenses</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_exp">—</span></div><input type="range" id="fire_exp" min="500" max="30000" step="100" value="5000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Savings</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_saved">—</span></div><input type="range" id="fire_saved" min="0" max="2000000" step="5000" value="100000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Monthly Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inv">—</span></div><input type="range" id="fire_inv" min="100" max="20000" step="100" value="2000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Portfolio Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_ret">10</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_ret" min="4" max="20" step="0.5" value="10"></div>
-        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Inflation</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inf">6</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_inf" min="1" max="12" step="0.5" value="6"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="fire-saved-label">Current Savings</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_saved">—</span></div><input type="range" id="fire_saved" min="0" max="2000000" step="5000" value="100000"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="fire-inv-label">Monthly Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inv">—</span></div><input type="range" id="fire_inv" min="100" max="20000" step="100" value="2000"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="fire-ret-label">Portfolio Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_ret">10</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_ret" min="4" max="20" step="0.5" value="10"></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="fire-inf-label">Inflation</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_fire_inf">6</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="fire_inf" min="1" max="12" step="0.5" value="6"></div>
       </div>
       <div class="card">
-        <div class="section-eyebrow" style="margin-bottom:12px;">FIRE Journey</div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:11px;color:var(--muted);">Progress to FIRE</span><span style="font-size:11px;color:var(--gold-light);font-weight:600;" id="fire_progress_pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="fire_progress_bar" style="width:0%;"></div></div></div>
+        <div class="section-eyebrow" style="margin-bottom:12px;" id="fire-journey-heading">FIRE Journey</div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:11px;color:var(--muted);" id="fire-progress-label">Progress to FIRE</span><span style="font-size:11px;color:var(--gold-light);font-weight:600;" id="fire_progress_pct">0%</span></div><div class="progress-bar"><div class="progress-fill" id="fire_progress_bar" style="width:0%;"></div></div></div>
         <div id="fire_milestones" style="font-size:11px;"></div>
         <div style="margin-top:14px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:12px;">
-          <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Your FIRE Type</div>
+          <div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;" id="fire-type-heading">Your FIRE Type</div>
           <div id="fire_type" style="font-size:12px;font-weight:700;color:var(--gold-light);margin-bottom:4px;">—</div>
           <div id="fire_type_desc" style="font-size:10px;color:var(--muted);line-height:1.6;"></div>
         </div>
@@ -1032,7 +1032,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div class="card">
         <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">YOUR PROFILE</div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-inc-label">Annual Income</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_inc">—</span></div><input type="range" id="ins_inc" min="10000" max="500000" step="5000" value="60000"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_age">32</span></div><input type="range" id="ins_age" min="18" max="55" value="32"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-age-label">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_age">32</span></div><input type="range" id="ins_age" min="18" max="55" value="32"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Retirement Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_ret">65</span></div><input type="range" id="ins_ret" min="55" max="70" value="65"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-liab-label">Liabilities</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_liab">—</span></div><input type="range" id="ins_liab" min="0" max="500000" step="5000" value="100000"></div>
         <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Existing Cover</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_exist">—</span></div><input type="range" id="ins_exist" min="0" max="500000" step="5000" value="0"></div>
@@ -1184,7 +1184,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">YOUR EMPLOYMENT DETAILS</div>
       <div class="grid-3" style="gap:20px;">
         <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Basic Salary/month</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_epf_sal">—</span></div><input type="range" id="epf_sal" min="10000" max="300000" step="1000" value="50000" oninput="calcEPF()"></div>
-        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_epf_age">28</span></div><input type="range" id="epf_age" min="18" max="55" step="1" value="28" oninput="calcEPF()"></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="epf-age-label">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_epf_age">28</span></div><input type="range" id="epf_age" min="18" max="55" step="1" value="28" oninput="calcEPF()"></div>
         <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Salary Growth %/yr</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_epf_grow">8</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="epf_grow" min="0" max="20" step="1" value="8" oninput="calcEPF()"></div>
       </div>
       <div style="margin-top:16px;padding:12px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:10px;display:flex;gap:24px;flex-wrap:wrap;">
@@ -1211,7 +1211,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div class="card">
         <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">NPS INPUTS</div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Monthly Contribution</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_nps_p">—</span></div><input type="range" id="nps_p" min="500" max="100000" step="500" value="5000" oninput="calcNPS()"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_nps_age">30</span></div><input type="range" id="nps_age" min="18" max="55" step="1" value="30" oninput="calcNPS()"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="nps-age-label">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_nps_age">30</span></div><input type="range" id="nps_age" min="18" max="55" step="1" value="30" oninput="calcNPS()"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Equity % (max 75%)</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_nps_eq">75</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="nps_eq" min="0" max="75" step="5" value="75" oninput="calcNPS()"></div>
         <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15);border-radius:10px;padding:12px;"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Extra Tax Saving</div><div style="font-size:1.2rem;font-weight:700;font-family:'DM Mono',monospace;color:#4ade80;" id="nps_tax">—</div><div style="font-size:10px;color:var(--muted);margin-top:3px;">80CCD(1B) — ₹50K extra over 80C</div></div>
       </div>
@@ -2072,8 +2072,18 @@ var CALC_LABELS = {
       emiTitle:'ऋण और मॉर्गेज योजनाकार', emiEyebrow:'ऋण योजना',
       emiDesc:'अपने गृह ऋण पर मासिक किस्त, कुल ब्याज और धारा 24(b) कर लाभ की गणना करें।',
       fireTitle:'FIRE सेवानिवृत्ति योजनाकार', fireEyebrow:'जल्दी सेवानिवृत्ति',
+      fireDesc:'अपना FIRE नंबर खोजें — वह कोष जो आपकी जीवनशैली को हमेशा के लिए वित्त पोषित करता है।',
+      fireCorpusLabel:'🎯 FIRE कोष', fireYearsLabel:'FIRE तक वर्ष', fireSWRLabel:'सुरक्षित निकासी/माह',
+      fireInputsHeading:'FIRE इनपुट',
+      fireAgeLabel:'वर्तमान आयु', fireExpLabel:'मासिक खर्च', fireSavedLabel:'वर्तमान बचत',
+      fireInvLabel:'मासिक निवेश', fireRetLabel:'पोर्टफोलियो रिटर्न', fireInflLabel:'मुद्रास्फीति',
+      fireJourneyHeading:'FIRE यात्रा', fireProgressLabel:'FIRE तक प्रगति',
+      fireTypeHeading:'आपका FIRE प्रकार',
       roiTitle:'ROI और चक्रवृद्धि ब्याज', roiEyebrow:'रिटर्न',
+      roiInitLabel:'प्रारंभिक निवेश', roiReturnLabel:'वार्षिक रिटर्न', roiPeriodLabel:'अवधि',
       insTitle:'बीमा योजनाकार', insEyebrow:'जीवन कवर',
+      insIncomeLabel:'वार्षिक आय', insAgeLabel:'वर्तमान आयु', insRetLabel:'सेवानिवृत्ति आयु',
+      insLiabLabel:'देनदारियां', insExistLabel:'मौजूदा कवर',
       taxTitle:'कर अनुकूलक', taxEyebrow:'कर योजना',
       crorepatiTitle:'करोड़पति कैलकुलेटर',
       habitTitle:'आदत बनाम निवेश',
@@ -2091,6 +2101,13 @@ var CALC_LABELS = {
       emiTitle:'Kredit- & Darlehensplaner', emiEyebrow:'Finanzierung',
       emiDesc:'Berechne monatliche Raten, Gesamtzinsen und steuerliche Aspekte deiner Immobilienfinanzierung.',
       fireTitle:'FIRE Ruhestandsplaner', fireEyebrow:'Frühzeitige Rente',
+      fireDesc:'Finden Sie Ihre FIRE-Zahl — das Vermögen, das Ihren Lebensunterhalt für immer finanziert.',
+      fireCorpusLabel:'🎯 FIRE-Vermögen', fireYearsLabel:'Jahre bis FIRE', fireSWRLabel:'Sichere Entnahme/Monat',
+      fireInputsHeading:'FIRE-Eingaben',
+      fireAgeLabel:'Aktuelles Alter', fireExpLabel:'Monatliche Ausgaben', fireSavedLabel:'Aktuelle Ersparnisse',
+      fireInvLabel:'Monatliche Investition', fireRetLabel:'Portfolio-Rendite', fireInflLabel:'Inflation',
+      fireJourneyHeading:'FIRE-Reise', fireProgressLabel:'Fortschritt zu FIRE',
+      fireTypeHeading:'Ihr FIRE-Typ',
       roiTitle:'Rendite & Zinseszins', roiEyebrow:'Renditen',
       insTitle:'Versicherungsplaner', insEyebrow:'Lebensschutz',
       taxTitle:'Steueroptimierung', taxEyebrow:'Steuern',
@@ -2296,7 +2313,24 @@ function applyLanguage(mode, lang) {
   var cardLang = document.getElementById('card-lang-label');
   if (cardLang) cardLang.textContent = lang === 'hi' ? 'मनीवेदा' : lang === 'de' ? 'MoneyVeda' : lang === 'fr' ? 'MoneyVeda' : lang === 'es' ? 'MoneyVeda' : 'MoneyVeda';
 
-  // Re-run active calculator to refresh currency symbols + labels
+  // ── FIRE tab full translation ────────────────────────────────────────
+  setEl('fire-corpus-label','text', cl.fireCorpusLabel || '🎯 FIRE Corpus');
+  setEl('fire-years-label','text', cl.fireYearsLabel || 'Years to FIRE');
+  setEl('fire-swr-label','text', cl.fireSWRLabel || 'Safe Withdrawal/mo');
+  setEl('fire-inputs-heading','text', cl.fireInputsHeading || 'FIRE INPUTS');
+  setEl('fire-age-label','text', cl.fireAgeLabel || 'Current Age');
+  setEl('fire-exp-label','text', cl.fireExpLabel || 'Monthly Expenses');
+  setEl('fire-saved-label','text', cl.fireSavedLabel || 'Current Savings');
+  setEl('fire-inv-label','text', cl.fireInvLabel || 'Monthly Investment');
+  setEl('fire-ret-label','text', cl.fireRetLabel || 'Portfolio Return');
+  setEl('fire-inf-label','text', cl.fireInflLabel || 'Inflation');
+  setEl('fire-journey-heading','text', cl.fireJourneyHeading || 'FIRE Journey');
+  setEl('fire-progress-label','text', cl.fireProgressLabel || 'Progress to FIRE');
+  setEl('fire-type-heading','text', cl.fireTypeHeading || 'Your FIRE Type');
+  var fireDesc = document.querySelector('#fire p');
+  if (fireDesc) fireDesc.textContent = cl.fireDesc || fireDesc.textContent;
+
+  // ── Re-run active calculator to refresh currency symbols + labels
   var at = document.querySelector('.tab.active');
   if (at) {
     var id = at.id;
