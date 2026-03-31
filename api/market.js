@@ -1,4 +1,3 @@
-
 /**
  * /api/market.js — MoneyVeda Market API v3 (Protected Edition)
  *
@@ -242,7 +241,7 @@ function getMarketStatus(mode) {
     world:  { open: 13*60+30, close: 20*60,      tz: 'ET',   exchange: 'NYSE',     local: '9:30–16:00 ET'   },
   };
 
-  const s = schedules[mode] || schedules.india;
+  const s = schedules[mode] || schedules[MODE_ALIAS[mode]] || schedules.india;
   // For India: also check NSE public holidays
   const isHoliday = (mode === 'india') && isNSEHoliday(now);
   const isOpen = !isWeekend && !isHoliday && t >= s.open && t < s.close;
@@ -351,12 +350,12 @@ function buildSidebarItemHtml(t) {
     `</div></div>`;
 }
 
-function resolveTickerItems(mode, tickers) {
+function resolveTickerItems(mode, symbolMode, tickers) {
   const live = tickers ? tickers.filter(t => t.ok) : [];
   return live.length > 0 ? live : STATIC_FALLBACK[symbolMode].map(t => ({ ...t, ok: true }));
 }
 
-function resolveSidebarItems(mode, tickers) {
+function resolveSidebarItems(mode, symbolMode, tickers) {
   const meta = MODE_META[mode] || MODE_META[MODE_ALIAS[mode]] || MODE_META.europe;
   const preferred = meta.sidebarLabels;
   if (tickers) {
@@ -430,7 +429,7 @@ export default async function handler(req, res) {
   // Client does: track.innerHTML = data.tickerHtml; startScroll(track);
   if (view === 'ticker') {
     const ms         = getMarketStatus(mode);
-    const items      = resolveTickerItems(mode, tickers);
+    const items      = resolveTickerItems(mode, symbolMode, tickers);
     const badge      = buildBadgeHtml(mode, ms);
     const itemsHtml  = items.map(buildTickerItemHtml).join('');
     const tickerHtml = badge + itemsHtml + badge + itemsHtml; // doubled for seamless loop
@@ -441,7 +440,7 @@ export default async function handler(req, res) {
   // Returns ready-to-inject sidebar HTML + live/time metadata.
   // Client does: el.innerHTML = data.sidebarHtml; updateDot(data.live);
   if (view === 'sidebar') {
-    const { items, live } = resolveSidebarItems(mode, tickers);
+    const { items, live } = resolveSidebarItems(mode, symbolMode, tickers);
     const sidebarHtml     = items.map(buildSidebarItemHtml).join('');
     const updatedTime     = live
       ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
