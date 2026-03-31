@@ -798,7 +798,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <!-- PARAMETERS CARD — full width, no side-by-side layout that can drift -->
     <div class="card" style="margin-bottom:20px;">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;margin-bottom:18px;">PARAMETERS</div>
+      <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;margin-bottom:18px;" id="sip-params-heading">PARAMETERS</div>
 
       <!-- Monthly SIP -->
       <div style="margin-bottom:20px;">
@@ -812,7 +812,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <!-- Expected Return -->
       <div style="margin-bottom:20px;">
         <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-          <label style="font-size:12px;color:var(--muted);">Expected Return</label>
+          <label style="font-size:12px;color:var(--muted);" id="sip-r-label">Expected Return</label>
           <span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_r">12.0</span><span style="font-size:10px;color:var(--muted);">%</span></span>
         </div>
         <input type="range" id="sip_r" min="1" max="30" step="0.5" value="12" style="width:100%;display:block;">
@@ -822,8 +822,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <!-- Tenure -->
       <div style="margin-bottom:20px;">
         <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-          <label style="font-size:12px;color:var(--muted);">Tenure</label>
-          <span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_t">15</span><span style="font-size:10px;color:var(--muted);">yrs</span></span>
+          <label style="font-size:12px;color:var(--muted);" id="sip-t-label">Tenure</label>
+          <span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_sip_t">15</span><span style="font-size:10px;color:var(--muted);" id="sip-yrs-label">yrs</span></span>
         </div>
         <input type="range" id="sip_t" min="1" max="40" step="1" value="15" style="width:100%;display:block;">
       </div>
@@ -840,17 +840,17 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
         <!-- Corpus breakdown chart -->
         <div style="flex:1;min-width:160px;display:flex;flex-direction:column;align-items:center;gap:10px;">
-          <div class="section-eyebrow" style="text-align:center;">Corpus Breakdown</div>
+          <div class="section-eyebrow" style="text-align:center;" id="sip-chart-heading">Corpus Breakdown</div>
           <div class="chart-wrap">
             <canvas id="sipChart" width="160" height="160"></canvas>
             <div class="chart-center">
-              <div style="font-size:8px;color:var(--muted);">Returns</div>
+              <div style="font-size:8px;color:var(--muted);" id="sip-chart-returns-label">Returns</div>
               <div style="font-size:1.1rem;font-weight:700;font-family:'Playfair Display',serif;color:var(--gold-light);" id="sip_return_pct_center">0%</div>
             </div>
           </div>
           <div style="display:flex;gap:12px;">
-            <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:#334155;"></div><span style="font-size:10px;color:var(--muted);">Invested</span></div>
-            <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:var(--gold);"></div><span style="font-size:10px;color:var(--muted);">Earnings</span></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:#334155;"></div><span style="font-size:10px;color:var(--muted);" id="sip-legend-invested">Invested</span></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:var(--gold);"></div><span style="font-size:10px;color:var(--muted);" id="sip-legend-earnings">Earnings</span></div>
           </div>
         </div>
 
@@ -859,7 +859,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <!-- MILESTONES -->
     <div class="card" style="margin-bottom:20px;">
-      <div style="font-size:10px;color:var(--muted);margin-bottom:10px;font-weight:600;letter-spacing:.5px;">MILESTONES</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:10px;font-weight:600;letter-spacing:.5px;" id="sip-milestones-heading">MILESTONES</div>
       <div id="sip_milestones" style="font-size:11px;"></div>
     </div>
 
@@ -873,11 +873,11 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <!-- YEAR-BY-YEAR TABLE -->
     <div class="card" style="margin-bottom:20px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
-        <h3 style="font-size:14px;font-weight:700;">Year-by-Year Projection</h3>
+        <h3 style="font-size:14px;font-weight:700;" id="sip-table-heading">Year-by-Year Projection</h3>
         <button class="btn-outline" onclick="downloadSIPCSV()">⬇ Export CSV</button>
       </div>
       <div class="table-wrap" style="max-height:280px;overflow-y:auto;">
-        <table><thead><tr><th>Yr</th><th>Invested</th><th>Value</th><th>Gains</th><th>%</th><th>Progress</th></tr></thead>
+        <table><thead><tr><th id="sip-th-yr">Yr</th><th id="sip-th-invested">Invested</th><th id="sip-th-value">Value</th><th id="sip-th-gains">Gains</th><th>%</th><th id="sip-th-progress">Progress</th></tr></thead>
         <tbody id="sip_tbody"></tbody></table>
       </div>
     </div>
@@ -899,16 +899,16 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <div class="grid-3" style="margin-bottom:20px;">
       <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" id="emi-monthly-label">Monthly EMI</div><div class="big-number" id="emi_monthly">—</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Interest</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="emi_interest">—</div></div>
-      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Payment</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="emi_total">—</div></div>
+      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" id="emi-interest-label">Total Interest</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="emi_interest">—</div></div>
+      <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" id="emi-total-label">Total Payment</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;" id="emi_total">—</div></div>
     </div>
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
-        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">LOAN PARAMETERS</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;" id="emi-params-heading">LOAN PARAMETERS</div>
         <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="emi-p-label">Loan Amount</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_p">—</span></div><input type="range" id="emi_p" min="10000" max="20000000" step="10000" value="5000000"></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Interest Rate</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_r">8.5</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="emi_r" min="1" max="20" step="0.25" value="8.5"><div style="font-size:9px;color:var(--muted);margin-top:3px;text-align:center;" id="emi-rate-hint">SBI Home Loan ~8.25% (2026)</div></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Tenure</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_t">20</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div><input type="range" id="emi_t" min="1" max="30" step="1" value="20"></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="emi-r-label">Interest Rate</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_r">8.5</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="emi_r" min="1" max="20" step="0.25" value="8.5"><div style="font-size:9px;color:var(--muted);margin-top:3px;text-align:center;" id="emi-rate-hint">SBI Home Loan ~8.25% (2026)</div></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="emi-t-label">Tenure</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_emi_t">20</span><span style="font-size:10px;color:var(--muted);" id="emi-yrs-label">yrs</span></span></div><input type="range" id="emi_t" min="1" max="30" step="1" value="20"></div>
         <div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.15);border-radius:10px;padding:12px;">
           <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;" id="emi-tax-label">Tax Benefit</div>
           <div style="font-size:1.2rem;font-weight:700;font-family:'DM Mono',monospace;color:#4ade80;" id="emi_tax_saved">—</div>
@@ -916,11 +916,11 @@ tr:hover td{background:rgba(255,255,255,.02);}
         </div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
-        <div class="section-eyebrow" style="text-align:center;">Payment Breakdown</div>
-        <div class="chart-wrap"><canvas id="emiChart" width="160" height="160"></canvas><div class="chart-center"><div style="font-size:8px;color:var(--muted);">Interest</div><div style="font-size:1.1rem;font-weight:700;font-family:'Playfair Display',serif;color:#f87171;" id="emi_interest_pct_center">0%</div></div></div>
+        <div class="section-eyebrow" style="text-align:center;" id="emi-chart-heading">Payment Breakdown</div>
+        <div class="chart-wrap"><canvas id="emiChart" width="160" height="160"></canvas><div class="chart-center"><div style="font-size:8px;color:var(--muted);" id="emi-chart-interest-label">Interest</div><div style="font-size:1.1rem;font-weight:700;font-family:'Playfair Display',serif;color:#f87171;" id="emi_interest_pct_center">0%</div></div></div>
         <div style="width:100%;">
-          <div class="compare-row"><span class="compare-label">Principal</span><div class="compare-bar"><div class="compare-fill" id="emi_bar_p" style="width:50%;background:#4f46e5;"></div></div><span class="compare-val" id="emi_pct_p">50%</span></div>
-          <div class="compare-row"><span class="compare-label">Interest</span><div class="compare-bar"><div class="compare-fill" id="emi_bar_i" style="width:50%;background:#ef4444;"></div></div><span class="compare-val" id="emi_pct_i">50%</span></div>
+          <div class="compare-row"><span class="compare-label" id="emi-principal-label">Principal</span><div class="compare-bar"><div class="compare-fill" id="emi_bar_p" style="width:50%;background:#4f46e5;"></div></div><span class="compare-val" id="emi_pct_p">50%</span></div>
+          <div class="compare-row"><span class="compare-label" id="emi-interest-breakdown-label">Interest</span><div class="compare-bar"><div class="compare-fill" id="emi_bar_i" style="width:50%;background:#ef4444;"></div></div><span class="compare-val" id="emi_pct_i">50%</span></div>
         </div>
         <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:8px;padding:10px;width:100%;text-align:center;">
           <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">Min income recommended</div>
@@ -935,9 +935,9 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <button class="btn-outline" onclick="generateEMIShareCard()" style="display:flex;align-items:center;gap:6px;flex:1;justify-content:center;background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.3);"><span id="emi-img-btn-label">📸 Save as Image</span></button>
     </div>
     <div class="card">
-      <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;">Amortization Schedule</h3>
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;" id="emi-amort-heading">Amortization Schedule</h3>
       <div class="table-wrap" style="max-height:280px;overflow-y:auto;">
-        <table><thead><tr><th>Yr</th><th>Opening</th><th>Principal</th><th>Interest</th><th>Closing</th></tr></thead>
+        <table><thead><tr><th id="emi-th-yr">Yr</th><th id="emi-th-opening">Opening</th><th id="emi-th-principal">Principal</th><th id="emi-th-interest">Interest</th><th id="emi-th-closing">Closing</th></tr></thead>
         <tbody id="emi_tbody"></tbody></table>
       </div>
     </div>
@@ -998,17 +998,17 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
-        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">LUMP SUM CALCULATOR</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;" id="roi-params-heading">LUMP SUM CALCULATOR</div>
         <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="roi-p-label">Initial Investment</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_p">—</span></div><input type="range" id="roi_p" min="1000" max="1000000" step="1000" value="100000"></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Annual Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_r">12</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="roi_r" min="1" max="30" step="0.5" value="12"></div>
-        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Period</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_t">20</span><span style="font-size:10px;color:var(--muted);">yrs</span></span></div><input type="range" id="roi_t" min="1" max="50" step="1" value="20"></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="roi-r-label">Annual Return</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_r">12</span><span style="font-size:10px;color:var(--muted);">%</span></span></div><input type="range" id="roi_r" min="1" max="30" step="0.5" value="12"></div>
+        <div style="margin-bottom:18px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="roi-t-label">Period</label><span><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_roi_t">20</span><span style="font-size:10px;color:var(--muted);" id="roi-yrs-label">yrs</span></span></div><input type="range" id="roi_t" min="1" max="50" step="1" value="20"></div>
         <div class="grid-3" style="margin-top:20px;gap:8px;">
-          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Final</div><div style="font-size:1.1rem;font-weight:800;color:var(--gold-light);font-family:'Playfair Display',serif;" id="roi_final">—</div></div>
-          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Returns</div><div style="font-size:1.1rem;font-weight:800;color:#4ade80;font-family:'Playfair Display',serif;" id="roi_returns">—</div></div>
-          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Multiplier</div><div style="font-size:1.1rem;font-weight:800;font-family:'Playfair Display',serif;" id="roi_mult">0x</div></div>
+          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;" id="roi-final-label">Final</div><div style="font-size:1.1rem;font-weight:800;color:var(--gold-light);font-family:'Playfair Display',serif;" id="roi_final">—</div></div>
+          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;" id="roi-returns-label">Returns</div><div style="font-size:1.1rem;font-weight:800;color:#4ade80;font-family:'Playfair Display',serif;" id="roi_returns">—</div></div>
+          <div class="result-box" style="padding:12px;"><div style="font-size:9px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;" id="roi-mult-label">Multiplier</div><div style="font-size:1.1rem;font-weight:800;font-family:'Playfair Display',serif;" id="roi_mult">0x</div></div>
         </div>
       </div>
-      <div class="card"><div class="section-eyebrow" style="text-align:center;margin-bottom:12px;">Growth Curve</div><canvas id="roiChart" height="200"></canvas></div>
+      <div class="card"><div class="section-eyebrow" style="text-align:center;margin-bottom:12px;" id="roi-chart-heading">Growth Curve</div><canvas id="roiChart" height="200"></canvas></div>
     </div>
 
     <div class="card">
@@ -1032,16 +1032,16 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <div class="grid-2-1" style="margin-bottom:20px;">
       <div class="card">
-        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;">YOUR PROFILE</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:18px;" id="ins-profile-heading">YOUR PROFILE</div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-inc-label">Annual Income</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_inc">—</span></div><input type="range" id="ins_inc" min="10000" max="500000" step="5000" value="60000"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-age-label">Current Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_age">32</span></div><input type="range" id="ins_age" min="18" max="55" value="32"></div>
-        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Retirement Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_ret">65</span></div><input type="range" id="ins_ret" min="55" max="70" value="65"></div>
+        <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-ret-label">Retirement Age</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_ret">65</span></div><input type="range" id="ins_ret" min="55" max="70" value="65"></div>
         <div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-liab-label">Liabilities</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_liab">—</span></div><input type="range" id="ins_liab" min="0" max="500000" step="5000" value="100000"></div>
-        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);">Existing Cover</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_exist">—</span></div><input type="range" id="ins_exist" min="0" max="500000" step="5000" value="0"></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><label style="font-size:12px;color:var(--muted);" id="ins-exist-label">Existing Cover</label><span class="mono" style="font-size:14px;font-weight:600;color:var(--gold-light);" id="v_ins_exist">—</span></div><input type="range" id="ins_exist" min="0" max="500000" step="5000" value="0"></div>
       </div>
       <div class="card" style="display:flex;flex-direction:column;gap:12px;">
-        <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Recommended Cover</div><div class="big-number" id="ins_cover">—</div></div>
-        <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Coverage Gap</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="ins_gap">—</div></div>
+        <div class="result-box" style="box-shadow:0 0 24px rgba(201,168,76,.1);"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" id="ins-cover-label">Recommended Cover</div><div class="big-number" id="ins_cover">—</div></div>
+        <div class="result-box"><div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;" id="ins-gap-label">Coverage Gap</div><div style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:700;color:#f87171;" id="ins_gap">—</div></div>
         <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:12px;">
           <div style="font-size:9px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:1px;" id="ins-premium-label">Est. Premium/yr</div>
           <div style="font-size:1.2rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--gold-light);" id="ins_premium">—</div>
@@ -2068,11 +2068,26 @@ var CALC_LABELS = {
     hi: {
       sipTitle:'निवेश योजनाकार', sipEyebrow:'SIP · भारत',
       sipDesc:'अनुशासित मासिक SIP के माध्यम से चक्रवृद्धि का लाभ उठाएं — भारत का सबसे शक्तिशाली धन-सृजन उपकरण।',
-      sipParamLabel:'मासिक निवेश', sipRateLabel:'अपेक्षित रिटर्न', sipTenureLabel:'अवधि',
+      sipParamsHeading:'पैरामीटर',
+      sipParamLabel:'मासिक निवेश', sipRateLabel:'अपेक्षित रिटर्न', sipTenureLabel:'अवधि', sipYrsLabel:'वर्ष',
+      sipRateHint:'निफ्टी 50 ऐतिहासिक औसत ~13%',
       sipTaxSectionLabel:'कर लाभ', sipTotalLabel:'कुल कोष', sipInvestedLabel:'निवेशित राशि',
-      sipGainedLabel:'अर्जित संपदा', sipShareBtn:'परिणाम साझा करें', sipImageBtn:'📸 छवि सहेजें',
+      sipGainedLabel:'अर्जित संपदा',
+      sipChartHeading:'कोष विवरण', sipChartReturnsLabel:'रिटर्न',
+      sipLegendInvested:'निवेशित', sipLegendEarnings:'कमाई',
+      sipMilestonesHeading:'मील के पत्थर',
+      sipTableHeading:'वर्ष-दर-वर्ष अनुमान',
+      sipThYr:'वर्ष', sipThInvested:'निवेशित', sipThValue:'मूल्य', sipThGains:'लाभ', sipThProgress:'प्रगति',
+      sipShareBtn:'परिणाम साझा करें', sipImageBtn:'📸 छवि सहेजें',
       emiTitle:'ऋण और मॉर्गेज योजनाकार', emiEyebrow:'ऋण योजना',
       emiDesc:'अपने गृह ऋण पर मासिक किस्त, कुल ब्याज और धारा 24(b) कर लाभ की गणना करें।',
+      emiMonthlyLabel:'मासिक EMI', emiInterestLabel:'कुल ब्याज', emiTotalLabel:'कुल भुगतान',
+      emiParamsHeading:'ऋण पैरामीटर',
+      emiRateLabel:'ब्याज दर', emiTenureLabel:'अवधि', emiYrsLabel:'वर्ष',
+      emiChartHeading:'भुगतान विवरण', emiChartInterestLabel:'ब्याज',
+      emiPrincipalLabel:'मूलधन', emiInterestBreakdownLabel:'ब्याज',
+      emiAmortHeading:'परिशोधन अनुसूची',
+      emiThYr:'वर्ष', emiThOpening:'प्रारंभिक', emiThPrincipal:'मूलधन', emiThInterest:'ब्याज', emiThClosing:'समापन',
       fireTitle:'FIRE सेवानिवृत्ति योजनाकार', fireEyebrow:'जल्दी सेवानिवृत्ति',
       fireDesc:'अपना FIRE नंबर खोजें — वह कोष जो आपकी जीवनशैली को हमेशा के लिए वित्त पोषित करता है।',
       fireCorpusLabel:'🎯 FIRE कोष', fireYearsLabel:'FIRE तक वर्ष', fireSWRLabel:'सुरक्षित निकासी/माह',
@@ -2082,10 +2097,14 @@ var CALC_LABELS = {
       fireJourneyHeading:'FIRE यात्रा', fireProgressLabel:'FIRE तक प्रगति',
       fireTypeHeading:'आपका FIRE प्रकार',
       roiTitle:'ROI और चक्रवृद्धि ब्याज', roiEyebrow:'रिटर्न',
-      roiInitLabel:'प्रारंभिक निवेश', roiReturnLabel:'वार्षिक रिटर्न', roiPeriodLabel:'अवधि',
+      roiParamsHeading:'एकमुश्त कैलकुलेटर',
+      roiRateLabel:'वार्षिक रिटर्न', roiPeriodLabel:'अवधि', roiYrsLabel:'वर्ष',
+      roiFinalLabel:'अंतिम मूल्य', roiReturnsLabel:'रिटर्न', roiMultLabel:'गुणक',
+      roiChartHeading:'विकास वक्र',
       insTitle:'बीमा योजनाकार', insEyebrow:'जीवन कवर',
-      insIncomeLabel:'वार्षिक आय', insAgeLabel:'वर्तमान आयु', insRetLabel:'सेवानिवृत्ति आयु',
-      insLiabLabel:'देनदारियां', insExistLabel:'मौजूदा कवर',
+      insProfileHeading:'आपकी प्रोफ़ाइल',
+      insRetLabel:'सेवानिवृत्ति आयु', insExistLabel:'मौजूदा कवर',
+      insCoverLabel:'अनुशंसित कवर', insGapLabel:'कवरेज अंतर',
       taxTitle:'कर अनुकूलक', taxEyebrow:'कर योजना',
       crorepatiTitle:'करोड़पति कैलकुलेटर',
       habitTitle:'आदत बनाम निवेश',
@@ -2097,21 +2116,43 @@ var CALC_LABELS = {
     de: {
       sipTitle:'Investitionsplaner', sipEyebrow:'ETF-Sparplan · DE',
       sipDesc:'Bauen Sie langfristig Vermögen durch disziplinierte monatliche ETF-Sparpläne auf — der deutsche Weg zur finanziellen Freiheit.',
-      sipParamLabel:'Monatliche Investition', sipRateLabel:'Erwartete Rendite', sipTenureLabel:'Laufzeit',
+      sipParamsHeading:'PARAMETER',
+      sipParamLabel:'Monatliche Investition', sipRateLabel:'Erwartete Rendite', sipTenureLabel:'Laufzeit', sipYrsLabel:'Jahre',
+      sipRateHint:'DAX hist. Durchschnitt ~8%',
       sipTaxSectionLabel:'Steuerersparnis', sipTotalLabel:'Gesamtvermögen', sipInvestedLabel:'Investierter Betrag',
-      sipGainedLabel:'Gewinn', sipShareBtn:'Ergebnis teilen', sipImageBtn:'📸 Als Bild speichern',
+      sipGainedLabel:'Gewinn',
+      sipChartHeading:'Vermögensaufbau', sipChartReturnsLabel:'Rendite',
+      sipLegendInvested:'Investiert', sipLegendEarnings:'Gewinn',
+      sipMilestonesHeading:'MEILENSTEINE',
+      sipTableHeading:'Jahr-für-Jahr-Projektion',
+      sipThYr:'Jahr', sipThInvested:'Investiert', sipThValue:'Wert', sipThGains:'Gewinn', sipThProgress:'Fortschritt',
+      sipShareBtn:'Ergebnis teilen', sipImageBtn:'📸 Als Bild speichern',
       emiTitle:'Kredit- & Darlehensplaner', emiEyebrow:'Finanzierung',
       emiDesc:'Berechne monatliche Raten, Gesamtzinsen und steuerliche Aspekte deiner Immobilienfinanzierung.',
+      emiMonthlyLabel:'Monatliche Rate', emiInterestLabel:'Gesamtzinsen', emiTotalLabel:'Gesamtzahlung',
+      emiParamsHeading:'KREDITPARAMETER',
+      emiRateLabel:'Zinssatz', emiTenureLabel:'Laufzeit', emiYrsLabel:'Jahre',
+      emiChartHeading:'Zahlungsaufteilung', emiChartInterestLabel:'Zinsen',
+      emiPrincipalLabel:'Tilgung', emiInterestBreakdownLabel:'Zinsen',
+      emiAmortHeading:'Tilgungsplan',
+      emiThYr:'Jahr', emiThOpening:'Restschuld', emiThPrincipal:'Tilgung', emiThInterest:'Zinsen', emiThClosing:'Restschuld',
       fireTitle:'FIRE Ruhestandsplaner', fireEyebrow:'Frühzeitige Rente',
       fireDesc:'Finden Sie Ihre FIRE-Zahl — das Vermögen, das Ihren Lebensunterhalt für immer finanziert.',
       fireCorpusLabel:'🎯 FIRE-Vermögen', fireYearsLabel:'Jahre bis FIRE', fireSWRLabel:'Sichere Entnahme/Monat',
-      fireInputsHeading:'FIRE-Eingaben',
+      fireInputsHeading:'FIRE-EINGABEN',
       fireAgeLabel:'Aktuelles Alter', fireExpLabel:'Monatliche Ausgaben', fireSavedLabel:'Aktuelle Ersparnisse',
       fireInvLabel:'Monatliche Investition', fireRetLabel:'Portfolio-Rendite', fireInflLabel:'Inflation',
       fireJourneyHeading:'FIRE-Reise', fireProgressLabel:'Fortschritt zu FIRE',
       fireTypeHeading:'Ihr FIRE-Typ',
       roiTitle:'Rendite & Zinseszins', roiEyebrow:'Renditen',
+      roiParamsHeading:'EINMALANLAGE-RECHNER',
+      roiRateLabel:'Jährliche Rendite', roiPeriodLabel:'Zeitraum', roiYrsLabel:'Jahre',
+      roiFinalLabel:'Endwert', roiReturnsLabel:'Rendite', roiMultLabel:'Multiplikator',
+      roiChartHeading:'Wachstumskurve',
       insTitle:'Versicherungsplaner', insEyebrow:'Lebensschutz',
+      insProfileHeading:'IHR PROFIL',
+      insRetLabel:'Rentenalter', insExistLabel:'Bestehender Schutz',
+      insCoverLabel:'Empfohlene Deckung', insGapLabel:'Deckungslücke',
       taxTitle:'Steueroptimierung', taxEyebrow:'Steuern',
       crorepatiTitle:'Millionär-Rechner',
       habitTitle:'Gewohnheit vs. Investition',
@@ -2139,20 +2180,48 @@ var CALC_LABELS = {
   france: {
     fr: {
       sipTitle:'Planificateur d\u2019investissement', sipEyebrow:'PEA · France',
-      sipDesc:'Constituez votre patrimoine à long terme gr\u00e2ce \u00e0 des investissements mensuels r\u00e9guliers \u2014 l\u2019approche fran\u00e7aise de la libert\u00e9 financi\u00e8re.',
-      sipParamLabel:'Investissement mensuel', sipRateLabel:'Rendement attendu', sipTenureLabel:'Durée',
+      sipDesc:'Constituez votre patrimoine à long terme grâce à des investissements mensuels réguliers — l\u2019approche française de la liberté financière.',
+      sipParamsHeading:'PARAMÈTRES',
+      sipParamLabel:'Investissement mensuel', sipRateLabel:'Rendement attendu', sipTenureLabel:'Durée', sipYrsLabel:'ans',
+      sipRateHint:'CAC 40 moy. hist. ~7.5%',
       sipTaxSectionLabel:'Économie fiscale', sipTotalLabel:'Patrimoine total', sipInvestedLabel:'Montant investi',
-      sipGainedLabel:'Gains', sipShareBtn:'Partager le résultat', sipImageBtn:'📸 Enregistrer en image',
+      sipGainedLabel:'Gains',
+      sipChartHeading:'Répartition du capital', sipChartReturnsLabel:'Rendement',
+      sipLegendInvested:'Investi', sipLegendEarnings:'Gains',
+      sipMilestonesHeading:'JALONS',
+      sipTableHeading:'Projection année par année',
+      sipThYr:'An', sipThInvested:'Investi', sipThValue:'Valeur', sipThGains:'Gains', sipThProgress:'Progression',
+      sipShareBtn:'Partager le résultat', sipImageBtn:'📸 Enregistrer en image',
       emiTitle:'Planificateur crédit immobilier', emiEyebrow:'Financement immobilier',
       emiDesc:'Calculez vos mensualités, intérêts totaux et avantages fiscaux de votre crédit immobilier.',
+      emiMonthlyLabel:'Mensualité', emiInterestLabel:'Intérêts totaux', emiTotalLabel:'Coût total',
+      emiParamsHeading:'PARAMÈTRES DU CRÉDIT',
+      emiRateLabel:'Taux d\u2019intérêt', emiTenureLabel:'Durée', emiYrsLabel:'ans',
+      emiChartHeading:'Répartition des paiements', emiChartInterestLabel:'Intérêts',
+      emiPrincipalLabel:'Capital', emiInterestBreakdownLabel:'Intérêts',
+      emiAmortHeading:'Tableau d\u2019amortissement',
+      emiThYr:'An', emiThOpening:'Solde initial', emiThPrincipal:'Capital', emiThInterest:'Intérêts', emiThClosing:'Solde final',
       fireTitle:'Planificateur retraite anticipée', fireEyebrow:'Retraite anticipée',
+      fireCorpusLabel:'🎯 Capital FIRE', fireYearsLabel:'Années jusqu\u2019au FIRE', fireSWRLabel:'Retrait mensuel sûr',
+      fireInputsHeading:'PARAMÈTRES FIRE',
+      fireAgeLabel:'Âge actuel', fireExpLabel:'Dépenses mensuelles', fireSavedLabel:'Épargne actuelle',
+      fireInvLabel:'Investissement mensuel', fireRetLabel:'Rendement du portefeuille', fireInflLabel:'Inflation',
+      fireJourneyHeading:'Parcours FIRE', fireProgressLabel:'Progression vers FIRE',
+      fireTypeHeading:'Votre type FIRE',
       roiTitle:'Rendement & Intérêts composés', roiEyebrow:'Rendements',
+      roiParamsHeading:'CALCULATEUR EN CAPITAL',
+      roiRateLabel:'Rendement annuel', roiPeriodLabel:'Période', roiYrsLabel:'ans',
+      roiFinalLabel:'Valeur finale', roiReturnsLabel:'Rendement', roiMultLabel:'Multiplicateur',
+      roiChartHeading:'Courbe de croissance',
       insTitle:'Planificateur assurance', insEyebrow:'Couverture vie',
+      insProfileHeading:'VOTRE PROFIL',
+      insRetLabel:'Âge de retraite', insExistLabel:'Couverture existante',
+      insCoverLabel:'Couverture recommandée', insGapLabel:'Déficit de couverture',
       taxTitle:'Optimisation fiscale', taxEyebrow:'Fiscalité',
       crorepatiTitle:'Calculateur millionnaire',
       habitTitle:'Habitude vs. Investissement',
-      compareTitle:'Versements r\u00e9guliers vs. Capital unique',
-      shareBtn:'Partager le r\u00e9sultat', imageBtn:'\U0001f4f8 Enregistrer en image',
+      compareTitle:'Versements réguliers vs. Capital unique',
+      shareBtn:'Partager le résultat', imageBtn:'📸 Enregistrer en image',
     },
     en: {
       sipTitle:'Investment Planner', sipEyebrow:'PEA · France',
@@ -2176,14 +2245,42 @@ var CALC_LABELS = {
     es: {
       sipTitle:'Planificador de inversión', sipEyebrow:'Fondos Indexados · España',
       sipDesc:'Construye tu patrimonio a largo plazo con inversiones mensuales regulares — el camino español hacia la libertad financiera.',
-      sipParamLabel:'Inversión mensual', sipRateLabel:'Rentabilidad esperada', sipTenureLabel:'Plazo',
+      sipParamsHeading:'PARÁMETROS',
+      sipParamLabel:'Inversión mensual', sipRateLabel:'Rentabilidad esperada', sipTenureLabel:'Plazo', sipYrsLabel:'años',
+      sipRateHint:'IBEX 35 prom. hist. ~7.0%',
       sipTaxSectionLabel:'Ahorro fiscal', sipTotalLabel:'Patrimonio total', sipInvestedLabel:'Importe invertido',
-      sipGainedLabel:'Ganancias', sipShareBtn:'Compartir resultado', sipImageBtn:'📸 Guardar como imagen',
+      sipGainedLabel:'Ganancias',
+      sipChartHeading:'Desglose del capital', sipChartReturnsLabel:'Rendimiento',
+      sipLegendInvested:'Invertido', sipLegendEarnings:'Ganancias',
+      sipMilestonesHeading:'HITOS',
+      sipTableHeading:'Proyección año a año',
+      sipThYr:'Año', sipThInvested:'Invertido', sipThValue:'Valor', sipThGains:'Ganancias', sipThProgress:'Progreso',
+      sipShareBtn:'Compartir resultado', sipImageBtn:'📸 Guardar como imagen',
       emiTitle:'Calculadora de hipoteca', emiEyebrow:'Financiación inmobiliaria',
       emiDesc:'Calcula tu cuota mensual, intereses totales y ventajas fiscales de tu hipoteca española.',
+      emiMonthlyLabel:'Cuota mensual', emiInterestLabel:'Intereses totales', emiTotalLabel:'Pago total',
+      emiParamsHeading:'PARÁMETROS DEL PRÉSTAMO',
+      emiRateLabel:'Tipo de interés', emiTenureLabel:'Plazo', emiYrsLabel:'años',
+      emiChartHeading:'Desglose de pagos', emiChartInterestLabel:'Intereses',
+      emiPrincipalLabel:'Capital', emiInterestBreakdownLabel:'Intereses',
+      emiAmortHeading:'Cuadro de amortización',
+      emiThYr:'Año', emiThOpening:'Saldo inicial', emiThPrincipal:'Capital', emiThInterest:'Intereses', emiThClosing:'Saldo final',
       fireTitle:'Planificador jubilación anticipada', fireEyebrow:'Jubilación anticipada',
+      fireCorpusLabel:'🎯 Capital FIRE', fireYearsLabel:'Años hasta FIRE', fireSWRLabel:'Retiro mensual seguro',
+      fireInputsHeading:'PARÁMETROS FIRE',
+      fireAgeLabel:'Edad actual', fireExpLabel:'Gastos mensuales', fireSavedLabel:'Ahorros actuales',
+      fireInvLabel:'Inversión mensual', fireRetLabel:'Rentabilidad cartera', fireInflLabel:'Inflación',
+      fireJourneyHeading:'Camino al FIRE', fireProgressLabel:'Progreso hacia FIRE',
+      fireTypeHeading:'Tu tipo de FIRE',
       roiTitle:'Rentabilidad e interés compuesto', roiEyebrow:'Rentabilidades',
+      roiParamsHeading:'CALCULADORA DE CAPITAL ÚNICO',
+      roiRateLabel:'Rentabilidad anual', roiPeriodLabel:'Período', roiYrsLabel:'años',
+      roiFinalLabel:'Valor final', roiReturnsLabel:'Rentabilidad', roiMultLabel:'Multiplicador',
+      roiChartHeading:'Curva de crecimiento',
       insTitle:'Planificador de seguros', insEyebrow:'Cobertura de vida',
+      insProfileHeading:'TU PERFIL',
+      insRetLabel:'Edad de jubilación', insExistLabel:'Cobertura existente',
+      insCoverLabel:'Cobertura recomendada', insGapLabel:'Brecha de cobertura',
       taxTitle:'Optimización fiscal', taxEyebrow:'Fiscalidad',
       crorepatiTitle:'Calculadora de millonario',
       habitTitle:'Hábito vs. Inversión',
@@ -2221,13 +2318,94 @@ function applyLanguage(mode, lang) {
   var strings = (LANG_STRINGS[mode] || {})[lang] || (LANG_STRINGS[mode] || {}).en || {};
   var cl = (CALC_LABELS[mode] || {})[lang] || (CALC_LABELS[mode] || {}).en || {};
 
+  // ── Fallback strings shared across all languages ─────────
+  var T = {
+    // NAV
+    sipNav: cl.sipTitle || 'Investment Planner',
+    emiNav: cl.emiTitle || 'Loan & Mortgage',
+    fireNav: cl.fireTitle || 'FIRE Retirement',
+    roiNav: cl.roiTitle || 'ROI & Compound',
+    insNav: cl.insTitle || 'Insurance Planner',
+    taxNav: cl.taxTitle || 'Tax Optimizer',
+    // SIP params
+    sipParamsHeading: cl.sipParamsHeading || 'PARAMETERS',
+    sipParamLabel: cl.sipParamLabel || 'Monthly Investment',
+    sipRateLabel: cl.sipRateLabel || 'Expected Return',
+    sipTenureLabel: cl.sipTenureLabel || 'Tenure',
+    sipYrsLabel: cl.sipYrsLabel || 'yrs',
+    sipTaxLabel: cl.sipTaxSectionLabel || 'Tax Benefit',
+    sipChartHeading: cl.sipChartHeading || 'Corpus Breakdown',
+    sipChartReturnsLabel: cl.sipChartReturnsLabel || 'Returns',
+    sipLegendInvested: cl.sipLegendInvested || 'Invested',
+    sipLegendEarnings: cl.sipLegendEarnings || 'Earnings',
+    sipMilestonesHeading: cl.sipMilestonesHeading || 'MILESTONES',
+    sipTotalLabel: cl.sipTotalLabel || 'Total Corpus',
+    sipInvestedLabel: cl.sipInvestedLabel || 'Amount Invested',
+    sipGainedLabel: cl.sipGainedLabel || 'Wealth Gained',
+    sipTableHeading: cl.sipTableHeading || 'Year-by-Year Projection',
+    sipThYr: cl.sipThYr || 'Yr',
+    sipThInvested: cl.sipThInvested || 'Invested',
+    sipThValue: cl.sipThValue || 'Value',
+    sipThGains: cl.sipThGains || 'Gains',
+    sipThProgress: cl.sipThProgress || 'Progress',
+    shareBtn: cl.shareBtn || 'Share Result',
+    imageBtn: cl.imageBtn || '📸 Save as Image',
+    // EMI params
+    emiMonthlyLabel: cl.emiMonthlyLabel || 'Monthly EMI',
+    emiInterestLabel: cl.emiInterestLabel || 'Total Interest',
+    emiTotalLabel: cl.emiTotalLabel || 'Total Payment',
+    emiParamsHeading: cl.emiParamsHeading || 'LOAN PARAMETERS',
+    emiRateLabel: cl.emiRateLabel || 'Interest Rate',
+    emiTenureLabel: cl.emiTenureLabel || 'Tenure',
+    emiYrsLabel: cl.emiYrsLabel || 'yrs',
+    emiChartHeading: cl.emiChartHeading || 'Payment Breakdown',
+    emiChartInterestLabel: cl.emiChartInterestLabel || 'Interest',
+    emiPrincipalLabel: cl.emiPrincipalLabel || 'Principal',
+    emiInterestBreakdownLabel: cl.emiInterestBreakdownLabel || 'Interest',
+    emiAmortHeading: cl.emiAmortHeading || 'Amortization Schedule',
+    emiThYr: cl.emiThYr || 'Yr',
+    emiThOpening: cl.emiThOpening || 'Opening',
+    emiThPrincipal: cl.emiThPrincipal || 'Principal',
+    emiThInterest: cl.emiThInterest || 'Interest',
+    emiThClosing: cl.emiThClosing || 'Closing',
+    // FIRE
+    fireCorpusLabel: cl.fireCorpusLabel || '🎯 FIRE Corpus',
+    fireYearsLabel: cl.fireYearsLabel || 'Years to FIRE',
+    fireSWRLabel: cl.fireSWRLabel || 'Safe Withdrawal/mo',
+    fireInputsHeading: cl.fireInputsHeading || 'FIRE INPUTS',
+    fireAgeLabel: cl.fireAgeLabel || 'Current Age',
+    fireExpLabel: cl.fireExpLabel || 'Monthly Expenses',
+    fireSavedLabel: cl.fireSavedLabel || 'Current Savings',
+    fireInvLabel: cl.fireInvLabel || 'Monthly Investment',
+    fireRetLabel: cl.fireRetLabel || 'Portfolio Return',
+    fireInflLabel: cl.fireInflLabel || 'Inflation',
+    fireJourneyHeading: cl.fireJourneyHeading || 'FIRE Journey',
+    fireProgressLabel: cl.fireProgressLabel || 'Progress to FIRE',
+    fireTypeHeading: cl.fireTypeHeading || 'Your FIRE Type',
+    // ROI
+    roiParamsHeading: cl.roiParamsHeading || 'LUMP SUM CALCULATOR',
+    roiRateLabel: cl.roiRateLabel || 'Annual Return',
+    roiPeriodLabel: cl.roiPeriodLabel || 'Period',
+    roiYrsLabel: cl.roiYrsLabel || 'yrs',
+    roiFinalLabel: cl.roiFinalLabel || 'Final',
+    roiReturnsLabel: cl.roiReturnsLabel || 'Returns',
+    roiMultLabel: cl.roiMultLabel || 'Multiplier',
+    roiChartHeading: cl.roiChartHeading || 'Growth Curve',
+    // Insurance
+    insProfileHeading: cl.insProfileHeading || 'YOUR PROFILE',
+    insRetLabel: cl.insRetLabel || 'Retirement Age',
+    insExistLabel: cl.insExistLabel || 'Existing Cover',
+    insCoverLabel: cl.insCoverLabel || 'Recommended Cover',
+    insGapLabel: cl.insGapLabel || 'Coverage Gap',
+  };
+
   // ── NAV items ────────────────────────────────────────────
-  setEl('btn-sip','html','📈 ' + (strings.sipLabel || cl.sipTitle || 'Investment Planner'));
-  setEl('btn-emi','html','🏦 ' + (strings.loanLabel || cl.emiTitle || 'Loan & Mortgage'));
-  setEl('btn-fire','html','🔥 ' + (strings.fireLabel || cl.fireTitle || 'FIRE Retirement'));
-  setEl('btn-roi','html','💹 ' + (strings.roiLabel || cl.roiTitle || 'ROI & Compound'));
-  setEl('btn-insurance','html','🛡️ ' + (strings.insLabel || cl.insTitle || 'Insurance Planner'));
-  setEl('btn-tax','html','📋 ' + (strings.taxLabel || cl.taxTitle || 'Tax Optimizer'));
+  setEl('btn-sip','html','📈 ' + (strings.sipLabel || T.sipNav));
+  setEl('btn-emi','html','🏦 ' + (strings.loanLabel || T.emiNav));
+  setEl('btn-fire','html','🔥 ' + (strings.fireLabel || T.fireNav));
+  setEl('btn-roi','html','💹 ' + (strings.roiLabel || T.roiNav));
+  setEl('btn-insurance','html','🛡️ ' + (strings.insLabel || T.insNav));
+  setEl('btn-tax','html','📋 ' + (strings.taxLabel || T.taxNav));
 
   // ── Section headers ──────────────────────────────────────
   setEl('nav-section-calc','text', strings.calcSection || 'Calculators');
@@ -2236,56 +2414,115 @@ function applyLanguage(mode, lang) {
   setEl('nav-section-learn','text', strings.learnSection || 'Learn');
   setEl('nav-market-region-label','text', strings.marketRegion || 'Market Region');
 
-  // ── SIP / Investment Planner ─────────────────────────────
+  // ── SIP — titles & description ───────────────────────────
   setEl('sip-eyebrow','text', cl.sipEyebrow || 'Investment Planner');
   setEl('sip-title','text', cl.sipTitle || 'Investment Planner');
   setEl('sip-desc','text', cl.sipDesc || '');
-  setEl('sip-p-label','text', cl.sipParamLabel || 'Monthly Investment');
-  setEl('sip-tax-label','text', cl.sipTaxSectionLabel || 'Tax Benefit');
-
-  // Result box labels
-  var labels = document.querySelectorAll('#sip .result-box');
-  if (labels[0]) {
-    var f = labels[0].querySelector('div');
-    if (f) f.textContent = cl.sipTotalLabel || 'Total Corpus';
-  }
-  if (labels[1]) {
-    var f = labels[1].querySelector('div');
-    if (f) f.textContent = cl.sipInvestedLabel || 'Amount Invested';
-  }
-  if (labels[2]) {
-    var f = labels[2].querySelector('div');
-    if (f) f.textContent = cl.sipGainedLabel || 'Wealth Gained';
-  }
-
-  // Share buttons
+  // SIP — parameter labels
+  setEl('sip-params-heading','text', T.sipParamsHeading);
+  setEl('sip-p-label','text', T.sipParamLabel);
+  setEl('sip-r-label','text', T.sipRateLabel);
+  setEl('sip-t-label','text', T.sipTenureLabel);
+  setEl('sip-yrs-label','text', T.sipYrsLabel);
+  setEl('sip-tax-label','text', T.sipTaxLabel);
+  // SIP — chart & legend
+  setEl('sip-chart-heading','text', T.sipChartHeading);
+  setEl('sip-chart-returns-label','text', T.sipChartReturnsLabel);
+  setEl('sip-legend-invested','text', T.sipLegendInvested);
+  setEl('sip-legend-earnings','text', T.sipLegendEarnings);
+  // SIP — milestones & table
+  setEl('sip-milestones-heading','text', T.sipMilestonesHeading);
+  setEl('sip-table-heading','text', T.sipTableHeading);
+  setEl('sip-th-yr','text', T.sipThYr);
+  setEl('sip-th-invested','text', T.sipThInvested);
+  setEl('sip-th-value','text', T.sipThValue);
+  setEl('sip-th-gains','text', T.sipThGains);
+  setEl('sip-th-progress','text', T.sipThProgress);
+  // SIP — result boxes
+  var sipBoxes = document.querySelectorAll('#sip .result-box');
+  if (sipBoxes[0]) { var f=sipBoxes[0].querySelector('div'); if(f) f.textContent=T.sipTotalLabel; }
+  if (sipBoxes[1]) { var f=sipBoxes[1].querySelector('div'); if(f) f.textContent=T.sipInvestedLabel; }
+  if (sipBoxes[2]) { var f=sipBoxes[2].querySelector('div'); if(f) f.textContent=T.sipGainedLabel; }
+  // SIP — share buttons
   var sipShare = document.querySelector('#sip .btn-outline[onclick*="shareResult"]');
-  if (sipShare) sipShare.innerHTML = '<span>📤</span> ' + (cl.shareBtn || 'Share Result');
+  if (sipShare) sipShare.innerHTML = '<span>📤</span> ' + T.shareBtn;
   var sipImg = document.querySelector('#sip .btn-outline[onclick*="generateSIP"]');
-  if (sipImg) sipImg.innerHTML = cl.imageBtn || '📸 Save as Image';
+  if (sipImg) sipImg.innerHTML = T.imageBtn;
 
-  // ── EMI / Loan Planner ───────────────────────────────────
+  // ── EMI — titles & description ───────────────────────────
   setEl('emi-eyebrow','text', cl.emiEyebrow || 'Loan Planning');
   setEl('emi-title','text', cl.emiTitle || 'Loan & Mortgage Planner');
   setEl('emi-desc','text', cl.emiDesc || '');
+  // EMI — result boxes
+  setEl('emi-monthly-label','text', T.emiMonthlyLabel);
+  setEl('emi-interest-label','text', T.emiInterestLabel);
+  setEl('emi-total-label','text', T.emiTotalLabel);
+  // EMI — parameters
+  setEl('emi-params-heading','text', T.emiParamsHeading);
+  setEl('emi-r-label','text', T.emiRateLabel);
+  setEl('emi-t-label','text', T.emiTenureLabel);
+  setEl('emi-yrs-label','text', T.emiYrsLabel);
+  // EMI — chart & breakdown
+  setEl('emi-chart-heading','text', T.emiChartHeading);
+  setEl('emi-chart-interest-label','text', T.emiChartInterestLabel);
+  setEl('emi-principal-label','text', T.emiPrincipalLabel);
+  setEl('emi-interest-breakdown-label','text', T.emiInterestBreakdownLabel);
+  // EMI — amortization table
+  setEl('emi-amort-heading','text', T.emiAmortHeading);
+  setEl('emi-th-yr','text', T.emiThYr);
+  setEl('emi-th-opening','text', T.emiThOpening);
+  setEl('emi-th-principal','text', T.emiThPrincipal);
+  setEl('emi-th-interest','text', T.emiThInterest);
+  setEl('emi-th-closing','text', T.emiThClosing);
+  // EMI — share buttons
+  setEl('emi-share-btn-label','text', T.shareBtn);
+  setEl('emi-img-btn-label','text', T.imageBtn);
 
-  // ── FIRE Planner ─────────────────────────────────────────
+  // ── FIRE ─────────────────────────────────────────────────
   var fireEyebrow = document.querySelector('#fire .section-eyebrow');
   if (fireEyebrow) fireEyebrow.textContent = cl.fireEyebrow || 'Early Retirement';
   var fireTitle = document.querySelector('#fire h1');
   if (fireTitle) fireTitle.textContent = cl.fireTitle || 'FIRE Retirement Planner';
+  var fireDesc = document.querySelector('#fire p');
+  if (fireDesc) fireDesc.textContent = cl.fireDesc || fireDesc.textContent;
+  setEl('fire-corpus-label','text', T.fireCorpusLabel);
+  setEl('fire-years-label','text', T.fireYearsLabel);
+  setEl('fire-swr-label','text', T.fireSWRLabel);
+  setEl('fire-inputs-heading','text', T.fireInputsHeading);
+  setEl('fire-age-label','text', T.fireAgeLabel);
+  setEl('fire-exp-label','text', T.fireExpLabel);
+  setEl('fire-saved-label','text', T.fireSavedLabel);
+  setEl('fire-inv-label','text', T.fireInvLabel);
+  setEl('fire-ret-label','text', T.fireRetLabel);
+  setEl('fire-inf-label','text', T.fireInflLabel);
+  setEl('fire-journey-heading','text', T.fireJourneyHeading);
+  setEl('fire-progress-label','text', T.fireProgressLabel);
+  setEl('fire-type-heading','text', T.fireTypeHeading);
 
   // ── ROI ──────────────────────────────────────────────────
   var roiEyebrow = document.querySelector('#roi .section-eyebrow');
   if (roiEyebrow) roiEyebrow.textContent = cl.roiEyebrow || 'Returns';
   var roiTitle = document.querySelector('#roi h1');
   if (roiTitle) roiTitle.textContent = cl.roiTitle || 'ROI & Compound Interest';
+  setEl('roi-params-heading','text', T.roiParamsHeading);
+  setEl('roi-r-label','text', T.roiRateLabel);
+  setEl('roi-t-label','text', T.roiPeriodLabel);
+  setEl('roi-yrs-label','text', T.roiYrsLabel);
+  setEl('roi-final-label','text', T.roiFinalLabel);
+  setEl('roi-returns-label','text', T.roiReturnsLabel);
+  setEl('roi-mult-label','text', T.roiMultLabel);
+  setEl('roi-chart-heading','text', T.roiChartHeading);
 
   // ── Insurance ────────────────────────────────────────────
   var insEyebrow = document.querySelector('#insurance .section-eyebrow');
   if (insEyebrow) insEyebrow.textContent = cl.insEyebrow || 'Life Cover';
-  var insTitle = document.querySelector('#insurance h1');
-  if (insTitle) insTitle.textContent = cl.insTitle || 'Insurance Planner';
+  setEl('ins-title','text', cl.insTitle || 'Insurance Planner');
+  setEl('ins-desc','text', cl.insDesc || '');
+  setEl('ins-profile-heading','text', T.insProfileHeading);
+  setEl('ins-ret-label','text', T.insRetLabel);
+  setEl('ins-exist-label','text', T.insExistLabel);
+  setEl('ins-cover-label','text', T.insCoverLabel);
+  setEl('ins-gap-label','text', T.insGapLabel);
 
   // ── Tax Optimizer ────────────────────────────────────────
   var taxEyebrow = document.querySelector('#tax .section-eyebrow');
@@ -2294,8 +2531,7 @@ function applyLanguage(mode, lang) {
   if (taxTitle) taxTitle.textContent = cl.taxTitle || 'Tax Optimizer';
 
   // ── Crorepati/Millionaire ────────────────────────────────
-  var crTitle = document.getElementById('cr_title');
-  if (crTitle) crTitle.textContent = cl.crorepatiTitle || 'Millionaire Calculator';
+  setEl('cr_title','text', cl.crorepatiTitle || 'Millionaire Calculator');
 
   // ── Habit vs Invest ──────────────────────────────────────
   var habTitle = document.querySelector('#habit h1');
@@ -2305,34 +2541,11 @@ function applyLanguage(mode, lang) {
   var cmpTitle = document.querySelector('#compare h1');
   if (cmpTitle) cmpTitle.textContent = cl.compareTitle || 'SIP vs Lump Sum';
 
-  // ── EMI/FIRE share button labels ─────────────────────────
-  var emiShareLbl = document.getElementById('emi-share-btn-label');
-  if (emiShareLbl) emiShareLbl.textContent = cl.shareBtn || 'Share Result';
-  var emiImgLbl = document.getElementById('emi-img-btn-label');
-  if (emiImgLbl) emiImgLbl.textContent = cl.imageBtn || '📸 Save as Image';
-
-  // ── Share card language label (for Instagram cards) ─────
+  // ── Share card language label ────────────────────────────
   var cardLang = document.getElementById('card-lang-label');
-  if (cardLang) cardLang.textContent = lang === 'hi' ? 'मनीवेदा' : lang === 'de' ? 'MoneyVeda' : lang === 'fr' ? 'MoneyVeda' : lang === 'es' ? 'MoneyVeda' : 'MoneyVeda';
+  if (cardLang) cardLang.textContent = 'MoneyVeda';
 
-  // ── FIRE tab full translation ────────────────────────────────────────
-  setEl('fire-corpus-label','text', cl.fireCorpusLabel || '🎯 FIRE Corpus');
-  setEl('fire-years-label','text', cl.fireYearsLabel || 'Years to FIRE');
-  setEl('fire-swr-label','text', cl.fireSWRLabel || 'Safe Withdrawal/mo');
-  setEl('fire-inputs-heading','text', cl.fireInputsHeading || 'FIRE INPUTS');
-  setEl('fire-age-label','text', cl.fireAgeLabel || 'Current Age');
-  setEl('fire-exp-label','text', cl.fireExpLabel || 'Monthly Expenses');
-  setEl('fire-saved-label','text', cl.fireSavedLabel || 'Current Savings');
-  setEl('fire-inv-label','text', cl.fireInvLabel || 'Monthly Investment');
-  setEl('fire-ret-label','text', cl.fireRetLabel || 'Portfolio Return');
-  setEl('fire-inf-label','text', cl.fireInflLabel || 'Inflation');
-  setEl('fire-journey-heading','text', cl.fireJourneyHeading || 'FIRE Journey');
-  setEl('fire-progress-label','text', cl.fireProgressLabel || 'Progress to FIRE');
-  setEl('fire-type-heading','text', cl.fireTypeHeading || 'Your FIRE Type');
-  var fireDesc = document.querySelector('#fire p');
-  if (fireDesc) fireDesc.textContent = cl.fireDesc || fireDesc.textContent;
-
-  // ── Re-run active calculator to refresh currency symbols + labels
+  // ── Re-run active calculator to refresh currency + labels ─
   var at = document.querySelector('.tab.active');
   if (at) {
     var id = at.id;
