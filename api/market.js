@@ -141,11 +141,45 @@ const SYMBOLS = {
 };
 
 // ── Mode display config (was modeColors + modeFlags in client JS) ─
+// ── Mode alias map: client sends germany/france/spain/uk → API maps to europe ─
+const MODE_ALIAS = {
+  germany: 'europe',
+  france:  'europe',
+  spain:   'europe',
+  uk:      'europe',
+};
+
+// ── NSE/BSE public holidays (YYYY-MM-DD, IST date) ──────────────────────────
+// Add new year's holidays at start of each year. Covers 2025 + 2026.
+const NSE_HOLIDAYS = new Set([
+  // 2025
+  '2025-02-26','2025-03-14','2025-03-31','2025-04-10','2025-04-14',
+  '2025-04-18','2025-05-01','2025-08-15','2025-10-02','2025-10-02',
+  '2025-10-20','2025-10-23','2025-11-05','2025-12-25',
+  // 2026
+  '2026-01-26','2026-02-16','2026-03-20','2026-03-31','2026-04-02',
+  '2026-04-03','2026-04-14','2026-05-01','2026-06-19','2026-08-15',
+  '2026-10-02','2026-10-09','2026-10-30','2026-11-13','2026-12-25',
+]);
+
+function isNSEHoliday(utcDate) {
+  // Convert UTC to IST (UTC+5:30)
+  const ist = new Date(utcDate.getTime() + 5.5 * 60 * 60 * 1000);
+  const yyyy = ist.getUTCFullYear();
+  const mm   = String(ist.getUTCMonth() + 1).padStart(2, '0');
+  const dd   = String(ist.getUTCDate()).padStart(2, '0');
+  return NSE_HOLIDAYS.has(`${yyyy}-${mm}-${dd}`);
+}
+
 const MODE_META = {
-  india:  { color: '#C9A84C', flag: '🇮🇳', sidebarLabels: ['SENSEX',     'NIFTY 50'] },
-  usa:    { color: '#60a5fa', flag: '🇺🇸', sidebarLabels: ['S&P 500',    'NASDAQ']   },
-  europe: { color: '#a5b4fc', flag: '🇪🇺', sidebarLabels: ['EURO STOXX', 'DAX']      },
-  world:  { color: '#4ade80', flag: '🌍', sidebarLabels: ['S&P 500',    'NIFTY 50'] },
+  india:   { color: '#C9A84C', flag: '🇮🇳', sidebarLabels: ['SENSEX',     'NIFTY 50']   },
+  usa:     { color: '#60a5fa', flag: '🇺🇸', sidebarLabels: ['S&P 500',    'NASDAQ']     },
+  europe:  { color: '#a5b4fc', flag: '🇪🇺', sidebarLabels: ['EURO STOXX', 'DAX']        },
+  world:   { color: '#4ade80', flag: '🌍', sidebarLabels: ['S&P 500',    'NIFTY 50']   },
+  germany: { color: '#a5b4fc', flag: '🇩🇪', sidebarLabels: ['DAX',        'EURO STOXX'] },
+  france:  { color: '#a5b4fc', flag: '🇫🇷', sidebarLabels: ['CAC 40',     'EURO STOXX'] },
+  spain:   { color: '#a5b4fc', flag: '🇪🇸', sidebarLabels: ['IBEX 35',    'EURO STOXX'] },
+  uk:      { color: '#a5b4fc', flag: '🇬🇧', sidebarLabels: ['FTSE 100',   'EURO STOXX'] },
 };
 
 // ── Static fallback data (was STATIC_FALLBACK in client JS) ──
@@ -209,11 +243,16 @@ function getMarketStatus(mode) {
   };
 
   const s = schedules[mode] || schedules.india;
-  const isOpen = !isWeekend && t >= s.open && t < s.close;
+  // For India: also check NSE public holidays
+  const isHoliday = (mode === 'india') && isNSEHoliday(now);
+  const isOpen = !isWeekend && !isHoliday && t >= s.open && t < s.close;
 
   let statusLabel, statusColor;
   if (isWeekend) {
     statusLabel = `${s.exchange} closed (weekend) · Opens Mon ${s.local}`;
+    statusColor = '#f59e0b';
+  } else if (isHoliday) {
+    statusLabel = `${s.exchange} closed (public holiday) · Opens next trading day`;
     statusColor = '#f59e0b';
   } else if (!isOpen && t < s.open) {
     const minsTo = s.open - t;
@@ -279,7 +318,7 @@ function buildTickerItemHtml(t) {
 }
 
 function buildBadgeHtml(mode, marketStatus) {
-  const m   = MODE_META[mode];
+  const m   = MODE_META[mode] || MODE_META[MODE_ALIAS[mode]] || MODE_META.europe;
   const ms  = marketStatus || { isOpen: true, statusColor: '#4ade80', statusLabel: 'LIVE' };
   const dot = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;` +
     `background:${ms.statusColor};margin-right:6px;flex-shrink:0;` +
@@ -314,18 +353,19 @@ function buildSidebarItemHtml(t) {
 
 function resolveTickerItems(mode, tickers) {
   const live = tickers ? tickers.filter(t => t.ok) : [];
-  return live.length > 0 ? live : STATIC_FALLBACK[mode].map(t => ({ ...t, ok: true }));
+  return live.length > 0 ? live : STATIC_FALLBACK[symbolMode].map(t => ({ ...t, ok: true }));
 }
 
 function resolveSidebarItems(mode, tickers) {
-  const preferred = MODE_META[mode].sidebarLabels;
+  const meta = MODE_META[mode] || MODE_META[MODE_ALIAS[mode]] || MODE_META.europe;
+  const preferred = meta.sidebarLabels;
   if (tickers) {
     const matched = preferred.map(lbl => tickers.find(t => t.ok && t.label === lbl)).filter(Boolean);
     if (matched.length === 2) return { items: matched, live: true };
     const top2 = tickers.filter(t => t.ok).slice(0, 2);
     if (top2.length === 2) return { items: top2, live: true };
   }
-  return { items: STATIC_FALLBACK[mode].slice(0, 2), live: false };
+  return { items: STATIC_FALLBACK[symbolMode].slice(0, 2), live: false };
 }
 
 // ── Main handler ──────────────────────────────────────────────
@@ -340,10 +380,12 @@ export default async function handler(req, res) {
   }
 
   const { mode, view } = req.query;
-  const validModes = ['india', 'usa', 'europe', 'world'];
+  const validModes = ['india', 'usa', 'europe', 'world', 'germany', 'france', 'spain', 'uk'];
   if (!validModes.includes(mode)) {
-    return res.status(400).json({ error: 'Invalid mode. Use: india, usa, europe, or world.' });
+    return res.status(400).json({ error: 'Invalid mode.' });
   }
+  // Map country-specific modes to their symbol group
+  const symbolMode = MODE_ALIAS[mode] || mode;
 
   let isWeekend = false;
   let tickers   = null;
@@ -359,7 +401,7 @@ export default async function handler(req, res) {
   }
   // Fetch fresh from Yahoo
   else {
-    const symbolList = SYMBOLS[mode];
+    const symbolList = SYMBOLS[symbolMode];
     const settled = await Promise.allSettled(
       symbolList.map(s => fetchQuote(s.symbol))
     );
