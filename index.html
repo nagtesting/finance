@@ -669,6 +669,10 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <div class="display" style="font-size:16px;font-weight:900;letter-spacing:-.3px;flex-shrink:0;">
     MONEY<span style="color:var(--gold);">VEDA</span>
   </div>
+     <div style="display:flex;gap:6px;flex-shrink:0;">
+    <a href="/market-pulse.html" target="_blank" style="display:flex;align-items:center;gap:4px;text-decoration:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#4ade80;font-size:10px;font-weight:700;padding:5px 10px;border-radius:100px;letter-spacing:.5px;white-space:nowrap;">📡 PULSE</a>
+    <a href="/accuracy-dashboard.html" target="_blank" style="display:flex;align-items:center;gap:4px;text-decoration:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);color:var(--gold-light);font-size:10px;font-weight:700;padding:5px 10px;border-radius:100px;letter-spacing:.5px;white-space:nowrap;">🎯 ACCURACY</a>
+  </div>
   <div class="mob-mode-row">
     <button class="mob-mode-btn active-india" id="mob-btn-india" onclick="setMode('india')">🇮🇳</button>
     <button class="mob-mode-btn" id="mob-btn-usa" onclick="setMode('usa')">🇺🇸</button>
@@ -688,18 +692,17 @@ tr:hover td{background:rgba(255,255,255,.02);}
       MONEY<span style="color:var(--gold);">VEDA</span>
     </div>
     <div id="sidebar-subtitle" style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:2px;">Your Finance Suite</div>
-    <div style="margin-top:14px;">
-      <div id="nav-market-region-label" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;">Market Region</div>
-      <div class="mode-grid">
-        <button class="mode-btn active-india" id="desk-btn-india" onclick="setMode('india')">🇮🇳 India</button>
-        <button class="mode-btn" id="desk-btn-usa" onclick="setMode('usa')">🇺🇸 USA</button>
-        <button class="mode-btn" id="desk-btn-uk" onclick="setMode('uk')">🇬🇧 UK</button>
-        <button class="mode-btn" id="desk-btn-germany" onclick="setMode('germany')">🇩🇪 Germany</button>
-        <button class="mode-btn" id="desk-btn-france" onclick="setMode('france')">🇫🇷 France</button>
-        <button class="mode-btn" id="desk-btn-spain" onclick="setMode('spain')">🇪🇸 Spain</button>
-      </div>
-      <!-- Language Toggle (appears for India, Germany, France, Spain) -->
-      <div id="lang-toggle-wrap">
+   <div style="margin-top:10px;">
+      <div id="nav-market-region-label" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Market Region</div>
+      <select id="region-dropdown" onchange="setModeFromDropdown(this.value)" style="width:100%;padding:8px 10px;background:var(--dark4);color:var(--cream);border:1px solid rgba(201,168,76,.2);border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22><path fill=%22%23C9A84C%22 d=%22M0 0l5 6 5-6z%22/></svg>');background-repeat:no-repeat;background-position:right 10px center;background-size:8px;">
+        <option value="india">🇮🇳 India — INR</option>
+        <option value="usa">🇺🇸 USA — USD</option>
+        <option value="uk">🇬🇧 UK — GBP</option>
+        <option value="germany">🇩🇪 Germany — EUR</option>
+        <option value="france">🇫🇷 France — EUR</option>
+        <option value="spain">🇪🇸 Spain — EUR</option>
+      </select>
+      <div id="lang-toggle-wrap" style="margin-top:6px;">
         <div class="lang-toggle" id="lang-toggle-inner"></div>
       </div>
     </div>
@@ -708,8 +711,12 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <div class="gold-line" style="margin:0 18px;"></div>
 
   <div style="padding:12px 0;flex:1;overflow-y:auto;">
+    <div style="padding:12px 0;flex:1;overflow-y:auto;">
+    <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 20px 5px;">📡 Market Intelligence</div>
+    <a class="nav-item" href="/market-pulse.html" target="_blank" style="text-decoration:none;color:#4ade80;border-left:2px solid #22C55E;">📡 Market Pulse — Live Signals</a>
+    <a class="nav-item" href="/accuracy-dashboard.html" target="_blank" style="text-decoration:none;color:var(--gold-light);border-left:2px solid var(--gold);">🎯 Accuracy Dashboard</a>
+    <div class="gold-line" style="margin:8px 18px;"></div>
     <div id="nav-section-calc" style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:8px 20px 5px;">Calculators</div>
-    <div class="nav-item active" id="btn-sip"       onclick="navTo('sip')">📈 Investment Planner</div>
     <div class="nav-item"        id="btn-emi"        onclick="navTo('emi')">🏦 Loan & Mortgage</div>
     <div class="nav-item"        id="btn-fire"       onclick="navTo('fire')">🔥 FIRE Retirement</div>
     <div class="nav-item"        id="btn-roi"        onclick="navTo('roi')">💹 ROI & Compound</div>
@@ -734,6 +741,9 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div class="nav-item" id="btn-edu"      onclick="navTo('edu')">🎓 Financial Academy</div>
     <div class="nav-item" id="btn-glossary" onclick="navTo('glossary')">📖 Glossary</div>
     <div class="nav-item" id="btn-contact"  onclick="navTo('contact')">✉️ Write to Us</div>
+       <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:16px 20px 5px;">📡 Market Intelligence</div>
+    <a class="nav-item" href="/market-pulse.html" style="text-decoration:none;">📡 Market Pulse</a>
+    <a class="nav-item" href="/accuracy-dashboard.html" style="text-decoration:none;">🎯 Accuracy Dashboard</a>
   </div>
 
   <div style="padding:8px 18px;border-top:1px solid rgba(201,168,76,.1);flex-shrink:0;">
@@ -1491,6 +1501,8 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <button class="bnav-item" id="bnav-edu"              onclick="navTo('edu')"       style="position:relative;"><span class="bnav-icon">🎓</span><span class="bnav-label">Learn</span><span class="bnav-indicator"></span></button>
   <button class="bnav-item" id="bnav-compare"          onclick="navTo('compare')"   style="position:relative;"><span class="bnav-icon">⚖️</span><span class="bnav-label">Compare</span><span class="bnav-indicator"></span></button>
   <button class="bnav-item" id="bnav-contact"          onclick="navTo('contact')"   style="position:relative;"><span class="bnav-icon">✉️</span><span class="bnav-label">Contact</span><span class="bnav-indicator"></span></button>
+  <a class="bnav-item" href="/market-pulse.html" style="position:relative;text-decoration:none;"><span class="bnav-icon">📡</span><span class="bnav-label">Pulse</span></a>
+  <a class="bnav-item" href="/accuracy-dashboard.html" style="position:relative;text-decoration:none;"><span class="bnav-icon">🎯</span><span class="bnav-label">Accuracy</span></a>   
 </nav>
 
 </div><!-- end app -->
@@ -5246,7 +5258,11 @@ document.addEventListener('DOMContentLoaded', function() {
   var s = document.createElement('style');
   s.textContent = '@keyframes fadeUp{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}';
   document.head.appendChild(s);
+     
 })();
+     function setModeFromDropdown(val) {
+  setMode(val);
+}
 </script>
 
 <script src="patch.js"></script>
