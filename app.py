@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime
 from flask_cors import CORS
+from commentary_engine import analyze_stock
 
 load_dotenv()
 
@@ -37,14 +38,17 @@ def home():
             "/api/accuracy",
             "/api/accuracy/record",
             "/api/accuracy/recent",
-            "/api/accuracy/stats",                                                                          
+            "/api/accuracy/stats",
             "/api/audit/recent",
-            "/api/accuracy/run-recorder"
+            "/api/accuracy/run-recorder",
+            "/api/commentary"
         ]
     })
+
 @app.route("/frontend/<path:filename>")
 def serve_frontend(filename):
     return send_from_directory("frontend", filename)
+
 # ─────────────────────────────────────────
 # SIGNALS
 # ─────────────────────────────────────────
@@ -341,6 +345,7 @@ def get_recent_outcomes():
         })
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
 @app.route("/api/accuracy/stats")
 def get_accuracy_stats():
     try:
@@ -451,6 +456,20 @@ def record_all_pending_outcomes():
             print(f"{symbol} → {'✅' if correct else '❌'} ({pct_change:+.2f}%)")
         except Exception as e:
             print(f"Error: {sig.get('symbol','?')} — {e}")
+
+# ─────────────────────────────────────────
+# COMMENTARY
+# ─────────────────────────────────────────
+@app.route("/api/commentary")
+def get_commentary():
+    try:
+        symbol = request.args.get("symbol", "TCS")
+        result = analyze_stock(symbol)
+        if result is None:
+            return jsonify({"status": "error", "message": "Could not analyze symbol"}), 404
+        return jsonify({"status": "success", "commentary": result})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
