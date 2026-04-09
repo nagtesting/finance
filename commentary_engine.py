@@ -167,7 +167,7 @@ def get_sector_context(symbol: str) -> dict:
 
         results = {}
         for name, sym in [("sector", sector_sym), ("nifty", nifty_sym)]:
-            hist = yf.Ticker(sym).history(period="2d")
+            hist = yf.Ticker(sym).history(period="5d")
             if len(hist) >= 2:
                 chg = round(
                     ((hist["Close"].iloc[-1] - hist["Close"].iloc[-2])
@@ -609,5 +609,6 @@ if __name__ == "__main__":
     else:
         # Full market scan
         run_all_movers()
+
 
 
