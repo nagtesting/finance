@@ -229,6 +229,24 @@ def scrape_moneycontrol_news(symbol: str) -> list[str]:
 
 
 def get_news_headlines(symbol: str) -> list[str]:
+    """Get news headlines using yfinance (reliable)."""
+    try:
+        ns_symbol = STOCKS.get(symbol, symbol + ".NS")
+        ticker = yf.Ticker(ns_symbol)
+        news = ticker.news[:5]
+        headlines = []
+        for n in news:
+            try:
+                title = n["content"]["title"]
+                if title and len(title) > 10:
+                    headlines.append(title)
+            except:
+                pass
+        return headlines
+    except:
+        return []
+
+def get_news_headlines_old(symbol: str):
     """Combine news from multiple sources, deduplicate."""
     et  = scrape_et_news(symbol)
     mc  = scrape_moneycontrol_news(symbol)
@@ -573,3 +591,4 @@ if __name__ == "__main__":
     else:
         # Full market scan
         run_all_movers()
+
