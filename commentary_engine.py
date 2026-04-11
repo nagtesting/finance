@@ -456,7 +456,13 @@ def _rule_based_commentary(symbol: str, data_packet: dict) -> str:
 
     # News
     if news:
-        parts.append(f"Recent news: \"{news[0][:80]}\"")
+           # Pick most relevant news - prefer symbol-specific headlines
+    symbol_lower = symbol.lower()
+    relevant = [h for h in news if symbol_lower in h.lower() or any(
+        w in h.lower() for w in ['result', 'profit', 'revenue', 'order', 'contract', 'dividend', 'acquire', 'merger', 'partnership']
+    )]
+    best_news = relevant[0] if relevant else news[0]
+    parts.append(f"Recent news: \"{best_news[:100]}\"")
 
     # 52-week context
     from_high = price.get("pct_from_high", 0)
