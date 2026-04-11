@@ -441,10 +441,16 @@ def _rule_based_commentary(symbol: str, data_packet: dict) -> str:
         top = filings[0]
         cat = top.get("category", "")
         sent= top.get("sentiment") or "unanalyzed"
-        parts.append(
-            f"A '{cat}' filing was detected today with {sent} sentiment, "
-            f"which may have triggered or amplified the move."
-        )
+        if sent in ["positive", "negative"]:
+            parts.append(
+                f"A '{cat}' filing was detected today with {sent} sentiment, "
+                f"which may have triggered or amplified the move."
+            )
+        elif sent == "neutral" or sent == "unanalyzed":
+            parts.append(
+                f"A '{cat}' filing was detected today — routine announcement, "
+                f"unlikely to be the primary driver."
+            )
     else:
         parts.append("No major NSE filings detected today — the move appears to be price/news driven.")
 
