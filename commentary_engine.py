@@ -440,7 +440,7 @@ def _rule_based_commentary(symbol: str, data_packet: dict) -> str:
     if filings:
         top = filings[0]
         cat = top.get("category", "")
-        sent= top.get("sentiment", "neutral")
+        sent= top.get("sentiment") or "unanalyzed"
         parts.append(
             f"A '{cat}' filing was detected today with {sent} sentiment, "
             f"which may have triggered or amplified the move."
@@ -609,6 +609,8 @@ if __name__ == "__main__":
     else:
         # Full market scan
         run_all_movers()
+
+
 
 
 
