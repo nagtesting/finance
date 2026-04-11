@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, send_from_directory
 from supabase import create_client
 from dotenv import load_dotenv
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from flask_cors import CORS
 from commentary_engine import analyze_stock
 
@@ -56,9 +56,11 @@ def serve_frontend(filename):
 def get_signals():
     try:
         limit = request.args.get("limit", 20)
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         result = supabase.table("signals")\
             .select("*")\
             .like("message", "%PUBLISHED%")\
+            .gte("created_at", today)\
             .order("created_at", desc=True)\
             .limit(limit)\
             .execute()
@@ -95,8 +97,10 @@ def get_signals_by_symbol(symbol):
 def get_filings():
     try:
         limit = request.args.get("limit", 20)
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         result = supabase.table("filings")\
             .select("id, symbol, source, headline, category, sentiment, sentiment_score, created_at")\
+            .gte("created_at", today)\
             .order("created_at", desc=True)\
             .limit(limit)\
             .execute()
@@ -166,15 +170,19 @@ def get_prices():
 @app.route("/api/summary")
 def get_summary():
     try:
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         signals = supabase.table("signals")\
             .select("*", count="exact")\
+            .gte("created_at", today)\
             .execute()
         filings = supabase.table("filings")\
             .select("*", count="exact")\
+            .gte("created_at", today)\
             .execute()
         published = supabase.table("signals")\
             .select("*", count="exact")\
             .like("message", "%PUBLISHED%")\
+            .gte("created_at", today)\
             .execute()
         return jsonify({
             "status": "success",
@@ -492,5 +500,3 @@ def get_commentary():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
-
-
