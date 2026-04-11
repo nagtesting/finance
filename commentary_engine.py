@@ -424,7 +424,7 @@ def _rule_based_commentary(symbol: str, data_packet: dict) -> str:
     # Sector context
     stock_vs_nifty = abs(chg) - abs(nifty)
     if abs(stock_vs_nifty) < 0.5:
-        parts.append(f"This broadly mirrors Nifty ({nifty:+.2f}%), suggesting market-wide pressure.")
+        parts.append(f"This broadly mirrors Nifty ({nifty:+.2f}%), suggesting a market-wide {'rally' if nifty > 0 else 'selloff' if nifty < 0 else 'flat session'}.")
     elif stock_vs_nifty > 0.5:
         parts.append(
             f"The move is stock-specific — Nifty only moved {nifty:+.2f}% and the sector {sec:+.2f}%."
