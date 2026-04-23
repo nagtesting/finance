@@ -501,15 +501,27 @@ def get_commentary():
                 "message": f"Could not generate commentary for {symbol}. Price data may be unavailable (market closed / holiday)."
             }), 500
 
+        # Fetch full price context so frontend can show all 6 metrics
+        # (cache-hit path returns minimal price; this ensures consistency)
+        ns_symbol = ce.STOCKS.get(symbol)
+        price_ctx = ce.get_price_context(ns_symbol) if ns_symbol else {}
+
         return jsonify({
             "status":       "success",
             "symbol":       symbol,
             "commentary":   result["commentary"],
             "source":       result.get("source", "unknown"),
             "cached":       result.get("cached", False),
-            "price":        result.get("price"),
-            "change_pct":   result.get("change_pct"),
             "generated_at": result.get("generated_at"),
+            # Flat price fields (frontend expects these)
+            "price":          price_ctx.get("current_price") or result.get("price"),
+            "change_pct":     price_ctx.get("change_pct", result.get("change_pct", 0)),
+            "high_52w":       price_ctx.get("high_52w"),
+            "low_52w":        price_ctx.get("low_52w"),
+            "pct_from_high":  price_ctx.get("pct_from_high"),
+            "pct_from_low":   price_ctx.get("pct_from_low"),
+            "vol_ratio":      price_ctx.get("vol_ratio"),
+            "trend_5d_pct":   price_ctx.get("trend_5d_pct"),
         })
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
