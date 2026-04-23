@@ -1,18 +1,23 @@
 """
-commentary_engine.py  ─  MoneyVeda Predictive Intelligence
-===========================================================
+commentary_engine.py  ─  MoneyVeda Predictive Intelligence (v3.1)
+===================================================================
 Detects significant price moves, then fetches every available
 data layer to produce plain-English "why it moved" commentary.
 
-Data layers:
-  1. Live price + 52-week hi/lo context      (yfinance)
-  2. Today's NSE filings                     (Supabase — your scraper)
-  3. Sector / Nifty benchmark comparison     (yfinance)
-  4. News sentiment via web scraping         (requests + BeautifulSoup)
-  5. Historical pattern matching             (yfinance)
-  6. AI narrative generation                 (Claude via Anthropic API)
+Data layers (unchanged from v2):
+  1. Live price + 52-week hi/lo + volume + 5-day trend  (yfinance)
+  2. Today's NSE filings                                (Supabase)
+  3. Sector / Nifty benchmark comparison                (yfinance)
+  4. News headlines                                     (yfinance)
+  5. Historical pattern matching                        (yfinance)
+  6. AI narrative generation                            (Gemini, with rule-based fallback)
 
-Run modes:
+NEW in v3.1:
+  - Supabase cache layer (daily_commentary table) — 1 Gemini call per stock per day max
+  - Swapped Claude/Anthropic → Gemini 2.5 Flash-Lite (free tier: 1000 req/day)
+  - Legacy ANTHROPIC_API_KEY still supported as a secondary fallback (optional)
+
+Run modes (unchanged):
   python commentary_engine.py              → analyze all movers now
   python commentary_engine.py RELIANCE     → analyze one stock
 """
@@ -28,6 +33,13 @@ from supabase import create_client
 import yfinance as yf
 from bs4 import BeautifulSoup
 
+# Gemini SDK (optional import — rule-based fallback works without it)
+try:
+    import google.generativeai as genai
+    GEMINI_AVAILABLE = True
+except ImportError:
+    GEMINI_AVAILABLE = False
+
 load_dotenv()
 
 # ── Clients ───────────────────────────────────────────────────────────────────
@@ -36,7 +48,9 @@ supabase = create_client(
     os.getenv("SUPABASE_SECRET_KEY")
 )
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+# AI provider keys — Gemini is primary, Anthropic kept as legacy fallback
+GEMINI_API_KEY    = os.getenv("GEMINI_API_KEY")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")   # legacy — still used if GEMINI fails
 
 # ── Stock universe ─────────────────────────────────────────────────────────────
 STOCKS = {
@@ -85,10 +99,65 @@ SECTOR_ETF = {
 }
 
 MOVE_THRESHOLD = 1.0   # % move to trigger commentary
+GEMINI_MODEL = "gemini-2.5-flash-lite"   # free tier: 15 RPM, 1000 RPD
+GEMINI_TIMEOUT_SECONDS = 15
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LAYER 1 — Price context
+# CACHE LAYER (new in v3.1) — Supabase daily_commentary
+# ─────────────────────────────────────────────────────────────────────────────
+def _today_str() -> str:
+    """Return today's date as YYYY-MM-DD (server timezone)."""
+    return datetime.now().strftime("%Y-%m-%d")
+
+
+def get_cached_commentary(symbol: str):
+    """
+    Check Supabase for today's cached commentary.
+    Returns the cached row dict if found, None otherwise.
+    """
+    try:
+        today = _today_str()
+        result = supabase.table("daily_commentary")\
+            .select("*")\
+            .eq("symbol", symbol)\
+            .eq("commentary_date", today)\
+            .limit(1)\
+            .execute()
+        if result.data and len(result.data) > 0:
+            row = result.data[0]
+            print(f"   💾 Cache HIT for {symbol}")
+            return {
+                "commentary": row["commentary_text"],
+                "source":     row.get("source", "gemini"),
+                "cached":     True,
+            }
+        return None
+    except Exception as e:
+        print(f"   ⚠️  Cache read error: {e}")
+        return None
+
+
+def save_commentary_to_cache(symbol: str, commentary_text: str, source: str) -> None:
+    """Upsert commentary into daily_commentary table."""
+    try:
+        today = _today_str()
+        supabase.table("daily_commentary").upsert(
+            {
+                "symbol":          symbol,
+                "commentary_date": today,
+                "commentary_text": commentary_text,
+                "source":          source,
+            },
+            on_conflict="symbol,commentary_date",
+        ).execute()
+        print(f"   💾 Cached commentary for {symbol} (source={source})")
+    except Exception as e:
+        print(f"   ⚠️  Cache write error: {e}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# LAYER 1 — Price context  (UNCHANGED from v2)
 # ─────────────────────────────────────────────────────────────────────────────
 def get_price_context(symbol_ns: str) -> dict:
     """Returns today's move, 52-week position, volume context."""
@@ -135,12 +204,12 @@ def get_price_context(symbol_ns: str) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LAYER 2 — NSE Filings from Supabase
+# LAYER 2 — NSE Filings from Supabase  (UNCHANGED)
 # ─────────────────────────────────────────────────────────────────────────────
 def get_today_filings(symbol: str) -> list:
     """Fetch today's filings for a symbol from Supabase."""
     try:
-        today = datetime.now().strftime("%Y-%m-%d")
+        today = _today_str()
         result = supabase.table("filings")\
             .select("headline, category, sentiment, sentiment_score, filing_date")\
             .eq("symbol", symbol)\
@@ -155,7 +224,7 @@ def get_today_filings(symbol: str) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LAYER 3 — Sector / Nifty comparison
+# LAYER 3 — Sector / Nifty comparison  (UNCHANGED)
 # ─────────────────────────────────────────────────────────────────────────────
 def get_sector_context(symbol: str) -> dict:
     """Compare today's stock move to its sector index and Nifty."""
@@ -179,7 +248,7 @@ def get_sector_context(symbol: str) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LAYER 4 — News headlines via yfinance
+# LAYER 4 — News headlines via yfinance  (UNCHANGED)
 # ─────────────────────────────────────────────────────────────────────────────
 HEADERS = {
     "User-Agent": (
@@ -209,7 +278,7 @@ def get_news_headlines(symbol: str) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LAYER 5 — Historical pattern matching
+# LAYER 5 — Historical pattern matching  (UNCHANGED)
 # ─────────────────────────────────────────────────────────────────────────────
 def find_similar_historical_moves(symbol_ns: str, change_pct: float) -> dict:
     """Look back 1 year for similar % moves."""
@@ -252,13 +321,10 @@ def find_similar_historical_moves(symbol_ns: str, change_pct: float) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LAYER 6 — AI Commentary via Claude
+# LAYER 6 — AI Commentary
 # ─────────────────────────────────────────────────────────────────────────────
-def generate_ai_commentary(symbol: str, data_packet: dict) -> str:
-    """Send all gathered data to Claude. Falls back to rule-based if API fails."""
-    if not ANTHROPIC_API_KEY:
-        return _rule_based_commentary(symbol, data_packet)
-
+def _build_prompt(symbol: str, data_packet: dict) -> str:
+    """Shared prompt used by both Gemini and Anthropic."""
     price   = data_packet.get("price", {})
     sector  = data_packet.get("sector", {})
     filings = data_packet.get("filings", [])
@@ -267,7 +333,7 @@ def generate_ai_commentary(symbol: str, data_packet: dict) -> str:
     change_pct = price.get("change_pct", 0)
     direction  = "fell" if change_pct < 0 else "rose"
 
-    prompt = f"""You are a senior Indian equity analyst writing for retail investors.
+    return f"""You are a senior Indian equity analyst writing for retail investors.
 A stock has moved significantly today. Analyze the data below and write a clear,
 concise commentary (4-6 sentences) explaining:
   1. WHY the stock moved (most likely reasons based on evidence)
@@ -275,7 +341,7 @@ concise commentary (4-6 sentences) explaining:
   3. PREDICTION: What might happen in the next 3-5 days based on patterns?
 
 Keep language simple. Avoid jargon. Use INR (Rs.) for prices. Be factual, not sensational.
-End with one clear takeaway line for a retail investor.
+Do NOT give direct buy/sell advice. End with one clear takeaway line for a retail investor.
 
 === DATA ===
 Stock: {symbol}
@@ -285,8 +351,8 @@ Current price: Rs.{price.get('current_price', 'N/A')}
 52-week low:  Rs.{price.get('low_52w', 'N/A')} ({price.get('pct_from_low', 'N/A')}% from low)
 Volume vs avg: {price.get('vol_ratio', 1.0)}x normal volume
 5-day trend: {price.get('trend_5d_pct', 0):+.1f}%
-Nifty 50 today: {sector.get('nifty_change_pct', 'N/A'):+}%
-Sector index today: {sector.get('sector_change_pct', 'N/A'):+}%
+Nifty 50 today: {sector.get('nifty_change_pct', 'N/A')}%
+Sector index today: {sector.get('sector_change_pct', 'N/A')}%
 NSE Filings today: {json.dumps(filings, indent=2) if filings else 'None found'}
 Recent news headlines:
 {chr(10).join('- ' + h for h in news) if news else 'No headlines found'}
@@ -297,6 +363,38 @@ Historical similar moves (past 1 year):
 
 Write the commentary now:"""
 
+
+def _call_gemini(prompt: str):
+    """Call Gemini API. Returns text on success, None on any failure."""
+    if not GEMINI_AVAILABLE or not GEMINI_API_KEY:
+        return None
+    try:
+        genai.configure(api_key=GEMINI_API_KEY)
+        model = genai.GenerativeModel(GEMINI_MODEL)
+        response = model.generate_content(
+            prompt,
+            generation_config={
+                "temperature":       0.4,
+                "max_output_tokens": 400,
+                "top_p":             0.9,
+            },
+            request_options={"timeout": GEMINI_TIMEOUT_SECONDS},
+        )
+        if response and response.text:
+            text = response.text.strip()
+            if len(text) >= 30:
+                return text
+        print(f"   ⚠️  Gemini returned empty/short response")
+        return None
+    except Exception as e:
+        print(f"   ⚠️  Gemini API error: {e}")
+        return None
+
+
+def _call_anthropic(prompt: str):
+    """Legacy Anthropic call — kept for backward compat. Returns text or None."""
+    if not ANTHROPIC_API_KEY:
+        return None
     try:
         resp = requests.post(
             "https://api.anthropic.com/v1/messages",
@@ -315,10 +413,36 @@ Write the commentary now:"""
         resp.raise_for_status()
         return resp.json()["content"][0]["text"].strip()
     except Exception as e:
-        print(f"   ⚠️  Claude API error: {e} — using rule-based fallback")
-        return _rule_based_commentary(symbol, data_packet)
+        print(f"   ⚠️  Anthropic API error: {e}")
+        return None
 
 
+def generate_ai_commentary(symbol: str, data_packet: dict):
+    """
+    Try Gemini first, then Anthropic (if key set), then rule-based fallback.
+    Returns (commentary_text, source_name).
+    source_name: 'gemini', 'anthropic', or 'rule_based'
+    """
+    prompt = _build_prompt(symbol, data_packet)
+
+    # Primary: Gemini
+    text = _call_gemini(prompt)
+    if text:
+        return text, "gemini"
+
+    # Secondary: Anthropic (legacy — only fires if ANTHROPIC_API_KEY is set)
+    text = _call_anthropic(prompt)
+    if text:
+        return text, "anthropic"
+
+    # Tertiary: rule-based
+    print(f"   ℹ️  Using rule-based fallback for {symbol}")
+    return _rule_based_commentary(symbol, data_packet), "rule_based"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RULE-BASED FALLBACK  (UNCHANGED from v2 — uses all 5 data layers)
+# ─────────────────────────────────────────────────────────────────────────────
 def _rule_based_commentary(symbol: str, data_packet: dict) -> str:
     """Plain-English fallback commentary without AI."""
     price   = data_packet.get("price", {})
@@ -403,10 +527,19 @@ def _rule_based_commentary(symbol: str, data_packet: dict) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# MAIN — Orchestrator
+# MAIN — Orchestrator  (MODIFIED: adds cache check + cache write)
 # ─────────────────────────────────────────────────────────────────────────────
-def analyze_stock(symbol: str):
-    """Full analysis pipeline for one stock."""
+def analyze_stock(symbol: str, force_refresh: bool = False, ignore_threshold: bool = False):
+    """
+    Full analysis pipeline for one stock.
+
+    force_refresh:    if True, skip the cache and regenerate from Gemini.
+                      Default False (cache-first — best for on-demand user requests).
+    ignore_threshold: if True, generate commentary even if the stock hasn't moved
+                      more than MOVE_THRESHOLD. Use True for user-initiated requests
+                      (users want commentary even on quiet days).
+                      Default False (batch/scheduled mode — only movers).
+    """
     ns_symbol = STOCKS.get(symbol)
     if not ns_symbol:
         print(f"❓ Unknown symbol: {symbol}")
@@ -414,13 +547,31 @@ def analyze_stock(symbol: str):
 
     print(f"\n🔍 Analyzing {symbol}...")
 
+    # --- CACHE CHECK (new in v3.1) ---
+    if not force_refresh:
+        cached = get_cached_commentary(symbol)
+        if cached:
+            # Return cached commentary without re-running the full pipeline.
+            # Still fetch fresh price so the UI shows current price alongside cached text.
+            price_ctx = get_price_context(ns_symbol)
+            return {
+                "symbol":       symbol,
+                "change_pct":   price_ctx.get("change_pct", 0) if price_ctx else 0,
+                "price":        price_ctx.get("current_price", "N/A") if price_ctx else "N/A",
+                "commentary":   cached["commentary"],
+                "source":       cached["source"],
+                "cached":       True,
+                "generated_at": datetime.now().isoformat(),
+            }
+
+    # --- FULL PIPELINE ---
     price_ctx = get_price_context(ns_symbol)
     if not price_ctx:
         print(f"   ❌ Could not fetch price data.")
         return None
 
     change_pct = price_ctx["change_pct"]
-    if abs(change_pct) < MOVE_THRESHOLD:
+    if abs(change_pct) < MOVE_THRESHOLD and not ignore_threshold:
         print(f"   ➖ {change_pct:+.2f}% — below threshold, skipping.")
         return None
 
@@ -449,13 +600,21 @@ def analyze_stock(symbol: str):
         "news":       news,
         "historical": hist_ctx,
     }
-    commentary = generate_ai_commentary(symbol, data_packet)
+    commentary, source = generate_ai_commentary(symbol, data_packet)
+
+    # --- CACHE WRITE (new in v3.1) ---
+    # Only cache AI-generated commentary. Don't cache rule-based — we want
+    # to retry the AI API on the next user click.
+    if source in ("gemini", "anthropic"):
+        save_commentary_to_cache(symbol, commentary, source)
 
     result = {
         "symbol":       symbol,
         "change_pct":   change_pct,
         "price":        price_ctx["current_price"],
         "commentary":   commentary,
+        "source":       source,
+        "cached":       False,
         "filings":      filings,
         "news":         news,
         "sector":       sector_ctx,
@@ -463,6 +622,7 @@ def analyze_stock(symbol: str):
         "generated_at": datetime.now().isoformat(),
     }
 
+    # Save signal to Supabase signals table (unchanged from v2)
     try:
         supabase.table("signals").insert({
             "symbol":      symbol,
@@ -499,7 +659,9 @@ def run_all_movers():
         chg   = r["change_pct"]
         arrow = "▼" if chg < 0 else "▲"
         emoji = "🔴" if chg < 0 else "🟢"
-        print(f"\n{emoji} {r['symbol']} {arrow} {abs(chg):.2f}% | ₹{r['price']}")
+        src   = r.get("source", "?")
+        cached = " (cached)" if r.get("cached") else ""
+        print(f"\n{emoji} {r['symbol']} {arrow} {abs(chg):.2f}% | ₹{r['price']} | source={src}{cached}")
         print(f"{'─'*58}")
         print(r["commentary"])
 
@@ -512,10 +674,11 @@ def run_all_movers():
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         sym = sys.argv[1].upper()
-        result = analyze_stock(sym)
+        result = analyze_stock(sym, ignore_threshold=True)
         if result:
             print(f"\n{'═'*60}")
             print(f"📝 Commentary for {sym}")
+            print(f"   source={result.get('source', '?')}  cached={result.get('cached', False)}")
             print(f"{'═'*60}")
             print(result["commentary"])
     else:

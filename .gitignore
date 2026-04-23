@@ -1,0 +1,38 @@
+# Secrets - NEVER commit
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+venv311/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local automation (machine-specific)
+run_daily.bat
+run_sentiment.bat
+
+# Logs
+*.log
+
+# Temp files
+how 960127b --name-only
+*.tmp
+
+# Backup files
+commentary_engine_old.py
+*_old.py
+*.bak

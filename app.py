@@ -466,34 +466,50 @@ def record_all_pending_outcomes():
             print(f"Error: {sig.get('symbol','?')} — {e}")
 
 # ─────────────────────────────────────────
-# COMMENTARY
+# COMMENTARY  (v3.1 — uses cache + Gemini + rule-based fallback)
 # ─────────────────────────────────────────
 @app.route("/api/commentary")
 def get_commentary():
+    """
+    On-demand commentary endpoint.
+
+    Flow (handled inside analyze_stock):
+      1. Check Supabase daily_commentary cache. If hit → return instantly.
+      2. Else: fetch 5 data layers (price, filings, sector, news, history).
+      3. Try Gemini → Anthropic (legacy) → rule-based fallback.
+      4. Cache the AI result for the rest of the day.
+
+    ignore_threshold=True → users get commentary even on quiet-move days.
+    force_refresh defaults to False → cache-first, saves API quota.
+    """
     try:
         symbol = request.args.get("symbol", "TCS").upper()
         import commentary_engine as ce
-        ns_symbol = ce.STOCKS.get(symbol)
-        if not ns_symbol:
-            return jsonify({"status": "error", "message": f"Unknown symbol: {symbol}. Use symbols like TCS, RELIANCE, INFY etc."}), 404
-        price_ctx = ce.get_price_context(ns_symbol)
-        if not price_ctx:
-            return jsonify({"status": "error", "message": "Could not fetch price data"}), 500
-        filings = ce.get_today_filings(symbol)
-        sector_ctx = ce.get_sector_context(symbol)
-        news = ce.get_news_headlines(symbol)
-        data_packet = {
-            "price": price_ctx,
-            "filings": filings,
-            "sector": sector_ctx,
-            "news": news
-        }
-        commentary = ce._rule_based_commentary(symbol, data_packet)
+
+        # Quick existence check before running the pipeline
+        if symbol not in ce.STOCKS:
+            return jsonify({
+                "status": "error",
+                "message": f"Unknown symbol: {symbol}. Use symbols like TCS, RELIANCE, INFY etc."
+            }), 404
+
+        result = ce.analyze_stock(symbol, force_refresh=False, ignore_threshold=True)
+
+        if not result:
+            return jsonify({
+                "status": "error",
+                "message": f"Could not generate commentary for {symbol}. Price data may be unavailable (market closed / holiday)."
+            }), 500
+
         return jsonify({
-            "status": "success",
-            "symbol": symbol,
-            "commentary": commentary,
-            "data": data_packet
+            "status":       "success",
+            "symbol":       symbol,
+            "commentary":   result["commentary"],
+            "source":       result.get("source", "unknown"),
+            "cached":       result.get("cached", False),
+            "price":        result.get("price"),
+            "change_pct":   result.get("change_pct"),
+            "generated_at": result.get("generated_at"),
         })
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
