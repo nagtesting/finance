@@ -117,11 +117,6 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
 .metric-value{font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:var(--cream);}
 .metric-value.up{color:#4ade80;}
 .metric-value.down{color:#f87171;}
-.source-badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:3px 9px;border-radius:100px;margin-left:8px;}
-.source-badge.gemini{background:rgba(99,102,241,.12);color:#a5b4fc;border:1px solid rgba(99,102,241,.25);}
-.source-badge.anthropic{background:rgba(217,119,6,.12);color:#fbbf24;border:1px solid rgba(217,119,6,.25);}
-.source-badge.rule_based{background:rgba(144,144,168,.1);color:var(--muted);border:1px solid rgba(144,144,168,.2);}
-.cached-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;color:var(--muted);margin-left:6px;}
 @media(max-width:600px){.hero{padding:28px 16px 20px;}.page{padding:16px;}.stats-grid{gap:8px;}.stat-number{font-size:1.3rem;}.how-grid{grid-template-columns:1fr 1fr;}.commentary-metrics{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -387,17 +382,10 @@ async function loadCommentary() {
       return;
     }
 
-    // Source badge — Gemini / Anthropic / Rule-based
-    const source = (d.source || 'rule_based').toLowerCase();
-    const srcLabel = source === 'gemini' ? '✨ Gemini AI'
-                  : source === 'anthropic' ? '✨ Claude AI'
-                  : '📐 Rule-based';
-    const cachedLabel = d.cached ? '<span class="cached-badge">💾 Cached</span>' : '';
-
-    document.getElementById('commentary-sym-label').innerHTML =
-      d.symbol + ' — Live Commentary' +
-      '<span class="source-badge ' + source + '">' + srcLabel + '</span>' +
-      cachedLabel;
+    // Source and cached info kept in backend data for debugging
+    // but NOT displayed to end users (clean UI)
+    document.getElementById('commentary-sym-label').textContent =
+      d.symbol + ' — Live Commentary';
 
     // Convert markdown-style **bold** to HTML
     const htmlText = (d.commentary || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
