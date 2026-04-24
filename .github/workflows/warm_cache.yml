@@ -1,0 +1,75 @@
+# ============================================================
+# MoneyVeda Commentary Cache Warmer — GitHub Actions
+# ============================================================
+# Runs once daily at 4:00 PM IST (10:30 UTC), Mon-Fri.
+# Pre-generates Gemini commentary for all 19 tracked stocks
+# so every user click is an instant cache hit.
+#
+# Why 4:00 PM IST?
+#   - NSE closes at 3:30 PM, data is final
+#   - Filings for the day are in Supabase
+#   - Users doing end-of-day analysis benefit
+#
+# Why NOT run earlier?
+#   - Intraday prices would become stale
+#   - Cache is valid only for the day it was generated
+#
+# SECRETS REQUIRED (same as other workflows):
+#   SUPABASE_URL, SUPABASE_SECRET_KEY, GEMINI_API_KEY
+# ============================================================
+
+name: Warm Commentary Cache
+
+on:
+  schedule:
+    # 16:00 IST = 10:30 UTC, Monday-Friday
+    - cron: "30 10 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Force regenerate (ignore existing cache)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      symbols:
+        description: "Comma-separated symbols (leave empty for all 19)"
+        required: false
+        default: ""
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Warm commentary cache
+        env:
+          SUPABASE_URL:        ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          ARGS=""
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          if [ -n "${{ github.event.inputs.symbols }}" ]; then
+            ARGS="$ARGS --symbols ${{ github.event.inputs.symbols }}"
+          fi
+          python warm_commentary_cache.py $ARGS
