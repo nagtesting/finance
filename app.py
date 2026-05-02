@@ -21,137 +21,133 @@ supabase = create_client(
 )
 
 # ═════════════════════════════════════════════════════════════════
-# NIFTY 100 LIVE CACHE (background refresh every 60 seconds)
+# NIFTY 100 LIVE CACHE (lazy fetch via yfinance, gunicorn-compatible)
 # ═════════════════════════════════════════════════════════════════
-# Architecture:
-#   • Background thread calls Yahoo Finance once per minute
-#   • Frontend hits /api/market-cache (instant, in-memory read)
-#   • Cache survives restart-thread's first miss with stale ok=false flags
-#   • Disabled on Render free-tier sleep — Render spins it back up on traffic
+# Architecture (revised May 2026 after gunicorn worker thread issue):
+#   • No background thread (gunicorn pre-fork model kills/restarts threads
+#     unpredictably across workers). Instead the cache refreshes lazily.
+#   • First request to /api/market-cache after the cache goes stale
+#     triggers a synchronous yfinance fetch (~3-6 seconds for 100 tickers).
+#   • While one request is fetching, others get the previous cache (locked)
+#     so users never see "building" repeatedly.
+#   • yfinance handles Yahoo's auth/headers/cookies automatically — much
+#     more reliable than raw HTTP which Yahoo has been blocking.
+import yfinance as yf
+
+CACHE_MAX_AGE_SECONDS = 60   # Refresh threshold
+
 NIFTY100_CACHE = {
-    "tickers": [],          # list of dicts: {symbol, name, value, pct, ok}
-    "updated_at": None,     # last successful Yahoo fetch (ISO string)
-    "fetch_attempts": 0,
-    "fetch_failures": 0,
+    "tickers":         [],          # list of dicts: {symbol, name, value, pct, ok}
+    "updated_at":      None,        # last successful fetch (ISO string)
+    "updated_at_unix": 0.0,         # for staleness math
+    "fetch_attempts":  0,
+    "fetch_failures":  0,
+    "last_error":      None,        # last exception string for debugging
 }
 _cache_lock = threading.Lock()
-
-
-def _fetch_yahoo_quote(yahoo_sym: str, timeout: float = 8.0):
-    """
-    Single-ticker fetch via Yahoo's quote API. Returns (value, pct) or (None, None).
-    Used by the background refresher.
-    """
-    url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={yahoo_sym}"
-    try:
-        r = requests.get(
-            url,
-            headers={"User-Agent": "Mozilla/5.0 (MoneyVeda/2.0 Cache)"},
-            timeout=timeout,
-        )
-        r.raise_for_status()
-        data = r.json()
-        results = (data.get("quoteResponse") or {}).get("result") or []
-        if not results:
-            return None, None
-        q = results[0]
-        price = q.get("regularMarketPrice")
-        pct   = q.get("regularMarketChangePercent")
-        if price is None:
-            return None, None
-        return float(price), round(float(pct or 0), 2)
-    except Exception:
-        return None, None
-
-
-def _fetch_yahoo_batch(yahoo_syms: list, timeout: float = 10.0):
-    """
-    Batch fetch via Yahoo's quote API — up to 50 symbols per call.
-    Returns dict {yahoo_sym: (value, pct)}.
-    """
-    if not yahoo_syms:
-        return {}
-    syms_param = ",".join(yahoo_syms)
-    url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={syms_param}"
-    try:
-        r = requests.get(
-            url,
-            headers={"User-Agent": "Mozilla/5.0 (MoneyVeda/2.0 Cache)"},
-            timeout=timeout,
-        )
-        r.raise_for_status()
-        data = r.json()
-        results = (data.get("quoteResponse") or {}).get("result") or []
-        out = {}
-        for q in results:
-            sym = q.get("symbol")
-            price = q.get("regularMarketPrice")
-            pct   = q.get("regularMarketChangePercent")
-            if sym and price is not None:
-                out[sym] = (float(price), round(float(pct or 0), 2))
-        return out
-    except Exception:
-        return {}
+_refresh_lock = threading.Lock()    # prevents concurrent refresh attempts
 
 
 def _refresh_nifty100_cache():
-    """One pass of the refresh loop — called by the background thread."""
+    """
+    One synchronous refresh pass via yfinance. ~3-6 seconds for 100 tickers.
+    Returns True on success (any tickers fetched), False on total failure.
+    Caller should hold _refresh_lock.
+    """
     NIFTY100_CACHE["fetch_attempts"] += 1
-    # Yahoo quote API caps at 50 symbols per request, so split 100 into 2 batches
-    half = len(ALL_YAHOO_SYMS) // 2
-    batch1 = _fetch_yahoo_batch(ALL_YAHOO_SYMS[:half])
-    batch2 = _fetch_yahoo_batch(ALL_YAHOO_SYMS[half:])
-    merged = {**batch1, **batch2}
-
-    if not merged:
-        NIFTY100_CACHE["fetch_failures"] += 1
-        return False
+    print(f"[cache] refresh starting attempt #{NIFTY100_CACHE['fetch_attempts']}")
 
     new_tickers = []
-    for sym, name, yahoo in NIFTY_100:
-        v_pct = merged.get(yahoo)
-        if v_pct is not None:
-            value, pct = v_pct
-            new_tickers.append({
-                "symbol": sym,
-                "name":   name,
-                "value":  value,
-                "pct":    pct,
-                "ok":     True,
-            })
-        else:
-            new_tickers.append({
-                "symbol": sym,
-                "name":   name,
-                "value":  None,
-                "pct":    None,
-                "ok":     False,
-            })
+    success_count = 0
+
+    try:
+        # yfinance.Tickers() handles batching internally — pass space-separated
+        tickers_str = " ".join(ALL_YAHOO_SYMS)
+        yf_tickers = yf.Tickers(tickers_str)
+
+        for sym, name, yahoo in NIFTY_100:
+            try:
+                t = yf_tickers.tickers.get(yahoo)
+                if t is None:
+                    new_tickers.append({
+                        "symbol": sym, "name": name,
+                        "value": None, "pct": None, "ok": False,
+                    })
+                    continue
+
+                fast = t.fast_info
+                price      = fast.last_price
+                prev_close = fast.previous_close
+
+                if price is None or prev_close is None or prev_close == 0:
+                    new_tickers.append({
+                        "symbol": sym, "name": name,
+                        "value": None, "pct": None, "ok": False,
+                    })
+                    continue
+
+                pct = ((price - prev_close) / prev_close) * 100
+                new_tickers.append({
+                    "symbol": sym,
+                    "name":   name,
+                    "value":  round(float(price), 2),
+                    "pct":    round(float(pct), 2),
+                    "ok":     True,
+                })
+                success_count += 1
+            except Exception as e:
+                # Per-ticker failure — keep the placeholder, don't kill the batch
+                new_tickers.append({
+                    "symbol": sym, "name": name,
+                    "value": None, "pct": None, "ok": False,
+                })
+
+    except Exception as e:
+        NIFTY100_CACHE["fetch_failures"] += 1
+        NIFTY100_CACHE["last_error"] = f"{type(e).__name__}: {e}"
+        print(f"[cache] refresh FAILED: {NIFTY100_CACHE['last_error']}")
+        return False
+
+    if success_count == 0:
+        NIFTY100_CACHE["fetch_failures"] += 1
+        NIFTY100_CACHE["last_error"] = "All tickers returned None price"
+        print(f"[cache] refresh got 0/{len(NIFTY_100)} tickers")
+        return False
 
     with _cache_lock:
-        NIFTY100_CACHE["tickers"] = new_tickers
-        NIFTY100_CACHE["updated_at"] = datetime.now(timezone.utc).isoformat()
+        NIFTY100_CACHE["tickers"]         = new_tickers
+        NIFTY100_CACHE["updated_at"]      = datetime.now(timezone.utc).isoformat()
+        NIFTY100_CACHE["updated_at_unix"] = time.time()
+        NIFTY100_CACHE["last_error"]      = None
+    print(f"[cache] refresh OK: {success_count}/{len(NIFTY_100)} tickers")
     return True
 
 
-def _cache_refresh_loop():
+def _ensure_cache_fresh(force: bool = False) -> None:
     """
-    Background daemon — refreshes Yahoo cache every 60 seconds.
-    Runs forever as long as the Render instance is alive.
+    If cache is stale or empty, refresh it. Held under _refresh_lock so
+    concurrent requests don't all trigger a refresh — one fetches, others
+    see the new data when it lands.
     """
-    # Initial 5-sec delay so app boots cleanly before first fetch
-    time.sleep(5)
-    while True:
-        try:
-            _refresh_nifty100_cache()
-        except Exception as e:
-            print(f"[cache_refresh_loop] error: {e}")
-        time.sleep(60)
+    age = time.time() - NIFTY100_CACHE["updated_at_unix"]
+    is_stale = age > CACHE_MAX_AGE_SECONDS or not NIFTY100_CACHE["tickers"]
 
+    if not is_stale and not force:
+        return
 
-# Start the background thread once, when the module is imported
-_cache_thread = threading.Thread(target=_cache_refresh_loop, daemon=True, name="nifty100-cache")
-_cache_thread.start()
+    # Try to acquire the refresh lock — if another request is already
+    # refreshing, just return whatever is currently cached.
+    acquired = _refresh_lock.acquire(blocking=False)
+    if not acquired:
+        return
+    try:
+        # Re-check after acquiring (another request may have just refreshed)
+        age = time.time() - NIFTY100_CACHE["updated_at_unix"]
+        if age <= CACHE_MAX_AGE_SECONDS and NIFTY100_CACHE["tickers"] and not force:
+            return
+        _refresh_nifty100_cache()
+    finally:
+        _refresh_lock.release()
 
 
 # ─────────────────────────────────────────
@@ -682,7 +678,9 @@ def get_commentary():
 # NIFTY 100 LIVE CACHE — read endpoint
 # ─────────────────────────────────────────
 # Returns the in-memory snapshot of all 100 stock prices + % changes.
-# Refreshed every 60 sec by the background thread; reads are instant.
+# Refreshes lazily on demand: if cache is older than 60 sec when this
+# endpoint is hit, a fresh yfinance fetch runs synchronously (~3-6 sec
+# for first request, instant for subsequent ones within the window).
 #
 # Query params:
 #   sort=movers   → sorted by abs(pct) descending (top movers first)
@@ -693,15 +691,21 @@ def get_market_cache():
         sort_mode = request.args.get("sort", "default").lower()
         limit = request.args.get("limit", type=int)
 
+        # Trigger a refresh if cache is stale or empty (synchronous on first hit,
+        # ~3-6 seconds; subsequent hits within 60 sec return cached data instantly)
+        _ensure_cache_fresh()
+
         with _cache_lock:
             tickers = list(NIFTY100_CACHE["tickers"])
             updated_at = NIFTY100_CACHE["updated_at"]
+            last_error = NIFTY100_CACHE["last_error"]
 
-        # If thread hasn't completed first fetch yet, return empty + 'building' status
+        # If we still have no data after attempting refresh, surface the error
         if not tickers:
             return jsonify({
                 "status":     "building",
-                "message":    "Cache warming up. Try again in 10 seconds.",
+                "message":    "Cache fetch failed. Try again in 30 seconds.",
+                "error":      last_error,
                 "tickers":    [],
                 "updated_at": None,
             })
