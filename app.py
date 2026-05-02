@@ -2,9 +2,13 @@ from flask import Flask, jsonify, request, send_from_directory
 from supabase import create_client
 from dotenv import load_dotenv
 import os
+import time
+import threading
+import requests
 from datetime import datetime, timezone
 from flask_cors import CORS
 from commentary_engine import analyze_stock
+from nifty100 import NIFTY_100, SYMBOL_TO_NAME, ALL_YAHOO_SYMS
 
 load_dotenv()
 
@@ -15,6 +19,140 @@ supabase = create_client(
     os.getenv("SUPABASE_URL"),
     os.getenv("SUPABASE_SECRET_KEY")
 )
+
+# ═════════════════════════════════════════════════════════════════
+# NIFTY 100 LIVE CACHE (background refresh every 60 seconds)
+# ═════════════════════════════════════════════════════════════════
+# Architecture:
+#   • Background thread calls Yahoo Finance once per minute
+#   • Frontend hits /api/market-cache (instant, in-memory read)
+#   • Cache survives restart-thread's first miss with stale ok=false flags
+#   • Disabled on Render free-tier sleep — Render spins it back up on traffic
+NIFTY100_CACHE = {
+    "tickers": [],          # list of dicts: {symbol, name, value, pct, ok}
+    "updated_at": None,     # last successful Yahoo fetch (ISO string)
+    "fetch_attempts": 0,
+    "fetch_failures": 0,
+}
+_cache_lock = threading.Lock()
+
+
+def _fetch_yahoo_quote(yahoo_sym: str, timeout: float = 8.0):
+    """
+    Single-ticker fetch via Yahoo's quote API. Returns (value, pct) or (None, None).
+    Used by the background refresher.
+    """
+    url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={yahoo_sym}"
+    try:
+        r = requests.get(
+            url,
+            headers={"User-Agent": "Mozilla/5.0 (MoneyVeda/2.0 Cache)"},
+            timeout=timeout,
+        )
+        r.raise_for_status()
+        data = r.json()
+        results = (data.get("quoteResponse") or {}).get("result") or []
+        if not results:
+            return None, None
+        q = results[0]
+        price = q.get("regularMarketPrice")
+        pct   = q.get("regularMarketChangePercent")
+        if price is None:
+            return None, None
+        return float(price), round(float(pct or 0), 2)
+    except Exception:
+        return None, None
+
+
+def _fetch_yahoo_batch(yahoo_syms: list, timeout: float = 10.0):
+    """
+    Batch fetch via Yahoo's quote API — up to 50 symbols per call.
+    Returns dict {yahoo_sym: (value, pct)}.
+    """
+    if not yahoo_syms:
+        return {}
+    syms_param = ",".join(yahoo_syms)
+    url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={syms_param}"
+    try:
+        r = requests.get(
+            url,
+            headers={"User-Agent": "Mozilla/5.0 (MoneyVeda/2.0 Cache)"},
+            timeout=timeout,
+        )
+        r.raise_for_status()
+        data = r.json()
+        results = (data.get("quoteResponse") or {}).get("result") or []
+        out = {}
+        for q in results:
+            sym = q.get("symbol")
+            price = q.get("regularMarketPrice")
+            pct   = q.get("regularMarketChangePercent")
+            if sym and price is not None:
+                out[sym] = (float(price), round(float(pct or 0), 2))
+        return out
+    except Exception:
+        return {}
+
+
+def _refresh_nifty100_cache():
+    """One pass of the refresh loop — called by the background thread."""
+    NIFTY100_CACHE["fetch_attempts"] += 1
+    # Yahoo quote API caps at 50 symbols per request, so split 100 into 2 batches
+    half = len(ALL_YAHOO_SYMS) // 2
+    batch1 = _fetch_yahoo_batch(ALL_YAHOO_SYMS[:half])
+    batch2 = _fetch_yahoo_batch(ALL_YAHOO_SYMS[half:])
+    merged = {**batch1, **batch2}
+
+    if not merged:
+        NIFTY100_CACHE["fetch_failures"] += 1
+        return False
+
+    new_tickers = []
+    for sym, name, yahoo in NIFTY_100:
+        v_pct = merged.get(yahoo)
+        if v_pct is not None:
+            value, pct = v_pct
+            new_tickers.append({
+                "symbol": sym,
+                "name":   name,
+                "value":  value,
+                "pct":    pct,
+                "ok":     True,
+            })
+        else:
+            new_tickers.append({
+                "symbol": sym,
+                "name":   name,
+                "value":  None,
+                "pct":    None,
+                "ok":     False,
+            })
+
+    with _cache_lock:
+        NIFTY100_CACHE["tickers"] = new_tickers
+        NIFTY100_CACHE["updated_at"] = datetime.now(timezone.utc).isoformat()
+    return True
+
+
+def _cache_refresh_loop():
+    """
+    Background daemon — refreshes Yahoo cache every 60 seconds.
+    Runs forever as long as the Render instance is alive.
+    """
+    # Initial 5-sec delay so app boots cleanly before first fetch
+    time.sleep(5)
+    while True:
+        try:
+            _refresh_nifty100_cache()
+        except Exception as e:
+            print(f"[cache_refresh_loop] error: {e}")
+        time.sleep(60)
+
+
+# Start the background thread once, when the module is imported
+_cache_thread = threading.Thread(target=_cache_refresh_loop, daemon=True, name="nifty100-cache")
+_cache_thread.start()
+
 
 # ─────────────────────────────────────────
 # HOME
@@ -540,6 +678,69 @@ def get_commentary():
 #                     Add &all=1 to get every intraday slot for today.
 #   type=latest     → auto-pick by IST time (default)
 # ─────────────────────────────────────────
+# ─────────────────────────────────────────
+# NIFTY 100 LIVE CACHE — read endpoint
+# ─────────────────────────────────────────
+# Returns the in-memory snapshot of all 100 stock prices + % changes.
+# Refreshed every 60 sec by the background thread; reads are instant.
+#
+# Query params:
+#   sort=movers   → sorted by abs(pct) descending (top movers first)
+#   limit=N       → return only first N tickers after sort
+@app.route("/api/market-cache")
+def get_market_cache():
+    try:
+        sort_mode = request.args.get("sort", "default").lower()
+        limit = request.args.get("limit", type=int)
+
+        with _cache_lock:
+            tickers = list(NIFTY100_CACHE["tickers"])
+            updated_at = NIFTY100_CACHE["updated_at"]
+
+        # If thread hasn't completed first fetch yet, return empty + 'building' status
+        if not tickers:
+            return jsonify({
+                "status":     "building",
+                "message":    "Cache warming up. Try again in 10 seconds.",
+                "tickers":    [],
+                "updated_at": None,
+            })
+
+        if sort_mode == "movers":
+            tickers = sorted(
+                [t for t in tickers if t["ok"] and t["pct"] is not None],
+                key=lambda t: abs(t["pct"]),
+                reverse=True,
+            )
+        if limit and limit > 0:
+            tickers = tickers[:limit]
+
+        return jsonify({
+            "status":     "success",
+            "count":      len(tickers),
+            "tickers":    tickers,
+            "updated_at": updated_at,
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+# ─────────────────────────────────────────
+# NIFTY 100 SYMBOL CATALOG — for autocomplete / dropdown
+# ─────────────────────────────────────────
+# Static list of (symbol, display_name) — frontend caches this on first load.
+@app.route("/api/market-cache/symbols")
+def get_symbol_catalog():
+    return jsonify({
+        "status": "success",
+        "count":  len(NIFTY_100),
+        "symbols": [
+            {"symbol": sym, "name": name}
+            for sym, name, _ in NIFTY_100
+        ],
+    })
+
+
 @app.route("/api/market-commentary")
 def get_market_commentary():
     try:

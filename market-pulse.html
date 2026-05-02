@@ -105,6 +105,20 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
 .disclaimer{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.12);border-radius:10px;padding:12px 16px;font-size:11px;color:var(--muted);line-height:1.6;margin-top:20px;}
 .disclaimer strong{color:#f87171;}
 .commentary-select{width:100%;padding:12px 16px;background:var(--dark4);color:var(--cream);border:1px solid rgba(201,168,76,.2);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22><path fill=%22%23C9A84C%22 d=%22M0 0l5 6 5-6z%22/></svg>');background-repeat:no-repeat;background-position:right 14px center;background-size:8px;margin-bottom:12px;}
+
+/* ═══════ Stock search combobox (Nifty 100) ═══════ */
+.stock-search-wrap{position:relative;margin-bottom:12px;}
+.stock-search-input{width:100%;padding:12px 16px;background:var(--dark4);color:var(--cream);border:1px solid rgba(201,168,76,.2);border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;}
+.stock-search-input::placeholder{color:rgba(144,144,168,.55);}
+.stock-search-input:focus{border-color:rgba(201,168,76,.5);}
+.stock-search-suggestions{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--dark2);border:1px solid rgba(201,168,76,.22);border-radius:10px;max-height:340px;overflow-y:auto;display:none;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.stock-search-suggestions.open{display:block;}
+.stock-search-item{padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.04);transition:background .12s;}
+.stock-search-item:last-child{border-bottom:none;}
+.stock-search-item:hover,.stock-search-item.kbd-active{background:var(--dark4);}
+.stock-search-item-sym{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--gold-light);letter-spacing:1px;flex-shrink:0;}
+.stock-search-item-name{font-size:12px;color:var(--cream);text-align:right;}
+.stock-search-empty{padding:18px;text-align:center;color:var(--muted);font-size:12px;}
 .commentary-btn{width:100%;padding:12px;background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.08));border:1px solid rgba(201,168,76,.3);border-radius:10px;color:var(--gold-light);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;letter-spacing:.5px;}
 .commentary-btn:hover{background:linear-gradient(135deg,rgba(201,168,76,.25),rgba(201,168,76,.15));border-color:rgba(201,168,76,.5);}
 .commentary-btn:disabled{opacity:.5;cursor:not-allowed;}
@@ -348,29 +362,19 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
       </div>
       <div id="tab-commentary" style="display:none;">
         <div class="card" style="margin-bottom:16px;">
-          <div class="section-title" style="margin-bottom:14px;">Stock Commentary</div>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Select a stock to get plain-English analysis — price context, sector comparison, filings, and news sentiment.</p>
-          <select class="commentary-select" id="commentary-symbol">
-            <option value="TCS">TCS — Tata Consultancy Services</option>
-            <option value="RELIANCE">RELIANCE — Reliance Industries</option>
-            <option value="HDFCBANK">HDFCBANK — HDFC Bank</option>
-            <option value="INFY">INFY — Infosys</option>
-            <option value="ICICIBANK">ICICIBANK — ICICI Bank</option>
-            <option value="HINDUNILVR">HINDUNILVR — Hindustan Unilever</option>
-            <option value="SBIN">SBIN — State Bank of India</option>
-            <option value="BHARTIARTL">BHARTIARTL — Bharti Airtel</option>
-            <option value="BAJFINANCE">BAJFINANCE — Bajaj Finance</option>
-            <option value="WIPRO">WIPRO — Wipro</option>
-            <option value="ADANIENT">ADANIENT — Adani Enterprises</option>
-            <option value="TATASTEEL">TATASTEEL — Tata Steel</option>
-            <option value="MARUTI">MARUTI — Maruti Suzuki</option>
-            <option value="SUNPHARMA">SUNPHARMA — Sun Pharma</option>
-            <option value="AXISBANK">AXISBANK — Axis Bank</option>
-            <option value="KOTAKBANK">KOTAKBANK — Kotak Mahindra Bank</option>
-            <option value="LT">LT — Larsen & Toubro</option>
-            <option value="TITAN">TITAN — Titan Company</option>
-            <option value="ONGC">ONGC — Oil & Natural Gas Corp</option>
-          </select>
+          <div class="section-title" style="margin-bottom:14px;">Stock Commentary · Nifty 100</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Type a stock name or symbol to search across all 100 Nifty constituents. Get plain-English analysis with price context, sector comparison, filings, and news sentiment.</p>
+
+          <!-- Search-as-you-type combobox -->
+          <div class="stock-search-wrap" id="stock-search-wrap">
+            <input type="text" class="stock-search-input" id="stock-search-input"
+                   placeholder="🔍 Search by name or symbol — e.g. 'TCS', 'Reliance', 'pharma'…"
+                   autocomplete="off" spellcheck="false"
+                   oninput="onStockSearchInput()" onfocus="onStockSearchFocus()">
+            <input type="hidden" id="commentary-symbol" value="">
+            <div id="stock-search-suggestions" class="stock-search-suggestions"></div>
+          </div>
+
           <button class="commentary-btn" id="commentary-btn" onclick="loadCommentary()">🧠 Get Commentary</button>
           <div class="commentary-result" id="commentary-result">
             <div class="commentary-symbol" id="commentary-sym-label"></div>
@@ -512,51 +516,64 @@ function renderFilings() {
 
 async function loadPrices() {
   const el = document.getElementById('prices-container');
-  el.innerHTML = '<div class="loading-card"><div class="skeleton"></div><div class="skeleton" style="width:50%;"></div></div>';
-  try {
-    // Use /api/market?mode=india (returns value + pct) — fallback to /api/prices if it fails
-    let rows = [];
-    try {
-      const m = await (await fetch('https://www.moneyveda.org/api/market?mode=india')).json();
-      const tickers = (m && m.tickers) || [];
-      // Filter to actual stocks (skip indices)
-      const stockLabels = ['RELIANCE','HDFC BANK','TCS','INFOSYS','ICICI BANK','TATA MOTORS',
-        'WIPRO','AXIS BANK','SBI','MARUTI','SUN PHARMA','BAJAJ FIN','HUL','L&T','KOTAK BANK',
-        'ITC','AIRTEL','ASIAN PAINTS','TITAN','ULTRATECH CEM','NESTLE INDIA','POWER GRID',
-        'NTPC','ONGC','ADANI ENT'];
-      rows = tickers
-        .filter(t => t.ok && stockLabels.includes(t.label))
-        .map(t => ({ symbol: t.label, price: t.value, pct: t.pct }));
-    } catch (err) { rows = []; }
 
-    // Fallback to /api/prices if market API failed
-    if (!rows.length) {
+  // Use the in-memory Nifty 100 cache. If empty, fall back to /api/prices.
+  let rows = [];
+
+  if (_nifty100Cache.length) {
+    // Cache is hot — sort: live tickers first (by symbol asc), then dead tickers
+    rows = _nifty100Cache.map(t => ({
+      symbol: t.symbol,
+      name:   t.name,
+      price:  t.value,
+      pct:    t.pct,
+      ok:     t.ok,
+    })).sort((a, b) => {
+      if (a.ok !== b.ok) return a.ok ? -1 : 1;
+      return a.symbol.localeCompare(b.symbol);
+    });
+  } else {
+    el.innerHTML = '<div class="loading-card"><div class="skeleton"></div><div class="skeleton" style="width:50%;"></div></div>';
+    // Fallback path
+    try {
       const d = await (await fetch(API_BASE + '/api/prices')).json();
       if (!d.prices || !d.prices.length) throw new Error();
       rows = d.prices.map(p => ({
         symbol: p.symbol.replace('.NS','').replace('^NSEI','NIFTY 50'),
-        price: p.price,
-        pct: null,  // backend doesn't return pct yet
+        name:   '',
+        price:  p.price,
+        pct:    null,
+        ok:     true,
       }));
+    } catch (err) {
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon">📈</div><div class="empty-title">Prices unavailable</div><div class="empty-desc">Live prices are available on trading days, 9:15am–3:30pm IST.</div></div>';
+      return;
     }
-
-    const body = rows.map(r => {
-      const priceStr = r.price ? '₹' + r.price.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '—';
-      let pctCell;
-      if (r.pct === null || r.pct === undefined) {
-        pctCell = '<td style="font-size:11px;color:rgba(144,144,168,.4);font-family:\'DM Mono\',monospace;">—</td>';
-      } else {
-        const cls = r.pct >= 0 ? 'up' : 'down';
-        const sign = r.pct >= 0 ? '+' : '';
-        pctCell = `<td class="metric-value ${cls}" style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;text-align:right;">${sign}${r.pct.toFixed(2)}%</td>`;
-      }
-      return `<tr><td class="sym-cell">${r.symbol}</td><td class="price-val">${priceStr}</td>${pctCell}</tr>`;
-    }).join('');
-
-    el.innerHTML = `<div class="card" style="overflow-x:auto;"><table class="price-table"><thead><tr><th>Stock</th><th>Price</th><th style="text-align:right;">Change</th></tr></thead><tbody>${body}</tbody></table><div style="margin-top:10px;font-size:9px;color:rgba(144,144,168,.4);text-align:right;">Live · ${new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})} IST</div></div>`;
-  } catch(e) {
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📈</div><div class="empty-title">Prices unavailable</div><div class="empty-desc">Live prices are available on trading days, 9:15am–3:30pm IST.</div></div>`;
   }
+
+  const body = rows.map(r => {
+    const priceStr = (r.price !== null && r.price !== undefined)
+      ? '₹' + r.price.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+      : '—';
+    let pctCell;
+    if (r.pct === null || r.pct === undefined) {
+      pctCell = '<td style="font-size:11px;color:rgba(144,144,168,.4);font-family:\'DM Mono\',monospace;text-align:right;">—</td>';
+    } else {
+      const cls  = r.pct >= 0 ? 'up' : 'down';
+      const sign = r.pct >= 0 ? '+' : '';
+      pctCell = `<td class="metric-value ${cls}" style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;text-align:right;">${sign}${r.pct.toFixed(2)}%</td>`;
+    }
+    const symCell = r.name
+      ? `<td class="sym-cell"><div style="font-weight:700;">${r.symbol}</div><div style="font-size:10px;color:var(--muted);font-weight:400;">${r.name}</div></td>`
+      : `<td class="sym-cell">${r.symbol}</td>`;
+    return `<tr>${symCell}<td class="price-val">${priceStr}</td>${pctCell}</tr>`;
+  }).join('');
+
+  const updatedNote = _nifty100UpdatedAt
+    ? `Live · cache updated ${new Date(_nifty100UpdatedAt).toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})} IST`
+    : `Live · ${new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})} IST`;
+
+  el.innerHTML = `<div class="card" style="overflow-x:auto;"><table class="price-table"><thead><tr><th>Stock</th><th>Price</th><th style="text-align:right;">Change</th></tr></thead><tbody>${body}</tbody></table><div style="margin-top:10px;font-size:9px;color:rgba(144,144,168,.4);text-align:right;">${updatedNote}</div></div>`;
 }
 
 async function loadCommentary() {
@@ -813,87 +830,212 @@ function closeTimelineModal() {
 // Close modal on Escape
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTimelineModal(); });
 
-// ─── Hero indices + Top movers strip (one fetch serves both) ───
-// Map our display labels to NSE symbols used in the Stock Commentary dropdown
-const STOCK_SYMBOL_MAP = {
-  'RELIANCE':'RELIANCE', 'HDFC BANK':'HDFCBANK', 'TCS':'TCS', 'INFOSYS':'INFY',
-  'ICICI BANK':'ICICIBANK', 'TATA MOTORS':'TATASTEEL', 'WIPRO':'WIPRO', 'AXIS BANK':'AXISBANK',
-  'SBI':'SBIN', 'MARUTI':'MARUTI', 'SUN PHARMA':'SUNPHARMA', 'BAJAJ FIN':'BAJFINANCE',
-  'HUL':'HINDUNILVR', 'L&T':'LT', 'KOTAK BANK':'KOTAKBANK', 'ITC':'ITC',
-  'AIRTEL':'BHARTIARTL', 'TITAN':'TITAN', 'ONGC':'ONGC', 'ADANI ENT':'ADANIENT'
-};
-
+// ═══════════════════════════════════════════════════════════════
+// HERO INDICES (Nifty/Sensex pills) — still from Vercel market API
+// ═══════════════════════════════════════════════════════════════
 async function loadHeroIndices() {
   try {
     const resp = await fetch('https://www.moneyveda.org/api/market?mode=india');
     const data = await resp.json();
     const tickers = (data && data.tickers) || [];
     const find = label => tickers.find(t => t.label === label && t.ok);
-
-    // Hero pills
     const nifty  = find('NIFTY 50');
     const sensex = find('SENSEX');
     if (nifty)  document.getElementById('hero-nifty').textContent  = `📊 Nifty ${nifty.value.toLocaleString('en-IN')} (${nifty.pct >= 0 ? '+' : ''}${nifty.pct}%)`;
     if (sensex) document.getElementById('hero-sensex').textContent = `📊 Sensex ${sensex.value.toLocaleString('en-IN')} (${sensex.pct >= 0 ? '+' : ''}${sensex.pct}%)`;
-
-    // Top movers strip — top 8 by abs(pct) among stocks
-    const stocks = tickers
-      .filter(t => t.ok && STOCK_SYMBOL_MAP[t.label] && typeof t.pct === 'number')
-      .sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct))
-      .slice(0, 8);
-
-    const moversWrap = document.getElementById('movers-wrap');
-    const stripEl    = document.getElementById('movers-strip');
-    if (!stocks.length) { moversWrap.style.display = 'none'; return; }
-
-    stripEl.innerHTML = stocks.map(s => {
-      const sym = STOCK_SYMBOL_MAP[s.label];
-      const cls = s.pct >= 0 ? 'up' : 'down';
-      const sign = s.pct >= 0 ? '+' : '';
-      const priceStr = s.value ? '₹' + s.value.toLocaleString('en-IN', {maximumFractionDigits: 2}) : '—';
-      return `<div class="mover-chip" onclick="drillIntoStock('${sym}')">
-        <span class="mover-chip-sym">${s.label}</span>
-        <span class="mover-chip-price">${priceStr}</span>
-        <span class="mover-chip-pct ${cls}">${sign}${s.pct.toFixed(2)}%</span>
-      </div>`;
-    }).join('');
-    moversWrap.style.display = 'block';
   } catch (e) {
     document.getElementById('hero-nifty').textContent  = '📊 Nifty —';
     document.getElementById('hero-sensex').textContent = '📊 Sensex —';
-    document.getElementById('movers-wrap').style.display = 'none';
   }
 }
 
-// Click a mover chip → switch to Stock Commentary tab + auto-load that stock
-function drillIntoStock(symbol) {
-  switchTab('commentary');
-  const select = document.getElementById('commentary-symbol');
-  if (select) {
-    // Match if the option exists; otherwise leave as-is
-    const opt = Array.from(select.options).find(o => o.value === symbol);
-    if (opt) {
-      select.value = symbol;
-      // Smooth scroll, then trigger
-      const target = document.getElementById('tab-commentary');
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setTimeout(() => { if (typeof loadCommentary === 'function') loadCommentary(); }, 350);
-    } else {
-      // Symbol not in dropdown — still scroll to commentary
-      const target = document.getElementById('tab-commentary');
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+// ═══════════════════════════════════════════════════════════════
+// NIFTY 100 CACHE — top movers + prices + symbol search
+// ═══════════════════════════════════════════════════════════════
+let _nifty100Cache = [];        // full array of 100 ticker objects
+let _nifty100Symbols = [];      // [{symbol, name}] — for search
+let _nifty100UpdatedAt = null;
+
+async function loadNifty100Cache() {
+  try {
+    const resp = await fetch(API_BASE + '/api/market-cache');
+    const data = await resp.json();
+    if (data.status === 'success' && Array.isArray(data.tickers)) {
+      _nifty100Cache = data.tickers;
+      _nifty100UpdatedAt = data.updated_at;
+      renderTopMovers();
+      // If user is on Prices tab right now, refresh it too
+      if (currentTab === 'prices') loadPrices();
+    } else if (data.status === 'building') {
+      // Cache not ready yet — try again in 8 seconds
+      setTimeout(loadNifty100Cache, 8000);
     }
+  } catch (e) {
+    console.error('Nifty 100 cache fetch failed:', e);
   }
 }
 
-// ─── Boot story system ───
+async function loadSymbolCatalog() {
+  // Fetch the static (symbol, name) list once at startup for the search input
+  try {
+    const resp = await fetch(API_BASE + '/api/market-cache/symbols');
+    const data = await resp.json();
+    if (data.status === 'success' && Array.isArray(data.symbols)) {
+      _nifty100Symbols = data.symbols;
+    }
+  } catch (e) {
+    console.error('Symbol catalog fetch failed:', e);
+  }
+}
+
+function renderTopMovers() {
+  const moversWrap = document.getElementById('movers-wrap');
+  const stripEl    = document.getElementById('movers-strip');
+
+  // Filter live tickers, sort by abs(pct), take top 8
+  const movers = _nifty100Cache
+    .filter(t => t.ok && typeof t.pct === 'number')
+    .sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct))
+    .slice(0, 8);
+
+  if (!movers.length) { moversWrap.style.display = 'none'; return; }
+
+  stripEl.innerHTML = movers.map(t => {
+    const cls = t.pct >= 0 ? 'up' : 'down';
+    const sign = t.pct >= 0 ? '+' : '';
+    const priceStr = t.value ? '₹' + t.value.toLocaleString('en-IN', {maximumFractionDigits: 2}) : '—';
+    return `<div class="mover-chip" onclick="drillIntoStock('${t.symbol}','${(t.name || '').replace(/'/g,'&#39;')}')">
+      <span class="mover-chip-sym">${t.symbol}</span>
+      <span class="mover-chip-price">${priceStr}</span>
+      <span class="mover-chip-pct ${cls}">${sign}${t.pct.toFixed(2)}%</span>
+    </div>`;
+  }).join('');
+  moversWrap.style.display = 'block';
+}
+
+// Click a mover chip → switch to Stock Commentary + auto-load that stock
+function drillIntoStock(symbol, displayName) {
+  switchTab('commentary');
+  document.getElementById('commentary-symbol').value = symbol;
+  document.getElementById('stock-search-input').value = (displayName || symbol) + ' (' + symbol + ')';
+  closeSearchSuggestions();
+  const target = document.getElementById('tab-commentary');
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => { if (typeof loadCommentary === 'function') loadCommentary(); }, 350);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STOCK SEARCH (search-as-you-type combobox over Nifty 100)
+// ═══════════════════════════════════════════════════════════════
+let _searchKbdIndex = -1;
+
+function _matchScore(sym, name, q) {
+  // Higher = better. Ranking: exact symbol > prefix symbol > prefix name > contains
+  const S = sym.toLowerCase(), N = name.toLowerCase(), Q = q.toLowerCase();
+  if (S === Q) return 1000;
+  if (S.startsWith(Q)) return 500;
+  if (N.toLowerCase().startsWith(Q)) return 300;
+  if (S.includes(Q)) return 200;
+  if (N.includes(Q)) return 100;
+  return 0;
+}
+
+function onStockSearchInput() {
+  const q = document.getElementById('stock-search-input').value.trim();
+  const wrap = document.getElementById('stock-search-suggestions');
+  _searchKbdIndex = -1;
+
+  if (!q) { closeSearchSuggestions(); return; }
+  if (!_nifty100Symbols.length) {
+    // Catalog not loaded yet — kick a load and stop
+    loadSymbolCatalog().then(() => onStockSearchInput());
+    return;
+  }
+
+  const matches = _nifty100Symbols
+    .map(s => ({ ...s, _score: _matchScore(s.symbol, s.name, q) }))
+    .filter(s => s._score > 0)
+    .sort((a, b) => b._score - a._score)
+    .slice(0, 12);
+
+  if (!matches.length) {
+    wrap.innerHTML = '<div class="stock-search-empty">No match in Nifty 100.</div>';
+    wrap.classList.add('open');
+    return;
+  }
+
+  wrap.innerHTML = matches.map((s, i) =>
+    `<div class="stock-search-item" data-idx="${i}" onclick="pickStock('${s.symbol}','${s.name.replace(/'/g,'&#39;')}')">
+      <span class="stock-search-item-sym">${s.symbol}</span>
+      <span class="stock-search-item-name">${s.name}</span>
+    </div>`
+  ).join('');
+  wrap.classList.add('open');
+}
+
+function onStockSearchFocus() {
+  const q = document.getElementById('stock-search-input').value.trim();
+  if (q) onStockSearchInput();
+}
+
+function pickStock(symbol, name) {
+  document.getElementById('stock-search-input').value = name + ' (' + symbol + ')';
+  document.getElementById('commentary-symbol').value = symbol;
+  closeSearchSuggestions();
+}
+
+function closeSearchSuggestions() {
+  const wrap = document.getElementById('stock-search-suggestions');
+  wrap.classList.remove('open');
+  _searchKbdIndex = -1;
+}
+
+// Keyboard navigation of suggestions (arrows + Enter)
+document.addEventListener('keydown', e => {
+  const input = document.getElementById('stock-search-input');
+  if (!input || document.activeElement !== input) return;
+  const wrap = document.getElementById('stock-search-suggestions');
+  if (!wrap.classList.contains('open')) return;
+  const items = wrap.querySelectorAll('.stock-search-item');
+  if (!items.length) return;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    _searchKbdIndex = (_searchKbdIndex + 1) % items.length;
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    _searchKbdIndex = (_searchKbdIndex - 1 + items.length) % items.length;
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    const idx = _searchKbdIndex >= 0 ? _searchKbdIndex : 0;
+    items[idx].click();
+    return;
+  } else if (e.key === 'Escape') {
+    closeSearchSuggestions();
+    return;
+  } else { return; }
+
+  items.forEach((el, i) => el.classList.toggle('kbd-active', i === _searchKbdIndex));
+});
+
+// Close suggestions when clicking outside
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('stock-search-wrap');
+  if (wrap && !wrap.contains(e.target)) closeSearchSuggestions();
+});
+
+// ─── Boot ───
 loadStory(_defaultStoryType());
 loadHeroIndices();
-// Auto-refresh every 5 minutes — picks up new intraday slots without page reload
+loadSymbolCatalog();   // populate stock search
+loadNifty100Cache();   // first prime of the price cache
+
+// Auto-refresh story every 5 min, hero indices every 5 min, prices/movers every 60 sec
 setInterval(() => {
   loadStory(currentStoryType);
   loadHeroIndices();
 }, 5 * 60 * 1000);
+setInterval(loadNifty100Cache, 60 * 1000);
 
 init();
 setInterval(()=>{loadSummary();loadSignals();loadFilings();},5*60*1000);
