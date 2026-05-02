@@ -440,22 +440,23 @@ async function init() {
 }
 
 async function loadSummary() {
+  const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
   try {
     const d = await (await fetch(API_BASE+'/api/summary')).json();
     if (d.status==='success') {
       const s = d.summary;
-      document.getElementById('stat-total').textContent     = s.total_signals||'—';
-      document.getElementById('stat-published').textContent = s.published_signals||'—';
-      document.getElementById('stat-filings').textContent   = s.total_filings||'—';
-      document.getElementById('hero-signals').textContent   = '⚡ '+(s.total_signals||0)+' signals generated';
-      document.getElementById('hero-filings').textContent   = '📋 '+(s.total_filings||0)+' filings analyzed';
+      setText('stat-total',     s.total_signals     || '—');
+      setText('stat-published', s.published_signals || '—');
+      setText('stat-filings',   s.total_filings     || '—');
+      setText('hero-signals',   '⚡ ' + (s.total_signals || 0) + ' signals generated');
+      setText('hero-filings',   '📋 ' + (s.total_filings || 0) + ' filings analyzed');
     }
   } catch(e) {
-    document.getElementById('hero-signals').textContent='⚡ — signals generated';
-    document.getElementById('hero-filings').textContent='📋 — filings analyzed';
-    document.getElementById('stat-total').textContent='—';
-    document.getElementById('stat-published').textContent='—';
-    document.getElementById('stat-filings').textContent='—';
+    setText('hero-signals',   '⚡ — signals generated');
+    setText('hero-filings',   '📋 — filings analyzed');
+    setText('stat-total',     '—');
+    setText('stat-published', '—');
+    setText('stat-filings',   '—');
   }
 }
 
