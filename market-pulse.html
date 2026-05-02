@@ -173,6 +173,21 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
 .timeline-item-slot{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold-light);font-weight:600;}
 .timeline-item-body{font-size:13px;color:var(--cream);line-height:1.7;white-space:pre-wrap;}
 
+/* ═══════ Top movers strip ═══════ */
+.movers-wrap{margin-top:18px;}
+.movers-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.movers-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.movers-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.2) transparent;}
+.movers-strip::-webkit-scrollbar{height:4px;}
+.movers-strip::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:2px;}
+.mover-chip{flex-shrink:0;background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:3px;min-width:110px;}
+.mover-chip:hover{border-color:rgba(201,168,76,.35);transform:translateY(-1px);}
+.mover-chip-sym{font-size:12px;font-weight:700;color:var(--cream);font-family:'DM Sans',sans-serif;}
+.mover-chip-price{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
+.mover-chip-pct{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;}
+.mover-chip-pct.up{color:#4ade80;}
+.mover-chip-pct.down{color:#f87171;}
+
 /* ═══════ Demoted secondary section ═══════ */
 .secondary-head{margin-top:36px;margin-bottom:18px;text-align:center;}
 .secondary-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
@@ -246,6 +261,14 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
       <div id="story-body" class="story-body"></div>
     </div>
 
+    <!-- Top movers strip -->
+    <div id="movers-wrap" class="movers-wrap" style="display:none;">
+      <div class="movers-head">
+        <span class="movers-title">📊 Top Movers Now · tap any to drill in</span>
+      </div>
+      <div id="movers-strip" class="movers-strip"></div>
+    </div>
+
     <!-- Earlier today (only shown for intraday) -->
     <div id="earlier-wrap" class="earlier-wrap">
       <div class="earlier-head">
@@ -288,10 +311,10 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
   <div class="grid-main">
     <div>
       <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('signals')">⚡ Signals</button>
-        <button class="tab-btn" onclick="switchTab('filings')">📋 Filings</button>
+        <button class="tab-btn active" onclick="switchTab('commentary')">🧠 Stock Commentary</button>
         <button class="tab-btn" onclick="switchTab('prices')">📈 Prices</button>
-        <button class="tab-btn" onclick="switchTab('commentary')">🧠 Stock Commentary</button>
+        <button class="tab-btn" onclick="switchTab('signals')">⚡ Signals</button>
+        <button class="tab-btn" onclick="switchTab('filings')">📋 Filings</button>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
         <div class="filter-bar" id="filter-bar">
@@ -305,7 +328,7 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
           Refresh
         </button>
       </div>
-      <div id="tab-signals">
+      <div id="tab-signals" style="display:none;">
         <div id="signals-container">
           <div class="loading-card"><div class="skeleton" style="width:60%;"></div><div class="skeleton" style="width:40%;"></div></div>
           <div class="loading-card"><div class="skeleton" style="width:70%;"></div><div class="skeleton" style="width:35%;"></div></div>
@@ -389,7 +412,7 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
 </div>
 <script>
 const API_BASE = 'https://moneyveda-backend.onrender.com';
-let allSignals = [], allFilings = [], currentTab = 'signals', currentFilter = 'all';
+let allSignals = [], allFilings = [], currentTab = 'commentary', currentFilter = 'all';
 
 function fmtDateTime(iso) {
   if (!iso) return '';
@@ -407,6 +430,7 @@ function fmt(val, decimals, prefix, suffix) {
 }
 
 async function init() {
+  switchTab('commentary');  // Stock Commentary is the default secondary tab
   await Promise.all([loadSummary(), loadSignals(), loadFilings()]);
   document.getElementById('last-updated').textContent = 'Last updated: ' + fmtDateTime(new Date().toISOString());
 }
@@ -482,17 +506,54 @@ function renderFilings() {
     const sent=f.sentiment||'neutral', score=f.sentiment_score?Math.round(f.sentiment_score*100):0;
     const t=fmtDateTime(f.created_at);
     const emoji=sent==='positive'?'😊':sent==='negative'?'😟':'😐';
-    return `<div class="filing-card"><div class="filing-header"><span class="filing-symbol">${f.symbol}</span><span class="filing-headline">${f.headline||'No headline'}</span><span class="sentiment-badge ${sent}">${emoji} ${sent}</span></div><div class="filing-footer"><span class="filing-cat">${f.category||'General'} · ${f.source||'NSE'}</span><span class="filing-time">📅 ${score?score+'% · ':''}${t}</span></div></div>`;
+    return `<div class="filing-card"><div class="filing-header"><span class="filing-symbol">${f.symbol}</span><span class="filing-headline">${f.headline||'No headline'}</span><span class="sentiment-badge ${sent}">${emoji} ${sent}</span></div><div class="filing-footer"><span class="filing-cat">${f.category||'General'}</span><span class="filing-time">📅 ${score?score+'% · ':''}${t}</span></div></div>`;
   }).join('');
 }
 
 async function loadPrices() {
-  const el=document.getElementById('prices-container');
-  el.innerHTML='<div class="loading-card"><div class="skeleton"></div><div class="skeleton" style="width:50%;"></div></div>';
+  const el = document.getElementById('prices-container');
+  el.innerHTML = '<div class="loading-card"><div class="skeleton"></div><div class="skeleton" style="width:50%;"></div></div>';
   try {
-    const d=await (await fetch(API_BASE+'/api/prices')).json();
-    if (!d.prices||!d.prices.length) throw new Error();
-    el.innerHTML=`<div class="card" style="overflow-x:auto;"><table class="price-table"><thead><tr><th>Company</th><th>Price</th><th>Exchange</th></tr></thead><tbody>${d.prices.map(p=>`<tr><td class="sym-cell">${p.symbol.replace('.NS','').replace('^NSEI','NIFTY 50')}</td><td class="price-val">₹${p.price?p.price.toFixed(2):'—'}</td><td style="font-size:10px;color:var(--muted);">NSE</td></tr>`).join('')}</tbody></table><div style="margin-top:10px;font-size:9px;color:rgba(144,144,168,.4);text-align:right;">As of ${fmtDateTime(d.timestamp)}</div></div>`;
+    // Use /api/market?mode=india (returns value + pct) — fallback to /api/prices if it fails
+    let rows = [];
+    try {
+      const m = await (await fetch('https://www.moneyveda.org/api/market?mode=india')).json();
+      const tickers = (m && m.tickers) || [];
+      // Filter to actual stocks (skip indices)
+      const stockLabels = ['RELIANCE','HDFC BANK','TCS','INFOSYS','ICICI BANK','TATA MOTORS',
+        'WIPRO','AXIS BANK','SBI','MARUTI','SUN PHARMA','BAJAJ FIN','HUL','L&T','KOTAK BANK',
+        'ITC','AIRTEL','ASIAN PAINTS','TITAN','ULTRATECH CEM','NESTLE INDIA','POWER GRID',
+        'NTPC','ONGC','ADANI ENT'];
+      rows = tickers
+        .filter(t => t.ok && stockLabels.includes(t.label))
+        .map(t => ({ symbol: t.label, price: t.value, pct: t.pct }));
+    } catch (err) { rows = []; }
+
+    // Fallback to /api/prices if market API failed
+    if (!rows.length) {
+      const d = await (await fetch(API_BASE + '/api/prices')).json();
+      if (!d.prices || !d.prices.length) throw new Error();
+      rows = d.prices.map(p => ({
+        symbol: p.symbol.replace('.NS','').replace('^NSEI','NIFTY 50'),
+        price: p.price,
+        pct: null,  // backend doesn't return pct yet
+      }));
+    }
+
+    const body = rows.map(r => {
+      const priceStr = r.price ? '₹' + r.price.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '—';
+      let pctCell;
+      if (r.pct === null || r.pct === undefined) {
+        pctCell = '<td style="font-size:11px;color:rgba(144,144,168,.4);font-family:\'DM Mono\',monospace;">—</td>';
+      } else {
+        const cls = r.pct >= 0 ? 'up' : 'down';
+        const sign = r.pct >= 0 ? '+' : '';
+        pctCell = `<td class="metric-value ${cls}" style="font-family:'DM Mono',monospace;font-size:12px;font-weight:700;text-align:right;">${sign}${r.pct.toFixed(2)}%</td>`;
+      }
+      return `<tr><td class="sym-cell">${r.symbol}</td><td class="price-val">${priceStr}</td>${pctCell}</tr>`;
+    }).join('');
+
+    el.innerHTML = `<div class="card" style="overflow-x:auto;"><table class="price-table"><thead><tr><th>Stock</th><th>Price</th><th style="text-align:right;">Change</th></tr></thead><tbody>${body}</tbody></table><div style="margin-top:10px;font-size:9px;color:rgba(144,144,168,.4);text-align:right;">Live · ${new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})} IST</div></div>`;
   } catch(e) {
     el.innerHTML=`<div class="empty-state"><div class="empty-icon">📈</div><div class="empty-title">Prices unavailable</div><div class="empty-desc">Live prices are available on trading days, 9:15am–3:30pm IST.</div></div>`;
   }
@@ -555,7 +616,7 @@ function renderFilingsFallback() { document.getElementById('filings-container').
 function switchTab(tab) {
   currentTab=tab;
   ['signals','filings','prices','commentary'].forEach(t=>{ document.getElementById('tab-'+t).style.display=t===tab?'block':'none'; });
-  document.querySelectorAll('.tabs > .tab-btn').forEach((b,i)=>b.classList.toggle('active',['signals','filings','prices','commentary'][i]===tab));
+  document.querySelectorAll('.tabs > .tab-btn').forEach((b,i)=>b.classList.toggle('active',['commentary','prices','signals','filings'][i]===tab));
   document.getElementById('filter-bar').style.display=tab==='signals'?'flex':'none';
   if (tab==='prices'&&document.getElementById('prices-container').querySelector('.loading-card')) loadPrices();
 }
@@ -752,20 +813,76 @@ function closeTimelineModal() {
 // Close modal on Escape
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTimelineModal(); });
 
-// ─── Hero index pills (Nifty/Sensex) ───
+// ─── Hero indices + Top movers strip (one fetch serves both) ───
+// Map our display labels to NSE symbols used in the Stock Commentary dropdown
+const STOCK_SYMBOL_MAP = {
+  'RELIANCE':'RELIANCE', 'HDFC BANK':'HDFCBANK', 'TCS':'TCS', 'INFOSYS':'INFY',
+  'ICICI BANK':'ICICIBANK', 'TATA MOTORS':'TATASTEEL', 'WIPRO':'WIPRO', 'AXIS BANK':'AXISBANK',
+  'SBI':'SBIN', 'MARUTI':'MARUTI', 'SUN PHARMA':'SUNPHARMA', 'BAJAJ FIN':'BAJFINANCE',
+  'HUL':'HINDUNILVR', 'L&T':'LT', 'KOTAK BANK':'KOTAKBANK', 'ITC':'ITC',
+  'AIRTEL':'BHARTIARTL', 'TITAN':'TITAN', 'ONGC':'ONGC', 'ADANI ENT':'ADANIENT'
+};
+
 async function loadHeroIndices() {
   try {
     const resp = await fetch('https://www.moneyveda.org/api/market?mode=india');
     const data = await resp.json();
     const tickers = (data && data.tickers) || [];
     const find = label => tickers.find(t => t.label === label && t.ok);
+
+    // Hero pills
     const nifty  = find('NIFTY 50');
     const sensex = find('SENSEX');
     if (nifty)  document.getElementById('hero-nifty').textContent  = `📊 Nifty ${nifty.value.toLocaleString('en-IN')} (${nifty.pct >= 0 ? '+' : ''}${nifty.pct}%)`;
     if (sensex) document.getElementById('hero-sensex').textContent = `📊 Sensex ${sensex.value.toLocaleString('en-IN')} (${sensex.pct >= 0 ? '+' : ''}${sensex.pct}%)`;
+
+    // Top movers strip — top 8 by abs(pct) among stocks
+    const stocks = tickers
+      .filter(t => t.ok && STOCK_SYMBOL_MAP[t.label] && typeof t.pct === 'number')
+      .sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct))
+      .slice(0, 8);
+
+    const moversWrap = document.getElementById('movers-wrap');
+    const stripEl    = document.getElementById('movers-strip');
+    if (!stocks.length) { moversWrap.style.display = 'none'; return; }
+
+    stripEl.innerHTML = stocks.map(s => {
+      const sym = STOCK_SYMBOL_MAP[s.label];
+      const cls = s.pct >= 0 ? 'up' : 'down';
+      const sign = s.pct >= 0 ? '+' : '';
+      const priceStr = s.value ? '₹' + s.value.toLocaleString('en-IN', {maximumFractionDigits: 2}) : '—';
+      return `<div class="mover-chip" onclick="drillIntoStock('${sym}')">
+        <span class="mover-chip-sym">${s.label}</span>
+        <span class="mover-chip-price">${priceStr}</span>
+        <span class="mover-chip-pct ${cls}">${sign}${s.pct.toFixed(2)}%</span>
+      </div>`;
+    }).join('');
+    moversWrap.style.display = 'block';
   } catch (e) {
     document.getElementById('hero-nifty').textContent  = '📊 Nifty —';
     document.getElementById('hero-sensex').textContent = '📊 Sensex —';
+    document.getElementById('movers-wrap').style.display = 'none';
+  }
+}
+
+// Click a mover chip → switch to Stock Commentary tab + auto-load that stock
+function drillIntoStock(symbol) {
+  switchTab('commentary');
+  const select = document.getElementById('commentary-symbol');
+  if (select) {
+    // Match if the option exists; otherwise leave as-is
+    const opt = Array.from(select.options).find(o => o.value === symbol);
+    if (opt) {
+      select.value = symbol;
+      // Smooth scroll, then trigger
+      const target = document.getElementById('tab-commentary');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => { if (typeof loadCommentary === 'function') loadCommentary(); }, 350);
+    } else {
+      // Symbol not in dropdown — still scroll to commentary
+      const target = document.getElementById('tab-commentary');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 }
 
