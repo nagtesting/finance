@@ -526,5 +526,128 @@ def get_commentary():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+# ─────────────────────────────────────────
+# MARKET COMMENTARY (pre / intraday / post)  ── v2.0
+# ─────────────────────────────────────────
+# Serves daily pre/intraday/post market commentary from Supabase cache.
+# No AI calls happen here — GitHub Actions generates + caches via
+# market_commentary.py, this endpoint just reads and returns.
+#
+# Query parameters:
+#   type=pre        → today's pre-market (one row)
+#   type=post       → today's post-market (one row)
+#   type=intraday   → intraday rows. Defaults to LATEST one.
+#                     Add &all=1 to get every intraday slot for today.
+#   type=latest     → auto-pick by IST time (default)
+# ─────────────────────────────────────────
+@app.route("/api/market-commentary")
+def get_market_commentary():
+    try:
+        from datetime import timezone, timedelta
+        IST = timezone(timedelta(hours=5, minutes=30))
+
+        ctype = request.args.get("type", "latest").lower()
+        want_all = request.args.get("all", "").lower() in ("1", "true", "yes")
+
+        now_ist = datetime.now(IST)
+        today = now_ist.strftime("%Y-%m-%d")
+        hour_min = now_ist.hour * 60 + now_ist.minute
+
+        # Resolve 'latest' to a concrete type based on IST time
+        if ctype == "latest":
+            if hour_min >= 16 * 60:           # 16:00 IST onwards
+                ctype = "post"
+            elif hour_min >= 9 * 60 + 15:     # 09:15 - 15:59 IST
+                ctype = "intraday"
+            else:                             # before 09:15 IST
+                ctype = "pre"
+
+        if ctype not in ("pre", "intraday", "post"):
+            return jsonify({
+                "status":  "error",
+                "message": "Invalid type. Use 'pre', 'intraday', 'post', or 'latest'."
+            }), 400
+
+        # Intraday + all=1: return today's full timeline
+        if ctype == "intraday" and want_all:
+            res = (
+                supabase.table("market_commentary")
+                .select("commentary_date, slot_time, commentary_text, source, created_at")
+                .eq("commentary_type", "intraday")
+                .eq("commentary_date", today)
+                .order("slot_time", desc=False)
+                .execute()
+            )
+            rows = res.data or []
+            return jsonify({
+                "status":   "success",
+                "type":     "intraday",
+                "date":     today,
+                "is_today": True,
+                "count":    len(rows),
+                "rows": [
+                    {
+                        "slot":         (r.get("slot_time") or "")[:5],
+                        "commentary":   r.get("commentary_text"),
+                        "source":       r.get("source", "gemini"),
+                        "generated_at": r.get("created_at"),
+                    }
+                    for r in rows
+                ],
+            })
+
+        # Single-row queries (pre, post, or latest intraday)
+        q = (
+            supabase.table("market_commentary")
+            .select("*")
+            .eq("commentary_type", ctype)
+            .eq("commentary_date", today)
+        )
+
+        if ctype == "intraday":
+            q = q.order("slot_time", desc=True).limit(1)
+        else:
+            q = q.limit(1)
+
+        result = q.execute()
+
+        # Fallback: today's row not ready yet — return most recent of this type
+        if not result.data:
+            fallback_q = (
+                supabase.table("market_commentary")
+                .select("*")
+                .eq("commentary_type", ctype)
+                .order("commentary_date", desc=True)
+                .order("slot_time",      desc=True)
+                .limit(1)
+                .execute()
+            )
+            if not fallback_q.data:
+                msg = {
+                    "pre":      "No pre-market commentary yet. Generated daily at 08:00 IST.",
+                    "intraday": "No intraday commentary yet. Generated every 30 min from 09:30 to 15:30 IST.",
+                    "post":     "No post-market commentary yet. Generated daily at 16:00 IST.",
+                }[ctype]
+                return jsonify({"status": "empty", "message": msg})
+            row = fallback_q.data[0]
+            is_today = False
+        else:
+            row = result.data[0]
+            is_today = True
+
+        return jsonify({
+            "status":       "success",
+            "type":         row["commentary_type"],
+            "date":         row["commentary_date"],
+            "slot":         (row.get("slot_time") or "")[:5],
+            "is_today":     is_today,
+            "commentary":   row["commentary_text"],
+            "source":       row.get("source", "gemini"),
+            "generated_at": row["created_at"],
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

@@ -1,0 +1,101 @@
+# ============================================================
+# MoneyVeda Market Commentary v2.0 — GitHub Actions
+# ============================================================
+# Runs 15 times per trading day:
+#   08:00 IST          → pre-market
+#   09:30 IST          → intraday opening tick (10 lines)
+#   10:00, 10:30, ...  → intraday updates every 30 min (12 more slots)
+#   15:30 IST          → last intraday slot
+#   16:00 IST          → post-market wrap
+#
+# Schedule reflects IST (UTC+5:30). All cron entries are UTC.
+#
+# COST: ~₹4.5/day at Gemini 2.5 Flash-Lite paid pricing.
+# Stays under your 200 RPD quota cap with 100-stock daily warmer also running.
+#
+# SECRETS REQUIRED (repo Settings → Secrets):
+#   SUPABASE_URL
+#   SUPABASE_SECRET_KEY
+#   GEMINI_API_KEY
+# ============================================================
+
+name: Market Commentary
+
+on:
+  schedule:
+    # Pre-market: 08:00 IST = 02:30 UTC, Mon-Fri
+    - cron: "30 2 * * 1-5"
+
+    # Intraday opening tick: 09:30 IST = 04:00 UTC
+    - cron: "0 4 * * 1-5"
+
+    # Intraday updates 10:00 IST through 15:00 IST every 30 min
+    # 04:30 UTC → 09:30 UTC = 11 slots (10:00, 10:30, 11:00, ..., 15:00 IST)
+    - cron: "30 4-9 * * 1-5"
+    - cron: "0 5-9 * * 1-5"
+
+    # Last intraday slot: 15:30 IST = 10:00 UTC
+    - cron: "0 10 * * 1-5"
+
+    # Post-market wrap: 16:00 IST = 10:30 UTC, Mon-Fri
+    - cron: "30 10 * * 1-5"
+
+  # Manual trigger for testing
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Commentary mode"
+        required: true
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - pre
+          - intraday
+          - post
+      slot:
+        description: "Intraday slot HH:MM (only for mode=intraday). Leave blank to auto-detect."
+        required: false
+        default: ""
+        type: string
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate commentary
+        env:
+          SUPABASE_URL:        ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          # For scheduled runs, the script auto-detects mode + slot from current IST time.
+          # For manual runs, honour the user's choice.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MODE="${{ github.event.inputs.mode }}"
+            SLOT="${{ github.event.inputs.slot }}"
+            if [ -n "$SLOT" ]; then
+              python market_commentary.py --mode "$MODE" --slot "$SLOT"
+            else
+              python market_commentary.py --mode "$MODE"
+            fi
+          else
+            # Scheduled — let the script figure out from IST time
+            python market_commentary.py --mode auto
+          fi
