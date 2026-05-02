@@ -119,6 +119,18 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
 .stock-search-item-sym{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--gold-light);letter-spacing:1px;flex-shrink:0;}
 .stock-search-item-name{font-size:12px;color:var(--cream);text-align:right;}
 .stock-search-empty{padding:18px;text-align:center;color:var(--muted);font-size:12px;}
+
+/* ═══════ Prices tab toolbar (search + sort chips) ═══════ */
+.prices-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;background:var(--dark2);border:1px solid rgba(201,168,76,.12);border-radius:12px;padding:12px;}
+.prices-search-input{flex:1;min-width:220px;padding:10px 14px;background:var(--dark4);color:var(--cream);border:1px solid rgba(201,168,76,.18);border-radius:8px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s;}
+.prices-search-input::placeholder{color:rgba(144,144,168,.5);}
+.prices-search-input:focus{border-color:rgba(201,168,76,.45);}
+.prices-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.prices-chip{background:var(--dark4);border:1px solid rgba(255,255,255,.06);color:var(--muted);padding:8px 12px;border-radius:8px;font-size:11px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.3px;}
+.prices-chip:hover{color:var(--cream);}
+.prices-chip.active{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.4);color:var(--gold-light);}
+.prices-count{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin-left:auto;}
+@media(max-width:600px){.prices-search-input{min-width:100%;}.prices-count{margin-left:0;width:100%;text-align:right;}}
 .commentary-btn{width:100%;padding:12px;background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.08));border:1px solid rgba(201,168,76,.3);border-radius:10px;color:var(--gold-light);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;letter-spacing:.5px;}
 .commentary-btn:hover{background:linear-gradient(135deg,rgba(201,168,76,.25),rgba(201,168,76,.15));border-color:rgba(201,168,76,.5);}
 .commentary-btn:disabled{opacity:.5;cursor:not-allowed;}
@@ -332,10 +344,13 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
         <div class="filter-bar" id="filter-bar">
+          <input type="text" id="signals-search" class="prices-search-input" style="min-width:180px;flex:0 1 240px;padding:7px 12px;font-size:11px;"
+                 placeholder="🔍 Filter signals…" autocomplete="off" oninput="onSignalsFilterInput()">
           <button class="filter-btn active" onclick="setFilter('all')">All</button>
           <button class="filter-btn" onclick="setFilter('BULLISH')">🟢 Bullish</button>
           <button class="filter-btn" onclick="setFilter('BEARISH')">🔴 Bearish</button>
           <button class="filter-btn" onclick="setFilter('WATCH')">🟡 Watch</button>
+          <span class="prices-count" id="signals-count" style="margin-left:8px;">—</span>
         </div>
         <button class="refresh-btn" id="refresh-btn" onclick="refreshAll()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
@@ -350,12 +365,37 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
         </div>
       </div>
       <div id="tab-filings" style="display:none;">
+        <div class="prices-toolbar">
+          <input type="text" id="filings-search" class="prices-search-input"
+                 placeholder="🔍 Filter by symbol, headline, or category…"
+                 autocomplete="off" spellcheck="false"
+                 oninput="onFilingsFilterInput()">
+          <div class="prices-chips">
+            <button class="prices-chip active" id="filings-chip-all"      onclick="setFilingsSort('all')">All</button>
+            <button class="prices-chip"        id="filings-chip-positive" onclick="setFilingsSort('positive')">😊 Positive</button>
+            <button class="prices-chip"        id="filings-chip-neutral"  onclick="setFilingsSort('neutral')">😐 Neutral</button>
+            <button class="prices-chip"        id="filings-chip-negative" onclick="setFilingsSort('negative')">😟 Negative</button>
+          </div>
+          <div class="prices-count" id="filings-count">—</div>
+        </div>
         <div id="filings-container">
           <div class="loading-card"><div class="skeleton" style="width:80%;"></div><div class="skeleton" style="width:50%;"></div></div>
           <div class="loading-card"><div class="skeleton" style="width:65%;"></div><div class="skeleton" style="width:40%;"></div></div>
         </div>
       </div>
       <div id="tab-prices" style="display:none;">
+        <div class="prices-toolbar">
+          <input type="text" id="prices-search" class="prices-search-input"
+                 placeholder="🔍 Filter by name or symbol — e.g. 'TCS', 'reliance', 'bank'…"
+                 autocomplete="off" spellcheck="false"
+                 oninput="onPricesFilterInput()">
+          <div class="prices-chips">
+            <button class="prices-chip active" id="prices-chip-all"     onclick="setPricesSort('all')">All</button>
+            <button class="prices-chip"        id="prices-chip-gainers" onclick="setPricesSort('gainers')">📈 Top Gainers</button>
+            <button class="prices-chip"        id="prices-chip-losers"  onclick="setPricesSort('losers')">📉 Top Losers</button>
+          </div>
+          <div class="prices-count" id="prices-count">—</div>
+        </div>
         <div id="prices-container">
           <div class="loading-card"><div class="skeleton"></div><div class="skeleton" style="width:50%;"></div></div>
         </div>
@@ -393,7 +433,12 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
       </div>
       <div class="card" style="margin-bottom:16px;">
         <div class="section-title" style="margin-bottom:12px;">Stocks Tracked</div>
-        <div style="font-size:11px;color:var(--muted);line-height:2.2;">RELIANCE · TCS · HDFCBANK · INFY · ICICIBANK · HINDUNILVR · SBIN · BHARTIARTL · BAJFINANCE · WIPRO · ADANIENT · TATASTEEL · MARUTI · SUNPHARMA · AXISBANK · KOTAKBANK · LT · TITAN · ONGC</div>
+        <div style="font-size:12px;color:var(--cream);line-height:1.7;">
+          <strong style="color:var(--gold-light);">Nifty 100 universe</strong> — all 100 large-cap NSE constituents covered for live prices, top movers, and stock commentary.
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:var(--muted);line-height:1.6;">
+          Includes <strong style="color:var(--cream);">banks, IT, pharma, FMCG, auto, energy, metals</strong> and more. Search any stock by name or symbol in the Stock Commentary tab.
+        </div>
       </div>
       <div class="card" style="margin-bottom:16px;">
         <div class="section-title" style="margin-bottom:12px;">Signal Quality</div>
@@ -468,19 +513,49 @@ async function loadSignals() {
   } catch(e) { renderSignalsFallback(); }
 }
 
+// ─── Signals tab state ───
+let _signalsQuery = '';
+
+function onSignalsFilterInput() {
+  _signalsQuery = document.getElementById('signals-search').value;
+  renderSignals();
+}
+
 function renderSignals() {
   const el = document.getElementById('signals-container');
-  const list = currentFilter==='all' ? allSignals : allSignals.filter(s=>s.signal_type===currentFilter);
+  const countEl = document.getElementById('signals-count');
+  const q = (_signalsQuery || '').toLowerCase().trim();
+
+  let list = currentFilter === 'all' ? allSignals : allSignals.filter(s => s.signal_type === currentFilter);
+  if (q) {
+    list = list.filter(s =>
+      (s.symbol  || '').toLowerCase().includes(q) ||
+      (s.message || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (countEl) {
+    const total = allSignals.length;
+    const filtered = list.length;
+    countEl.textContent = (q || currentFilter !== 'all')
+      ? `${filtered} of ${total}`
+      : `${total} signals`;
+  }
+
   if (!list.length) {
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">🕐</div><div class="empty-title">No ${currentFilter==='all'?'':''+currentFilter.toLowerCase()+' '}signals yet</div><div class="empty-desc">Signals appear during market hours (Mon–Fri, 9:15am–3:30pm IST) when price moves or major announcements are detected.</div></div>`;
+    const reason = q
+      ? `Nothing matches "${q}"${currentFilter !== 'all' ? ' under the ' + currentFilter.toLowerCase() + ' filter' : ''}. Try clearing the filter.`
+      : `Signals appear during market hours (Mon–Fri, 9:15am–3:30pm IST) when price moves or major announcements are detected.`;
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">${q ? '🔍' : '🕐'}</div><div class="empty-title">No ${currentFilter==='all'?'':''+currentFilter.toLowerCase()+' '}signals${q?' match':' yet'}</div><div class="empty-desc">${reason}</div></div>`;
     return;
   }
-  el.innerHTML = list.slice(0,20).map(s=>{
+
+  el.innerHTML = list.slice(0, 40).map(s => {
     const type = (s.signal_type||'NEUTRAL').toLowerCase();
     const conf = Math.round((s.confidence||0)*100);
     const msg  = (s.message||'').replace(/\|.*$/,'').trim()||'No details';
     const t    = fmtDateTime(s.created_at);
-    return `<div class="signal-card ${type}"><div class="signal-header"><span class="signal-symbol">${s.symbol||'—'}</span><span class="signal-type ${type}">${s.signal_type||'NEUTRAL'}</span></div><div class="signal-msg">${msg.length>100?msg.slice(0,100)+'…':msg}</div><div class="signal-meta"><div class="conf-bar"><div class="conf-fill ${type}" style="width:${conf}%;"></div></div><span class="conf-label">${conf}% confidence</span><span class="time-label">📅 ${t}</span></div></div>`;
+    return `<div class="signal-card ${type}"><div class="signal-header"><span class="signal-symbol">${s.symbol||'—'}</span><span class="signal-type ${type}">${s.signal_type||'NEUTRAL'}</span></div><div class="signal-msg">${msg.length>140?msg.slice(0,140)+'…':msg}</div><div class="signal-meta"><div class="conf-bar"><div class="conf-fill ${type}" style="width:${conf}%;"></div></div><span class="conf-label">${conf}% confidence</span><span class="time-label">📅 ${t}</span></div></div>`;
   }).join('');
 }
 
@@ -504,16 +579,70 @@ async function loadFilings() {
   } catch(e) { renderFilingsFallback(); }
 }
 
+// ─── Filings tab state ───
+let _filingsQuery = '';
+let _filingsSentiment = 'all';   // 'all' | 'positive' | 'neutral' | 'negative'
+
+function onFilingsFilterInput() {
+  _filingsQuery = document.getElementById('filings-search').value;
+  renderFilings();
+}
+
+function setFilingsSort(mode) {
+  _filingsSentiment = mode;
+  ['all','positive','neutral','negative'].forEach(m => {
+    const btn = document.getElementById('filings-chip-' + m);
+    if (btn) btn.classList.toggle('active', m === mode);
+  });
+  renderFilings();
+}
+
 function renderFilings() {
-  const el=document.getElementById('filings-container');
-  if (!allFilings.length) { el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No filings today</div><div class="empty-desc">Corporate announcements from NSE will appear here as they are detected.</div></div>`; return; }
-  el.innerHTML=allFilings.slice(0,20).map(f=>{
-    const sent=f.sentiment||'neutral', score=f.sentiment_score?Math.round(f.sentiment_score*100):0;
-    const t=fmtDateTime(f.created_at);
-    const emoji=sent==='positive'?'😊':sent==='negative'?'😟':'😐';
+  const el = document.getElementById('filings-container');
+  const countEl = document.getElementById('filings-count');
+  const q = (_filingsQuery || '').toLowerCase().trim();
+
+  let list = allFilings.slice();
+
+  if (_filingsSentiment !== 'all') {
+    list = list.filter(f => (f.sentiment || 'neutral') === _filingsSentiment);
+  }
+  if (q) {
+    list = list.filter(f =>
+      (f.symbol   || '').toLowerCase().includes(q) ||
+      (f.headline || '').toLowerCase().includes(q) ||
+      (f.category || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (countEl) {
+    const total = allFilings.length;
+    countEl.textContent = (q || _filingsSentiment !== 'all')
+      ? `${list.length} of ${total}`
+      : `${total} filings`;
+  }
+
+  if (!list.length) {
+    const reason = q
+      ? `Nothing matches "${q}"${_filingsSentiment !== 'all' ? ' under the ' + _filingsSentiment + ' filter' : ''}. Try clearing the filter.`
+      : `Corporate announcements from NSE will appear here as they are detected.`;
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">${q ? '🔍' : '📋'}</div><div class="empty-title">${q ? 'No filings match' : 'No filings yet'}</div><div class="empty-desc">${reason}</div></div>`;
+    return;
+  }
+
+  el.innerHTML = list.slice(0, 40).map(f => {
+    const sent  = f.sentiment || 'neutral';
+    const score = f.sentiment_score ? Math.round(f.sentiment_score * 100) : 0;
+    const t     = fmtDateTime(f.created_at);
+    const emoji = sent === 'positive' ? '😊' : sent === 'negative' ? '😟' : '😐';
     return `<div class="filing-card"><div class="filing-header"><span class="filing-symbol">${f.symbol}</span><span class="filing-headline">${f.headline||'No headline'}</span><span class="sentiment-badge ${sent}">${emoji} ${sent}</span></div><div class="filing-footer"><span class="filing-cat">${f.category||'General'}</span><span class="filing-time">📅 ${score?score+'% · ':''}${t}</span></div></div>`;
   }).join('');
 }
+
+// ─── Prices tab state ───
+let _pricesAllRows = [];        // master list, populated by loadPrices()
+let _pricesQuery   = '';        // current search query
+let _pricesSort    = 'all';     // 'all' | 'gainers' | 'losers'
 
 async function loadPrices() {
   const el = document.getElementById('prices-container');
@@ -522,20 +651,15 @@ async function loadPrices() {
   let rows = [];
 
   if (_nifty100Cache.length) {
-    // Cache is hot — sort: live tickers first (by symbol asc), then dead tickers
     rows = _nifty100Cache.map(t => ({
       symbol: t.symbol,
       name:   t.name,
       price:  t.value,
       pct:    t.pct,
       ok:     t.ok,
-    })).sort((a, b) => {
-      if (a.ok !== b.ok) return a.ok ? -1 : 1;
-      return a.symbol.localeCompare(b.symbol);
-    });
+    }));
   } else {
     el.innerHTML = '<div class="loading-card"><div class="skeleton"></div><div class="skeleton" style="width:50%;"></div></div>';
-    // Fallback path
     try {
       const d = await (await fetch(API_BASE + '/api/prices')).json();
       if (!d.prices || !d.prices.length) throw new Error();
@@ -548,8 +672,63 @@ async function loadPrices() {
       }));
     } catch (err) {
       el.innerHTML = '<div class="empty-state"><div class="empty-icon">📈</div><div class="empty-title">Prices unavailable</div><div class="empty-desc">Live prices are available on trading days, 9:15am–3:30pm IST.</div></div>';
+      _pricesAllRows = [];
+      const c = document.getElementById('prices-count'); if (c) c.textContent = '0 stocks';
       return;
     }
+  }
+
+  _pricesAllRows = rows;
+  renderPricesTable();
+}
+
+function renderPricesTable() {
+  const el = document.getElementById('prices-container');
+  const countEl = document.getElementById('prices-count');
+  if (!el) return;
+
+  const q = (_pricesQuery || '').toLowerCase().trim();
+
+  // Step 1 — filter by query
+  let rows = _pricesAllRows.filter(r => {
+    if (!q) return true;
+    return (r.symbol || '').toLowerCase().includes(q)
+        || (r.name   || '').toLowerCase().includes(q);
+  });
+
+  // Step 2 — apply sort/sub-filter
+  if (_pricesSort === 'gainers') {
+    rows = rows
+      .filter(r => r.ok && typeof r.pct === 'number' && r.pct > 0)
+      .sort((a, b) => b.pct - a.pct);
+  } else if (_pricesSort === 'losers') {
+    rows = rows
+      .filter(r => r.ok && typeof r.pct === 'number' && r.pct < 0)
+      .sort((a, b) => a.pct - b.pct);
+  } else {
+    // 'all' — live tickers first, then dead, alpha within each
+    rows = rows.slice().sort((a, b) => {
+      if (a.ok !== b.ok) return a.ok ? -1 : 1;
+      return a.symbol.localeCompare(b.symbol);
+    });
+  }
+
+  if (countEl) {
+    const total = _pricesAllRows.length;
+    if (q || _pricesSort !== 'all') {
+      countEl.textContent = `${rows.length} of ${total} stocks`;
+    } else {
+      countEl.textContent = `${total} stocks`;
+    }
+  }
+
+  if (!rows.length) {
+    el.innerHTML = `<div class="card" style="padding:36px 20px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:10px;">🔍</div>
+      <div style="font-size:13px;font-weight:600;color:var(--cream);margin-bottom:6px;">No matches</div>
+      <div style="font-size:11px;color:var(--muted);">${q ? `Nothing matches "${q}".` : 'No stocks match the current filter.'} Try clearing the filter or searching for another name.</div>
+    </div>`;
+    return;
   }
 
   const body = rows.map(r => {
@@ -577,28 +756,59 @@ async function loadPrices() {
   el.innerHTML = `<div class="card" style="overflow-x:auto;"><table class="price-table"><thead><tr><th>Stock</th><th>Price</th><th style="text-align:right;">Change</th></tr></thead><tbody>${body}</tbody></table><div style="margin-top:10px;font-size:9px;color:rgba(144,144,168,.4);text-align:right;">${updatedNote}</div></div>`;
 }
 
+function onPricesFilterInput() {
+  _pricesQuery = document.getElementById('prices-search').value;
+  renderPricesTable();
+}
+
+function setPricesSort(mode) {
+  _pricesSort = mode;
+  ['all','gainers','losers'].forEach(m => {
+    const btn = document.getElementById('prices-chip-' + m);
+    if (btn) btn.classList.toggle('active', m === mode);
+  });
+  renderPricesTable();
+}
+
 async function loadCommentary() {
   const symbol = document.getElementById('commentary-symbol').value;
   const btn = document.getElementById('commentary-btn');
   const result = document.getElementById('commentary-result');
+
+  if (!symbol) {
+    document.getElementById('commentary-sym-label').textContent = 'No symbol selected';
+    document.getElementById('commentary-text').innerHTML =
+      '<div style="padding:14px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:8px;color:#f59e0b;font-size:13px;">⚠️ Please pick a stock from the search above first.</div>';
+    document.getElementById('commentary-metrics').innerHTML = '';
+    result.style.display = 'block';
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = '⏳ Loading...';
   result.style.display = 'none';
+
   try {
     const resp = await fetch(API_BASE+'/api/commentary?symbol='+encodeURIComponent(symbol));
     const d = await resp.json();
 
     if (d.status !== 'success') {
-      alert('Error: ' + (d.message || 'Unknown error'));
+      // Inline error render — no popup, no alert()
+      document.getElementById('commentary-sym-label').textContent = symbol + ' — Commentary unavailable';
+      document.getElementById('commentary-text').innerHTML =
+        '<div style="padding:14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:8px;color:#f87171;font-size:13px;line-height:1.6;">' +
+        '<div style="font-weight:600;margin-bottom:6px;">⚠️ Could not load commentary</div>' +
+        '<div style="color:rgba(248,113,113,.85);font-size:12px;">' +
+        (d.message || 'An unknown error occurred. Please try a different stock or come back during market hours.') +
+        '</div></div>';
+      document.getElementById('commentary-metrics').innerHTML = '';
+      result.style.display = 'block';
       btn.disabled = false;
       btn.textContent = '🧠 Get Commentary';
       return;
     }
 
-    // Source and cached info kept in backend data for debugging
-    // but NOT displayed to end users (clean UI)
-    document.getElementById('commentary-sym-label').textContent =
-      d.symbol + ' — Live Commentary';
+    document.getElementById('commentary-sym-label').textContent = d.symbol + ' — Live Commentary';
 
     // Convert markdown-style **bold** to HTML
     const htmlText = (d.commentary || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
@@ -622,7 +832,11 @@ async function loadCommentary() {
     result.style.display = 'block';
   } catch(e) {
     console.error('Commentary load error:', e);
-    alert('Failed to load commentary. Please try again.');
+    document.getElementById('commentary-sym-label').textContent = symbol + ' — Connection error';
+    document.getElementById('commentary-text').innerHTML =
+      '<div style="padding:14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:8px;color:#f87171;font-size:13px;">⚠️ Failed to reach the server. Please check your connection and try again.</div>';
+    document.getElementById('commentary-metrics').innerHTML = '';
+    result.style.display = 'block';
   }
   btn.disabled = false;
   btn.textContent = '🧠 Get Commentary';

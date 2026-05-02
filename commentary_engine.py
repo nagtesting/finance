@@ -53,50 +53,92 @@ GEMINI_API_KEY    = os.getenv("GEMINI_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")   # legacy — still used if GEMINI fails
 
 # ── Stock universe ─────────────────────────────────────────────────────────────
-STOCKS = {
-    "RELIANCE":   "RELIANCE.NS",
-    "TCS":        "TCS.NS",
-    "HDFCBANK":   "HDFCBANK.NS",
-    "INFY":       "INFY.NS",
-    "ICICIBANK":  "ICICIBANK.NS",
-    "HINDUNILVR": "HINDUNILVR.NS",
-    "SBIN":       "SBIN.NS",
-    "BHARTIARTL": "BHARTIARTL.NS",
-    "BAJFINANCE": "BAJFINANCE.NS",
-    "WIPRO":      "WIPRO.NS",
-    "ADANIENT":   "ADANIENT.NS",
-    "TATASTEEL":  "TATASTEEL.NS",
-    "MARUTI":     "MARUTI.NS",
-    "SUNPHARMA":  "SUNPHARMA.NS",
-    "AXISBANK":   "AXISBANK.NS",
-    "KOTAKBANK":  "KOTAKBANK.NS",
-    "LT":         "LT.NS",
-    "TITAN":      "TITAN.NS",
-    "ONGC":       "ONGC.NS",
-}
+# Source of truth: nifty100.py — 100 NSE constituents. Falls back to a hardcoded
+# list of 19 if the import fails (defensive — keeps legacy behavior alive).
+try:
+    from nifty100 import NIFTY_100 as _NIFTY_100_LIST
+    STOCKS = {sym: yahoo for sym, _name, yahoo in _NIFTY_100_LIST}
+except Exception:
+    STOCKS = {
+        "RELIANCE":   "RELIANCE.NS",
+        "TCS":        "TCS.NS",
+        "HDFCBANK":   "HDFCBANK.NS",
+        "INFY":       "INFY.NS",
+        "ICICIBANK":  "ICICIBANK.NS",
+        "HINDUNILVR": "HINDUNILVR.NS",
+        "SBIN":       "SBIN.NS",
+        "BHARTIARTL": "BHARTIARTL.NS",
+        "BAJFINANCE": "BAJFINANCE.NS",
+        "WIPRO":      "WIPRO.NS",
+        "ADANIENT":   "ADANIENT.NS",
+        "TATASTEEL":  "TATASTEEL.NS",
+        "MARUTI":     "MARUTI.NS",
+        "SUNPHARMA":  "SUNPHARMA.NS",
+        "AXISBANK":   "AXISBANK.NS",
+        "KOTAKBANK":  "KOTAKBANK.NS",
+        "LT":         "LT.NS",
+        "TITAN":      "TITAN.NS",
+        "ONGC":       "ONGC.NS",
+    }
 
-# Sector mapping for benchmark comparison
+# ── Sector benchmark mapping ───────────────────────────────────────────────────
+# Maps each stock to its Nifty sector index for sector-relative comparison.
+# Uses explicit mappings where the sector is well-defined; falls back to ^NSEI
+# (Nifty 50) for stocks without a clear sector index.
 SECTOR_ETF = {
-    "RELIANCE":   "^NSEI",
-    "TCS":        "^CNXIT",
-    "INFY":       "^CNXIT",
-    "WIPRO":      "^CNXIT",
-    "HDFCBANK":   "^NSEBANK",
-    "ICICIBANK":  "^NSEBANK",
-    "SBIN":       "^NSEBANK",
-    "AXISBANK":   "^NSEBANK",
-    "KOTAKBANK":  "^NSEBANK",
-    "BAJFINANCE": "^NSEBANK",
+    # Banks & Financials → Nifty Bank
+    "HDFCBANK": "^NSEBANK", "ICICIBANK": "^NSEBANK", "SBIN": "^NSEBANK",
+    "KOTAKBANK": "^NSEBANK", "AXISBANK": "^NSEBANK", "INDUSINDBK": "^NSEBANK",
+    "BANKBARODA": "^NSEBANK", "PNB": "^NSEBANK", "CANBK": "^NSEBANK",
+    "FEDERALBNK": "^NSEBANK", "BAJFINANCE": "^NSEBANK", "BAJAJFINSV": "^NSEBANK",
+    "CHOLAFIN": "^NSEBANK", "HDFCLIFE": "^NSEBANK", "SBILIFE": "^NSEBANK",
+    "ICICIPRULI": "^NSEBANK", "ICICIGI": "^NSEBANK", "LICI": "^NSEBANK",
+    "SHRIRAMFIN": "^NSEBANK", "PFC": "^NSEBANK", "RECLTD": "^NSEBANK",
+    "HDFCAMC": "^NSEBANK",
+
+    # IT
+    "TCS": "^CNXIT", "INFY": "^CNXIT", "WIPRO": "^CNXIT",
+    "HCLTECH": "^CNXIT", "TECHM": "^CNXIT", "LTIM": "^CNXIT",
+
+    # Energy / Oil & Gas
+    "RELIANCE": "^CNXENERGY", "ONGC": "^CNXENERGY", "IOC": "^CNXENERGY",
+    "BPCL": "^CNXENERGY", "GAIL": "^CNXENERGY", "ADANIENSOL": "^CNXENERGY",
+    "ADANIGREEN": "^CNXENERGY",
+
+    # Metals & Mining
+    "TATASTEEL": "^CNXMETAL", "JSWSTEEL": "^CNXMETAL", "HINDALCO": "^CNXMETAL",
+    "VEDL": "^CNXMETAL", "COALINDIA": "^CNXMETAL", "HINDZINC": "^CNXMETAL",
+    "JINDALSTEL": "^CNXMETAL",
+
+    # Auto
+    "MARUTI": "^CNXAUTO", "M&M": "^CNXAUTO", "TMPV": "^CNXAUTO",
+    "BAJAJ-AUTO": "^CNXAUTO", "EICHERMOT": "^CNXAUTO", "HEROMOTOCO": "^CNXAUTO",
+    "TVSMOTOR": "^CNXAUTO", "BOSCHLTD": "^CNXAUTO", "MOTHERSON": "^CNXAUTO",
+
+    # Pharma / Healthcare
+    "SUNPHARMA": "^CNXPHARMA", "DRREDDY": "^CNXPHARMA", "CIPLA": "^CNXPHARMA",
+    "DIVISLAB": "^CNXPHARMA", "APOLLOHOSP": "^CNXPHARMA",
+    "TORNTPHARM": "^CNXPHARMA", "ZYDUSLIFE": "^CNXPHARMA",
+
+    # FMCG
+    "HINDUNILVR": "^CNXFMCG", "ITC": "^CNXFMCG", "NESTLEIND": "^CNXFMCG",
+    "BRITANNIA": "^CNXFMCG", "DABUR": "^CNXFMCG", "MARICO": "^CNXFMCG",
+    "GODREJCP": "^CNXFMCG", "VBL": "^CNXFMCG", "UNITDSPR": "^CNXFMCG",
+    "TATACONSUM": "^CNXFMCG",
+
+    # Telecom & Media
     "BHARTIARTL": "^CNXTELECOM",
-    "HINDUNILVR": "^CNXFMCG",
-    "MARUTI":     "^CNXAUTO",
-    "TATASTEEL":  "^CNXMETAL",
-    "ADANIENT":   "^NSEI",
-    "SUNPHARMA":  "^CNXPHARMA",
-    "LT":         "^NSEI",
-    "TITAN":      "^NSEI",
-    "ONGC":       "^NSEI",
+
+    # Power & Utilities (no dedicated index — use Nifty Energy)
+    "NTPC": "^CNXENERGY", "POWERGRID": "^CNXENERGY",
+    "ADANIPOWER": "^CNXENERGY", "TATAPOWER": "^CNXENERGY",
 }
+# Default for everything else — broad market benchmark
+SECTOR_ETF_DEFAULT = "^NSEI"
+
+def _sector_for(symbol: str) -> str:
+    """Return the sector ETF/index for a stock, defaulting to Nifty 50."""
+    return SECTOR_ETF.get(symbol, SECTOR_ETF_DEFAULT)
 
 MOVE_THRESHOLD = 1.0   # % move to trigger commentary
 GEMINI_MODEL = "gemini-2.5-flash-lite"   # free tier: 15 RPM, 1000 RPD

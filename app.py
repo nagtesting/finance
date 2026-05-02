@@ -624,7 +624,7 @@ def get_commentary():
         if symbol not in ce.STOCKS:
             return jsonify({
                 "status": "error",
-                "message": f"Unknown symbol: {symbol}. Use symbols like TCS, RELIANCE, INFY etc."
+                "message": f"Symbol '{symbol}' is not in the Nifty 100 universe. Please pick from the search."
             }), 404
 
         result = ce.analyze_stock(symbol, force_refresh=False, ignore_threshold=True)

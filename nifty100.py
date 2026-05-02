@@ -76,7 +76,7 @@ NIFTY_100 = [
     # ── Automobile ──
     ("MARUTI",     "Maruti Suzuki",        "MARUTI.NS"),
     ("M&M",        "Mahindra & Mahindra",  "M%26M.NS"),
-    ("TATAMOTORS", "Tata Motors",          "TATAMOTORS.NS"),
+    ("TMPV",       "Tata Motors PV",       "TMPV.NS"),
     ("BAJAJ-AUTO", "Bajaj Auto",           "BAJAJ-AUTO.NS"),
     ("EICHERMOT",  "Eicher Motors",        "EICHERMOT.NS"),
     ("HEROMOTOCO", "Hero MotoCorp",        "HEROMOTOCO.NS"),
@@ -106,7 +106,7 @@ NIFTY_100 = [
     # ── Telecom & Media ──
     ("BHARTIARTL", "Bharti Airtel",        "BHARTIARTL.NS"),
     ("INDIGO",     "InterGlobe Aviation",  "INDIGO.NS"),
-    ("ZOMATO",     "Zomato",               "ZOMATO.NS"),
+    ("ETERNAL",    "Eternal (Zomato)",     "ETERNAL.NS"),
     ("DMART",      "Avenue Supermarts",    "DMART.NS"),
     ("TRENT",      "Trent",                "TRENT.NS"),
     ("TITAN",      "Titan Company",        "TITAN.NS"),
