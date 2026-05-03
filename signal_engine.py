@@ -10,11 +10,11 @@ supabase = create_client(
     os.getenv("SUPABASE_SECRET_KEY")
 )
 
-# Signal scoring weights
+# Signal scoring weights (must sum to ~1.0 so confidence can reach 100%)
+# v2 fix: previous weights summed to 0.6, capping confidence at 60%
 WEIGHTS = {
-    "price_move": 0.4,      # 40% weight
-    "sentiment": 0.35,      # 35% weight
-    "filing_category": 0.25 # 25% weight
+    "sentiment":       0.55,     # Sentiment is the dominant signal for filings
+    "filing_category": 0.45,     # Category context boosts/dampens it
 }
 
 # High impact filing categories
@@ -74,20 +74,22 @@ def generate_signals():
         filing_impact = get_filing_impact(category)
         sentiment_value = get_sentiment_score(sentiment, sentiment_score)
 
-        # Combined confidence score
+        # Combined confidence score (now caps at 100% with rebalanced weights)
         confidence = (
-            WEIGHTS["sentiment"] * abs(sentiment_value) +
+            WEIGHTS["sentiment"]      * abs(sentiment_value) +
             WEIGHTS["filing_category"] * filing_impact
         )
 
         # Determine signal type
-        if filing_impact >= 0.8:
-            if sentiment_value >= 0:
-                signal_type = "BULLISH"
-                emoji = "🟢"
-            else:
-                signal_type = "BEARISH"
-                emoji = "🔴"
+        # v2 fix: previously a neutral filing on a high-impact category became
+        # BULLISH because `sentiment_value >= 0` is True for 0. Now requires
+        # genuine positive/negative sentiment to fire a directional signal.
+        if filing_impact >= 0.8 and sentiment == "positive":
+            signal_type = "BULLISH"
+            emoji = "🟢"
+        elif filing_impact >= 0.8 and sentiment == "negative":
+            signal_type = "BEARISH"
+            emoji = "🔴"
         elif filing_impact >= 0.5:
             signal_type = "WATCH"
             emoji = "🟡"

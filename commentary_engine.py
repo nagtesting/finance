@@ -664,16 +664,44 @@ def analyze_stock(symbol: str, force_refresh: bool = False, ignore_threshold: bo
         "generated_at": datetime.now().isoformat(),
     }
 
-    # Save signal to Supabase signals table (unchanged from v2)
+    # Save signal to Supabase signals table (v3 — proper thresholds)
+    # ─────────────────────────────────────────────────────────────────
+    # Signal classification rules (calibrated for Indian large-cap volatility):
+    #   |move| < 0.5%   → NEUTRAL  (skip writing — pure noise on a normal day)
+    #   |move| 0.5–1.5% → WATCH    (worth flagging, low conviction)
+    #   |move| ≥ 1.5%   → BULLISH or BEARISH (genuine signal)
+    #
+    # Confidence formula recalibrated so 1.5% move ≈ 30% confidence,
+    # 3% move ≈ 60%, 5% move ≈ 100%. Previously a 5% move was the cap which
+    # meant typical days showed misleading single-digit confidence even on
+    # real signals.
+    abs_move = abs(change_pct)
+    if abs_move < 0.5:
+        signal_type = "NEUTRAL"
+    elif abs_move < 1.5:
+        signal_type = "WATCH"
+    else:
+        signal_type = "BULLISH" if change_pct > 0 else "BEARISH"
+
+    # Skip writing NEUTRAL signals — they're noise, not signal.
+    if signal_type == "NEUTRAL":
+        print(f"   ⚪ {symbol} {change_pct:+.2f}% — below threshold, no signal saved.")
+        return result
+
+    # Confidence: linear ramp from 0.5% (start) to 5% (cap), squared for emphasis
+    # so small moves get small confidence and big moves get high confidence.
+    raw = max(0.0, (abs_move - 0.5) / 4.5)        # 0 at 0.5%, 1 at 5%
+    confidence = round(min(1.0, raw ** 0.7), 3)   # gentle curve, hits ~30% at 1.5%
+
     try:
         supabase.table("signals").insert({
             "symbol":      symbol,
-            "signal_type": "BEARISH" if change_pct < 0 else "BULLISH",
-            "confidence":  round(min(abs(change_pct) / 5.0, 1.0), 3),
+            "signal_type": signal_type,
+            "confidence":  confidence,
             "source":      "commentary_engine",
             "message":     f"{symbol} {change_pct:+.2f}% | {commentary[:200]} | PUBLISHED",
         }).execute()
-        print("   ✅ Saved to Supabase signals table.")
+        print(f"   ✅ Saved {signal_type} signal ({confidence:.0%} confidence) to Supabase.")
     except Exception as e:
         print(f"   ⚠️  Supabase save failed: {e}")
 
