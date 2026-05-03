@@ -481,6 +481,192 @@ def _format_breadth(b: dict) -> str:
             f"({b.get('breadth_descriptor')})")
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# NEWS HEADLINES (Pulse by Zerodha — pulse.zerodha.com/feed.php)
+# ─────────────────────────────────────────────────────────────────────────────
+# Aggregates real-time Indian financial news from ET, NDTV Profit, The Hindu,
+# Mint, BS, MoneyControl etc. Free RSS feed. Used as CONTEXT input for Gemini —
+# headlines never appear verbatim in the user-facing commentary (transformative
+# use of public headlines for original analysis).
+#
+# Polling: max once per slot = ~15-20 calls/day. Honest User-Agent. No storage.
+
+import xml.etree.ElementTree as _ET
+from html import unescape as _html_unescape
+
+PULSE_FEED_URL = "http://pulse.zerodha.com/feed.php"
+PULSE_HEADERS = {
+    "User-Agent": (
+        "MoneyVeda/2.0 MarketCommentary "
+        "(https://moneyveda.org; analysis context use; contact via website)"
+    )
+}
+
+# Keyword filter — passed only headlines matching these markers go to Gemini.
+# Drops sports/lifestyle/general news that pollute the feed.
+_PULSE_RELEVANCE_HITS = {
+    # Index/market terms
+    "nifty", "sensex", "nse", "bse", "stock market", "indian market",
+    "stocks", "shares", "equity", "equities", "index", "indices",
+    "trading guide", "ahead of market", "market action",
+    # Macro/policy
+    "rbi", "sebi", "rupee", "fed", "inflation", "gdp", "policy", "rate", "rates",
+    "fii", "dii", "monsoon", "budget", "fiscal",
+    # Sector terms
+    "bank", "banks", "banking", "it services", "pharma", "auto",
+    "metals", "fmcg", "energy", "oil", "crude", "gold",
+    # Common Indian large-caps + Nifty 100 names
+    "reliance", "tcs", "infosys", "hdfc", "icici", "sbi", "bharti",
+    "tata", "adani", "axis", "kotak", "wipro", "maruti", "ongc",
+    "bajaj", "ultratech", "asian paints", "titan", "sun pharma",
+    "ambuja", "coal india", "ntpc", "powergrid", "nestle", "hindustan unilever",
+    "vodafone", "vodafone idea", "vi", "airtel", "indigo", "zomato", "eternal",
+    "paytm", "amazon", "flipkart", "swiggy", "ola",
+    "drreddy", "dr reddy", "cipla", "lupin", "torrent",
+    "jsw", "jindal", "vedanta", "hindalco", "nalco",
+    "bel", "hal", "siemens", "abb", "havells",
+    "lic", "shriram", "muthoot", "cholamandalam",
+    "mittal", "arcelormittal", "mahindra", "ambani",
+    "gujarat fluoro", "kalyani steel", "time techno", "shyam metalic",
+    "uco bank", "central bank", "punjab national", "canara",
+    "federal bank", "indusind", "yes bank", "idbi",
+    "godrej", "marico", "dabur", "britannia",
+    # Earnings / corporate actions
+    "results", "earnings", "profit", "loss", "dividend", "bonus",
+    "split", "buyback", "ipo", "qip", "merger", "acquisition",
+    "stake", "deal", "valuation", "demerger",
+    # Brokerage/analyst signals
+    "buy call", "sell call", "target price", "upgrade", "downgrade",
+    "brokerage", "rating", "outlook", "guidance",
+    "bullish", "bearish", "bullish on", "bearish on",
+    # General market conditions
+    "rally", "selloff", "crash", "volatility", "correction",
+    "breakout", "support", "resistance", "all-time high", "52-week",
+    # Geopolitics affecting Indian markets (crude/USD/risk-off)
+    "iran", "hormuz", "tehran", "opec", "sanctions",
+    "russia", "ukraine", "china trade", "tariff",
+}
+
+
+def _parse_pubdate(raw: str):
+    """Parse RSS pubDate to a UTC-aware datetime; return None on failure."""
+    if not raw:
+        return None
+    raw = raw.strip()
+    # RFC 822 / RFC 2822 e.g. 'Sun, 03 May 2026 17:44:16 +0530'
+    for fmt in ("%a, %d %b %Y %H:%M:%S %z", "%a, %d %b %Y %H:%M:%S %Z"):
+        try:
+            return datetime.strptime(raw, fmt)
+        except ValueError:
+            continue
+    return None
+
+
+def _is_market_relevant(title: str, summary: str) -> bool:
+    """True if the headline contains any market-relevance keyword."""
+    blob = f"{title} {summary}".lower()
+    return any(k in blob for k in _PULSE_RELEVANCE_HITS)
+
+
+def get_pulse_headlines(max_age_hours: int = 12, limit: int = 12) -> list:
+    """
+    Fetch + filter Pulse news. Returns up to `limit` market-relevant headlines
+    from the last `max_age_hours` hours, newest first.
+
+    Each item: {"title": str, "summary": str, "source": str, "minutes_ago": int}
+
+    Returns [] on any failure — callers must handle gracefully.
+    """
+    try:
+        r = requests.get(PULSE_FEED_URL, headers=PULSE_HEADERS, timeout=12)
+        r.raise_for_status()
+        root = _ET.fromstring(r.text)
+        items = root.findall(".//item")
+        if not items:
+            return []
+
+        now_utc = datetime.now(timezone.utc)
+        cutoff  = now_utc - timedelta(hours=max_age_hours)
+        out = []
+        seen_titles = set()
+
+        for it in items:
+            title_el = it.find("title")
+            desc_el  = it.find("description")
+            link_el  = it.find("link")
+            date_el  = it.find("pubDate")
+
+            title   = _html_unescape((title_el.text or "").strip()) if title_el is not None else ""
+            summary = _html_unescape((desc_el.text  or "").strip()) if desc_el  is not None else ""
+            link    = (link_el.text or "").strip() if link_el is not None else ""
+            pub_dt  = _parse_pubdate(date_el.text if date_el is not None else "")
+
+            if not title or len(title) < 8:
+                continue
+            if pub_dt is None:
+                continue
+            # Convert to UTC-aware for comparison
+            if pub_dt.tzinfo is None:
+                pub_dt = pub_dt.replace(tzinfo=timezone.utc)
+            if pub_dt < cutoff:
+                continue
+            if not _is_market_relevant(title, summary):
+                continue
+
+            # Dedupe by lowercase title (multiple sources sometimes carry the same story)
+            tkey = title.lower()[:80]
+            if tkey in seen_titles:
+                continue
+            seen_titles.add(tkey)
+
+            # Extract source from link (e.g. economictimes.indiatimes.com -> "ET")
+            source = "Pulse"
+            try:
+                if "economictimes" in link:    source = "ET"
+                elif "moneycontrol" in link:   source = "MoneyControl"
+                elif "ndtvprofit" in link:     source = "NDTV Profit"
+                elif "thehindu" in link:       source = "The Hindu"
+                elif "livemint" in link or "mint.com" in link: source = "Mint"
+                elif "business-standard" in link: source = "BS"
+                elif "reuters" in link:        source = "Reuters"
+            except Exception:
+                pass
+
+            minutes_ago = max(0, int((now_utc - pub_dt).total_seconds() / 60))
+
+            out.append({
+                "title":       title[:200],
+                "summary":     summary[:280],
+                "source":      source,
+                "minutes_ago": minutes_ago,
+            })
+            if len(out) >= limit:
+                break
+
+        _log("📰", f"Pulse: {len(out)} relevant headline(s) in last {max_age_hours}h")
+        return out
+    except Exception as e:
+        _log("⚠️", f"Pulse fetch failed: {e}")
+        return []
+
+
+def _format_pulse_headlines(headlines: list) -> str:
+    """Render for prompt input. Each line carries source + age for Gemini context."""
+    if not headlines:
+        return "  (no recent market news available)"
+    lines = []
+    for h in headlines:
+        age = h.get("minutes_ago", 0)
+        if   age < 60:        age_str = f"{age}m ago"
+        elif age < 24 * 60:   age_str = f"{age // 60}h ago"
+        else:                 age_str = f"{age // (24 * 60)}d ago"
+        title = h.get("title", "").strip()
+        src   = h.get("source", "Pulse")
+        lines.append(f"  - [{src}, {age_str}] {title}")
+    return "\n".join(lines)
+
+
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DATA PACKETS
@@ -535,6 +721,8 @@ def build_pre_market_packet():
     # Yesterday's post-market wrap for cross-day continuity
     prior = get_prior_intraday_context(packet["date"], "00:00")
     packet["yesterday_post_text"] = prior.get("yesterday_post_text")
+    # Real-time Indian market news from Pulse (last 12h, max 12 headlines)
+    packet["news"] = get_pulse_headlines(max_age_hours=12, limit=12)
 
     for key in packet:
         if isinstance(packet[key], list):
@@ -604,6 +792,8 @@ def build_intraday_packet(slot: str):
     }
     packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
     packet["breadth"]   = get_market_breadth()
+    # Real-time Indian market news from Pulse (last 6h for intraday — narrower window)
+    packet["news"] = get_pulse_headlines(max_age_hours=6, limit=10)
 
     # Fetch prior context for narrative continuity (now extended with all-slots + yesterday)
     packet["prior"] = get_prior_intraday_context(today, slot)
@@ -664,6 +854,8 @@ def build_post_market_packet():
     }
     packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
     packet["breadth"]   = get_market_breadth()
+    # Real-time Indian market news from Pulse (last 12h for post-market — covers full day)
+    packet["news"] = get_pulse_headlines(max_age_hours=12, limit=15)
     # Arc of the day — pull all today's intraday slots so post-market can review
     packet["prior"] = get_prior_intraday_context(packet["date"], "23:59")
 
@@ -741,6 +933,14 @@ INDIA VIX (volatility regime):
 YESTERDAY'S POST-MARKET WRAP (for continuity):
 {yesterday_wrap}
 
+RECENT MARKET NEWS HEADLINES (last 12 hours, from Indian financial press via Pulse):
+{news_block}
+
+Use these headlines as background context only. Do NOT cite them verbatim, do NOT
+treat them as confirmed events unless multiple headlines align, and do NOT invent
+causation that the data does not support. Some are macro themes worth weaving in;
+some are noise — your job is to pick the relevant signals.
+
 Now write the strategist pre-market briefing:"""
 
 
@@ -801,6 +1001,14 @@ CURRENCIES:
 
 COMMODITIES:
 {commodities}
+
+RECENT MARKET NEWS HEADLINES (last 6 hours, from Indian financial press via Pulse):
+{news_block}
+
+Use these as background context only. Do NOT cite them verbatim, do NOT treat
+them as confirmed market drivers unless price action backs them up, and do NOT
+invent specific cause-and-effect claims. Most are noise; pick the few that
+genuinely connect to today's open.
 
 Now write the 10-12 line opening update:"""
 
@@ -873,6 +1081,14 @@ COMMODITIES:
 
 ASIA-PACIFIC (if still trading):
 {asia_pacific}
+
+RECENT MARKET NEWS HEADLINES (last 6 hours, from Indian financial press via Pulse):
+{news_block}
+
+Use these as background only. Do NOT cite them verbatim. Do NOT treat them as
+confirmed drivers of any specific price move unless the data clearly aligns.
+Most are noise. Connect a headline to today's price action ONLY if there's
+genuine evidence in the numbers.
 
 Now write the {slot} IST intraday update:"""
 
@@ -953,6 +1169,15 @@ US MARKET STATUS (pre-open in New York):
 TODAY'S NSE FILINGS (first 10):
 {filings}
 
+RECENT MARKET NEWS HEADLINES (last 12 hours, from Indian financial press via Pulse):
+{news_block}
+
+Use these as supporting context for the day's narrative. Do NOT cite them
+verbatim, do NOT confidently claim a specific headline caused a specific move
+unless multiple data points align (price action + filings + breadth). Pick the
+2-3 most relevant headlines that genuinely explain themes you're already
+identifying — ignore the rest.
+
 Now write the strategist post-market wrap:"""
 
 
@@ -1001,6 +1226,7 @@ def build_pre_market_prompt(packet: dict) -> str:
         technicals_block = _build_technicals_block(packet),
         vix_line         = _build_vix_line(packet),
         yesterday_wrap   = yest,
+        news_block       = _format_pulse_headlines(packet.get("news") or []),
     )
 
 
@@ -1022,6 +1248,7 @@ def build_post_market_prompt(packet: dict) -> str:
         breadth_line     = _format_breadth(packet.get("breadth") or {}),
         pre_context      = (prior.get("pre_text") or "(no pre-market briefing on file)")[:1200],
         day_arc          = (prior.get("all_slots_compact") or "  (no intraday slots recorded today)"),
+        news_block       = _format_pulse_headlines(packet.get("news") or []),
     )
 
 
@@ -1043,6 +1270,7 @@ def build_intraday_prompt(packet: dict) -> str:
             technicals_block = _build_technicals_block(packet),
             vix_line         = _build_vix_line(packet),
             breadth_line     = _format_breadth(packet.get("breadth") or {}),
+            news_block       = _format_pulse_headlines(packet.get("news") or []),
         )
     # Update slots
     prev_slot = prior.get("prev_slot") or "the prior slot"
@@ -1071,6 +1299,7 @@ def build_intraday_prompt(packet: dict) -> str:
         technicals_block   = _build_technicals_block(packet),
         vix_line           = _build_vix_line(packet),
         breadth_line       = _format_breadth(packet.get("breadth") or {}),
+        news_block         = _format_pulse_headlines(packet.get("news") or []),
     )
 
 
