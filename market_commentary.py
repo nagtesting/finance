@@ -236,13 +236,18 @@ def get_prior_intraday_context(today: str, current_slot: str) -> dict:
       "prev_slot": str | None,
       "prev_text": str | None,
       "prev_nifty_pct": float | None,
+      "all_slots_compact": str | None,   # NEW: compact summary of all earlier slots today
+      "yesterday_post_text": str | None, # NEW: yesterday's post-market wrap (cross-day memory)
     }
     """
-    out = {"pre_text": None, "prev_slot": None, "prev_text": None, "prev_nifty_pct": None}
+    out = {
+        "pre_text": None, "prev_slot": None, "prev_text": None,
+        "prev_nifty_pct": None, "all_slots_compact": None,
+        "yesterday_post_text": None,
+    }
     if not supabase:
         return out
     try:
-        # Pre-market for today
         pre = (
             supabase.table("market_commentary")
             .select("commentary_text")
@@ -254,19 +259,18 @@ def get_prior_intraday_context(today: str, current_slot: str) -> dict:
         if pre.data:
             out["pre_text"] = (pre.data[0].get("commentary_text") or "")[:1200]
 
-        # Most recent intraday before current_slot
-        prev = (
+        # ALL intraday slots before current_slot (newest first)
+        prev_all = (
             supabase.table("market_commentary")
             .select("slot_time, commentary_text, data_snapshot")
             .eq("commentary_type", "intraday")
             .eq("commentary_date", today)
             .lt("slot_time", current_slot + ":00")
             .order("slot_time", desc=True)
-            .limit(1)
             .execute()
         )
-        if prev.data:
-            row = prev.data[0]
+        if prev_all.data:
+            row = prev_all.data[0]
             out["prev_slot"] = (row.get("slot_time") or "")[:5]
             out["prev_text"] = (row.get("commentary_text") or "")[:1000]
             try:
@@ -279,9 +283,203 @@ def get_prior_intraday_context(today: str, current_slot: str) -> dict:
                         out["prev_nifty_pct"] = n.get("pct")
             except Exception:
                 pass
+
+            # Compact summary of EVERY earlier slot today — used for memory continuity.
+            slot_lines = []
+            for r in reversed(prev_all.data):  # oldest first for natural reading
+                slot_label = (r.get("slot_time") or "")[:5]
+                txt = (r.get("commentary_text") or "")[:280]
+                pct_str = ""
+                try:
+                    sn = r.get("data_snapshot")
+                    if isinstance(sn, str): sn = json.loads(sn)
+                    if isinstance(sn, dict):
+                        n = sn.get("nifty")
+                        if isinstance(n, dict) and n.get("pct") is not None:
+                            pct_str = f" ({n['pct']:+.2f}%)"
+                except Exception:
+                    pass
+                first_sentence = txt.split(".")[0].strip()
+                if len(first_sentence) > 220:
+                    first_sentence = first_sentence[:220]
+                slot_lines.append(f"  {slot_label}{pct_str}: {first_sentence}")
+            if slot_lines:
+                out["all_slots_compact"] = "\n".join(slot_lines)
+
+        # Yesterday's post-market wrap (look back up to 5 days for weekends/holidays)
+        try:
+            today_dt = datetime.strptime(today, "%Y-%m-%d").date()
+            for days_back in range(1, 6):
+                check_date = (today_dt - timedelta(days=days_back)).strftime("%Y-%m-%d")
+                yres = (
+                    supabase.table("market_commentary")
+                    .select("commentary_text, commentary_date")
+                    .eq("commentary_type", "post")
+                    .eq("commentary_date", check_date)
+                    .limit(1)
+                    .execute()
+                )
+                if yres.data:
+                    txt = (yres.data[0].get("commentary_text") or "")[:1200]
+                    out["yesterday_post_text"] = f"[{check_date}] {txt}"
+                    break
+        except Exception:
+            pass
     except Exception as e:
         _log("⚠️", f"Prior context fetch failed: {e}")
     return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TECHNICAL ANALYSIS HELPERS  (Phase 1 depth — yfinance OHLC + math)
+# ─────────────────────────────────────────────────────────────────────────────
+# Computes the depth signals that distinguish "describe today" commentary from
+# "interpret what's happening" commentary. All numbers are derived from data we
+# already have access to via yfinance — no NSE scraping, no paid feeds.
+
+try:
+    import yfinance as _yf
+    YFINANCE_AVAILABLE = True
+except ImportError:
+    YFINANCE_AVAILABLE = False
+
+
+def _compute_index_technicals(yahoo_symbol: str) -> dict:
+    """
+    Pull ~90-day daily OHLC for an index/stock and compute a technical context
+    block. Returns {} on any error so callers can degrade gracefully.
+    """
+    if not YFINANCE_AVAILABLE:
+        return {}
+    try:
+        t = _yf.Ticker(yahoo_symbol)
+        hist = t.history(period="90d", interval="1d")
+        if hist is None or hist.empty or len(hist) < 30:
+            return {}
+        closes  = hist["Close"]
+        volumes = hist["Volume"]
+        last    = float(closes.iloc[-1])
+
+        ma_20 = float(closes.tail(20).mean())
+        ma_50 = float(closes.tail(50).mean()) if len(closes) >= 50 else None
+
+        # 52-week proxy via separate longer fetch
+        try:
+            hist_year = t.history(period="1y", interval="1d")
+            if hist_year is not None and not hist_year.empty:
+                year_closes = hist_year["Close"]
+                high_52w = float(year_closes.max())
+                low_52w  = float(year_closes.min())
+            else:
+                high_52w = float(closes.max())
+                low_52w  = float(closes.min())
+        except Exception:
+            high_52w = float(closes.max())
+            low_52w  = float(closes.min())
+
+        c5  = float(closes.iloc[-6])  if len(closes) >= 6  else last
+        c30 = float(closes.iloc[-31]) if len(closes) >= 31 else last
+        trend_5d_pct  = ((last - c5)  / c5)  * 100 if c5  else 0
+        trend_30d_pct = ((last - c30) / c30) * 100 if c30 else 0
+
+        avg_vol_30d = float(volumes.tail(30).mean()) if volumes.tail(30).sum() > 0 else 0
+        today_vol   = float(volumes.iloc[-1])
+        vol_ratio   = (today_vol / avg_vol_30d) if avg_vol_30d > 0 else None
+
+        # Support/resistance: 30-day pivot zones via percentile of swings
+        recent = hist.tail(30)
+        recent_lows  = sorted([float(x) for x in recent["Low"].tolist()])
+        recent_highs = sorted([float(x) for x in recent["High"].tolist()], reverse=True)
+        idx_low  = max(0, int(len(recent_lows)  * 0.10))
+        idx_high = max(0, int(len(recent_highs) * 0.10))
+        support_30d    = recent_lows[idx_low]   if recent_lows  else None
+        resistance_30d = recent_highs[idx_high] if recent_highs else None
+
+        return {
+            "last":              round(last, 2),
+            "ma_20":             round(ma_20, 2),
+            "ma_50":             round(ma_50, 2) if ma_50 else None,
+            "vs_ma_20_pct":      round((last - ma_20) / ma_20 * 100, 2) if ma_20 else None,
+            "vs_ma_50_pct":      round((last - ma_50) / ma_50 * 100, 2) if ma_50 else None,
+            "high_52w":          round(high_52w, 2),
+            "low_52w":           round(low_52w, 2),
+            "pct_from_52w_high": round((last - high_52w) / high_52w * 100, 2) if high_52w else None,
+            "pct_from_52w_low":  round((last - low_52w)  / low_52w  * 100, 2) if low_52w  else None,
+            "trend_5d_pct":      round(trend_5d_pct, 2),
+            "trend_30d_pct":     round(trend_30d_pct, 2),
+            "today_vol_vs_avg":  round(vol_ratio, 2) if vol_ratio else None,
+            "support_30d":       round(support_30d, 2)    if support_30d    else None,
+            "resistance_30d":    round(resistance_30d, 2) if resistance_30d else None,
+        }
+    except Exception as e:
+        _log("⚠️", f"Technicals fetch failed for {yahoo_symbol}: {e}")
+        return {}
+
+
+def get_market_breadth() -> dict:
+    """
+    Compute advance/decline ratio + breadth descriptor from the Render Nifty 100 cache.
+    """
+    out = {
+        "advances": 0, "declines": 0, "unchanged": 0,
+        "ad_ratio": None, "breadth_descriptor": "n/a",
+    }
+    try:
+        cache_url = "https://finance-bxyf.onrender.com/api/market-cache"
+        r = requests.get(cache_url, headers=HEADERS, timeout=15)
+        r.raise_for_status()
+        data = r.json()
+        tickers = data.get("tickers") or []
+        if not tickers:
+            return out
+        adv = sum(1 for t in tickers if t.get("ok") and t.get("pct", 0) >  0.1)
+        dec = sum(1 for t in tickers if t.get("ok") and t.get("pct", 0) < -0.1)
+        unc = sum(1 for t in tickers if t.get("ok") and abs(t.get("pct", 0)) <= 0.1)
+        out["advances"]  = adv
+        out["declines"]  = dec
+        out["unchanged"] = unc
+        if dec > 0:
+            out["ad_ratio"] = round(adv / dec, 2)
+        if   adv > dec * 2:  out["breadth_descriptor"] = "broad-based rally (>2:1 advancers)"
+        elif adv > dec:      out["breadth_descriptor"] = "more advancers than decliners"
+        elif dec > adv * 2:  out["breadth_descriptor"] = "broad-based selling (>2:1 decliners)"
+        elif dec > adv:      out["breadth_descriptor"] = "more decliners than advancers"
+        else:                out["breadth_descriptor"] = "evenly split breadth"
+    except Exception as e:
+        _log("⚠️", f"Breadth fetch failed: {e}")
+    return out
+
+
+def _format_technicals(label: str, tech: dict) -> str:
+    """Render the technicals dict into 4-5 dense lines for prompt input."""
+    if not tech:
+        return f"  {label}: (technicals unavailable)"
+    lines = [f"  {label}: {tech.get('last', '?')} | "
+             f"vs 20D MA: {tech.get('vs_ma_20_pct', 'n/a')}% | "
+             f"vs 50D MA: {tech.get('vs_ma_50_pct', 'n/a')}%"]
+    if tech.get("pct_from_52w_high") is not None:
+        lines.append(f"    52W: {tech.get('pct_from_52w_high')}% from high {tech.get('high_52w')} | "
+                     f"+{tech.get('pct_from_52w_low')}% from low {tech.get('low_52w')}")
+    if tech.get("trend_5d_pct") is not None:
+        lines.append(f"    Trend: 5D {tech.get('trend_5d_pct')}% | 30D {tech.get('trend_30d_pct')}%")
+    if tech.get("support_30d") and tech.get("resistance_30d"):
+        lines.append(f"    Recent 30D zone: support ~{tech.get('support_30d')}, "
+                     f"resistance ~{tech.get('resistance_30d')}")
+    if tech.get("today_vol_vs_avg") is not None:
+        vol = tech.get("today_vol_vs_avg")
+        if vol >= 1.5:    descr = "heavier than usual (institutional activity likely)"
+        elif vol <= 0.7:  descr = "lighter than usual (low conviction session)"
+        else:             descr = "in line with average"
+        lines.append(f"    Volume: {vol}x 30D average ({descr})")
+    return "\n".join(lines)
+
+
+def _format_breadth(b: dict) -> str:
+    if not b or (b.get("advances") == 0 and b.get("declines") == 0):
+        return "  Breadth: (data unavailable)"
+    return (f"  Breadth: {b.get('advances')} advancers vs {b.get('declines')} decliners "
+            f"({b.get('breadth_descriptor')})")
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -324,6 +522,19 @@ def build_pre_market_packet():
     if india:
         packet["india_prev"] = [find_ticker(india, l) for l in
                                 ["SENSEX", "NIFTY 50", "NIFTY BANK", "NIFTY IT"]]
+
+    # ── Phase 1 depth additions ──
+    # Technicals for Nifty 50, Bank Nifty, Nifty IT (key indices)
+    packet["technicals"] = {
+        "NIFTY 50":   _compute_index_technicals("^NSEI"),
+        "NIFTY BANK": _compute_index_technicals("^NSEBANK"),
+        "NIFTY IT":   _compute_index_technicals("^CNXIT"),
+    }
+    # India VIX (volatility regime indicator)
+    packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
+    # Yesterday's post-market wrap for cross-day continuity
+    prior = get_prior_intraday_context(packet["date"], "00:00")
+    packet["yesterday_post_text"] = prior.get("yesterday_post_text")
 
     for key in packet:
         if isinstance(packet[key], list):
@@ -385,7 +596,16 @@ def build_intraday_packet(slot: str):
             packet["asia_pacific"] = [t for t in (find_ticker(world, l) for l in
                                        ["NIKKEI 225", "HANG SENG", "KOSPI"]) if t]
 
-    # Fetch prior context for narrative continuity
+    # ── Phase 1 depth additions ──
+    packet["technicals"] = {
+        "NIFTY 50":   _compute_index_technicals("^NSEI"),
+        "NIFTY BANK": _compute_index_technicals("^NSEBANK"),
+        "NIFTY IT":   _compute_index_technicals("^CNXIT"),
+    }
+    packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
+    packet["breadth"]   = get_market_breadth()
+
+    # Fetch prior context for narrative continuity (now extended with all-slots + yesterday)
     packet["prior"] = get_prior_intraday_context(today, slot)
     return packet
 
@@ -436,6 +656,17 @@ def build_post_market_packet():
         packet["us_status"] = [t for t in (find_ticker(usa, l)
                                             for l in ["S&P 500", "NASDAQ"]) if t]
 
+    # ── Phase 1 depth additions ──
+    packet["technicals"] = {
+        "NIFTY 50":   _compute_index_technicals("^NSEI"),
+        "NIFTY BANK": _compute_index_technicals("^NSEBANK"),
+        "NIFTY IT":   _compute_index_technicals("^CNXIT"),
+    }
+    packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
+    packet["breadth"]   = get_market_breadth()
+    # Arc of the day — pull all today's intraday slots so post-market can review
+    packet["prior"] = get_prior_intraday_context(packet["date"], "23:59")
+
     packet["filings"] = get_todays_filings()
     return packet
 
@@ -443,26 +674,39 @@ def build_post_market_packet():
 # ─────────────────────────────────────────────────────────────────────────────
 # PROMPT TEMPLATES
 # ─────────────────────────────────────────────────────────────────────────────
-PRE_MARKET_PROMPT = """You are a senior Indian equity market analyst writing a PRE-MARKET commentary for MoneyVeda — a free financial platform for Indian retail investors. NSE opens at 9:15 AM IST today.
+PRE_MARKET_PROMPT = """You are a senior equity strategist briefing the trading desk on Indian markets before the 9:15 AM IST open. Your audience is retail investors using MoneyVeda — they are smart but time-pressed and want analysis, not just data.
 
 YOUR TASK:
-Write a 20-line plain-English commentary that helps a retail investor understand how global markets overnight might impact the Indian market opening today. Use natural paragraphs (no bullet points, no headers). Write as if explaining to a friend who invests casually.
+Write a structured 18-22 line strategist briefing in plain English. The goal is INTERPRETATION, not description. Identify 2-3 dominant themes; place today's setup against the recent context (last week's range, last session's wrap); call out divergences worth watching; and give a clear directional bias for the open.
 
-STRUCTURE (approximately):
-  Lines 1-4:  Lead with the overall mood — bullish/bearish/mixed — based on overnight cues.
-  Lines 5-8:  US market close: Dow, Nasdaq, S&P performance. What drove them?
-  Lines 9-12: Asian markets this morning (Nikkei, Hang Seng), plus dollar index and USD/INR.
-  Lines 13-16: Commodities (crude, gold) and what they imply for Indian sectors.
-  Lines 17-19: Potential Nifty opening direction — educated guess, clearly framed as expectation not prediction.
-  Line 20:    One-line takeaway for a retail investor.
+STRUCTURE (use markdown headers exactly as shown — frontend renders them):
+
+**Setup**
+2-3 lines on the dominant overnight narrative and what it means for today's open. Don't just describe overnight US closes — interpret them. Note any major divergence from yesterday's domestic tone.
+
+**Global Context**
+3-4 lines covering US close (Dow/Nasdaq/S&P with one driver each), Asian markets this morning, USD/INR direction, and crude. Connect movements where causally relevant (e.g., "weak crude pressuring upstream names; tailwind for OMCs").
+
+**Technical Position**
+3-4 lines on Nifty's recent range, where it sits relative to 20D/50D moving averages, the support and resistance zones, and India VIX level. Use specific levels: "Nifty closed yesterday at X, with 23,950 having held twice this week as support."
+
+**Themes to Watch**
+3-4 lines on 2-3 themes likely to drive today's session — sector rotation continuation, an upcoming event, a divergence between sectors, etc. Reference yesterday's wrap if relevant.
+
+**Bias**
+2 lines: directional view for the open (positive / mixed / cautious / negative) with the level that confirms or invalidates the view. Frame as expectation, not certainty.
+
+**Takeaway**
+One sentence — what should a retail investor watch in the first 30 minutes.
 
 RULES:
-  1. USE ONLY the data provided. Do not invent numbers, news, or events.
-  2. Frame predictions as likelihood, not certainty ("may open", "could see pressure", "likely to").
-  3. Do NOT give buy/sell advice on specific stocks. Educational content only.
-  4. Use Rs. for currency (not the rupee symbol to avoid encoding issues).
-  5. If data for any asset is missing, just omit that asset — don't say "data unavailable".
-  6. End with a clear, actionable mindset (e.g., "Watch for banking strength", "Caution advised").
+1. USE ONLY data provided. Do not invent numbers, levels, news, or events.
+2. Reference SPECIFIC LEVELS where the data supports it (e.g., "23,950", "+1.4% above 20D MA").
+3. Frame predictions as expectation, not certainty. ("likely to", "should test", "watch for").
+4. NO buy/sell advice on individual stocks. Educational analysis only.
+5. Use Rs. for currency.
+6. If you don't have enough data for a section, write a one-line acknowledgement and move on — don't pad.
+7. Voice: confident, specific, professional. Like a desk strategist, not a TV anchor.
 
 === DATA FOR TODAY ({date}) ===
 Timestamp: {timestamp}
@@ -485,41 +729,63 @@ COMMODITIES:
 CRYPTO (risk-appetite indicator):
 {crypto}
 
-INDIA — PREVIOUS DAY'S CLOSE (for reference):
+INDIA — PREVIOUS DAY'S CLOSE:
 {india_prev}
 
-Now write the 20-line pre-market commentary:"""
+INDIA TECHNICAL POSITION:
+{technicals_block}
+
+INDIA VIX (volatility regime):
+{vix_line}
+
+YESTERDAY'S POST-MARKET WRAP (for continuity):
+{yesterday_wrap}
+
+Now write the strategist pre-market briefing:"""
 
 
-INTRADAY_OPENING_PROMPT = """You are a senior Indian equity market analyst writing the FIRST INTRADAY commentary of the day for MoneyVeda. NSE opened at 9:15 AM IST. It is now {timestamp}.
+INTRADAY_OPENING_PROMPT = """You are a senior equity strategist writing the FIRST INTRADAY UPDATE of the day for MoneyVeda. NSE opened at 9:15 AM IST. It is now {timestamp}, slot 09:30 IST.
 
 YOUR TASK:
-Write a CRISP 10-LINE plain-English commentary on how the market opened. This is the first read of the day after the bell — focus on the opening tick, sector behaviour in the first 15 minutes, and how it compares to the pre-market expectation. Use natural paragraphs (no bullet points, no headers).
+Write a structured 10-12 line briefing on how the opening 15 minutes played out. The KEY angle: did the market open as the pre-market expected, or is reality diverging? Be specific. Use markdown headers.
 
-STRUCTURE (approximately):
-  Lines 1-2: How did Nifty/Sensex open vs yesterday's close. Set the tone.
-  Lines 3-4: Which sectors are leading and lagging in the early minutes.
-  Lines 5-6: Notable individual movers (gainers and losers) so far.
-  Lines 7-8: How does this compare with what pre-market cues suggested? Confirm or contradict?
-  Line 9:    Asian markets / USD-INR / crude — quick context.
-  Line 10:   What to watch in the next half-hour.
+STRUCTURE:
 
-RULES:
-  1. USE ONLY the data provided. Do not invent numbers, news, or events.
-  2. State the opening direction plainly. No prediction theatrics.
-  3. Do NOT give buy/sell advice. Educational content only.
-  4. Use Rs. for currency.
-  5. Keep it tight — exactly around 10 lines. No filler.
+**Open**
+2 lines on Nifty/Sensex opening level and direction vs yesterday's close. Specific number, no fluff.
+
+**Vs Pre-Market**
+2-3 lines comparing what's actually happening to what pre-market expected. Where is the bias confirmed? Where is reality diverging? This is the most important section — interpret, don't just describe.
+
+**Sectors & Movers**
+2-3 lines on sector behavior so far + 1-2 individual names worth flagging. Use the technical position data — e.g., "Bank Nifty opening below its 20D MA confirms the weakness pre-market flagged."
+
+**Levels in Play**
+1-2 lines: the key support/resistance the market is testing right now, and what a break would signal.
+
+**Watch**
+1 line on what to monitor in the next 30 minutes.
+
+RULES (same as pre-market): Use only provided data, reference specific levels, no buy/sell advice, frame as expectation, professional voice.
 
 === DATA AT 09:30 IST ({date}) ===
 Timestamp: {timestamp}
 
-PRE-MARKET CONTEXT (what we said this morning):
+PRE-MARKET BRIEFING (this morning's expectation — compare against it):
 {pre_context}
 
-INDEX (live):
+INDEX (live now):
   Sensex: {sensex}
   Nifty 50: {nifty}
+
+TECHNICAL POSITION (where indices are vs MAs and recent range):
+{technicals_block}
+
+INDIA VIX:
+{vix_line}
+
+MARKET BREADTH (advance-decline from Nifty 100):
+{breadth_line}
 
 SECTOR PERFORMANCE (live):
 {sectors}
@@ -536,40 +802,62 @@ CURRENCIES:
 COMMODITIES:
 {commodities}
 
-Now write the 10-line opening commentary:"""
+Now write the 10-12 line opening update:"""
 
 
-INTRADAY_UPDATE_PROMPT = """You are a senior Indian equity market analyst writing an INTRADAY UPDATE for MoneyVeda. The NSE session is in progress. Current time: {timestamp}, slot: {slot} IST.
+INTRADAY_UPDATE_PROMPT = """You are a senior equity strategist writing an INTRADAY UPDATE for MoneyVeda. The session is in progress. Current time: {timestamp}, slot: {slot} IST.
 
 YOUR TASK:
-Write a CRISP 10-LINE update on what has CHANGED since the last update at {prev_slot} IST. This is a delta read, not a full recap. Focus on the move in the last 30 minutes, sector rotation, and any fresh themes. Use natural paragraphs (no bullet points, no headers).
+Write a 10-12 line delta update on what has CHANGED since the last slot — and connect to the day's overall arc. This is a continuation, not a recap. Use markdown headers.
 
-STRUCTURE (approximately):
-  Lines 1-2: Where is Nifty now vs the {prev_slot} reading. Direction and magnitude of the move in this half-hour.
-  Lines 3-4: Which sectors moved, which stalled, which reversed since {prev_slot}.
-  Lines 5-6: Names that have come into focus — fresh gainers or new losers in this slot.
-  Line 7:    USD-INR / crude / gold context if it shifted.
-  Line 8:    What's the prevailing tone now — risk-on, risk-off, choppy, range-bound?
-  Lines 9-10: What to watch in the next half-hour.
+STRUCTURE:
+
+**The Move**
+2 lines: where is Nifty now vs the {prev_slot} reading? Up/down how much in this 30 minutes? Specific.
+
+**What Changed**
+2-3 lines: the most important shift since {prev_slot}. Sector rotation? A name suddenly leading or lagging? Breadth deterioration? Volume spike? Be specific and concrete.
+
+**Day's Arc**
+2-3 lines: where does this slot fit in today's story so far? Reference the day-so-far summary if it shows a pattern (steady fade, bounce attempts, range-bound, etc.). If the open expected one thing and we're seeing another, say so.
+
+**Levels & Breadth**
+1-2 lines: which level is being tested or held? What does breadth (advance/decline) tell us about conviction?
+
+**Watch**
+1 line on what to monitor in the next 30 minutes.
 
 RULES:
-  1. Treat this as a CONTINUATION. Reference the prior slot ({prev_slot}) where the move warrants it.
-  2. USE ONLY the data provided. Do not invent numbers, news, or events.
-  3. If the market is essentially unchanged from {prev_slot}, say so plainly — don't manufacture drama.
-  4. Do NOT give buy/sell advice. Educational content only.
-  5. Use Rs. for currency.
+1. Treat this as continuation. Reference earlier slots and themes by their data.
+2. If the market is essentially flat from {prev_slot}, say so plainly — don't manufacture drama. Use it as a signal of indecision.
+3. Use specific numbers and levels. No vague "the market is mixed."
+4. Use only provided data. No buy/sell advice. Professional voice.
 
 === DATA AT {slot} IST ({date}) ===
 Timestamp: {timestamp}
 
-PREVIOUS SLOT ({prev_slot} IST) — what we said:
-{prev_context}
+PRE-MARKET BRIEFING (this morning's setup):
+{pre_context}
 
+DAY'S ARC SO FAR (all earlier intraday slots, oldest first):
+{day_arc}
+
+PREVIOUS SLOT ({prev_slot} IST) — full text:
+{prev_context}
 PREVIOUS NIFTY READING: {prev_nifty_summary}
 
 INDEX (live now):
   Sensex: {sensex}
   Nifty 50: {nifty}
+
+TECHNICAL POSITION:
+{technicals_block}
+
+INDIA VIX:
+{vix_line}
+
+MARKET BREADTH:
+{breadth_line}
 
 SECTOR PERFORMANCE (live now, vs prev close):
 {sectors}
@@ -586,37 +874,66 @@ COMMODITIES:
 ASIA-PACIFIC (if still trading):
 {asia_pacific}
 
-Now write the 10-line {slot} IST intraday update:"""
+Now write the {slot} IST intraday update:"""
 
 
-POST_MARKET_PROMPT = """You are a senior Indian equity market analyst writing a POST-MARKET wrap-up for MoneyVeda — a free financial platform for Indian retail investors. NSE closed at 3:30 PM IST today.
+POST_MARKET_PROMPT = """You are a senior equity strategist writing the POST-MARKET WRAP for MoneyVeda. NSE closed at 3:30 PM IST today. Your audience is retail investors who want to understand the day they just lived through.
 
 YOUR TASK:
-Write a 20-line plain-English wrap-up of what happened in Indian markets today. Use natural paragraphs (no bullet points, no headers). Write as if explaining to a friend who invests casually.
+Write a structured 20-24 line wrap. This is the day's THESIS — pull together the pre-market setup, how the day actually unfolded across the 13 intraday slots, the close, and the implications for tomorrow. Interpret, don't describe. Use markdown headers.
 
-STRUCTURE (approximately):
-  Lines 1-3:  Lead with the big picture — how did Nifty/Sensex close and what's the tone?
-  Lines 4-7:  Sector winners and losers — which sectors led, which lagged, and why.
-  Lines 8-12: Top individual stock movers — name a few notable gainers and decliners with context.
-  Lines 13-16: Key news/filings/events that influenced the day.
-  Lines 17-18: Currency and commodity context (USD/INR, crude, gold).
-  Line 19:    What to watch heading into tomorrow.
-  Line 20:    One-line takeaway for a retail investor.
+STRUCTURE:
+
+**The Close**
+2-3 lines on Nifty/Sensex close — direction, magnitude, where on the day's range we settled. Specific levels.
+
+**The Story**
+4-5 lines on how the day actually unfolded. Reference the pre-market expectation: did it play out, or did the day reject the setup? Walk through the arc: open, mid-morning, midday, close. Identify the inflection points using the slot summaries provided.
+
+**Sector & Stock Highlights**
+4-5 lines on which sectors led/lagged AND why (use the data — connect a sector move to a sub-theme). Name 2-3 individual stocks with context (not just "X was up Y%" — say what the move means: earnings beat, sector rotation, technical breakout).
+
+**Technical Read**
+3-4 lines on where the close leaves Nifty technically: above/below 20D and 50D MAs, position vs 52W high/low, distance from recent support/resistance. India VIX direction too. What does the technical setup imply for tomorrow?
+
+**Filings & Flows**
+2-3 lines on the day's NSE filings if any were market-moving; note the breadth (advance/decline) and what it says about institutional conviction.
+
+**Tomorrow**
+2 lines on what matters tomorrow — a level being tested, a global event, a sector to watch. Frame as expectation.
+
+**Bottom Line**
+One sentence — the day in a single insight a retail investor can take home.
 
 RULES:
-  1. USE ONLY the data provided. Do not invent numbers, news, or events.
-  2. Connect stock moves to broader themes where possible (e.g., "bank stocks fell as yields rose").
-  3. Do NOT give buy/sell advice. Educational content only.
-  4. Use Rs. for currency.
-  5. If a theme isn't obvious from the data, don't force a narrative — state the facts plainly.
-  6. Be honest about uncertainty ("appears to have been driven by...", not "was driven by...").
+1. USE ONLY provided data. No invented numbers, news, or events.
+2. Reference SPECIFIC LEVELS in the technical section.
+3. Connect dots — what THEME explains today's price action? Resist describing without interpreting.
+4. Be honest about uncertainty when interpretation is hard ("appears to have been driven by..." not "was driven by...").
+5. NO buy/sell advice on individual stocks. Use Rs. for currency.
+6. Professional desk voice.
 
 === DATA FOR TODAY ({date}) ===
 Timestamp: {timestamp}
 
+PRE-MARKET BRIEFING (today's setup, from this morning):
+{pre_context}
+
+DAY'S ARC (every intraday slot from open to close, oldest first):
+{day_arc}
+
 INDEX CLOSE:
   Sensex: {sensex}
   Nifty 50: {nifty}
+
+TECHNICAL POSITION (where the close leaves us):
+{technicals_block}
+
+INDIA VIX:
+{vix_line}
+
+MARKET BREADTH:
+{breadth_line}
 
 SECTOR PERFORMANCE:
 {sectors}
@@ -636,75 +953,126 @@ US MARKET STATUS (pre-open in New York):
 TODAY'S NSE FILINGS (first 10):
 {filings}
 
-Now write the 20-line post-market commentary:"""
+Now write the strategist post-market wrap:"""
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PROMPT BUILDERS — wire packet data into prompt templates
+# ─────────────────────────────────────────────────────────────────────────────
+def _build_technicals_block(packet: dict) -> str:
+    tech = packet.get("technicals") or {}
+    if not tech:
+        return "  (technical data unavailable)"
+    parts = []
+    for label in ("NIFTY 50", "NIFTY BANK", "NIFTY IT"):
+        t = tech.get(label) or {}
+        parts.append(_format_technicals(label, t))
+    return "\n".join(parts)
+
+
+def _build_vix_line(packet: dict) -> str:
+    vix = packet.get("india_vix") or {}
+    last = vix.get("last")
+    if last is None:
+        return "  India VIX: (data unavailable)"
+    trend = vix.get("trend_5d_pct")
+    note = ""
+    if   last < 13: note = " — low volatility regime, complacency risk"
+    elif last < 18: note = " — normal volatility regime"
+    elif last < 25: note = " — elevated, caution warranted"
+    else:           note = " — high stress regime"
+    if trend is not None:
+        return f"  India VIX: {last} ({trend:+.1f}% over 5D){note}"
+    return f"  India VIX: {last}{note}"
 
 
 def build_pre_market_prompt(packet: dict) -> str:
+    yest = packet.get("yesterday_post_text") or "(no recent post-market wrap on file)"
     return PRE_MARKET_PROMPT.format(
-        date         = packet["date"],
-        timestamp    = packet["timestamp_ist"],
-        us_markets   = _format_ticker_list(packet.get("us_markets",   [])),
-        us_tech      = _format_ticker_list(packet.get("us_tech",      [])),
-        asia_pacific = _format_ticker_list(packet.get("asia_pacific", [])),
-        currencies   = _format_ticker_list(packet.get("currencies",   [])),
-        commodities  = _format_ticker_list(packet.get("commodities",  [])),
-        crypto       = _format_ticker_list(packet.get("crypto",       [])),
-        india_prev   = _format_ticker_list(packet.get("india_prev",   [])),
+        date             = packet["date"],
+        timestamp        = packet["timestamp_ist"],
+        us_markets       = _format_ticker_list(packet.get("us_markets",   [])),
+        us_tech          = _format_ticker_list(packet.get("us_tech",      [])),
+        asia_pacific     = _format_ticker_list(packet.get("asia_pacific", [])),
+        currencies       = _format_ticker_list(packet.get("currencies",   [])),
+        commodities      = _format_ticker_list(packet.get("commodities",  [])),
+        crypto           = _format_ticker_list(packet.get("crypto",       [])),
+        india_prev       = _format_ticker_list(packet.get("india_prev",   [])),
+        technicals_block = _build_technicals_block(packet),
+        vix_line         = _build_vix_line(packet),
+        yesterday_wrap   = yest,
     )
 
 
 def build_post_market_prompt(packet: dict) -> str:
+    prior = packet.get("prior") or {}
     return POST_MARKET_PROMPT.format(
-        date        = packet["date"],
-        timestamp   = packet["timestamp_ist"],
-        sensex      = format_ticker_line(packet.get("sensex")),
-        nifty       = format_ticker_line(packet.get("nifty")),
-        sectors     = _format_ticker_list(packet.get("sectors",     [])),
-        top_stocks  = _format_ticker_list(packet.get("top_stocks",  [])),
-        currencies  = _format_ticker_list(packet.get("currencies",  [])),
-        commodities = _format_ticker_list(packet.get("commodities", [])),
-        us_status   = _format_ticker_list(packet.get("us_status",   [])),
-        filings     = summarize_filings(packet.get("filings",       [])),
+        date             = packet["date"],
+        timestamp        = packet["timestamp_ist"],
+        sensex           = format_ticker_line(packet.get("sensex")),
+        nifty            = format_ticker_line(packet.get("nifty")),
+        sectors          = _format_ticker_list(packet.get("sectors",     [])),
+        top_stocks       = _format_ticker_list(packet.get("top_stocks",  [])),
+        currencies       = _format_ticker_list(packet.get("currencies",  [])),
+        commodities      = _format_ticker_list(packet.get("commodities", [])),
+        us_status        = _format_ticker_list(packet.get("us_status",   [])),
+        filings          = summarize_filings(packet.get("filings",       [])),
+        technicals_block = _build_technicals_block(packet),
+        vix_line         = _build_vix_line(packet),
+        breadth_line     = _format_breadth(packet.get("breadth") or {}),
+        pre_context      = (prior.get("pre_text") or "(no pre-market briefing on file)")[:1200],
+        day_arc          = (prior.get("all_slots_compact") or "  (no intraday slots recorded today)"),
     )
 
 
 def build_intraday_prompt(packet: dict) -> str:
     prior = packet.get("prior", {}) or {}
     if packet.get("is_opening"):
-        pre_ctx = prior.get("pre_text") or "(pre-market commentary not available — describe the opening on its own merits)"
+        pre_ctx = prior.get("pre_text") or "(pre-market briefing not available — describe the opening on its own merits)"
         return INTRADAY_OPENING_PROMPT.format(
-            date         = packet["date"],
-            timestamp    = packet["timestamp_ist"],
-            pre_context  = pre_ctx,
-            sensex       = format_ticker_line(packet.get("sensex")),
-            nifty        = format_ticker_line(packet.get("nifty")),
-            sectors      = _format_ticker_list(packet.get("sectors",      [])),
-            top_stocks   = _format_ticker_list(packet.get("top_stocks",   [])),
-            asia_pacific = _format_ticker_list(packet.get("asia_pacific", [])),
-            currencies   = _format_ticker_list(packet.get("currencies",   [])),
-            commodities  = _format_ticker_list(packet.get("commodities",  [])),
+            date             = packet["date"],
+            timestamp        = packet["timestamp_ist"],
+            pre_context      = pre_ctx,
+            sensex           = format_ticker_line(packet.get("sensex")),
+            nifty            = format_ticker_line(packet.get("nifty")),
+            sectors          = _format_ticker_list(packet.get("sectors",      [])),
+            top_stocks       = _format_ticker_list(packet.get("top_stocks",   [])),
+            asia_pacific     = _format_ticker_list(packet.get("asia_pacific", [])),
+            currencies       = _format_ticker_list(packet.get("currencies",   [])),
+            commodities      = _format_ticker_list(packet.get("commodities",  [])),
+            technicals_block = _build_technicals_block(packet),
+            vix_line         = _build_vix_line(packet),
+            breadth_line     = _format_breadth(packet.get("breadth") or {}),
         )
-    # Update slots — need a previous slot reference
+    # Update slots
     prev_slot = prior.get("prev_slot") or "the prior slot"
     prev_ctx  = prior.get("prev_text") or "(no prior slot found — write as a fresh update for this time)"
     prev_pct  = prior.get("prev_nifty_pct")
     prev_summary = (f"{prev_pct:+.2f}% vs yesterday close" if isinstance(prev_pct, (int, float))
                     else "not recorded")
+    pre_ctx_short = (prior.get("pre_text") or "(no pre-market briefing on file)")[:900]
+    day_arc = prior.get("all_slots_compact") or "  (this is the first intraday update)"
     return INTRADAY_UPDATE_PROMPT.format(
-        date            = packet["date"],
-        timestamp       = packet["timestamp_ist"],
-        slot            = packet["slot"],
-        prev_slot       = prev_slot,
-        prev_context    = prev_ctx,
+        date               = packet["date"],
+        timestamp          = packet["timestamp_ist"],
+        slot               = packet["slot"],
+        prev_slot          = prev_slot,
+        prev_context       = prev_ctx,
         prev_nifty_summary = prev_summary,
-        sensex          = format_ticker_line(packet.get("sensex")),
-        nifty           = format_ticker_line(packet.get("nifty")),
-        sectors         = _format_ticker_list(packet.get("sectors",      [])),
-        top_stocks      = _format_ticker_list(packet.get("top_stocks",   [])),
-        currencies      = _format_ticker_list(packet.get("currencies",   [])),
-        commodities     = _format_ticker_list(packet.get("commodities",  [])),
-        asia_pacific    = _format_ticker_list(packet.get("asia_pacific", [])),
+        pre_context        = pre_ctx_short,
+        day_arc            = day_arc,
+        sensex             = format_ticker_line(packet.get("sensex")),
+        nifty              = format_ticker_line(packet.get("nifty")),
+        sectors            = _format_ticker_list(packet.get("sectors",      [])),
+        top_stocks         = _format_ticker_list(packet.get("top_stocks",   [])),
+        currencies         = _format_ticker_list(packet.get("currencies",   [])),
+        commodities        = _format_ticker_list(packet.get("commodities",  [])),
+        asia_pacific       = _format_ticker_list(packet.get("asia_pacific", [])),
+        technicals_block   = _build_technicals_block(packet),
+        vix_line           = _build_vix_line(packet),
+        breadth_line       = _format_breadth(packet.get("breadth") or {}),
     )
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
