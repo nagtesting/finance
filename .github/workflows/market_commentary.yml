@@ -1,15 +1,23 @@
 # ============================================================
-# Schedule re-register: 2026-05-04
+# Schedule re-register: 2026-05-04 (consolidated cron)
 # MoneyVeda Market Commentary v2.0 — GitHub Actions
 # ============================================================
-# Runs 15 times per trading day:
-#   08:00 IST          → pre-market
-#   09:30 IST          → intraday opening tick (10 lines)
-#   10:00, 10:30, ...  → intraday updates every 30 min (12 more slots)
-#   15:30 IST          → last intraday slot
-#   16:00 IST          → post-market wrap
+# Single combined schedule fires every :00 and :30 from 02:00 UTC through
+# 10:30 UTC, Mon–Fri. In IST that gives 18 fires per trading day:
+#   07:30, 08:00, 08:30, 09:00, 09:30, 10:00, 10:30, 11:00, 11:30, 12:00,
+#   12:30, 13:00, 13:30, 14:00, 14:30, 15:00, 15:30, 16:00 IST
 #
-# Schedule reflects IST (UTC+5:30). All cron entries are UTC.
+# Useful slots covered (auto-detected by script):
+#   08:00 IST → pre-market
+#   09:30 IST → intraday opening tick
+#   10:00 → 15:30 IST → 12 intraday updates every 30 min
+#   16:00 IST → post-market wrap
+#
+# The 3 extra fires (07:30, 08:30, 09:00 IST) don't match any slot — the
+# script's --mode auto exits cleanly with "no slot for this time" (~5s wasted).
+#
+# Why one cron line: GitHub Actions sometimes silently fails to register
+# additional cron lines beyond the first. Consolidating eliminates that risk.
 #
 # COST: ~₹4.5/day at Gemini 2.5 Flash-Lite paid pricing.
 # Stays under your 200 RPD quota cap with 100-stock daily warmer also running.
@@ -19,28 +27,11 @@
 #   SUPABASE_SECRET_KEY
 #   GEMINI_API_KEY
 # ============================================================
-
 name: Market Commentary
 
 on:
   schedule:
-    # Pre-market: 08:00 IST = 02:30 UTC, Mon-Fri
-    - cron: "30 2 * * 1-5"
-
-    # Intraday opening tick: 09:30 IST = 04:00 UTC
-    - cron: "0 4 * * 1-5"
-
-    # Intraday updates 10:00 IST through 15:00 IST every 30 min
-    # 04:30 UTC → 09:30 UTC = 11 slots (10:00, 10:30, 11:00, ..., 15:00 IST)
-    - cron: "30 4-9 * * 1-5"
-    - cron: "0 5-9 * * 1-5"
-
-    # Last intraday slot: 15:30 IST = 10:00 UTC
-    - cron: "0 10 * * 1-5"
-
-    # Post-market wrap: 16:00 IST = 10:30 UTC, Mon-Fri
-    - cron: "30 10 * * 1-5"
-
+    - cron: "0,30 2-10 * * 1-5"
   # Manual trigger for testing
   workflow_dispatch:
     inputs:
@@ -60,11 +51,15 @@ on:
         default: ""
         type: string
 
+# Prevent overlapping runs of the same workflow (rare, but a safety net)
+concurrency:
+  group: market-commentary
+  cancel-in-progress: false
+
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-
+    timeout-minutes: 8
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -86,17 +81,30 @@ jobs:
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
           GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # For scheduled runs, the script auto-detects mode + slot from current IST time.
-          # For manual runs, honour the user's choice.
+          # For scheduled runs the script auto-detects mode + slot from current IST time.
+          # For manual runs honour the user's choice.
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             MODE="${{ github.event.inputs.mode }}"
             SLOT="${{ github.event.inputs.slot }}"
             if [ -n "$SLOT" ]; then
-              python market_commentary.py --mode "$MODE" --slot "$SLOT"
+              # Up to 3 attempts on transient failures (network, yfinance, Gemini)
+              for i in 1 2 3; do
+                python market_commentary.py --mode "$MODE" --slot "$SLOT" && break
+                echo "Attempt $i failed, retrying in 5s..."
+                sleep 5
+              done
             else
-              python market_commentary.py --mode "$MODE"
+              for i in 1 2 3; do
+                python market_commentary.py --mode "$MODE" && break
+                echo "Attempt $i failed, retrying in 5s..."
+                sleep 5
+              done
             fi
           else
-            # Scheduled — let the script figure out from IST time
-            python market_commentary.py --mode auto
+            # Scheduled — script figures out mode + slot from current IST time
+            for i in 1 2 3; do
+              python market_commentary.py --mode auto && break
+              echo "Attempt $i failed, retrying in 5s..."
+              sleep 5
+            done
           fi
