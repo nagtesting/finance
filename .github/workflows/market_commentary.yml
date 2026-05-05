@@ -2,36 +2,15 @@
 # Schedule re-register: 2026-05-04 (consolidated cron)
 # MoneyVeda Market Commentary v2.0 — GitHub Actions
 # ============================================================
-# Single combined schedule fires every :00 and :30 from 02:00 UTC through
-# 10:30 UTC, Mon–Fri. In IST that gives 18 fires per trading day:
-#   07:30, 08:00, 08:30, 09:00, 09:30, 10:00, 10:30, 11:00, 11:30, 12:00,
-#   12:30, 13:00, 13:30, 14:00, 14:30, 15:00, 15:30, 16:00 IST
-#
-# Useful slots covered (auto-detected by script):
-#   08:00 IST → pre-market
-#   09:30 IST → intraday opening tick
-#   10:00 → 15:30 IST → 12 intraday updates every 30 min
-#   16:00 IST → post-market wrap
-#
-# The 3 extra fires (07:30, 08:30, 09:00 IST) don't match any slot — the
-# script's --mode auto exits cleanly with "no slot for this time" (~5s wasted).
-#
-# Why one cron line: GitHub Actions sometimes silently fails to register
-# additional cron lines beyond the first. Consolidating eliminates that risk.
-#
-# COST: ~₹4.5/day at Gemini 2.5 Flash-Lite paid pricing.
-# Stays under your 200 RPD quota cap with 100-stock daily warmer also running.
-#
-# SECRETS REQUIRED (repo Settings → Secrets):
-#   SUPABASE_URL
-#   SUPABASE_SECRET_KEY
-#   GEMINI_API_KEY
-# ============================================================
 name: Market Commentary
 
 on:
   schedule:
+    # Fires every :00 and :30 from 02:00 UTC through 10:30 UTC, Mon–Fri.
+    # IST: 07:30, 08:00, 08:30, 09:00, 09:30, 10:00, 10:30, 11:00, 11:30, 
+    #      12:00, 12:30, 13:00, 13:30, 14:00, 14:30, 15:00, 15:30, 16:00
     - cron: "0,30 2-10 * * 1-5"
+  
   # Manual trigger for testing
   workflow_dispatch:
     inputs:
@@ -51,7 +30,7 @@ on:
         default: ""
         type: string
 
-# Prevent overlapping runs of the same workflow (rare, but a safety net)
+# Prevent overlapping runs
 concurrency:
   group: market-commentary
   cancel-in-progress: false
@@ -73,38 +52,30 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Generate commentary
         env:
-          SUPABASE_URL:        ${{ secrets.SUPABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
-          GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # For scheduled runs the script auto-detects mode + slot from current IST time.
-          # For manual runs honour the user's choice.
+          # Determine execution arguments
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            MODE="${{ github.event.inputs.mode }}"
-            SLOT="${{ github.event.inputs.slot }}"
-            if [ -n "$SLOT" ]; then
-              # Up to 3 attempts on transient failures (network, yfinance, Gemini)
-              for i in 1 2 3; do
-                python market_commentary.py --mode "$MODE" --slot "$SLOT" && break
-                echo "Attempt $i failed, retrying in 5s..."
-                sleep 5
-              done
-            else
-              for i in 1 2 3; do
-                python market_commentary.py --mode "$MODE" && break
-                echo "Attempt $i failed, retrying in 5s..."
-                sleep 5
-              done
+            ARGS="--mode ${{ github.event.inputs.mode }}"
+            if [ -n "${{ github.event.inputs.slot }}" ]; then
+              ARGS="$ARGS --slot ${{ github.event.inputs.slot }}"
             fi
           else
-            # Scheduled — script figures out mode + slot from current IST time
-            for i in 1 2 3; do
-              python market_commentary.py --mode auto && break
-              echo "Attempt $i failed, retrying in 5s..."
-              sleep 5
-            done
+            # Scheduled runs use auto-detection
+            ARGS="--mode auto"
           fi
+
+          # Robust retry logic (up to 3 attempts for network/API flickers)
+          for i in 1 2 3; do
+            echo "Execution attempt $i..."
+            python market_commentary.py $ARGS && exit 0
+            echo "Attempt $i failed. Retrying in 10s..."
+            sleep 10
+          done
+          exit 1
