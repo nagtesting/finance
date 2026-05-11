@@ -98,6 +98,75 @@ def _today_ist() -> str:
     return datetime.now(IST).strftime("%Y-%m-%d")
 
 
+def _last_trading_day_ist():
+    """
+    Returns the most recent trading day BEFORE today (IST).
+    Simple Mon-Fri logic — doesn't account for India-specific holidays yet.
+    On Monday returns last Friday; otherwise yesterday.
+    Returns a date object.
+    """
+    today = datetime.now(IST).date()
+    # weekday(): Mon=0 ... Sun=6
+    if today.weekday() == 0:        # Monday → last Friday
+        return today - timedelta(days=3)
+    elif today.weekday() == 6:      # Sunday → last Friday
+        return today - timedelta(days=2)
+    elif today.weekday() == 5:      # Saturday → last Friday
+        return today - timedelta(days=1)
+    else:                            # Tue-Fri → yesterday
+        return today - timedelta(days=1)
+
+
+def _last_session_label() -> str:
+    """
+    Returns the natural-language reference to the most recent trading day.
+    'Friday' on Monday, 'yesterday' on Tue-Fri, 'Friday' on weekends.
+    Used in prompts to avoid Gemini saying 'yesterday' when it means Friday.
+    """
+    today_dow = datetime.now(IST).weekday()
+    if today_dow == 0:               # Monday
+        return "Friday's"
+    elif today_dow == 5 or today_dow == 6:   # Saturday or Sunday
+        return "Friday's"
+    else:
+        return "yesterday's"
+
+
+def _overnight_label() -> str:
+    """
+    Returns the natural-language reference to the most recent US close.
+    On Monday morning, the US close was Friday afternoon — calling that
+    'overnight' is wrong. On other days, US close was actually overnight.
+    """
+    today_dow = datetime.now(IST).weekday()
+    if today_dow == 0:               # Monday
+        return "Friday's US close"
+    elif today_dow == 5 or today_dow == 6:
+        return "Friday's US close"
+    else:
+        return "overnight US session"
+
+
+def _next_session_label() -> str:
+    """
+    Returns the natural-language reference to the next trading session.
+    On Friday's post-market wrap, 'tomorrow' is wrong — should be 'Monday'.
+    """
+    today_dow = datetime.now(IST).weekday()
+    if today_dow == 4:               # Friday → next session Monday
+        return "Monday"
+    elif today_dow == 5:             # Saturday → still Monday
+        return "Monday"
+    elif today_dow == 6:             # Sunday → still Monday
+        return "Monday"
+    else:
+        return "tomorrow"
+
+
+def _day_of_week_ist() -> str:
+    return datetime.now(IST).strftime("%A")
+
+
 def _now_ist_str() -> str:
     return datetime.now(IST).strftime("%Y-%m-%d %H:%M IST")
 
@@ -885,19 +954,21 @@ PRE_MARKET_PROMPT = """You are a senior equity strategist briefing the trading d
 YOUR TASK:
 Write a structured 18-22 line strategist briefing in plain English. The goal is INTERPRETATION, not description. Identify 2-3 dominant themes; place today's setup against the recent context (last week's range, last session's wrap); call out divergences worth watching; and give a clear directional bias for the open.
 
+IMPORTANT: Today is {day_of_week} {date}. The most recent trading session was {india_session_label}. The most recent US close was {us_close_label}. Use these labels precisely — do NOT say "yesterday" or "overnight" if today is Monday or a post-holiday open. Use "Friday's" or "{india_session_label}" when that's the accurate reference.
+
 STRUCTURE (use markdown headers exactly as shown — frontend renders them):
 
 **Setup**
-2-3 lines on the dominant overnight narrative and what it means for today's open. Don't just describe overnight US closes — interpret them. Note any major divergence from yesterday's domestic tone.
+2-3 lines on the dominant narrative from {us_close_label} and what it means for today's open. Don't just describe US closes — interpret them. Note any major divergence from {india_session_label} domestic tone.
 
 **Global Context**
 3-4 lines covering US close (Dow/Nasdaq/S&P with one driver each), Asian markets this morning, USD/INR direction, and crude. Connect movements where causally relevant (e.g., "weak crude pressuring upstream names; tailwind for OMCs").
 
 **Technical Position**
-3-4 lines on Nifty's recent range, where it sits relative to 20D/50D moving averages, the support and resistance zones, and India VIX level. Use specific levels: "Nifty closed yesterday at X, with 23,950 having held twice this week as support."
+3-4 lines on Nifty's recent range, where it sits relative to 20D/50D moving averages, the support and resistance zones, and India VIX level. Use specific levels: e.g. "Nifty closed {india_session_label} at X, with 23,950 having held twice last week as support."
 
 **Themes to Watch**
-3-4 lines on 2-3 themes likely to drive today's session — sector rotation continuation, an upcoming event, a divergence between sectors, etc. Reference yesterday's wrap if relevant.
+3-4 lines on 2-3 themes likely to drive today's session — sector rotation continuation, an upcoming event, a divergence between sectors, etc. Reference {india_session_label} wrap if relevant.
 
 **Bias**
 2 lines: directional view for the open (positive / mixed / cautious / negative) with the level that confirms or invalidates the view. Frame as expectation, not certainty.
@@ -922,7 +993,7 @@ RULES:
 === DATA FOR TODAY ({date}) ===
 Timestamp: {timestamp}
 
-US MARKETS (overnight close):
+US MARKETS ({us_close_label}):
 {us_markets}
 
 US TECH (drivers of Nifty IT sentiment):
@@ -940,7 +1011,7 @@ COMMODITIES:
 CRYPTO (risk-appetite indicator):
 {crypto}
 
-INDIA — PREVIOUS DAY'S CLOSE:
+INDIA — {india_session_label_caps} CLOSE:
 {india_prev}
 
 INDIA TECHNICAL POSITION:
@@ -949,7 +1020,7 @@ INDIA TECHNICAL POSITION:
 INDIA VIX (volatility regime):
 {vix_line}
 
-YESTERDAY'S POST-MARKET WRAP (for continuity):
+{last_session_wrap_label} POST-MARKET WRAP (for continuity):
 {yesterday_wrap}
 
 RECENT MARKET NEWS HEADLINES (last 12 hours, from Indian financial press via Pulse):
@@ -972,13 +1043,15 @@ Now write the strategist pre-market briefing:"""
 
 INTRADAY_OPENING_PROMPT = """You are a senior equity strategist writing the FIRST INTRADAY UPDATE of the day for MoneyVeda. NSE opened at 9:15 AM IST. It is now {timestamp}, slot 09:30 IST.
 
+IMPORTANT: Today is {day_of_week} {date}. The most recent prior trading session was {india_session_label} (NOT "yesterday" if today is Monday or post-holiday). Use "{india_session_label}" or "Friday's" precisely — never substitute "yesterday" when that's inaccurate.
+
 YOUR TASK:
 Write a structured 10-12 line briefing on how the opening 15 minutes played out. The KEY angle: did the market open as the pre-market expected, or is reality diverging? Be specific. Use markdown headers.
 
 STRUCTURE:
 
 **Open**
-2 lines on Nifty/Sensex opening level and direction vs yesterday's close. Specific number, no fluff.
+2 lines on Nifty/Sensex opening level and direction vs {india_session_label} close. Specific number, no fluff.
 
 **Vs Pre-Market**
 2-3 lines comparing what's actually happening to what pre-market expected. Where is the bias confirmed? Where is reality diverging? This is the most important section — interpret, don't just describe.
@@ -1154,7 +1227,7 @@ STRUCTURE:
 2-3 lines on the day's NSE filings if any were market-moving; note the breadth (advance/decline) and what it says about institutional conviction.
 
 **Tomorrow**
-2 lines on what matters tomorrow — a level being tested, a global event, a sector to watch. Frame as expectation.
+2 lines on what matters {next_session_label} — a level being tested, a global event, a sector to watch. Frame as expectation.
 
 **Bottom Line**
 One sentence — the day in a single insight a retail investor can take home.
@@ -1255,70 +1328,81 @@ def _build_vix_line(packet: dict) -> str:
 
 def build_pre_market_prompt(packet: dict) -> str:
     yest = packet.get("yesterday_post_text") or "(no recent post-market wrap on file)"
+    sess_lbl = _last_session_label()                  # "Friday's" on Mon, "yesterday's" otherwise
+    sess_caps = sess_lbl.upper().rstrip("S")          # "FRIDAY'" or "YESTERDAY'" — for heading
     return PRE_MARKET_PROMPT.format(
-        date             = packet["date"],
-        timestamp        = packet["timestamp_ist"],
-        us_markets       = _format_ticker_list(packet.get("us_markets",   [])),
-        us_tech          = _format_ticker_list(packet.get("us_tech",      [])),
-        asia_pacific     = _format_ticker_list(packet.get("asia_pacific", [])),
-        currencies       = _format_ticker_list(packet.get("currencies",   [])),
-        commodities      = _format_ticker_list(packet.get("commodities",  [])),
-        crypto           = _format_ticker_list(packet.get("crypto",       [])),
-        india_prev       = _format_ticker_list(packet.get("india_prev",   [])),
-        technicals_block = _build_technicals_block(packet),
-        vix_line         = _build_vix_line(packet),
-        yesterday_wrap   = yest,
-        news_block       = _format_pulse_headlines(packet.get("news") or []),
+        date                     = packet["date"],
+        timestamp                = packet["timestamp_ist"],
+        day_of_week              = _day_of_week_ist(),
+        india_session_label      = sess_lbl,
+        india_session_label_caps = sess_lbl.upper(),  # "FRIDAY'S" or "YESTERDAY'S"
+        us_close_label           = _overnight_label(),
+        last_session_wrap_label  = sess_lbl.upper().replace("'S", "'S"),  # heading version
+        us_markets               = _format_ticker_list(packet.get("us_markets",   [])),
+        us_tech                  = _format_ticker_list(packet.get("us_tech",      [])),
+        asia_pacific             = _format_ticker_list(packet.get("asia_pacific", [])),
+        currencies               = _format_ticker_list(packet.get("currencies",   [])),
+        commodities              = _format_ticker_list(packet.get("commodities",  [])),
+        crypto                   = _format_ticker_list(packet.get("crypto",       [])),
+        india_prev               = _format_ticker_list(packet.get("india_prev",   [])),
+        technicals_block         = _build_technicals_block(packet),
+        vix_line                 = _build_vix_line(packet),
+        yesterday_wrap           = yest,
+        news_block               = _format_pulse_headlines(packet.get("news") or []),
     )
 
 
 def build_post_market_prompt(packet: dict) -> str:
     prior = packet.get("prior") or {}
     return POST_MARKET_PROMPT.format(
-        date             = packet["date"],
-        timestamp        = packet["timestamp_ist"],
-        sensex           = format_ticker_line(packet.get("sensex")),
-        nifty            = format_ticker_line(packet.get("nifty")),
-        sectors          = _format_ticker_list(packet.get("sectors",     [])),
-        top_stocks       = _format_ticker_list(packet.get("top_stocks",  [])),
-        currencies       = _format_ticker_list(packet.get("currencies",  [])),
-        commodities      = _format_ticker_list(packet.get("commodities", [])),
-        us_status        = _format_ticker_list(packet.get("us_status",   [])),
-        filings          = summarize_filings(packet.get("filings",       [])),
-        technicals_block = _build_technicals_block(packet),
-        vix_line         = _build_vix_line(packet),
-        breadth_line     = _format_breadth(packet.get("breadth") or {}),
-        pre_context      = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP all 'compare to pre-market' comparisons in your wrap. Do NOT mention that pre-market is missing. Just describe today's session on its own terms.]")[:1200],
-        day_arc          = (prior.get("all_slots_compact") or "  [INSTRUCTION: No intraday slots recorded today. Skip the 'arc' walkthrough; describe the day from open to close using the close-of-day data only.]"),
-        news_block       = _format_pulse_headlines(packet.get("news") or []),
+        date                = packet["date"],
+        timestamp           = packet["timestamp_ist"],
+        next_session_label  = _next_session_label(),
+        sensex              = format_ticker_line(packet.get("sensex")),
+        nifty               = format_ticker_line(packet.get("nifty")),
+        sectors             = _format_ticker_list(packet.get("sectors",     [])),
+        top_stocks          = _format_ticker_list(packet.get("top_stocks",  [])),
+        currencies          = _format_ticker_list(packet.get("currencies",  [])),
+        commodities         = _format_ticker_list(packet.get("commodities", [])),
+        us_status           = _format_ticker_list(packet.get("us_status",   [])),
+        filings             = summarize_filings(packet.get("filings",       [])),
+        technicals_block    = _build_technicals_block(packet),
+        vix_line            = _build_vix_line(packet),
+        breadth_line        = _format_breadth(packet.get("breadth") or {}),
+        pre_context         = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP all 'compare to pre-market' comparisons in your wrap. Do NOT mention that pre-market is missing. Just describe today's session on its own terms.]")[:1200],
+        day_arc             = (prior.get("all_slots_compact") or "  [INSTRUCTION: No intraday slots recorded today. Skip the 'arc' walkthrough; describe the day from open to close using the close-of-day data only.]"),
+        news_block          = _format_pulse_headlines(packet.get("news") or []),
     )
 
 
 def build_intraday_prompt(packet: dict) -> str:
     prior = packet.get("prior", {}) or {}
+    sess_lbl = _last_session_label()
     if packet.get("is_opening"):
         pre_ctx = prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing exists for today. SKIP all 'vs pre-market' comparisons. Describe the opening on its own merits using the live data below. Do NOT mention that pre-market is missing.]"
         return INTRADAY_OPENING_PROMPT.format(
-            date             = packet["date"],
-            timestamp        = packet["timestamp_ist"],
-            pre_context      = pre_ctx,
-            sensex           = format_ticker_line(packet.get("sensex")),
-            nifty            = format_ticker_line(packet.get("nifty")),
-            sectors          = _format_ticker_list(packet.get("sectors",      [])),
-            top_stocks       = _format_ticker_list(packet.get("top_stocks",   [])),
-            asia_pacific     = _format_ticker_list(packet.get("asia_pacific", [])),
-            currencies       = _format_ticker_list(packet.get("currencies",   [])),
-            commodities      = _format_ticker_list(packet.get("commodities",  [])),
-            technicals_block = _build_technicals_block(packet),
-            vix_line         = _build_vix_line(packet),
-            breadth_line     = _format_breadth(packet.get("breadth") or {}),
-            news_block       = _format_pulse_headlines(packet.get("news") or []),
+            date                = packet["date"],
+            timestamp           = packet["timestamp_ist"],
+            day_of_week         = _day_of_week_ist(),
+            india_session_label = sess_lbl,
+            pre_context         = pre_ctx,
+            sensex              = format_ticker_line(packet.get("sensex")),
+            nifty               = format_ticker_line(packet.get("nifty")),
+            sectors             = _format_ticker_list(packet.get("sectors",      [])),
+            top_stocks          = _format_ticker_list(packet.get("top_stocks",   [])),
+            asia_pacific        = _format_ticker_list(packet.get("asia_pacific", [])),
+            currencies          = _format_ticker_list(packet.get("currencies",   [])),
+            commodities         = _format_ticker_list(packet.get("commodities",  [])),
+            technicals_block    = _build_technicals_block(packet),
+            vix_line            = _build_vix_line(packet),
+            breadth_line        = _format_breadth(packet.get("breadth") or {}),
+            news_block          = _format_pulse_headlines(packet.get("news") or []),
         )
     # Update slots
     prev_slot = prior.get("prev_slot") or "the prior slot"
     prev_ctx  = prior.get("prev_text") or "[INSTRUCTION: No prior intraday slot found. Write as a fresh update for this time. Do not mention that prior context is missing.]"
     prev_pct  = prior.get("prev_nifty_pct")
-    prev_summary = (f"{prev_pct:+.2f}% vs yesterday close" if isinstance(prev_pct, (int, float))
+    prev_summary = (f"{prev_pct:+.2f}% vs {sess_lbl} close" if isinstance(prev_pct, (int, float))
                     else "not recorded")
     pre_ctx_short = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP any 'vs pre-market' framing. Do NOT mention that pre-market is missing.]")[:900]
     day_arc = prior.get("all_slots_compact") or "  [INSTRUCTION: This is the first intraday update of the day; no earlier slots to reference.]"
