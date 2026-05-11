@@ -476,7 +476,7 @@ def _format_technicals(label: str, tech: dict) -> str:
 
 def _format_breadth(b: dict) -> str:
     if not b or (b.get("advances") == 0 and b.get("declines") == 0):
-        return "  Breadth: (data unavailable)"
+        return "  Breadth: [INSTRUCTION TO MODEL: Breadth ratio not available this slot. Infer conviction from sector dispersion (count green vs red sectors in the SECTOR PERFORMANCE block) and from top-mover skew (lopsided gainers vs losers). Do NOT mention that breadth is unavailable.]"
     return (f"  Breadth: {b.get('advances')} advancers vs {b.get('declines')} decliners "
             f"({b.get('breadth_descriptor')})")
 
@@ -545,6 +545,20 @@ _PULSE_RELEVANCE_HITS = {
     # Geopolitics affecting Indian markets (crude/USD/risk-off)
     "iran", "hormuz", "tehran", "opec", "sanctions",
     "russia", "ukraine", "china trade", "tariff",
+    # Political / electoral events (often material for Indian markets)
+    "election", "elections", "exit poll", "counting", "results day",
+    "bjp", "congress", "modi", "verdict", "majority", "lead", "trailing",
+    "state assembly", "lok sabha", "general election", "by-election",
+    "cabinet", "parliament",
+    # Macro / policy events
+    "monetary policy", "repo rate", "rbi mpc", "rbi minutes",
+    "fed minutes", "fed meeting", "fomc",
+    "cpi data", "cpi inflation", "wpi", "iip", "gdp data", "trade deficit",
+    "fiscal deficit", "current account",
+    # Earnings season
+    "q1 results", "q2 results", "q3 results", "q4 results",
+    "results announcement", "earnings result", "guidance",
+    "results day", "result preview",
 }
 
 
@@ -894,11 +908,16 @@ One sentence — what should a retail investor watch in the first 30 minutes.
 RULES:
 1. USE ONLY data provided. Do not invent numbers, levels, news, or events.
 2. Reference SPECIFIC LEVELS where the data supports it (e.g., "23,950", "+1.4% above 20D MA").
-3. Frame predictions as expectation, not certainty. ("likely to", "should test", "watch for").
+3. Frame predictions as expectation, not certainty ("likely to", "should test", "watch for").
 4. NO buy/sell advice on individual stocks. Educational analysis only.
 5. Use Rs. for currency.
-6. If you don't have enough data for a section, write a one-line acknowledgement and move on — don't pad.
+6. If you don't have enough data for a section, do NOT confess the gap to the reader. Quietly omit, or use the data you DO have. Never write "data unavailable" or "while not explicitly provided".
 7. Voice: confident, specific, professional. Like a desk strategist, not a TV anchor.
+8. ANTI-HEDGING: Avoid filler phrases like "possibly", "appears to", "suggesting a potential", "ongoing concerns". When the data supports a claim, state it directly. Examples:
+   - WEAK: "Auto outperformed, suggesting a potential rotation into cyclical names."
+   - STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation."
+   - WEAK: "IT lagged, possibly reflecting ongoing concerns in the technology space."
+   - STRONG: "IT lagged with TCS -1.4% and Wipro -0.88% — overnight Nasdaq weakness translating to Indian IT names."
 
 === DATA FOR TODAY ({date}) ===
 Timestamp: {timestamp}
@@ -936,10 +955,17 @@ YESTERDAY'S POST-MARKET WRAP (for continuity):
 RECENT MARKET NEWS HEADLINES (last 12 hours, from Indian financial press via Pulse):
 {news_block}
 
-Use these headlines as background context only. Do NOT cite them verbatim, do NOT
-treat them as confirmed events unless multiple headlines align, and do NOT invent
-causation that the data does not support. Some are macro themes worth weaving in;
-some are noise — your job is to pick the relevant signals.
+These headlines are CONTEXT to weave into the briefing. Categories that are usually MATERIAL and worth citing if present:
+- Election results, exit polls, political shifts (BJP/Congress/state polls)
+- RBI announcements, monetary policy, repo rate moves
+- Major company news (results, M&A, regulatory action against named Nifty names)
+- Brokerage upgrades/downgrades on specific stocks
+- Macro events (Budget, CPI/IIP/GDP data, Fed meetings)
+- Geopolitical flashpoints affecting crude or risk appetite (Iran, Russia, China trade)
+
+Categories that are usually NOISE and should be ignored: sports, lifestyle, crime, IPL, entertainment.
+
+Rules: Do NOT cite headlines verbatim. Do NOT invent causation. But DO connect material headlines to specific themes in your briefing — if BJP wins state elections and the index is gapping up, say so directly.
 
 Now write the strategist pre-market briefing:"""
 
@@ -966,7 +992,16 @@ STRUCTURE:
 **Watch**
 1 line on what to monitor in the next 30 minutes.
 
-RULES (same as pre-market): Use only provided data, reference specific levels, no buy/sell advice, frame as expectation, professional voice.
+RULES:
+1. Use only provided data. No invented numbers or events.
+2. Reference SPECIFIC LEVELS — distance from MAs, support/resistance touches, breadth ratios.
+3. NO buy/sell advice. Educational analysis only.
+4. Frame as expectation, not certainty.
+5. Voice: senior strategist, not TV anchor.
+6. NEVER confess data gaps to the reader (no "data unavailable", "not explicitly provided"). Quietly omit or use alternative signals.
+7. ANTI-HEDGING: Be specific. Avoid "possibly", "appears to", "suggesting a potential", "may be reflecting". State claims directly when data supports them.
+   - WEAK: "Bank Nifty showing some strength, possibly reflecting positive sentiment."
+   - STRONG: "Bank Nifty +0.8% leads sectors, confirming the morning rally is institution-led not retail-FOMO."
 
 === DATA AT 09:30 IST ({date}) ===
 Timestamp: {timestamp}
@@ -1005,10 +1040,9 @@ COMMODITIES:
 RECENT MARKET NEWS HEADLINES (last 6 hours, from Indian financial press via Pulse):
 {news_block}
 
-Use these as background context only. Do NOT cite them verbatim, do NOT treat
-them as confirmed market drivers unless price action backs them up, and do NOT
-invent specific cause-and-effect claims. Most are noise; pick the few that
-genuinely connect to today's open.
+Material categories worth citing if they explain the open: election results, RBI/SEBI moves, named-stock company news (results, M&A, regulatory), brokerage calls on specific names, macro data (CPI/IIP/GDP/Fed), geopolitical events affecting crude/USD. Sports/lifestyle/IPL/entertainment headlines are noise — ignore.
+
+Rules: Do NOT cite headlines verbatim. Do NOT invent causation. But DO connect material headlines to today's open — if a Citi upgrade explains a stock's strength, say so. If election counting explains a sector rally, say so.
 
 Now write the 10-12 line opening update:"""
 
@@ -1037,9 +1071,14 @@ STRUCTURE:
 
 RULES:
 1. Treat this as continuation. Reference earlier slots and themes by their data.
-2. If the market is essentially flat from {prev_slot}, say so plainly — don't manufacture drama. Use it as a signal of indecision.
+2. If the market is essentially flat from {prev_slot}, say so plainly — don't manufacture drama. Use it as a signal of indecision, then pivot to what's developing under the surface (sector rotation, breadth changes, individual stock moves).
 3. Use specific numbers and levels. No vague "the market is mixed."
 4. Use only provided data. No buy/sell advice. Professional voice.
+5. NEVER confess data gaps. If breadth data is unavailable, infer conviction from sector dispersion or top-mover skew instead. Do NOT write "breadth data unavailable" or similar.
+6. ANTI-HEDGING: Be specific. Avoid "possibly", "appears to", "suggesting a potential", "may be reflecting". State claims when data supports them.
+   - WEAK: "The pullback could possibly indicate profit-taking."
+   - STRONG: "Auto giving back 0.4% of the morning's 1.5% gain — profit-taking after the upgrade-driven rally."
+7. ANTI-REPETITION: Don't reuse phrases or framings from prior slots. If three slots in a row say "consolidating", you're not reading the data hard enough. Find what's actually developing.
 
 === DATA AT {slot} IST ({date}) ===
 Timestamp: {timestamp}
@@ -1085,10 +1124,9 @@ ASIA-PACIFIC (if still trading):
 RECENT MARKET NEWS HEADLINES (last 6 hours, from Indian financial press via Pulse):
 {news_block}
 
-Use these as background only. Do NOT cite them verbatim. Do NOT treat them as
-confirmed drivers of any specific price move unless the data clearly aligns.
-Most are noise. Connect a headline to today's price action ONLY if there's
-genuine evidence in the numbers.
+Material categories that often drive intraday moves: company-specific news (results, regulatory, M&A on named Nifty stocks), election counting trends, RBI/SEBI actions, brokerage calls on specific names, macro data releases. Sports/lifestyle/IPL are noise — ignore.
+
+Rules: Do NOT cite headlines verbatim. Do NOT invent causation. DO connect material headlines to specific moves if the price action and headline align — e.g. if Vodafone Idea is up 4% and there's a Citi bullish-on-VI headline, that's the explanation, say so.
 
 Now write the {slot} IST intraday update:"""
 
@@ -1125,9 +1163,15 @@ RULES:
 1. USE ONLY provided data. No invented numbers, news, or events.
 2. Reference SPECIFIC LEVELS in the technical section.
 3. Connect dots — what THEME explains today's price action? Resist describing without interpreting.
-4. Be honest about uncertainty when interpretation is hard ("appears to have been driven by..." not "was driven by...").
-5. NO buy/sell advice on individual stocks. Use Rs. for currency.
-6. Professional desk voice.
+4. NO buy/sell advice on individual stocks. Use Rs. for currency.
+5. Professional desk voice.
+6. NEVER confess data gaps. If a section's input is missing (e.g., no pre-market on file, breadth unavailable), quietly omit that comparison/sentence. Do NOT write "data unavailable", "while not explicitly provided", or similar. The user should never see plumbing leaking into copy.
+7. ANTI-HEDGING: Be specific and direct. Avoid "possibly", "appears to", "suggesting a potential", "ongoing concerns". When the data supports a claim, state it.
+   - WEAK: "Auto outperformed, suggesting a potential rotation."
+   - STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation — likely election-result-driven."
+   - WEAK: "The session was characterized by indecisive undertones."
+   - STRONG: "A 0.02% close masks a session that tried twice to break 24,400 and failed both times. Auto rotation alone wasn't enough."
+8. Calibrate certainty: when interpretation is genuinely uncertain, say so once. Don't hedge every sentence.
 
 === DATA FOR TODAY ({date}) ===
 Timestamp: {timestamp}
@@ -1172,11 +1216,9 @@ TODAY'S NSE FILINGS (first 10):
 RECENT MARKET NEWS HEADLINES (last 12 hours, from Indian financial press via Pulse):
 {news_block}
 
-Use these as supporting context for the day's narrative. Do NOT cite them
-verbatim, do NOT confidently claim a specific headline caused a specific move
-unless multiple data points align (price action + filings + breadth). Pick the
-2-3 most relevant headlines that genuinely explain themes you're already
-identifying — ignore the rest.
+These headlines should help explain the day's narrative. Material categories: election results (named parties/states), RBI/SEBI moves, named-company news (results, M&A, regulatory), brokerage upgrades/downgrades, macro data (CPI/IIP/GDP/Fed minutes), geopolitical flashpoints. Sports/lifestyle/IPL are noise — ignore.
+
+Rules: Do NOT cite headlines verbatim. DO connect headlines to specific themes when price action and headline align — e.g. if state election results are out and Auto sector outperformed, the rotation explanation is real. If a brokerage upgrade aligns with a stock's outsized move, name it. Don't be so cautious that you miss obvious causation.
 
 Now write the strategist post-market wrap:"""
 
@@ -1246,8 +1288,8 @@ def build_post_market_prompt(packet: dict) -> str:
         technicals_block = _build_technicals_block(packet),
         vix_line         = _build_vix_line(packet),
         breadth_line     = _format_breadth(packet.get("breadth") or {}),
-        pre_context      = (prior.get("pre_text") or "(no pre-market briefing on file)")[:1200],
-        day_arc          = (prior.get("all_slots_compact") or "  (no intraday slots recorded today)"),
+        pre_context      = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP all 'compare to pre-market' comparisons in your wrap. Do NOT mention that pre-market is missing. Just describe today's session on its own terms.]")[:1200],
+        day_arc          = (prior.get("all_slots_compact") or "  [INSTRUCTION: No intraday slots recorded today. Skip the 'arc' walkthrough; describe the day from open to close using the close-of-day data only.]"),
         news_block       = _format_pulse_headlines(packet.get("news") or []),
     )
 
@@ -1255,7 +1297,7 @@ def build_post_market_prompt(packet: dict) -> str:
 def build_intraday_prompt(packet: dict) -> str:
     prior = packet.get("prior", {}) or {}
     if packet.get("is_opening"):
-        pre_ctx = prior.get("pre_text") or "(pre-market briefing not available — describe the opening on its own merits)"
+        pre_ctx = prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing exists for today. SKIP all 'vs pre-market' comparisons. Describe the opening on its own merits using the live data below. Do NOT mention that pre-market is missing.]"
         return INTRADAY_OPENING_PROMPT.format(
             date             = packet["date"],
             timestamp        = packet["timestamp_ist"],
@@ -1274,12 +1316,12 @@ def build_intraday_prompt(packet: dict) -> str:
         )
     # Update slots
     prev_slot = prior.get("prev_slot") or "the prior slot"
-    prev_ctx  = prior.get("prev_text") or "(no prior slot found — write as a fresh update for this time)"
+    prev_ctx  = prior.get("prev_text") or "[INSTRUCTION: No prior intraday slot found. Write as a fresh update for this time. Do not mention that prior context is missing.]"
     prev_pct  = prior.get("prev_nifty_pct")
     prev_summary = (f"{prev_pct:+.2f}% vs yesterday close" if isinstance(prev_pct, (int, float))
                     else "not recorded")
-    pre_ctx_short = (prior.get("pre_text") or "(no pre-market briefing on file)")[:900]
-    day_arc = prior.get("all_slots_compact") or "  (this is the first intraday update)"
+    pre_ctx_short = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP any 'vs pre-market' framing. Do NOT mention that pre-market is missing.]")[:900]
+    day_arc = prior.get("all_slots_compact") or "  [INSTRUCTION: This is the first intraday update of the day; no earlier slots to reference.]"
     return INTRADAY_UPDATE_PROMPT.format(
         date               = packet["date"],
         timestamp          = packet["timestamp_ist"],
