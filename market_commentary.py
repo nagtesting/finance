@@ -628,6 +628,23 @@ _PULSE_RELEVANCE_HITS = {
     "q1 results", "q2 results", "q3 results", "q4 results",
     "results announcement", "earnings result", "guidance",
     "results day", "result preview",
+    # Commodities & consumption — the gap that missed Modi's gold appeal
+    "gold", "silver", "jewellery", "jewelry", "platinum",
+    "consumption", "consumer demand", "consumer spending",
+    "appeal", "campaign", "import duty", "export duty", "gst on",
+    "festive demand", "wedding season", "rural demand", "urban demand",
+    # Currency moves (rupee depreciation often material)
+    "rupee falls", "rupee weakens", "rupee depreciates", "rupee declines",
+    "rupee gains", "rupee strengthens", "rupee appreciates",
+    "dollar index", "dxy",
+    # Stock-specific verbs that signal material news
+    "block deal", "bulk deal", "insider", "promoter",
+    "stake sale", "stake purchase", "open offer",
+    "preferential allotment", "rights issue", "warrant",
+    "investigation", "probe", "raid", "penalty",
+    # Regulatory/government actions
+    "ban", "approval", "license", "tax", "duty", "levy",
+    "subsidy", "scheme", "psu",
 }
 
 
@@ -984,11 +1001,15 @@ RULES:
 5. Use Rs. for currency.
 6. If you don't have enough data for a section, do NOT confess the gap to the reader. Quietly omit, or use the data you DO have. Never write "data unavailable" or "while not explicitly provided".
 7. Voice: confident, specific, professional. Like a desk strategist, not a TV anchor.
-8. ANTI-HEDGING: Avoid filler phrases like "possibly", "appears to", "suggesting a potential", "ongoing concerns". When the data supports a claim, state it directly. Examples:
-   - WEAK: "Auto outperformed, suggesting a potential rotation into cyclical names."
-   - STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation."
-   - WEAK: "IT lagged, possibly reflecting ongoing concerns in the technology space."
-   - STRONG: "IT lagged with TCS -1.4% and Wipro -0.88% — overnight Nasdaq weakness translating to Indian IT names."
+8. NO INVENTION OF CAUSATION (CRITICAL): If a stock or sector is moving and the NEWS HEADLINES section does NOT contain a specific catalyst, do NOT invent one. Common temptations to avoid:
+   - Don't say "X on results" unless you can see an earnings/results headline for X today
+   - Don't say "X on profit-booking" unless multiple data points support that
+   - Don't say "Y sector on ongoing concerns" — name the concern or omit
+   - Acceptable framings when cause is unknown: "Titan -7% on heavy volume — driver not visible in today's news flow", "Bank Nifty leading the decline (-1.3%) without an obvious sector-specific catalyst", or simply state the move and move on.
+9. ANTI-HEDGING (only when you HAVE evidence): Avoid filler like "possibly", "appears to", "suggesting a potential" WHEN the data supports a direct claim. Examples:
+   - WHEN EVIDENCE EXISTS — WEAK: "Auto outperformed, suggesting a potential rotation."
+   - WHEN EVIDENCE EXISTS — STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation."
+   - WHEN EVIDENCE IS MISSING — say so: "Titan -7% — no specific catalyst visible in news; possibly reacting to broader consumer-discretionary weakness, but the trigger isn't clear."
 
 === DATA FOR TODAY ({date}) ===
 Timestamp: {timestamp}
@@ -1072,9 +1093,10 @@ RULES:
 4. Frame as expectation, not certainty.
 5. Voice: senior strategist, not TV anchor.
 6. NEVER confess data gaps to the reader (no "data unavailable", "not explicitly provided"). Quietly omit or use alternative signals.
-7. ANTI-HEDGING: Be specific. Avoid "possibly", "appears to", "suggesting a potential", "may be reflecting". State claims directly when data supports them.
-   - WEAK: "Bank Nifty showing some strength, possibly reflecting positive sentiment."
-   - STRONG: "Bank Nifty +0.8% leads sectors, confirming the morning rally is institution-led not retail-FOMO."
+7. NO INVENTION OF CAUSATION (CRITICAL): If a stock is moving sharply and the NEWS HEADLINES section does not contain a specific catalyst for THAT stock, do NOT invent one. Don't say "X on results" unless you can see a results headline. Don't say "Y on profit-booking" unless multiple data points support it. When cause is unclear, frame as "X moved Y% — driver not visible in available news" or just state the move.
+8. ANTI-HEDGING (only when you HAVE evidence): Be specific WHEN the data supports a claim. Avoid filler like "possibly" / "suggesting a potential" ONLY when you actually have evidence to be direct.
+   - WHEN EVIDENCE EXISTS — STRONG: "Bank Nifty +0.8% leads sectors after RBI rate-cut headline this morning."
+   - WHEN EVIDENCE IS MISSING — HONEST: "Titan -7% on no specific visible catalyst — the move may relate to today's gold-consumption headlines but the connection isn't explicit in the data."
 
 === DATA AT 09:30 IST ({date}) ===
 Timestamp: {timestamp}
@@ -1148,10 +1170,16 @@ RULES:
 3. Use specific numbers and levels. No vague "the market is mixed."
 4. Use only provided data. No buy/sell advice. Professional voice.
 5. NEVER confess data gaps. If breadth data is unavailable, infer conviction from sector dispersion or top-mover skew instead. Do NOT write "breadth data unavailable" or similar.
-6. ANTI-HEDGING: Be specific. Avoid "possibly", "appears to", "suggesting a potential", "may be reflecting". State claims when data supports them.
-   - WEAK: "The pullback could possibly indicate profit-taking."
-   - STRONG: "Auto giving back 0.4% of the morning's 1.5% gain — profit-taking after the upgrade-driven rally."
-7. ANTI-REPETITION: Don't reuse phrases or framings from prior slots. If three slots in a row say "consolidating", you're not reading the data hard enough. Find what's actually developing.
+6. NO INVENTION OF CAUSATION (CRITICAL): If a stock is moving sharply and the NEWS HEADLINES section does not contain a specific catalyst for THAT stock, do NOT fabricate one. Common temptations to avoid:
+   - Don't say "X on results" unless you see a results-related headline for X TODAY
+   - Don't say "X on profit-booking" unless you have evidence beyond just "stock fell after a rise"
+   - Don't say "X on weakness in [sector]" without naming what caused the sector weakness
+   - When cause is unknown: "X moved Y% on no specific visible catalyst" is FAR better than inventing one.
+7. NO SELF-REFERENCE: You are writing the commentary, not narrating writing it. Phrases like "this slot represents...", "the narrative we're tracking", "our analysis suggests" break immersion. Write the analysis, not the meta-commentary.
+8. ANTI-HEDGING (only when you HAVE evidence): Be specific WHEN the data supports a claim.
+   - WHEN EVIDENCE EXISTS — STRONG: "Auto giving back 0.4% of the morning's 1.5% gain — profit-taking after the upgrade-driven rally."
+   - WHEN EVIDENCE IS MISSING — HONEST: "Auto down 0.4% in the last 30 min on no specific news visible — possibly position trimming, but the trigger isn't clear."
+9. ANTI-REPETITION: Don't reuse phrases or framings from prior slots. If three slots in a row say "consolidating", you're not reading the data hard enough. Find what's actually developing.
 
 === DATA AT {slot} IST ({date}) ===
 Timestamp: {timestamp}
@@ -1239,12 +1267,16 @@ RULES:
 4. NO buy/sell advice on individual stocks. Use Rs. for currency.
 5. Professional desk voice.
 6. NEVER confess data gaps. If a section's input is missing (e.g., no pre-market on file, breadth unavailable), quietly omit that comparison/sentence. Do NOT write "data unavailable", "while not explicitly provided", or similar. The user should never see plumbing leaking into copy.
-7. ANTI-HEDGING: Be specific and direct. Avoid "possibly", "appears to", "suggesting a potential", "ongoing concerns". When the data supports a claim, state it.
-   - WEAK: "Auto outperformed, suggesting a potential rotation."
-   - STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation — likely election-result-driven."
-   - WEAK: "The session was characterized by indecisive undertones."
-   - STRONG: "A 0.02% close masks a session that tried twice to break 24,400 and failed both times. Auto rotation alone wasn't enough."
-8. Calibrate certainty: when interpretation is genuinely uncertain, say so once. Don't hedge every sentence.
+7. NO INVENTION OF CAUSATION (CRITICAL): If a stock or sector had a big move and the NEWS HEADLINES / FILINGS sections don't contain a specific catalyst, do NOT fabricate one. Common temptations to avoid:
+   - Don't write "X fell on results" unless you can see results-related news for X today
+   - Don't write "Y rallied on positive sentiment" without naming what created the sentiment
+   - Don't write "ongoing concerns" / "weakness in the space" without naming the concern
+   - When cause is unknown but the move is real, frame as: "Titan's -6% decline was the day's most notable outlier — no specific catalyst visible in today's news or filings" or just "Titan -6% in heavy volume" without inventing a reason.
+8. NO SELF-REFERENCE: You are writing the wrap, not narrating writing it. Avoid "this slot represents", "the narrative we're tracking", "our wrap will cover". Just write the analysis.
+9. ANTI-HEDGING (only when you HAVE evidence): Be specific WHEN the data supports a direct claim.
+   - WHEN EVIDENCE EXISTS — STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation — likely election-result-driven."
+   - WHEN EVIDENCE IS MISSING — HONEST: "Titan's -6% decline was the day's most striking single-stock move; no specific catalyst surfaced in available news flow."
+10. Calibrate certainty: when interpretation is genuinely uncertain, say so once. Don't hedge every sentence.
 
 === DATA FOR TODAY ({date}) ===
 Timestamp: {timestamp}
