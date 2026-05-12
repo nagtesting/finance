@@ -821,8 +821,11 @@ def build_pre_market_packet():
     # Yesterday's post-market wrap for cross-day continuity
     prior = get_prior_intraday_context(packet["date"], "00:00")
     packet["yesterday_post_text"] = prior.get("yesterday_post_text")
-    # Real-time Indian market news from Pulse (last 12h, max 12 headlines)
-    packet["news"] = get_pulse_headlines(max_age_hours=12, limit=12)
+    # Real-time Indian market news from Pulse.
+    # 36h window (vs default 12h) so Monday pre-market still catches Friday/Sunday material headlines
+    # (e.g. an RBI announcement on Friday evening, a Modi policy appeal on Sunday).
+    # Limit bumped to 18 to compensate for the wider window — more candidates for Gemini to filter.
+    packet["news"] = get_pulse_headlines(max_age_hours=36, limit=18)
 
     for key in packet:
         if isinstance(packet[key], list):
@@ -1044,10 +1047,10 @@ INDIA VIX (volatility regime):
 {last_session_wrap_label} POST-MARKET WRAP (for continuity):
 {yesterday_wrap}
 
-RECENT MARKET NEWS HEADLINES (last 12 hours, from Indian financial press via Pulse):
+RECENT MARKET NEWS HEADLINES (last 36 hours, from Indian financial press via Pulse):
 {news_block}
 
-These headlines are CONTEXT to weave into the briefing. Categories that are usually MATERIAL and worth citing if present:
+These headlines are CONTEXT to weave into the briefing. Some are from Friday/over the weekend (especially relevant on a Monday pre-market). Categories that are usually MATERIAL and worth citing if present:
 - Election results, exit polls, political shifts (BJP/Congress/state polls)
 - RBI announcements, monetary policy, repo rate moves
 - Major company news (results, M&A, regulatory action against named Nifty names)
