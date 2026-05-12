@@ -13,7 +13,19 @@ from nifty100 import NIFTY_100, SYMBOL_TO_NAME, ALL_YAHOO_SYMS
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+# CORS — restrict to moneyveda domains so copycat sites can't use our backend.
+# localhost entries kept for local dev. If you ever serve a preview/staging URL,
+# add it here.
+CORS(app, origins=[
+    "https://moneyveda.org",
+    "https://www.moneyveda.org",
+    "https://moneyveda.vercel.app",
+    "http://localhost:8000",
+    "http://localhost:3000",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://127.0.0.1:8000",
+])
 
 supabase = create_client(
     os.getenv("SUPABASE_URL"),
