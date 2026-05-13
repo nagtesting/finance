@@ -1,40 +1,31 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v2.0)
+market_commentary.py  ─  MoneyVeda Market Commentary (v2.1)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
 
-THREE MODES (v2.0 upgrade — was 2 in v1):
+v2.1 CHANGES (reasoning upgrade):
+  • SHARED_PRINCIPLES block injected into every prompt:
+      - Internal reasoning framework (8 questions, silent CoT)
+      - "What is the market TRYING to do" core framing
+      - Banned filler phrases list
+      - Interpreting-moves checklist (breadth/volume/peer/persistence confirmation)
+      - Market-ignoring-news detection rule
+      - Causal-chain examples (crude → OMC, rupee → IT, etc.)
+      - Non-obvious insight requirement (>= 1 per commentary)
+  • Hybrid model selection:
+      - Post-market always uses gemini-2.5-pro (best wrap quality)
+      - Event days (>1.5% move, VIX spike, extreme breadth) use Pro for intraday
+      - Routine intraday/pre-market stay on flash-lite
+  • Sharpened role line ("You are not a news summarizer") in every prompt
+
+THREE MODES (unchanged from v2.0):
   1. PRE-MARKET   (08:00 IST)
-       Overnight US, ADRs, dollar index, crude, gold, Asian markets,
-       previous NSE close → likely Nifty opening sentiment.
-
-  2. INTRADAY     (09:30, 10:00, 10:30 ... 15:30 IST — 13 slots/day)
-       Live Nifty/Sensex level, sector indices, top movers vs prev close.
-       09:30 slot = "opening tick" (10 lines, just-after-open),
-       subsequent slots = "what's changed" delta narrative (10 lines).
-
+  2. INTRADAY     (09:30, 10:00 ... 15:30 IST — 13 slots/day)
   3. POST-MARKET  (16:00 IST)
-       Today's close, sector winners/losers, top movers, filings,
-       news → 20-line wrap of what drove the market.
-
-DATA SOURCES:
-  • https://moneyveda.org/api/market?mode=usa     (US markets)
-  • https://moneyveda.org/api/market?mode=world   (Asia, FX, commodities)
-  • https://moneyveda.org/api/market?mode=india   (NSE data + stocks)
-  • Supabase filings table (today's NSE announcements — post only)
-  • Supabase market_commentary table (previous intraday slot — for delta)
-
-OUTPUT:
-  • Pre/Post: ~20 lines via Gemini 2.5 Flash-Lite
-  • Intraday: ~10 lines via Gemini 2.5 Flash-Lite
-  • Saved to Supabase `market_commentary` table (one row per slot)
-  • Frontend reads from cache (no live API calls per user click)
 
 USAGE:
   python market_commentary.py                     # auto-detect from IST time
   python market_commentary.py --mode pre
-  python market_commentary.py --mode post
-  python market_commentary.py --mode intraday     # auto-snap to nearest slot
   python market_commentary.py --mode intraday --slot 10:30
   python market_commentary.py --mode pre --dry-run
 
@@ -67,8 +58,12 @@ SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY")
 GEMINI_API_KEY      = os.getenv("GEMINI_API_KEY")
 
 MARKET_API_BASE = "https://moneyveda.org/api/market"
-GEMINI_MODEL    = "gemini-2.5-flash-lite"
-IST             = timezone(timedelta(hours=5, minutes=30))
+
+# v2.1: model selection is now per-call. These are the candidate models.
+GEMINI_MODEL_FAST   = "gemini-2.5-flash-lite"   # cheap, fast — default intraday
+GEMINI_MODEL_STRONG = "gemini-2.5-pro"          # post-market + event days
+
+IST = timezone(timedelta(hours=5, minutes=30))
 
 # Canonical intraday slot times (IST). Must match the cron schedule in YAML.
 INTRADAY_SLOTS = [
@@ -80,7 +75,7 @@ POST_SLOT = "16:00"   # nominal slot label for post-market row
 
 HEADERS = {
     "User-Agent": (
-        "Mozilla/5.0 (MoneyVeda/2.0 MarketCommentary) "
+        "Mozilla/5.0 (MoneyVeda/2.1 MarketCommentary) "
         "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
     )
 }
@@ -99,47 +94,30 @@ def _today_ist() -> str:
 
 
 def _last_trading_day_ist():
-    """
-    Returns the most recent trading day BEFORE today (IST).
-    Simple Mon-Fri logic — doesn't account for India-specific holidays yet.
-    On Monday returns last Friday; otherwise yesterday.
-    Returns a date object.
-    """
     today = datetime.now(IST).date()
-    # weekday(): Mon=0 ... Sun=6
     if today.weekday() == 0:        # Monday → last Friday
         return today - timedelta(days=3)
     elif today.weekday() == 6:      # Sunday → last Friday
         return today - timedelta(days=2)
     elif today.weekday() == 5:      # Saturday → last Friday
         return today - timedelta(days=1)
-    else:                            # Tue-Fri → yesterday
+    else:
         return today - timedelta(days=1)
 
 
 def _last_session_label() -> str:
-    """
-    Returns the natural-language reference to the most recent trading day.
-    'Friday' on Monday, 'yesterday' on Tue-Fri, 'Friday' on weekends.
-    Used in prompts to avoid Gemini saying 'yesterday' when it means Friday.
-    """
     today_dow = datetime.now(IST).weekday()
-    if today_dow == 0:               # Monday
+    if today_dow == 0:
         return "Friday's"
-    elif today_dow == 5 or today_dow == 6:   # Saturday or Sunday
+    elif today_dow == 5 or today_dow == 6:
         return "Friday's"
     else:
         return "yesterday's"
 
 
 def _overnight_label() -> str:
-    """
-    Returns the natural-language reference to the most recent US close.
-    On Monday morning, the US close was Friday afternoon — calling that
-    'overnight' is wrong. On other days, US close was actually overnight.
-    """
     today_dow = datetime.now(IST).weekday()
-    if today_dow == 0:               # Monday
+    if today_dow == 0:
         return "Friday's US close"
     elif today_dow == 5 or today_dow == 6:
         return "Friday's US close"
@@ -148,16 +126,12 @@ def _overnight_label() -> str:
 
 
 def _next_session_label() -> str:
-    """
-    Returns the natural-language reference to the next trading session.
-    On Friday's post-market wrap, 'tomorrow' is wrong — should be 'Monday'.
-    """
     today_dow = datetime.now(IST).weekday()
-    if today_dow == 4:               # Friday → next session Monday
+    if today_dow == 4:
         return "Monday"
-    elif today_dow == 5:             # Saturday → still Monday
+    elif today_dow == 5:
         return "Monday"
-    elif today_dow == 6:             # Sunday → still Monday
+    elif today_dow == 6:
         return "Monday"
     else:
         return "tomorrow"
@@ -176,14 +150,11 @@ def _log(emoji: str, msg: str) -> None:
 
 
 def _snap_to_intraday_slot(hh: int, mm: int) -> str:
-    """Snap a (hour, minute) IST tuple to the nearest valid intraday slot."""
-    # Find the slot whose minute distance is smallest, but don't go past current time
     candidate = None
     cur_total = hh * 60 + mm
     for s in INTRADAY_SLOTS:
         sh, sm = map(int, s.split(":"))
         s_total = sh * 60 + sm
-        # Pick the largest slot <= current time
         if s_total <= cur_total:
             candidate = s
         else:
@@ -192,29 +163,19 @@ def _snap_to_intraday_slot(hh: int, mm: int) -> str:
 
 
 def detect_mode_and_slot():
-    """
-    Auto-detect mode + slot from current IST time.
-    Used when --mode is not specified, or to validate an explicit choice.
-    Returns (mode, slot_label).
-    """
     now = datetime.now(IST)
     hh, mm = now.hour, now.minute
-
-    # Before 09:15 → pre-market
     if hh < 9 or (hh == 9 and mm < 15):
         return "pre", PRE_SLOT
-    # 16:00 onwards → post-market
     if hh >= 16:
         return "post", POST_SLOT
-    # Otherwise intraday — snap to nearest slot <= now
     return "intraday", _snap_to_intraday_slot(hh, mm)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# DATA FETCHING — uses your existing Vercel /api/market.js endpoint
+# DATA FETCHING
 # ─────────────────────────────────────────────────────────────────────────────
 def fetch_market_data(mode: str, timeout: int = 12):
-    """Fetch ticker data from moneyveda.org/api/market?mode=<X>."""
     url = f"{MARKET_API_BASE}?mode={mode}"
     try:
         resp = requests.get(url, headers=HEADERS, timeout=timeout)
@@ -258,7 +219,7 @@ def _format_ticker_list(tickers: list) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# FILINGS (post-market only)
+# FILINGS
 # ─────────────────────────────────────────────────────────────────────────────
 def get_todays_filings(limit: int = 20):
     if not supabase:
@@ -295,20 +256,9 @@ def summarize_filings(filings: list) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PRIOR CONTEXT (intraday only) — fetch the previous slot's commentary +
-# pre-market commentary so the new intraday slot can write a "delta" narrative.
+# PRIOR CONTEXT (intraday continuity)
 # ─────────────────────────────────────────────────────────────────────────────
 def get_prior_intraday_context(today: str, current_slot: str) -> dict:
-    """
-    Returns {
-      "pre_text": str | None,
-      "prev_slot": str | None,
-      "prev_text": str | None,
-      "prev_nifty_pct": float | None,
-      "all_slots_compact": str | None,   # NEW: compact summary of all earlier slots today
-      "yesterday_post_text": str | None, # NEW: yesterday's post-market wrap (cross-day memory)
-    }
-    """
     out = {
         "pre_text": None, "prev_slot": None, "prev_text": None,
         "prev_nifty_pct": None, "all_slots_compact": None,
@@ -328,7 +278,6 @@ def get_prior_intraday_context(today: str, current_slot: str) -> dict:
         if pre.data:
             out["pre_text"] = (pre.data[0].get("commentary_text") or "")[:1200]
 
-        # ALL intraday slots before current_slot (newest first)
         prev_all = (
             supabase.table("market_commentary")
             .select("slot_time, commentary_text, data_snapshot")
@@ -353,9 +302,8 @@ def get_prior_intraday_context(today: str, current_slot: str) -> dict:
             except Exception:
                 pass
 
-            # Compact summary of EVERY earlier slot today — used for memory continuity.
             slot_lines = []
-            for r in reversed(prev_all.data):  # oldest first for natural reading
+            for r in reversed(prev_all.data):
                 slot_label = (r.get("slot_time") or "")[:5]
                 txt = (r.get("commentary_text") or "")[:280]
                 pct_str = ""
@@ -375,7 +323,6 @@ def get_prior_intraday_context(today: str, current_slot: str) -> dict:
             if slot_lines:
                 out["all_slots_compact"] = "\n".join(slot_lines)
 
-        # Yesterday's post-market wrap (look back up to 5 days for weekends/holidays)
         try:
             today_dt = datetime.strptime(today, "%Y-%m-%d").date()
             for days_back in range(1, 6):
@@ -400,12 +347,8 @@ def get_prior_intraday_context(today: str, current_slot: str) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# TECHNICAL ANALYSIS HELPERS  (Phase 1 depth — yfinance OHLC + math)
+# TECHNICAL ANALYSIS HELPERS
 # ─────────────────────────────────────────────────────────────────────────────
-# Computes the depth signals that distinguish "describe today" commentary from
-# "interpret what's happening" commentary. All numbers are derived from data we
-# already have access to via yfinance — no NSE scraping, no paid feeds.
-
 try:
     import yfinance as _yf
     YFINANCE_AVAILABLE = True
@@ -414,10 +357,6 @@ except ImportError:
 
 
 def _compute_index_technicals(yahoo_symbol: str) -> dict:
-    """
-    Pull ~90-day daily OHLC for an index/stock and compute a technical context
-    block. Returns {} on any error so callers can degrade gracefully.
-    """
     if not YFINANCE_AVAILABLE:
         return {}
     try:
@@ -432,7 +371,6 @@ def _compute_index_technicals(yahoo_symbol: str) -> dict:
         ma_20 = float(closes.tail(20).mean())
         ma_50 = float(closes.tail(50).mean()) if len(closes) >= 50 else None
 
-        # 52-week proxy via separate longer fetch
         try:
             hist_year = t.history(period="1y", interval="1d")
             if hist_year is not None and not hist_year.empty:
@@ -455,7 +393,6 @@ def _compute_index_technicals(yahoo_symbol: str) -> dict:
         today_vol   = float(volumes.iloc[-1])
         vol_ratio   = (today_vol / avg_vol_30d) if avg_vol_30d > 0 else None
 
-        # Support/resistance: 30-day pivot zones via percentile of swings
         recent = hist.tail(30)
         recent_lows  = sorted([float(x) for x in recent["Low"].tolist()])
         recent_highs = sorted([float(x) for x in recent["High"].tolist()], reverse=True)
@@ -486,9 +423,6 @@ def _compute_index_technicals(yahoo_symbol: str) -> dict:
 
 
 def get_market_breadth() -> dict:
-    """
-    Compute advance/decline ratio + breadth descriptor from the Render Nifty 100 cache.
-    """
     out = {
         "advances": 0, "declines": 0, "unchanged": 0,
         "ad_ratio": None, "breadth_descriptor": "n/a",
@@ -520,7 +454,6 @@ def get_market_breadth() -> dict:
 
 
 def _format_technicals(label: str, tech: dict) -> str:
-    """Render the technicals dict into 4-5 dense lines for prompt input."""
     if not tech:
         return f"  {label}: (technicals unavailable)"
     lines = [f"  {label}: {tech.get('last', '?')} | "
@@ -551,40 +484,27 @@ def _format_breadth(b: dict) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# NEWS HEADLINES (Pulse by Zerodha — pulse.zerodha.com/feed.php)
+# NEWS HEADLINES (Pulse by Zerodha)
 # ─────────────────────────────────────────────────────────────────────────────
-# Aggregates real-time Indian financial news from ET, NDTV Profit, The Hindu,
-# Mint, BS, MoneyControl etc. Free RSS feed. Used as CONTEXT input for Gemini —
-# headlines never appear verbatim in the user-facing commentary (transformative
-# use of public headlines for original analysis).
-#
-# Polling: max once per slot = ~15-20 calls/day. Honest User-Agent. No storage.
-
 import xml.etree.ElementTree as _ET
 from html import unescape as _html_unescape
 
 PULSE_FEED_URL = "http://pulse.zerodha.com/feed.php"
 PULSE_HEADERS = {
     "User-Agent": (
-        "MoneyVeda/2.0 MarketCommentary "
+        "MoneyVeda/2.1 MarketCommentary "
         "(https://moneyveda.org; analysis context use; contact via website)"
     )
 }
 
-# Keyword filter — passed only headlines matching these markers go to Gemini.
-# Drops sports/lifestyle/general news that pollute the feed.
 _PULSE_RELEVANCE_HITS = {
-    # Index/market terms
     "nifty", "sensex", "nse", "bse", "stock market", "indian market",
     "stocks", "shares", "equity", "equities", "index", "indices",
     "trading guide", "ahead of market", "market action",
-    # Macro/policy
     "rbi", "sebi", "rupee", "fed", "inflation", "gdp", "policy", "rate", "rates",
     "fii", "dii", "monsoon", "budget", "fiscal",
-    # Sector terms
     "bank", "banks", "banking", "it services", "pharma", "auto",
     "metals", "fmcg", "energy", "oil", "crude", "gold",
-    # Common Indian large-caps + Nifty 100 names
     "reliance", "tcs", "infosys", "hdfc", "icici", "sbi", "bharti",
     "tata", "adani", "axis", "kotak", "wipro", "maruti", "ongc",
     "bajaj", "ultratech", "asian paints", "titan", "sun pharma",
@@ -600,60 +520,47 @@ _PULSE_RELEVANCE_HITS = {
     "uco bank", "central bank", "punjab national", "canara",
     "federal bank", "indusind", "yes bank", "idbi",
     "godrej", "marico", "dabur", "britannia",
-    # Earnings / corporate actions
     "results", "earnings", "profit", "loss", "dividend", "bonus",
     "split", "buyback", "ipo", "qip", "merger", "acquisition",
     "stake", "deal", "valuation", "demerger",
-    # Brokerage/analyst signals
     "buy call", "sell call", "target price", "upgrade", "downgrade",
     "brokerage", "rating", "outlook", "guidance",
     "bullish", "bearish", "bullish on", "bearish on",
-    # General market conditions
     "rally", "selloff", "crash", "volatility", "correction",
     "breakout", "support", "resistance", "all-time high", "52-week",
-    # Geopolitics affecting Indian markets (crude/USD/risk-off)
     "iran", "hormuz", "tehran", "opec", "sanctions",
     "russia", "ukraine", "china trade", "tariff",
-    # Political / electoral events (often material for Indian markets)
     "election", "elections", "exit poll", "counting", "results day",
     "bjp", "congress", "modi", "verdict", "majority", "lead", "trailing",
     "state assembly", "lok sabha", "general election", "by-election",
     "cabinet", "parliament",
-    # Macro / policy events
     "monetary policy", "repo rate", "rbi mpc", "rbi minutes",
     "fed minutes", "fed meeting", "fomc",
     "cpi data", "cpi inflation", "wpi", "iip", "gdp data", "trade deficit",
     "fiscal deficit", "current account",
-    # Earnings season
     "q1 results", "q2 results", "q3 results", "q4 results",
     "results announcement", "earnings result", "guidance",
     "results day", "result preview",
-    # Commodities & consumption — the gap that missed Modi's gold appeal
     "gold", "silver", "jewellery", "jewelry", "platinum",
     "consumption", "consumer demand", "consumer spending",
     "appeal", "campaign", "import duty", "export duty", "gst on",
     "festive demand", "wedding season", "rural demand", "urban demand",
-    # Currency moves (rupee depreciation often material)
     "rupee falls", "rupee weakens", "rupee depreciates", "rupee declines",
     "rupee gains", "rupee strengthens", "rupee appreciates",
     "dollar index", "dxy",
-    # Stock-specific verbs that signal material news
     "block deal", "bulk deal", "insider", "promoter",
     "stake sale", "stake purchase", "open offer",
     "preferential allotment", "rights issue", "warrant",
     "investigation", "probe", "raid", "penalty",
-    # Regulatory/government actions
     "ban", "approval", "license", "tax", "duty", "levy",
     "subsidy", "scheme", "psu",
 }
 
 
 def _parse_pubdate(raw: str):
-    """Parse RSS pubDate to a UTC-aware datetime; return None on failure."""
     if not raw:
         return None
     raw = raw.strip()
-    # RFC 822 / RFC 2822 e.g. 'Sun, 03 May 2026 17:44:16 +0530'
     for fmt in ("%a, %d %b %Y %H:%M:%S %z", "%a, %d %b %Y %H:%M:%S %Z"):
         try:
             return datetime.strptime(raw, fmt)
@@ -663,20 +570,11 @@ def _parse_pubdate(raw: str):
 
 
 def _is_market_relevant(title: str, summary: str) -> bool:
-    """True if the headline contains any market-relevance keyword."""
     blob = f"{title} {summary}".lower()
     return any(k in blob for k in _PULSE_RELEVANCE_HITS)
 
 
 def get_pulse_headlines(max_age_hours: int = 12, limit: int = 12) -> list:
-    """
-    Fetch + filter Pulse news. Returns up to `limit` market-relevant headlines
-    from the last `max_age_hours` hours, newest first.
-
-    Each item: {"title": str, "summary": str, "source": str, "minutes_ago": int}
-
-    Returns [] on any failure — callers must handle gracefully.
-    """
     try:
         r = requests.get(PULSE_FEED_URL, headers=PULSE_HEADERS, timeout=12)
         r.raise_for_status()
@@ -705,7 +603,6 @@ def get_pulse_headlines(max_age_hours: int = 12, limit: int = 12) -> list:
                 continue
             if pub_dt is None:
                 continue
-            # Convert to UTC-aware for comparison
             if pub_dt.tzinfo is None:
                 pub_dt = pub_dt.replace(tzinfo=timezone.utc)
             if pub_dt < cutoff:
@@ -713,13 +610,11 @@ def get_pulse_headlines(max_age_hours: int = 12, limit: int = 12) -> list:
             if not _is_market_relevant(title, summary):
                 continue
 
-            # Dedupe by lowercase title (multiple sources sometimes carry the same story)
             tkey = title.lower()[:80]
             if tkey in seen_titles:
                 continue
             seen_titles.add(tkey)
 
-            # Extract source from link (e.g. economictimes.indiatimes.com -> "ET")
             source = "Pulse"
             try:
                 if "economictimes" in link:    source = "ET"
@@ -751,7 +646,6 @@ def get_pulse_headlines(max_age_hours: int = 12, limit: int = 12) -> list:
 
 
 def _format_pulse_headlines(headlines: list) -> str:
-    """Render for prompt input. Each line carries source + age for Gemini context."""
     if not headlines:
         return "  (no recent market news available)"
     lines = []
@@ -764,8 +658,6 @@ def _format_pulse_headlines(headlines: list) -> str:
         src   = h.get("source", "Pulse")
         lines.append(f"  - [{src}, {age_str}] {title}")
     return "\n".join(lines)
-
-
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -809,22 +701,14 @@ def build_pre_market_packet():
         packet["india_prev"] = [find_ticker(india, l) for l in
                                 ["SENSEX", "NIFTY 50", "NIFTY BANK", "NIFTY IT"]]
 
-    # ── Phase 1 depth additions ──
-    # Technicals for Nifty 50, Bank Nifty, Nifty IT (key indices)
     packet["technicals"] = {
         "NIFTY 50":   _compute_index_technicals("^NSEI"),
         "NIFTY BANK": _compute_index_technicals("^NSEBANK"),
         "NIFTY IT":   _compute_index_technicals("^CNXIT"),
     }
-    # India VIX (volatility regime indicator)
     packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
-    # Yesterday's post-market wrap for cross-day continuity
     prior = get_prior_intraday_context(packet["date"], "00:00")
     packet["yesterday_post_text"] = prior.get("yesterday_post_text")
-    # Real-time Indian market news from Pulse.
-    # 36h window (vs default 12h) so Monday pre-market still catches Friday/Sunday material headlines
-    # (e.g. an RBI announcement on Friday evening, a Modi policy appeal on Sunday).
-    # Limit bumped to 18 to compensate for the wider window — more candidates for Gemini to filter.
     packet["news"] = get_pulse_headlines(max_age_hours=36, limit=18)
 
     for key in packet:
@@ -834,7 +718,6 @@ def build_pre_market_packet():
 
 
 def build_intraday_packet(slot: str):
-    """Live snapshot during market hours."""
     _log("📈", f"Building intraday data packet for slot {slot}")
     today = _today_ist()
     packet = {
@@ -880,14 +763,12 @@ def build_intraday_packet(slot: str):
         if usd_inr:
             packet["currencies"].append(usd_inr)
 
-    # Asian markets are still trading before 13:30 IST — useful early in the day
     if slot < "13:30":
         world = fetch_market_data("world")
         if world:
             packet["asia_pacific"] = [t for t in (find_ticker(world, l) for l in
                                        ["NIKKEI 225", "HANG SENG", "KOSPI"]) if t]
 
-    # ── Phase 1 depth additions ──
     packet["technicals"] = {
         "NIFTY 50":   _compute_index_technicals("^NSEI"),
         "NIFTY BANK": _compute_index_technicals("^NSEBANK"),
@@ -895,11 +776,8 @@ def build_intraday_packet(slot: str):
     }
     packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
     packet["breadth"]   = get_market_breadth()
-    # Real-time Indian market news from Pulse (last 6h for intraday — narrower window)
-    packet["news"] = get_pulse_headlines(max_age_hours=6, limit=10)
-
-    # Fetch prior context for narrative continuity (now extended with all-slots + yesterday)
-    packet["prior"] = get_prior_intraday_context(today, slot)
+    packet["news"]      = get_pulse_headlines(max_age_hours=6, limit=10)
+    packet["prior"]     = get_prior_intraday_context(today, slot)
     return packet
 
 
@@ -949,7 +827,6 @@ def build_post_market_packet():
         packet["us_status"] = [t for t in (find_ticker(usa, l)
                                             for l in ["S&P 500", "NASDAQ"]) if t]
 
-    # ── Phase 1 depth additions ──
     packet["technicals"] = {
         "NIFTY 50":   _compute_index_technicals("^NSEI"),
         "NIFTY BANK": _compute_index_technicals("^NSEBANK"),
@@ -957,62 +834,139 @@ def build_post_market_packet():
     }
     packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
     packet["breadth"]   = get_market_breadth()
-    # Real-time Indian market news from Pulse (last 12h for post-market — covers full day)
-    packet["news"] = get_pulse_headlines(max_age_hours=12, limit=15)
-    # Arc of the day — pull all today's intraday slots so post-market can review
-    packet["prior"] = get_prior_intraday_context(packet["date"], "23:59")
-
-    packet["filings"] = get_todays_filings()
+    packet["news"]      = get_pulse_headlines(max_age_hours=12, limit=15)
+    packet["prior"]     = get_prior_intraday_context(packet["date"], "23:59")
+    packet["filings"]   = get_todays_filings()
     return packet
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PROMPT TEMPLATES
+# SHARED REASONING PRINCIPLES  (v2.1 — injected into every prompt)
 # ─────────────────────────────────────────────────────────────────────────────
-PRE_MARKET_PROMPT = """You are a senior equity strategist briefing the trading desk on Indian markets before the 9:15 AM IST open. Your audience is retail investors using MoneyVeda — they are smart but time-pressed and want analysis, not just data.
+# This block is the core of v2.1. It shifts every prompt from "describe the
+# market" to "interpret what the market is trying to do" — with explicit
+# silent chain-of-thought, banned phrases, an interpreting-moves checklist,
+# the market-ignoring-news rule, causal chains, and a non-obvious insight
+# requirement. Injected via {shared_principles} placeholder.
+SHARED_PRINCIPLES = """
+SILENT REASONING (do this BEFORE writing — do NOT print these answers, do NOT label your output with them):
+1. What is the dominant market force in the data right now?
+2. What CHANGED since the previous slot/session?
+3. Is the move broad-based or narrow / index-heavy?
+4. Is institutional conviction visible in breadth + volume + sector dispersion?
+5. Which sector leadership matters most today?
+6. Is the market confirming or rejecting the pre-market / prior expectation?
+7. What significant news is the market IGNORING? (non-reaction = signal)
+8. What would invalidate the current trend?
+
+Pick the strongest 2-3 of these and let them shape the commentary. The reasoning is silent; the OUTPUT shows interpretation.
+
+CORE FRAMING — what is the market TRYING TO DO?
+Frame your commentary around what the market is trying to do this session:
+  - defend a support level
+  - sustain a breakout
+  - rotate into defensives / out of defensives
+  - absorb bad news
+  - fade an opening gap
+  - maintain risk appetite despite headwinds
+  - test a key technical level
+Not "what it did" — "what it's attempting, and whether it's succeeding."
+
+BANNED FILLER PHRASES (use ONLY if the specific data point explicitly proves them):
+  "profit booking", "cautious sentiment", "mixed cues", "selective buying",
+  "volatile trade", "rangebound action", "investors remained cautious",
+  "market participants awaited cues", "in a holding pattern",
+  "consolidation" (if you mean consolidation, prove it: cite the range, days, volume).
+If you cannot replace one of these with a specific observation grounded in numbers, OMIT the sentence entirely.
+
+INTERPRETING MOVES (apply to every sector >0.8% or stock >2%):
+  - Did BREADTH confirm? (broad participation or narrow heavyweight push?)
+  - Did VOLUME confirm? (>1.5x 30D avg = institutional activity likely)
+  - Did the related sector / peers confirm?
+  - Did the move PERSIST or fade across the slot?
+A move without confirmation is fragile — say so. A move with full confirmation is real — say that too, directly.
+
+MARKET IGNORING NEWS (high-signal — call it out):
+If a material headline appears in NEWS but the related sectors/stocks fail to react materially, FLAG IT EXPLICITLY. Non-reaction is itself a signal — either the news is already priced in, or conviction in the implied direction is weak. Example: "Crude up 2% overnight but OMCs flat — the market is treating today's spike as transient."
+
+CAUSAL CHAINS (think second-order, not headline-level):
+  - crude up → OMC margin pressure + inflation watch
+  - rupee weak → IT positive (exporters), auto/durables negative (importers)
+  - bond yields falling → bank NIM concern + rate-sensitive sectors helped
+  - VIX spike → defensive rotation into FMCG/pharma
+  - election certainty → cyclicals up, defensives lag
+  - Fed dovish surprise → IT + financials up, gold up
+Do not stop at the headline. State the chain.
+
+EXPECTATION vs REACTION (markets move on surprise, not headlines):
+  - Strong news + weak reaction = already priced in
+  - Weak news + strong rally = excessive pessimism earlier
+  - Good earnings + no upside = expectations were too high
+  - Bad news + market holds = absorbed, buyers underneath
+Apply this lens when news + price data are both available.
+
+NON-OBVIOUS INSIGHT (REQUIRED — at least ONE per commentary):
+Every commentary must contain at least one observation NOT derivable from a single ticker. A divergence, a quiet rotation, an inconsistency, a non-reaction. Examples of the right voice:
+  - "Index stability despite weak breadth suggests heavyweight support — not real risk appetite."
+  - "IT weakness no longer dragging banks indicates domestic-risk preference is holding."
+  - "Broad participation fading while indices hold highs reduces sustainability of the rally."
+  - "Auto's rally alongside FMCG weakness confirms defensive-to-cyclical rotation."
+Surface-level summaries ("Nifty closed higher led by banks") are not enough.
+
+PRIORITIZATION (focus, don't enumerate):
+Pick the 2 most important sector moves, the strongest divergence, the key institutional signal, and the most important technical level. Ignore low-impact noise — five mediocre observations are worse than two sharp ones.
+""".strip()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PROMPT TEMPLATES (v2.1 — strengthened role + shared principles injected)
+# ─────────────────────────────────────────────────────────────────────────────
+PRE_MARKET_PROMPT = """You are a senior equity strategist briefing the trading desk on Indian markets before the 9:15 AM IST open. You are NOT a news summarizer. You are NOT a TV anchor. You interpret price action, sector rotation, breadth, positioning, and conviction for retail investors using MoneyVeda — smart, time-pressed, want analysis not data.
+
+{shared_principles}
 
 YOUR TASK:
-Write a structured 18-22 line strategist briefing in plain English. The goal is INTERPRETATION, not description. Identify 2-3 dominant themes; place today's setup against the recent context (last week's range, last session's wrap); call out divergences worth watching; and give a clear directional bias for the open.
+Write a structured 18-22 line strategist briefing in plain English. INTERPRETATION, not description. Identify 2-3 dominant themes; place today's setup against recent context (last week's range, last session's wrap); call out divergences worth watching; give a clear directional bias for the open and a clear view of what the market will be TRYING TO DO at open.
 
 IMPORTANT: Today is {day_of_week} {date}. The most recent trading session was {india_session_label}. The most recent US close was {us_close_label}. Use these labels precisely — do NOT say "yesterday" or "overnight" if today is Monday or a post-holiday open. Use "Friday's" or "{india_session_label}" when that's the accurate reference.
 
 STRUCTURE (use markdown headers exactly as shown — frontend renders them):
 
 **Setup**
-2-3 lines on the dominant narrative from {us_close_label} and what it means for today's open. Don't just describe US closes — interpret them. Note any major divergence from {india_session_label} domestic tone.
+2-3 lines on the dominant narrative from {us_close_label} and what it means for today's open. Interpret US closes, don't just describe them. Note any major divergence from {india_session_label} domestic tone.
 
 **Global Context**
-3-4 lines covering US close (Dow/Nasdaq/S&P with one driver each), Asian markets this morning, USD/INR direction, and crude. Connect movements where causally relevant (e.g., "weak crude pressuring upstream names; tailwind for OMCs").
+3-4 lines covering US close (Dow/Nasdaq/S&P with one driver each), Asian markets this morning, USD/INR direction, and crude. Apply the CAUSAL CHAINS framework — connect movements where causally relevant.
 
 **Technical Position**
-3-4 lines on Nifty's recent range, where it sits relative to 20D/50D moving averages, the support and resistance zones, and India VIX level. Use specific levels: e.g. "Nifty closed {india_session_label} at X, with 23,950 having held twice last week as support."
+3-4 lines on Nifty's recent range, where it sits vs 20D/50D MAs, support and resistance zones, India VIX level. Use specific levels: "Nifty closed {india_session_label} at X, with 23,950 having held twice last week as support."
 
 **Themes to Watch**
-3-4 lines on 2-3 themes likely to drive today's session — sector rotation continuation, an upcoming event, a divergence between sectors, etc. Reference {india_session_label} wrap if relevant.
+3-4 lines on 2-3 themes likely to drive today's session — sector rotation continuation, an upcoming event, a divergence between sectors. Reference {india_session_label} wrap if relevant. Include at least one NON-OBVIOUS INSIGHT here.
 
 **Bias**
-2 lines: directional view for the open (positive / mixed / cautious / negative) with the level that confirms or invalidates the view. Frame as expectation, not certainty.
+2 lines: what the market will be TRYING TO DO at open (defend a level, follow through on yesterday's move, fade an overnight cue, etc.) and what would invalidate that view. Frame as expectation, not certainty.
 
 **Takeaway**
 One sentence — what should a retail investor watch in the first 30 minutes.
 
 RULES:
 1. USE ONLY data provided. Do not invent numbers, levels, news, or events.
-2. Reference SPECIFIC LEVELS where the data supports it (e.g., "23,950", "+1.4% above 20D MA").
+2. Reference SPECIFIC LEVELS where the data supports it.
 3. Frame predictions as expectation, not certainty ("likely to", "should test", "watch for").
 4. NO buy/sell advice on individual stocks. Educational analysis only.
 5. Use Rs. for currency.
 6. If you don't have enough data for a section, do NOT confess the gap to the reader. Quietly omit, or use the data you DO have. Never write "data unavailable" or "while not explicitly provided".
-7. Voice: confident, specific, professional. Like a desk strategist, not a TV anchor.
-8. NO INVENTION OF CAUSATION (CRITICAL): If a stock or sector is moving and the NEWS HEADLINES section does NOT contain a specific catalyst, do NOT invent one. Common temptations to avoid:
-   - Don't say "X on results" unless you can see an earnings/results headline for X today
+7. Voice: confident, specific, professional. Desk strategist, not TV anchor.
+8. NO INVENTION OF CAUSATION (CRITICAL): If a stock or sector is moving and the NEWS HEADLINES section does NOT contain a specific catalyst, do NOT invent one.
+   - Don't say "X on results" unless an earnings/results headline for X today is visible
    - Don't say "X on profit-booking" unless multiple data points support that
    - Don't say "Y sector on ongoing concerns" — name the concern or omit
-   - Acceptable framings when cause is unknown: "Titan -7% on heavy volume — driver not visible in today's news flow", "Bank Nifty leading the decline (-1.3%) without an obvious sector-specific catalyst", or simply state the move and move on.
-9. ANTI-HEDGING (only when you HAVE evidence): Avoid filler like "possibly", "appears to", "suggesting a potential" WHEN the data supports a direct claim. Examples:
-   - WHEN EVIDENCE EXISTS — WEAK: "Auto outperformed, suggesting a potential rotation."
-   - WHEN EVIDENCE EXISTS — STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation."
-   - WHEN EVIDENCE IS MISSING — say so: "Titan -7% — no specific catalyst visible in news; possibly reacting to broader consumer-discretionary weakness, but the trigger isn't clear."
+   - Acceptable when cause is unknown: "Titan -7% on heavy volume — driver not visible in today's news flow", or just state the move.
+9. ANTI-HEDGING (only when you HAVE evidence): Avoid filler like "possibly", "appears to", "suggesting a potential" WHEN the data supports a direct claim.
+   - EVIDENCE EXISTS — WEAK: "Auto outperformed, suggesting a potential rotation."
+   - EVIDENCE EXISTS — STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation."
+   - EVIDENCE IS MISSING — say so: "Titan -7% — no specific catalyst visible in news; trigger isn't clear."
 
 === DATA FOR TODAY ({date}) ===
 Timestamp: {timestamp}
@@ -1047,30 +1001,24 @@ INDIA VIX (volatility regime):
 {last_session_wrap_label} POST-MARKET WRAP (for continuity):
 {yesterday_wrap}
 
-RECENT MARKET NEWS HEADLINES (last 36 hours, from Indian financial press via Pulse):
+RECENT MARKET NEWS HEADLINES (last 36 hours, Indian financial press via Pulse):
 {news_block}
 
-These headlines are CONTEXT to weave into the briefing. Some are from Friday/over the weekend (especially relevant on a Monday pre-market). Categories that are usually MATERIAL and worth citing if present:
-- Election results, exit polls, political shifts (BJP/Congress/state polls)
-- RBI announcements, monetary policy, repo rate moves
-- Major company news (results, M&A, regulatory action against named Nifty names)
-- Brokerage upgrades/downgrades on specific stocks
-- Macro events (Budget, CPI/IIP/GDP data, Fed meetings)
-- Geopolitical flashpoints affecting crude or risk appetite (Iran, Russia, China trade)
+These headlines are CONTEXT. Material categories worth citing: election results, RBI/SEBI moves, named-company news (results, M&A, regulatory), brokerage upgrades/downgrades, macro data (CPI/IIP/GDP/Fed), geopolitical events affecting crude/USD. Noise to ignore: sports, lifestyle, IPL, entertainment.
 
-Categories that are usually NOISE and should be ignored: sports, lifestyle, crime, IPL, entertainment.
-
-Rules: Do NOT cite headlines verbatim. Do NOT invent causation. But DO connect material headlines to specific themes in your briefing — if BJP wins state elections and the index is gapping up, say so directly.
+Rules: Do NOT cite headlines verbatim. Do NOT invent causation. DO connect material headlines to themes when data confirms the connection.
 
 Now write the strategist pre-market briefing:"""
 
 
-INTRADAY_OPENING_PROMPT = """You are a senior equity strategist writing the FIRST INTRADAY UPDATE of the day for MoneyVeda. NSE opened at 9:15 AM IST. It is now {timestamp}, slot 09:30 IST.
+INTRADAY_OPENING_PROMPT = """You are a senior equity strategist writing the FIRST INTRADAY UPDATE of the day for MoneyVeda. You are NOT a news summarizer. NSE opened at 9:15 AM IST. It is now {timestamp}, slot 09:30 IST.
+
+{shared_principles}
 
 IMPORTANT: Today is {day_of_week} {date}. The most recent prior trading session was {india_session_label} (NOT "yesterday" if today is Monday or post-holiday). Use "{india_session_label}" or "Friday's" precisely — never substitute "yesterday" when that's inaccurate.
 
 YOUR TASK:
-Write a structured 10-12 line briefing on how the opening 15 minutes played out. The KEY angle: did the market open as the pre-market expected, or is reality diverging? Be specific. Use markdown headers.
+Write a structured 10-12 line briefing on how the opening 15 minutes played out. The KEY angle: did the market open as the pre-market expected, or is reality diverging? AND what is the market TRYING TO DO in the first 15 minutes — confirm yesterday's trend, fade an overnight gap, defend a level? Use markdown headers.
 
 STRUCTURE:
 
@@ -1078,13 +1026,13 @@ STRUCTURE:
 2 lines on Nifty/Sensex opening level and direction vs {india_session_label} close. Specific number, no fluff.
 
 **Vs Pre-Market**
-2-3 lines comparing what's actually happening to what pre-market expected. Where is the bias confirmed? Where is reality diverging? This is the most important section — interpret, don't just describe.
+2-3 lines comparing actual vs expected. Where confirmed? Where diverging? Most important section — interpret, don't describe.
 
 **Sectors & Movers**
-2-3 lines on sector behavior so far + 1-2 individual names worth flagging. Use the technical position data — e.g., "Bank Nifty opening below its 20D MA confirms the weakness pre-market flagged."
+2-3 lines on sector behavior + 1-2 individual names worth flagging. Apply the INTERPRETING MOVES checklist: is the move confirmed by breadth, volume, peers? Use technicals — e.g. "Bank Nifty opening below 20D MA confirms the weakness pre-market flagged."
 
 **Levels in Play**
-1-2 lines: the key support/resistance the market is testing right now, and what a break would signal.
+1-2 lines: the key support/resistance the market is testing, and what a break would signal. This is where you say what the market is TRYING TO DO.
 
 **Watch**
 1 line on what to monitor in the next 30 minutes.
@@ -1092,14 +1040,13 @@ STRUCTURE:
 RULES:
 1. Use only provided data. No invented numbers or events.
 2. Reference SPECIFIC LEVELS — distance from MAs, support/resistance touches, breadth ratios.
-3. NO buy/sell advice. Educational analysis only.
-4. Frame as expectation, not certainty.
-5. Voice: senior strategist, not TV anchor.
-6. NEVER confess data gaps to the reader (no "data unavailable", "not explicitly provided"). Quietly omit or use alternative signals.
-7. NO INVENTION OF CAUSATION (CRITICAL): If a stock is moving sharply and the NEWS HEADLINES section does not contain a specific catalyst for THAT stock, do NOT invent one. Don't say "X on results" unless you can see a results headline. Don't say "Y on profit-booking" unless multiple data points support it. When cause is unclear, frame as "X moved Y% — driver not visible in available news" or just state the move.
-8. ANTI-HEDGING (only when you HAVE evidence): Be specific WHEN the data supports a claim. Avoid filler like "possibly" / "suggesting a potential" ONLY when you actually have evidence to be direct.
-   - WHEN EVIDENCE EXISTS — STRONG: "Bank Nifty +0.8% leads sectors after RBI rate-cut headline this morning."
-   - WHEN EVIDENCE IS MISSING — HONEST: "Titan -7% on no specific visible catalyst — the move may relate to today's gold-consumption headlines but the connection isn't explicit in the data."
+3. NO buy/sell advice. Frame as expectation, not certainty.
+4. Senior strategist voice, not TV anchor.
+5. NEVER confess data gaps to the reader. Quietly omit or use alternative signals.
+6. NO INVENTION OF CAUSATION (CRITICAL): If a stock is moving sharply and NEWS doesn't contain a specific catalyst for THAT stock, do NOT invent one. When cause is unclear: "X moved Y% — driver not visible in available news" or just state the move.
+7. ANTI-HEDGING (only when you HAVE evidence):
+   - EVIDENCE EXISTS — STRONG: "Bank Nifty +0.8% leads sectors after RBI rate-cut headline this morning."
+   - EVIDENCE MISSING — HONEST: "Titan -7% on no specific visible catalyst — connection to today's gold-consumption headlines isn't explicit in the data."
 
 === DATA AT 09:30 IST ({date}) ===
 Timestamp: {timestamp}
@@ -1111,13 +1058,13 @@ INDEX (live now):
   Sensex: {sensex}
   Nifty 50: {nifty}
 
-TECHNICAL POSITION (where indices are vs MAs and recent range):
+TECHNICAL POSITION:
 {technicals_block}
 
 INDIA VIX:
 {vix_line}
 
-MARKET BREADTH (advance-decline from Nifty 100):
+MARKET BREADTH:
 {breadth_line}
 
 SECTOR PERFORMANCE (live):
@@ -1135,54 +1082,52 @@ CURRENCIES:
 COMMODITIES:
 {commodities}
 
-RECENT MARKET NEWS HEADLINES (last 6 hours, from Indian financial press via Pulse):
+RECENT MARKET NEWS HEADLINES (last 6 hours, Indian financial press via Pulse):
 {news_block}
 
-Material categories worth citing if they explain the open: election results, RBI/SEBI moves, named-stock company news (results, M&A, regulatory), brokerage calls on specific names, macro data (CPI/IIP/GDP/Fed), geopolitical events affecting crude/USD. Sports/lifestyle/IPL/entertainment headlines are noise — ignore.
+Material categories: election results, RBI/SEBI moves, named-stock news (results/M&A/regulatory), brokerage calls, macro data, geopolitics affecting crude/USD. Noise to ignore: sports/lifestyle/IPL.
 
-Rules: Do NOT cite headlines verbatim. Do NOT invent causation. But DO connect material headlines to today's open — if a Citi upgrade explains a stock's strength, say so. If election counting explains a sector rally, say so.
+Rules: Do NOT cite verbatim. Do NOT invent causation. DO connect material headlines to today's open when data confirms.
 
 Now write the 10-12 line opening update:"""
 
 
-INTRADAY_UPDATE_PROMPT = """You are a senior equity strategist writing an INTRADAY UPDATE for MoneyVeda. The session is in progress. Current time: {timestamp}, slot: {slot} IST.
+INTRADAY_UPDATE_PROMPT = """You are a senior equity strategist writing an INTRADAY UPDATE for MoneyVeda. You are NOT a news summarizer. The session is in progress. Current time: {timestamp}, slot: {slot} IST.
+
+{shared_principles}
 
 YOUR TASK:
-Write a 10-12 line delta update on what has CHANGED since the last slot — and connect to the day's overall arc. This is a continuation, not a recap. Use markdown headers.
+Write a 10-12 line delta update on what has CHANGED since the last slot — and connect to the day's overall arc. This is a continuation, not a recap. What is the market TRYING TO DO right now — extend a move, reverse one, defend a level, rotate? Use markdown headers.
 
 STRUCTURE:
 
 **The Move**
-2 lines: where is Nifty now vs the {prev_slot} reading? Up/down how much in this 30 minutes? Specific.
+2 lines: where is Nifty now vs {prev_slot} reading? Up/down how much in this 30 minutes? Specific.
 
 **What Changed**
-2-3 lines: the most important shift since {prev_slot}. Sector rotation? A name suddenly leading or lagging? Breadth deterioration? Volume spike? Be specific and concrete.
+2-3 lines: the most important shift since {prev_slot}. Sector rotation? A name suddenly leading or lagging? Breadth deterioration? Volume spike? Be specific. Apply the INTERPRETING MOVES checklist.
 
 **Day's Arc**
-2-3 lines: where does this slot fit in today's story so far? Reference the day-so-far summary if it shows a pattern (steady fade, bounce attempts, range-bound, etc.). If the open expected one thing and we're seeing another, say so.
+2-3 lines: where does this slot fit in today's story so far? Reference the day-so-far summary. If open expected one thing and we're seeing another, say so. State what the market is TRYING TO DO.
 
 **Levels & Breadth**
-1-2 lines: which level is being tested or held? What does breadth (advance/decline) tell us about conviction?
+1-2 lines: which level is being tested or held? What does breadth tell us about conviction? Include at least one NON-OBVIOUS INSIGHT here if not earlier.
 
 **Watch**
 1 line on what to monitor in the next 30 minutes.
 
 RULES:
 1. Treat this as continuation. Reference earlier slots and themes by their data.
-2. If the market is essentially flat from {prev_slot}, say so plainly — don't manufacture drama. Use it as a signal of indecision, then pivot to what's developing under the surface (sector rotation, breadth changes, individual stock moves).
+2. If the market is essentially flat from {prev_slot}, say so plainly — don't manufacture drama. Use it as a signal of indecision, then pivot to what's developing under the surface.
 3. Use specific numbers and levels. No vague "the market is mixed."
 4. Use only provided data. No buy/sell advice. Professional voice.
-5. NEVER confess data gaps. If breadth data is unavailable, infer conviction from sector dispersion or top-mover skew instead. Do NOT write "breadth data unavailable" or similar.
-6. NO INVENTION OF CAUSATION (CRITICAL): If a stock is moving sharply and the NEWS HEADLINES section does not contain a specific catalyst for THAT stock, do NOT fabricate one. Common temptations to avoid:
-   - Don't say "X on results" unless you see a results-related headline for X TODAY
-   - Don't say "X on profit-booking" unless you have evidence beyond just "stock fell after a rise"
-   - Don't say "X on weakness in [sector]" without naming what caused the sector weakness
-   - When cause is unknown: "X moved Y% on no specific visible catalyst" is FAR better than inventing one.
-7. NO SELF-REFERENCE: You are writing the commentary, not narrating writing it. Phrases like "this slot represents...", "the narrative we're tracking", "our analysis suggests" break immersion. Write the analysis, not the meta-commentary.
-8. ANTI-HEDGING (only when you HAVE evidence): Be specific WHEN the data supports a claim.
-   - WHEN EVIDENCE EXISTS — STRONG: "Auto giving back 0.4% of the morning's 1.5% gain — profit-taking after the upgrade-driven rally."
-   - WHEN EVIDENCE IS MISSING — HONEST: "Auto down 0.4% in the last 30 min on no specific news visible — possibly position trimming, but the trigger isn't clear."
-9. ANTI-REPETITION: Don't reuse phrases or framings from prior slots. If three slots in a row say "consolidating", you're not reading the data hard enough. Find what's actually developing.
+5. NEVER confess data gaps. If breadth unavailable, infer conviction from sector dispersion. Do NOT write "breadth data unavailable".
+6. NO INVENTION OF CAUSATION (CRITICAL): If a stock is moving sharply and NEWS doesn't contain a specific catalyst for THAT stock, do NOT fabricate one. When cause is unknown: "X moved Y% on no specific visible catalyst" is FAR better than inventing one.
+7. NO SELF-REFERENCE: You are writing the commentary, not narrating writing it. Phrases like "this slot represents...", "our analysis suggests" break immersion.
+8. ANTI-HEDGING (only when you HAVE evidence):
+   - EVIDENCE EXISTS — STRONG: "Auto giving back 0.4% of the morning's 1.5% gain — profit-taking after the upgrade-driven rally."
+   - EVIDENCE MISSING — HONEST: "Auto down 0.4% in the last 30 min on no specific news visible — possibly position trimming, trigger isn't clear."
+9. ANTI-REPETITION: Don't reuse phrases or framings from prior slots. If three slots in a row say "consolidating", you're not reading the data hard enough.
 
 === DATA AT {slot} IST ({date}) ===
 Timestamp: {timestamp}
@@ -1210,10 +1155,10 @@ INDIA VIX:
 MARKET BREADTH:
 {breadth_line}
 
-SECTOR PERFORMANCE (live now, vs prev close):
+SECTOR PERFORMANCE (live now):
 {sectors}
 
-TOP MOVERS (live now, by magnitude):
+TOP MOVERS (live now):
 {top_stocks}
 
 CURRENCIES:
@@ -1225,20 +1170,22 @@ COMMODITIES:
 ASIA-PACIFIC (if still trading):
 {asia_pacific}
 
-RECENT MARKET NEWS HEADLINES (last 6 hours, from Indian financial press via Pulse):
+RECENT MARKET NEWS HEADLINES (last 6 hours, Indian financial press via Pulse):
 {news_block}
 
-Material categories that often drive intraday moves: company-specific news (results, regulatory, M&A on named Nifty stocks), election counting trends, RBI/SEBI actions, brokerage calls on specific names, macro data releases. Sports/lifestyle/IPL are noise — ignore.
+Material categories driving intraday: named-stock news, election counting, RBI/SEBI, brokerage calls, macro data. Noise: sports/lifestyle/IPL.
 
-Rules: Do NOT cite headlines verbatim. Do NOT invent causation. DO connect material headlines to specific moves if the price action and headline align — e.g. if Vodafone Idea is up 4% and there's a Citi bullish-on-VI headline, that's the explanation, say so.
+Rules: Do NOT cite verbatim. Do NOT invent causation. DO connect material headlines to specific moves when price action and headline align.
 
 Now write the {slot} IST intraday update:"""
 
 
-POST_MARKET_PROMPT = """You are a senior equity strategist writing the POST-MARKET WRAP for MoneyVeda. NSE closed at 3:30 PM IST today. Your audience is retail investors who want to understand the day they just lived through.
+POST_MARKET_PROMPT = """You are a senior equity strategist writing the POST-MARKET WRAP for MoneyVeda. You are NOT a news summarizer. NSE closed at 3:30 PM IST today. Your audience is retail investors who want to understand the day they just lived through.
+
+{shared_principles}
 
 YOUR TASK:
-Write a structured 20-24 line wrap. This is the day's THESIS — pull together the pre-market setup, how the day actually unfolded across the 13 intraday slots, the close, and the implications for tomorrow. Interpret, don't describe. Use markdown headers.
+Write a structured 20-24 line wrap. This is the day's THESIS — pull together pre-market setup, how the day actually unfolded across 13 intraday slots, the close, and implications for tomorrow. The central question: WHAT WAS THE MARKET TRYING TO DO TODAY, and did it succeed? Use markdown headers.
 
 STRUCTURE:
 
@@ -1246,45 +1193,41 @@ STRUCTURE:
 2-3 lines on Nifty/Sensex close — direction, magnitude, where on the day's range we settled. Specific levels.
 
 **The Story**
-4-5 lines on how the day actually unfolded. Reference the pre-market expectation: did it play out, or did the day reject the setup? Walk through the arc: open, mid-morning, midday, close. Identify the inflection points using the slot summaries provided.
+4-5 lines on how the day unfolded. Reference the pre-market expectation: did it play out, or did the day reject the setup? Walk through the arc: open, mid-morning, midday, close. Identify inflection points using the slot summaries. State what the market was TRYING TO DO and whether it succeeded.
 
 **Sector & Stock Highlights**
-4-5 lines on which sectors led/lagged AND why (use the data — connect a sector move to a sub-theme). Name 2-3 individual stocks with context (not just "X was up Y%" — say what the move means: earnings beat, sector rotation, technical breakout).
+4-5 lines on which sectors led/lagged AND why. Apply the INTERPRETING MOVES checklist. Name 2-3 individual stocks with context — what the move means, not just the magnitude. Apply CAUSAL CHAINS where the data supports them.
 
 **Technical Read**
-3-4 lines on where the close leaves Nifty technically: above/below 20D and 50D MAs, position vs 52W high/low, distance from recent support/resistance. India VIX direction too. What does the technical setup imply for tomorrow?
+3-4 lines on where the close leaves Nifty technically: above/below 20D and 50D MAs, position vs 52W high/low, distance from recent support/resistance. India VIX direction. What does the technical setup imply for tomorrow?
 
 **Filings & Flows**
-2-3 lines on the day's NSE filings if any were market-moving; note the breadth (advance/decline) and what it says about institutional conviction.
+2-3 lines on the day's NSE filings if any were market-moving; note breadth (advance/decline) and what it says about institutional conviction. Apply the MARKET IGNORING NEWS rule — was there material news the market ignored?
 
 **Tomorrow**
-2 lines on what matters {next_session_label} — a level being tested, a global event, a sector to watch. Frame as expectation.
+2 lines on what matters {next_session_label} — a level being tested, a global event, a sector to watch. Frame as expectation. State what the market will likely be TRYING TO DO.
 
 **Bottom Line**
-One sentence — the day in a single insight a retail investor can take home.
+One sentence — the day in a single insight a retail investor can take home. This MUST be a NON-OBVIOUS INSIGHT, not a recap.
 
 RULES:
 1. USE ONLY provided data. No invented numbers, news, or events.
 2. Reference SPECIFIC LEVELS in the technical section.
-3. Connect dots — what THEME explains today's price action? Resist describing without interpreting.
-4. NO buy/sell advice on individual stocks. Use Rs. for currency.
+3. Connect dots — what THEME explains today's price action?
+4. NO buy/sell advice. Use Rs. for currency.
 5. Professional desk voice.
-6. NEVER confess data gaps. If a section's input is missing (e.g., no pre-market on file, breadth unavailable), quietly omit that comparison/sentence. Do NOT write "data unavailable", "while not explicitly provided", or similar. The user should never see plumbing leaking into copy.
-7. NO INVENTION OF CAUSATION (CRITICAL): If a stock or sector had a big move and the NEWS HEADLINES / FILINGS sections don't contain a specific catalyst, do NOT fabricate one. Common temptations to avoid:
-   - Don't write "X fell on results" unless you can see results-related news for X today
-   - Don't write "Y rallied on positive sentiment" without naming what created the sentiment
-   - Don't write "ongoing concerns" / "weakness in the space" without naming the concern
-   - When cause is unknown but the move is real, frame as: "Titan's -6% decline was the day's most notable outlier — no specific catalyst visible in today's news or filings" or just "Titan -6% in heavy volume" without inventing a reason.
-8. NO SELF-REFERENCE: You are writing the wrap, not narrating writing it. Avoid "this slot represents", "the narrative we're tracking", "our wrap will cover". Just write the analysis.
-9. ANTI-HEDGING (only when you HAVE evidence): Be specific WHEN the data supports a direct claim.
-   - WHEN EVIDENCE EXISTS — STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation — likely election-result-driven."
-   - WHEN EVIDENCE IS MISSING — HONEST: "Titan's -6% decline was the day's most striking single-stock move; no specific catalyst surfaced in available news flow."
+6. NEVER confess data gaps. If a section's input is missing, quietly omit. Do NOT write "data unavailable", "while not explicitly provided", or similar.
+7. NO INVENTION OF CAUSATION (CRITICAL): If a stock or sector had a big move and NEWS/FILINGS don't contain a specific catalyst, do NOT fabricate one. When cause is unknown but the move is real: "Titan's -6% decline was the day's most notable outlier — no specific catalyst visible in today's news or filings."
+8. NO SELF-REFERENCE: Just write the analysis.
+9. ANTI-HEDGING (only when you HAVE evidence):
+   - EVIDENCE EXISTS — STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation — likely election-driven."
+   - EVIDENCE MISSING — HONEST: "Titan's -6% decline was the day's most striking move; no specific catalyst surfaced in available news flow."
 10. Calibrate certainty: when interpretation is genuinely uncertain, say so once. Don't hedge every sentence.
 
 === DATA FOR TODAY ({date}) ===
 Timestamp: {timestamp}
 
-PRE-MARKET BRIEFING (today's setup, from this morning):
+PRE-MARKET BRIEFING (today's setup):
 {pre_context}
 
 DAY'S ARC (every intraday slot from open to close, oldest first):
@@ -1306,7 +1249,7 @@ MARKET BREADTH:
 SECTOR PERFORMANCE:
 {sectors}
 
-TOP STOCK MOVERS (sorted by % change magnitude):
+TOP STOCK MOVERS (by % change magnitude):
 {top_stocks}
 
 CURRENCIES:
@@ -1321,18 +1264,18 @@ US MARKET STATUS (pre-open in New York):
 TODAY'S NSE FILINGS (first 10):
 {filings}
 
-RECENT MARKET NEWS HEADLINES (last 12 hours, from Indian financial press via Pulse):
+RECENT MARKET NEWS HEADLINES (last 12 hours, Indian financial press via Pulse):
 {news_block}
 
-These headlines should help explain the day's narrative. Material categories: election results (named parties/states), RBI/SEBI moves, named-company news (results, M&A, regulatory), brokerage upgrades/downgrades, macro data (CPI/IIP/GDP/Fed minutes), geopolitical flashpoints. Sports/lifestyle/IPL are noise — ignore.
+Material categories: election results, RBI/SEBI moves, named-company news, brokerage calls, macro data, geopolitical flashpoints. Noise: sports/lifestyle/IPL.
 
-Rules: Do NOT cite headlines verbatim. DO connect headlines to specific themes when price action and headline align — e.g. if state election results are out and Auto sector outperformed, the rotation explanation is real. If a brokerage upgrade aligns with a stock's outsized move, name it. Don't be so cautious that you miss obvious causation.
+Rules: Do NOT cite verbatim. DO connect headlines to themes when price action confirms. Apply MARKET IGNORING NEWS rule — explicit non-reactions are signal.
 
 Now write the strategist post-market wrap:"""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PROMPT BUILDERS — wire packet data into prompt templates
+# PROMPT BUILDERS — wire packet data + shared principles into prompt templates
 # ─────────────────────────────────────────────────────────────────────────────
 def _build_technicals_block(packet: dict) -> str:
     tech = packet.get("technicals") or {}
@@ -1363,16 +1306,16 @@ def _build_vix_line(packet: dict) -> str:
 
 def build_pre_market_prompt(packet: dict) -> str:
     yest = packet.get("yesterday_post_text") or "(no recent post-market wrap on file)"
-    sess_lbl = _last_session_label()                  # "Friday's" on Mon, "yesterday's" otherwise
-    sess_caps = sess_lbl.upper().rstrip("S")          # "FRIDAY'" or "YESTERDAY'" — for heading
+    sess_lbl = _last_session_label()
     return PRE_MARKET_PROMPT.format(
+        shared_principles        = SHARED_PRINCIPLES,
         date                     = packet["date"],
         timestamp                = packet["timestamp_ist"],
         day_of_week              = _day_of_week_ist(),
         india_session_label      = sess_lbl,
-        india_session_label_caps = sess_lbl.upper(),  # "FRIDAY'S" or "YESTERDAY'S"
+        india_session_label_caps = sess_lbl.upper(),
         us_close_label           = _overnight_label(),
-        last_session_wrap_label  = sess_lbl.upper().replace("'S", "'S"),  # heading version
+        last_session_wrap_label  = sess_lbl.upper().replace("'S", "'S"),
         us_markets               = _format_ticker_list(packet.get("us_markets",   [])),
         us_tech                  = _format_ticker_list(packet.get("us_tech",      [])),
         asia_pacific             = _format_ticker_list(packet.get("asia_pacific", [])),
@@ -1390,6 +1333,7 @@ def build_pre_market_prompt(packet: dict) -> str:
 def build_post_market_prompt(packet: dict) -> str:
     prior = packet.get("prior") or {}
     return POST_MARKET_PROMPT.format(
+        shared_principles   = SHARED_PRINCIPLES,
         date                = packet["date"],
         timestamp           = packet["timestamp_ist"],
         next_session_label  = _next_session_label(),
@@ -1404,8 +1348,8 @@ def build_post_market_prompt(packet: dict) -> str:
         technicals_block    = _build_technicals_block(packet),
         vix_line            = _build_vix_line(packet),
         breadth_line        = _format_breadth(packet.get("breadth") or {}),
-        pre_context         = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP all 'compare to pre-market' comparisons in your wrap. Do NOT mention that pre-market is missing. Just describe today's session on its own terms.]")[:1200],
-        day_arc             = (prior.get("all_slots_compact") or "  [INSTRUCTION: No intraday slots recorded today. Skip the 'arc' walkthrough; describe the day from open to close using the close-of-day data only.]"),
+        pre_context         = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP all 'compare to pre-market' comparisons. Do NOT mention pre-market is missing. Describe today's session on its own terms.]")[:1200],
+        day_arc             = (prior.get("all_slots_compact") or "  [INSTRUCTION: No intraday slots recorded today. Skip the 'arc' walkthrough; describe the day from open to close using close-of-day data only.]"),
         news_block          = _format_pulse_headlines(packet.get("news") or []),
     )
 
@@ -1414,8 +1358,9 @@ def build_intraday_prompt(packet: dict) -> str:
     prior = packet.get("prior", {}) or {}
     sess_lbl = _last_session_label()
     if packet.get("is_opening"):
-        pre_ctx = prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing exists for today. SKIP all 'vs pre-market' comparisons. Describe the opening on its own merits using the live data below. Do NOT mention that pre-market is missing.]"
+        pre_ctx = prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing exists for today. SKIP all 'vs pre-market' comparisons. Describe the opening on its own merits. Do NOT mention pre-market is missing.]"
         return INTRADAY_OPENING_PROMPT.format(
+            shared_principles   = SHARED_PRINCIPLES,
             date                = packet["date"],
             timestamp           = packet["timestamp_ist"],
             day_of_week         = _day_of_week_ist(),
@@ -1435,13 +1380,14 @@ def build_intraday_prompt(packet: dict) -> str:
         )
     # Update slots
     prev_slot = prior.get("prev_slot") or "the prior slot"
-    prev_ctx  = prior.get("prev_text") or "[INSTRUCTION: No prior intraday slot found. Write as a fresh update for this time. Do not mention that prior context is missing.]"
+    prev_ctx  = prior.get("prev_text") or "[INSTRUCTION: No prior intraday slot found. Write as a fresh update for this time. Do not mention prior context is missing.]"
     prev_pct  = prior.get("prev_nifty_pct")
     prev_summary = (f"{prev_pct:+.2f}% vs {sess_lbl} close" if isinstance(prev_pct, (int, float))
                     else "not recorded")
-    pre_ctx_short = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP any 'vs pre-market' framing. Do NOT mention that pre-market is missing.]")[:900]
+    pre_ctx_short = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP 'vs pre-market' framing. Do NOT mention pre-market is missing.]")[:900]
     day_arc = prior.get("all_slots_compact") or "  [INSTRUCTION: This is the first intraday update of the day; no earlier slots to reference.]"
     return INTRADAY_UPDATE_PROMPT.format(
+        shared_principles  = SHARED_PRINCIPLES,
         date               = packet["date"],
         timestamp          = packet["timestamp_ist"],
         slot               = packet["slot"],
@@ -1464,37 +1410,94 @@ def build_intraday_prompt(packet: dict) -> str:
     )
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# MODEL SELECTION (v2.1 — hybrid strategy)
+# ─────────────────────────────────────────────────────────────────────────────
+# Post-market always uses Pro (best wrap quality, once per day).
+# Event days route intraday through Pro too — big moves, VIX spikes, extreme
+# breadth all signal a session where the cost premium pays back in quality.
+# Routine intraday and pre-market stay on Flash-Lite to control costs.
+def _is_event_day(packet: dict) -> bool:
+    """Detect whether today warrants stronger model for intraday."""
+    # 1. Nifty move >= 1.5% (absolute)
+    nifty = packet.get("nifty")
+    if not nifty and packet.get("india_prev"):
+        # Fallback for pre-market packet
+        for t in packet["india_prev"]:
+            if t and t.get("label") == "NIFTY 50":
+                nifty = t
+                break
+    if isinstance(nifty, dict) and nifty.get("pct") is not None:
+        if abs(nifty.get("pct", 0)) >= 1.5:
+            return True
+
+    # 2. India VIX moved >= 15% over 5D
+    vix = packet.get("india_vix") or {}
+    if vix.get("trend_5d_pct") is not None:
+        if abs(vix["trend_5d_pct"]) >= 15:
+            return True
+
+    # 3. Breadth extreme (>= 3:1 either way)
+    breadth = packet.get("breadth") or {}
+    ratio = breadth.get("ad_ratio")
+    if ratio is not None and ratio > 0:
+        if ratio >= 3.0 or ratio <= 0.33:
+            return True
+
+    return False
+
+
+def _select_model(mode: str, packet: dict) -> tuple:
+    """
+    Returns (model_name, max_output_tokens).
+    Post-market always Pro. Intraday/pre-market upgrade to Pro on event days.
+    """
+    if mode == "post":
+        return (GEMINI_MODEL_STRONG, 1400)
+    if mode == "pre":
+        # Pre-market on Monday or after major event yesterday — upgrade.
+        if _is_event_day(packet):
+            return (GEMINI_MODEL_STRONG, 1100)
+        return (GEMINI_MODEL_FAST, 900)
+    # Intraday
+    if _is_event_day(packet):
+        return (GEMINI_MODEL_STRONG, 700)
+    return (GEMINI_MODEL_FAST, 500)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
-# GEMINI CALL — with mode-aware token limit
+# GEMINI CALL (v2.1 — accepts model parameter)
 # ─────────────────────────────────────────────────────────────────────────────
-def call_gemini(prompt: str, max_tokens: int = 900):
+def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
     if not GEMINI_AVAILABLE:
         _log("⚠️", "google-generativeai package not installed")
         return None, "error"
     if not GEMINI_API_KEY:
         _log("⚠️", "GEMINI_API_KEY not set")
         return None, "error"
+    model = model or GEMINI_MODEL_FAST
     try:
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel(GEMINI_MODEL)
-        _log("🧠", f"Calling Gemini ({GEMINI_MODEL}, max_tokens={max_tokens})...")
-        response = model.generate_content(
+        gen_model = genai.GenerativeModel(model)
+        _log("🧠", f"Calling Gemini ({model}, max_tokens={max_tokens})...")
+        response = gen_model.generate_content(
             prompt,
             generation_config={
                 "temperature":       0.5,
                 "max_output_tokens": max_tokens,
                 "top_p":             0.9,
             },
-            request_options={"timeout": 30},
+            request_options={"timeout": 45},   # Pro is slower than flash-lite
         )
         if response and response.text:
             text = response.text.strip()
             if len(text) < 80:
                 _log("⚠️", f"Gemini returned too-short text ({len(text)} chars)")
                 return None, "error"
-            _log("✅", f"Gemini returned {len(text)} characters")
-            return text, "gemini"
+            _log("✅", f"Gemini returned {len(text)} characters ({model})")
+            # source tag: "gemini_pro" or "gemini_flash" — useful for audit
+            source_tag = "gemini_pro" if "pro" in model else "gemini_flash"
+            return text, source_tag
         _log("⚠️", "Gemini returned empty response")
         return None, "error"
     except Exception as e:
@@ -1503,7 +1506,7 @@ def call_gemini(prompt: str, max_tokens: int = 900):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# RULE-BASED FALLBACKS
+# RULE-BASED FALLBACKS (unchanged from v2.0)
 # ─────────────────────────────────────────────────────────────────────────────
 def fallback_pre_market(packet: dict) -> str:
     us = packet.get("us_markets", [])
@@ -1588,7 +1591,7 @@ def fallback_post_market(packet: dict) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SUPABASE CACHE WRITE — schema v2 (slot_time column required)
+# SUPABASE CACHE WRITE
 # ─────────────────────────────────────────────────────────────────────────────
 def save_commentary(commentary_type: str, slot: str, text: str, source: str, packet: dict) -> bool:
     if not supabase:
@@ -1596,11 +1599,10 @@ def save_commentary(commentary_type: str, slot: str, text: str, source: str, pac
         return False
     try:
         date = _today_ist()
-        # slot stored as TIME 'HH:MM:00'
         slot_full = f"{slot}:00"
         supabase.table("market_commentary").upsert(
             {
-                "commentary_type": commentary_type,    # 'pre' | 'intraday' | 'post'
+                "commentary_type": commentary_type,
                 "commentary_date": date,
                 "slot_time":       slot_full,
                 "commentary_text": text,
@@ -1617,7 +1619,7 @@ def save_commentary(commentary_type: str, slot: str, text: str, source: str, pac
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ORCHESTRATION
+# ORCHESTRATION (v2.1 — uses _select_model)
 # ─────────────────────────────────────────────────────────────────────────────
 def generate_commentary(mode: str, slot: str = None, dry_run: bool = False):
     _log("🚀", f"Starting {mode.upper()} commentary generation (slot={slot})")
@@ -1627,14 +1629,11 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False):
         slot   = slot or PRE_SLOT
         packet = build_pre_market_packet()
         prompt = build_pre_market_prompt(packet)
-        max_tokens = 900
     elif mode == "post":
         slot   = slot or POST_SLOT
         packet = build_post_market_packet()
         prompt = build_post_market_prompt(packet)
-        max_tokens = 900
     elif mode == "intraday":
-        # Validate / snap slot
         if slot is None:
             now = datetime.now(IST)
             slot = _snap_to_intraday_slot(now.hour, now.minute)
@@ -1644,12 +1643,17 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False):
             slot = _snap_to_intraday_slot(sh, sm)
         packet = build_intraday_packet(slot)
         prompt = build_intraday_prompt(packet)
-        max_tokens = 500   # 10-line target — keeps output tight + costs lower
     else:
         _log("❌", f"Unknown mode: {mode}")
         return None
 
-    # Sanity check — bail if data is too thin
+    # v2.1: model + token limit chosen by hybrid strategy
+    model, max_tokens = _select_model(mode, packet)
+    is_event = _is_event_day(packet)
+    if is_event and mode != "post":
+        _log("⚡", f"EVENT DAY detected — routing {mode} to {model}")
+
+    # Sanity check
     total_datapoints = sum(
         len(v) if isinstance(v, list) else (1 if v and not isinstance(v, dict) else 0)
         for v in packet.values()
@@ -1660,12 +1664,12 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False):
 
     if dry_run:
         print("\n" + "=" * 70)
-        print(f"DRY RUN — prompt for {mode} {slot}:")
+        print(f"DRY RUN — prompt for {mode} {slot} (model={model}):")
         print("=" * 70)
         print(prompt)
         print("=" * 70)
 
-    text, source = call_gemini(prompt, max_tokens=max_tokens)
+    text, source = call_gemini(prompt, model=model, max_tokens=max_tokens)
 
     if not text:
         _log("🔁", "Gemini failed — using rule-based fallback")
@@ -1685,26 +1689,27 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False):
 
     if dry_run:
         _log("🏁", "Dry run complete — nothing saved")
-        return {"text": text, "source": source, "saved": False, "slot": slot}
+        return {"text": text, "source": source, "saved": False, "slot": slot, "model": model}
 
     saved = save_commentary(mode, slot, text, source, packet)
-    return {"text": text, "source": source, "saved": saved, "slot": slot}
+    return {"text": text, "source": source, "saved": saved, "slot": slot, "model": model}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.0")
+    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.1")
     parser.add_argument("--mode", choices=["pre", "intraday", "post", "auto"], default="auto",
                         help="'auto' detects from current IST time (default)")
     parser.add_argument("--slot", default=None,
-                        help="Intraday slot HH:MM (e.g. 10:30). Optional — auto-detected if omitted.")
+                        help="Intraday slot HH:MM (e.g. 10:30). Optional.")
     parser.add_argument("--dry-run", action="store_true",
                         help="Print prompt and output but do not save to Supabase")
+    parser.add_argument("--force-pro", action="store_true",
+                        help="Override model selection — use Gemini Pro for this run")
     args = parser.parse_args()
 
-    # Resolve mode
     mode = args.mode
     slot = args.slot
     if mode == "auto":
@@ -1712,7 +1717,15 @@ def main():
         slot = slot or auto_slot
         _log("🤖", f"Auto-detected: mode={mode}, slot={slot}")
 
-    # Validate environment
+    # Optional manual override of model selection
+    if args.force_pro:
+        global _select_model
+        _orig = _select_model
+        def _select_model(m, p):
+            base_tokens = _orig(m, p)[1]
+            return (GEMINI_MODEL_STRONG, base_tokens)
+        _log("⚡", "FORCE-PRO override active — Gemini Pro for this run")
+
     missing = []
     if not SUPABASE_URL:        missing.append("SUPABASE_URL")
     if not SUPABASE_SECRET_KEY: missing.append("SUPABASE_SECRET_KEY")
