@@ -1,7 +1,15 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v2.1)
+market_commentary.py  ─  MoneyVeda Market Commentary (v2.2)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
+
+v2.2 CHANGES (Render scheduling fix):
+  • detect_mode_and_slot() now returns (None, None) for off-schedule fires
+    instead of misclassifying 07:30/08:30/09:00 IST as pre-market.
+  • main() exits cleanly (exit 0, no API calls) when off-schedule.
+  • This lets the Render cron use a broad schedule like `0,30 2-10 * * 1-5`
+    (fires every :00 and :30 from 02:00 to 10:30 UTC = 07:30 to 16:00 IST).
+    Real slots fire normally; "extra" fires exit in ~2 seconds.
 
 v2.1 CHANGES (reasoning upgrade):
   • SHARED_PRINCIPLES block injected into every prompt:
@@ -29,8 +37,16 @@ USAGE:
   python market_commentary.py --mode intraday --slot 10:30
   python market_commentary.py --mode pre --dry-run
 
+RENDER CRON SCHEDULE (set in Render dashboard, Settings → Deploy → Schedule):
+  0,30 2-10 * * 1-5
+  → fires every :00 and :30 from 02:00 UTC to 10:30 UTC, Mon-Fri
+  → covers all 15 real slots (pre + 13 intraday + post) in IST
+  → 3 "extra" fires exit cleanly via detect_mode_and_slot() returning None
+
 EXIT CODES:
-  0 = success, 2 = data too thin (skipped), 1 = config/env error
+  0 = success OR clean exit (off-schedule fire)
+  1 = config/env error
+  2 = data too thin (skipped)
 """
 
 import os
@@ -163,13 +179,39 @@ def _snap_to_intraday_slot(hh: int, mm: int) -> str:
 
 
 def detect_mode_and_slot():
+    """
+    Auto-detect mode + slot from current IST time.
+
+    Returns (None, None) if the current time is NOT inside a valid scheduled
+    slot window. This lets the caller exit cleanly when Render fires the cron
+    at a time that doesn't correspond to a real slot (e.g. 07:30, 08:30, 09:00
+    IST when using a broad `0,30 2-10 * * 1-5` Render schedule).
+
+    Valid windows (each ±15 min for cron drift tolerance):
+      - Pre-market: 08:00 IST  (07:45 – 08:15)
+      - Intraday:   09:30, 10:00, ... 15:30 IST  (each ±15 min)
+      - Post-market: 16:00 IST  (15:45 – 16:15)
+    """
     now = datetime.now(IST)
-    hh, mm = now.hour, now.minute
-    if hh < 9 or (hh == 9 and mm < 15):
+    cur_min = now.hour * 60 + now.minute  # minutes since midnight IST
+
+    # Pre-market window: 08:00 IST = 480 min
+    if 465 <= cur_min <= 495:
         return "pre", PRE_SLOT
-    if hh >= 16:
+
+    # Post-market window: 16:00 IST = 960 min
+    if 945 <= cur_min <= 975:
         return "post", POST_SLOT
-    return "intraday", _snap_to_intraday_slot(hh, mm)
+
+    # Intraday slots: each ±15 min
+    for slot in INTRADAY_SLOTS:
+        sh, sm = map(int, slot.split(":"))
+        slot_min = sh * 60 + sm
+        if abs(cur_min - slot_min) <= 15:
+            return "intraday", slot
+
+    # Off-schedule fire — caller should exit cleanly
+    return None, None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1713,7 +1755,12 @@ def main():
     mode = args.mode
     slot = args.slot
     if mode == "auto":
-        mode, auto_slot = detect_mode_and_slot()
+        detected_mode, auto_slot = detect_mode_and_slot()
+        if detected_mode is None:
+            _log("⏭️", f"Current IST time ({_now_ist_str()}) is outside any "
+                       f"scheduled slot window. Exiting cleanly — no commentary generated.")
+            sys.exit(0)
+        mode = detected_mode
         slot = slot or auto_slot
         _log("🤖", f"Auto-detected: mode={mode}, slot={slot}")
 
