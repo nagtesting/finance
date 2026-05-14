@@ -1495,15 +1495,15 @@ def _select_model(mode: str, packet: dict) -> tuple:
     Post-market always Pro. Intraday/pre-market upgrade to Pro on event days.
     """
     if mode == "post":
-        return (GEMINI_MODEL_STRONG, 1400)
+        return (GEMINI_MODEL_STRONG, 8000)
     if mode == "pre":
         # Pre-market on Monday or after major event yesterday — upgrade.
         if _is_event_day(packet):
-            return (GEMINI_MODEL_STRONG, 1100)
+            return (GEMINI_MODEL_STRONG, 8000)
         return (GEMINI_MODEL_FAST, 900)
     # Intraday
     if _is_event_day(packet):
-        return (GEMINI_MODEL_STRONG, 700)
+        return (GEMINI_MODEL_STRONG, 6000)
     return (GEMINI_MODEL_FAST, 500)
 
 
