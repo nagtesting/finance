@@ -471,7 +471,7 @@ def get_market_breadth() -> dict:
     }
     try:
         cache_url = "https://finance-bxyf.onrender.com/api/market-cache"
-        r = requests.get(cache_url, headers=HEADERS, timeout=15)
+        r = requests.get(cache_url, headers=HEADERS, timeout=30)
         r.raise_for_status()
         data = r.json()
         tickers = data.get("tickers") or []
