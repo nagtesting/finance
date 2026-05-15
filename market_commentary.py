@@ -1,47 +1,41 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v2.2)
+market_commentary.py  ─  MoneyVeda Market Commentary (v2.3)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
 
-v2.2 CHANGES (Render scheduling fix):
-  • detect_mode_and_slot() now returns (None, None) for off-schedule fires
-    instead of misclassifying 07:30/08:30/09:00 IST as pre-market.
-  • main() exits cleanly (exit 0, no API calls) when off-schedule.
-  • This lets the Render cron use a broad schedule like `0,30 2-10 * * 1-5`
-    (fires every :00 and :30 from 02:00 to 10:30 UTC = 07:30 to 16:00 IST).
-    Real slots fire normally; "extra" fires exit in ~2 seconds.
+v2.3 CHANGES (Google Search grounding for pre/post-market):
+  • call_gemini_grounded() added — uses Gemini's built-in google_search tool
+    to fetch live web context. Used ONLY for pre-market and post-market slots,
+    where depth matters more than latency/cost.
+  • Intraday remains on Pulse RSS + Flash-Lite (unchanged) — preserves the
+    sub-second response budget and per-slot cost discipline.
+  • Pulse headlines are still passed to pre/post prompts as a curated baseline;
+    grounding adds depth on top, not replacement.
+  • SHARED_PRINCIPLES extended with a GROUNDING DISCIPLINE block (only injected
+    on grounded calls) — keeps the strategist voice, prevents drift into
+    "news summary" mode.
+  • grounding_sources persisted into data_snapshot for audit / debugging.
+  • Tool name auto-negotiates between 'google_search' (Gemini 2.0+) and
+    'google_search_retrieval' (legacy) depending on SDK version.
 
-v2.1 CHANGES (reasoning upgrade):
-  • SHARED_PRINCIPLES block injected into every prompt:
-      - Internal reasoning framework (8 questions, silent CoT)
-      - "What is the market TRYING to do" core framing
-      - Banned filler phrases list
-      - Interpreting-moves checklist (breadth/volume/peer/persistence confirmation)
-      - Market-ignoring-news detection rule
-      - Causal-chain examples (crude → OMC, rupee → IT, etc.)
-      - Non-obvious insight requirement (>= 1 per commentary)
-  • Hybrid model selection:
-      - Post-market always uses gemini-2.5-pro (best wrap quality)
-      - Event days (>1.5% move, VIX spike, extreme breadth) use Pro for intraday
-      - Routine intraday/pre-market stay on flash-lite
-  • Sharpened role line ("You are not a news summarizer") in every prompt
+v2.2 CHANGES (Render scheduling fix) — unchanged:
+  • detect_mode_and_slot() returns (None, None) for off-schedule fires.
+  • main() exits cleanly when off-schedule.
 
-THREE MODES (unchanged from v2.0):
-  1. PRE-MARKET   (08:00 IST)
-  2. INTRADAY     (09:30, 10:00 ... 15:30 IST — 13 slots/day)
-  3. POST-MARKET  (16:00 IST)
+THREE MODES:
+  1. PRE-MARKET   (08:00 IST)  — Gemini Pro + Google Search grounding
+  2. INTRADAY     (09:30–15:30, 13 slots) — Flash-Lite / Pro (event days), Pulse only
+  3. POST-MARKET  (16:00 IST)  — Gemini Pro + Google Search grounding
 
 USAGE:
   python market_commentary.py                     # auto-detect from IST time
   python market_commentary.py --mode pre
   python market_commentary.py --mode intraday --slot 10:30
   python market_commentary.py --mode pre --dry-run
+  python market_commentary.py --no-grounding      # disable grounding for this run
 
-RENDER CRON SCHEDULE (set in Render dashboard, Settings → Deploy → Schedule):
+RENDER CRON SCHEDULE (Settings → Deploy → Schedule):
   0,30 2-10 * * 1-5
-  → fires every :00 and :30 from 02:00 UTC to 10:30 UTC, Mon-Fri
-  → covers all 15 real slots (pre + 13 intraday + post) in IST
-  → 3 "extra" fires exit cleanly via detect_mode_and_slot() returning None
 
 EXIT CODES:
   0 = success OR clean exit (off-schedule fire)
@@ -75,28 +69,25 @@ GEMINI_API_KEY      = os.getenv("GEMINI_API_KEY")
 
 MARKET_API_BASE = "https://moneyveda.org/api/market"
 
-# v2.1: model selection is now per-call. These are the candidate models.
 GEMINI_MODEL_FAST   = "gemini-2.5-flash-lite"   # cheap, fast — default intraday
-GEMINI_MODEL_STRONG = "gemini-2.5-pro"          # post-market + event days
+GEMINI_MODEL_STRONG = "gemini-2.5-pro"          # post-market + event days + grounded
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
-# Canonical intraday slot times (IST). Must match the cron schedule in YAML.
 INTRADAY_SLOTS = [
     "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
     "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
 ]
-PRE_SLOT  = "08:00"   # nominal slot label for pre-market row
-POST_SLOT = "16:00"   # nominal slot label for post-market row
+PRE_SLOT  = "08:00"
+POST_SLOT = "16:00"
 
 HEADERS = {
     "User-Agent": (
-        "Mozilla/5.0 (MoneyVeda/2.1 MarketCommentary) "
+        "Mozilla/5.0 (MoneyVeda/2.3 MarketCommentary) "
         "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
     )
 }
 
-# Supabase client
 supabase = None
 if SUPABASE_URL and SUPABASE_SECRET_KEY:
     supabase = create_client(SUPABASE_URL, SUPABASE_SECRET_KEY)
@@ -181,36 +172,28 @@ def _snap_to_intraday_slot(hh: int, mm: int) -> str:
 def detect_mode_and_slot():
     """
     Auto-detect mode + slot from current IST time.
-
-    Returns (None, None) if the current time is NOT inside a valid scheduled
-    slot window. This lets the caller exit cleanly when Render fires the cron
-    at a time that doesn't correspond to a real slot (e.g. 07:30, 08:30, 09:00
-    IST when using a broad `0,30 2-10 * * 1-5` Render schedule).
+    Returns (None, None) for off-schedule fires (caller exits cleanly).
 
     Valid windows (each ±15 min for cron drift tolerance):
       - Pre-market: 08:00 IST  (07:45 – 08:15)
-      - Intraday:   09:30, 10:00, ... 15:30 IST  (each ±15 min)
-      - Post-market: 16:00 IST  (15:45 – 16:15)
+      - Intraday:   09:30, 10:00, ... 15:30 IST (each ±15 min)
+      - Post-market: 16:00 IST (15:45 – 16:15)
     """
     now = datetime.now(IST)
-    cur_min = now.hour * 60 + now.minute  # minutes since midnight IST
+    cur_min = now.hour * 60 + now.minute
 
-    # Pre-market window: 08:00 IST = 480 min
-    if 465 <= cur_min <= 495:
+    if 465 <= cur_min <= 495:        # Pre-market 08:00 ± 15
         return "pre", PRE_SLOT
 
-    # Post-market window: 16:00 IST = 960 min
-    if 945 <= cur_min <= 975:
+    if 945 <= cur_min <= 975:        # Post-market 16:00 ± 15
         return "post", POST_SLOT
 
-    # Intraday slots: each ±15 min
     for slot in INTRADAY_SLOTS:
         sh, sm = map(int, slot.split(":"))
         slot_min = sh * 60 + sm
         if abs(cur_min - slot_min) <= 15:
             return "intraday", slot
 
-    # Off-schedule fire — caller should exit cleanly
     return None, None
 
 
@@ -526,7 +509,8 @@ def _format_breadth(b: dict) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# NEWS HEADLINES (Pulse by Zerodha)
+# NEWS HEADLINES (Pulse by Zerodha) — used for intraday + as Pulse baseline
+# in pre/post (grounding adds depth on top)
 # ─────────────────────────────────────────────────────────────────────────────
 import xml.etree.ElementTree as _ET
 from html import unescape as _html_unescape
@@ -534,7 +518,7 @@ from html import unescape as _html_unescape
 PULSE_FEED_URL = "http://pulse.zerodha.com/feed.php"
 PULSE_HEADERS = {
     "User-Agent": (
-        "MoneyVeda/2.1 MarketCommentary "
+        "MoneyVeda/2.3 MarketCommentary "
         "(https://moneyveda.org; analysis context use; contact via website)"
     )
 }
@@ -883,7 +867,7 @@ def build_post_market_packet():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SHARED REASONING PRINCIPLES  (v2.1 — injected into every prompt)
+# SHARED REASONING PRINCIPLES
 # ─────────────────────────────────────────────────────────────────────────────
 SHARED_PRINCIPLES = """
 SILENT REASONING (do this BEFORE writing — do NOT print these answers, do NOT label your output with them):
@@ -955,12 +939,46 @@ Pick the 2 most important sector moves, the strongest divergence, the key instit
 """.strip()
 
 
+# NEW in v2.3: extra block injected only on grounded calls (pre/post-market)
+GROUNDING_DISCIPLINE = """
+GROUNDING DISCIPLINE (Google Search is available to you — use it like a strategist, not a news aggregator):
+
+WHEN TO SEARCH:
+  - To verify a specific catalyst for a large stock move (>3%) when the news headlines in the data packet don't already explain it
+  - To get precise wording of a central bank statement, election counting trend, brokerage call target, or macro data print
+  - To confirm a global event (Fed speak, OPEC decision, geopolitical flashpoint) before connecting it to Indian sectors
+  - To check whether a sector move has a fresh, specific driver (regulatory change, sector-wide downgrade, commodity print)
+
+WHEN NOT TO SEARCH:
+  - To pad commentary with "experts say" or "analysts believe" framing
+  - To restate what the Pulse headlines already cover
+  - To find generic background on a stock or sector
+  - To paraphrase a Bloomberg/Reuters article — that's news-summary mode, not strategist mode
+
+HARD RULES FOR USING GROUNDED INFORMATION:
+  1. Cite ONLY sources dated within the last 48 hours for pre-market, last 24 hours for post-market.
+  2. If two reputable sources disagree on a fact, state the uncertainty plainly. Do not pick one silently.
+  3. Avoid retail-blog / SEO-farm sources. Stick to: Bloomberg, Reuters, ET, Mint, BS, MoneyControl, NDTV Profit, official RBI/SEBI/PIB/exchange statements, central bank wires.
+  4. Do NOT quote articles verbatim. Synthesize the fact into the strategist voice.
+  5. The data packet is still the SOURCE OF TRUTH for prices, levels, sectors, and breadth. Search is for CAUSATION and CONTEXT only — never to override the price data.
+  6. If you searched and found nothing useful, say nothing about it. Do not write "I checked recent news and..."
+  7. Keep your strategist voice — you are not summarizing what the press says, you are using it as one input among several.
+
+CROSS-CHECK:
+  - When the data packet's Pulse headlines and your search results agree: state the cause confidently.
+  - When they disagree: trust the more recent / more authoritative source, and note the divergence briefly if material.
+  - When data shows a move but no source explains it: say so honestly ("no specific catalyst surfaced in available news flow") — do NOT invent.
+""".strip()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
-# PROMPT TEMPLATES (v2.1 — strengthened role + shared principles injected)
+# PROMPT TEMPLATES
 # ─────────────────────────────────────────────────────────────────────────────
 PRE_MARKET_PROMPT = """You are a senior equity strategist briefing the trading desk on Indian markets before the 9:15 AM IST open. You are NOT a news summarizer. You are NOT a TV anchor. You interpret price action, sector rotation, breadth, positioning, and conviction for retail investors using MoneyVeda — smart, time-pressed, want analysis not data.
 
 {shared_principles}
+
+{grounding_block}
 
 YOUR TASK:
 Write a structured 18-22 line strategist briefing in plain English. INTERPRETATION, not description. Identify 2-3 dominant themes; place today's setup against recent context (last week's range, last session's wrap); call out divergences worth watching; give a clear directional bias for the open and a clear view of what the market will be TRYING TO DO at open.
@@ -988,22 +1006,19 @@ STRUCTURE (use markdown headers exactly as shown — frontend renders them):
 One sentence — what should a retail investor watch in the first 30 minutes.
 
 RULES:
-1. USE ONLY data provided. Do not invent numbers, levels, news, or events.
+1. USE the data provided + Google Search for verifying causation and context. Never invent numbers, levels, news, or events.
 2. Reference SPECIFIC LEVELS where the data supports it.
 3. Frame predictions as expectation, not certainty ("likely to", "should test", "watch for").
 4. NO buy/sell advice on individual stocks. Educational analysis only.
 5. Use Rs. for currency.
 6. If you don't have enough data for a section, do NOT confess the gap to the reader. Quietly omit, or use the data you DO have. Never write "data unavailable" or "while not explicitly provided".
 7. Voice: confident, specific, professional. Desk strategist, not TV anchor.
-8. NO INVENTION OF CAUSATION (CRITICAL): If a stock or sector is moving and the NEWS HEADLINES section does NOT contain a specific catalyst, do NOT invent one.
-   - Don't say "X on results" unless an earnings/results headline for X today is visible
+8. NO INVENTION OF CAUSATION (CRITICAL): If a stock or sector is moving and neither the NEWS HEADLINES section nor your grounded search yields a specific catalyst, do NOT invent one.
+   - Don't say "X on results" unless an earnings/results headline for X today is visible OR confirmed via search
    - Don't say "X on profit-booking" unless multiple data points support that
    - Don't say "Y sector on ongoing concerns" — name the concern or omit
    - Acceptable when cause is unknown: "Titan -7% on heavy volume — driver not visible in today's news flow", or just state the move.
 9. ANTI-HEDGING (only when you HAVE evidence): Avoid filler like "possibly", "appears to", "suggesting a potential" WHEN the data supports a direct claim.
-   - EVIDENCE EXISTS — WEAK: "Auto outperformed, suggesting a potential rotation."
-   - EVIDENCE EXISTS — STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation."
-   - EVIDENCE IS MISSING — say so: "Titan -7% — no specific catalyst visible in news; trigger isn't clear."
 
 === DATA FOR TODAY ({date}) ===
 Timestamp: {timestamp}
@@ -1038,12 +1053,10 @@ INDIA VIX (volatility regime):
 {last_session_wrap_label} POST-MARKET WRAP (for continuity):
 {yesterday_wrap}
 
-RECENT MARKET NEWS HEADLINES (last 36 hours, Indian financial press via Pulse):
+RECENT MARKET NEWS HEADLINES (last 36 hours, Indian financial press via Pulse — curated baseline):
 {news_block}
 
-These headlines are CONTEXT. Material categories worth citing: election results, RBI/SEBI moves, named-company news (results, M&A, regulatory), brokerage upgrades/downgrades, macro data (CPI/IIP/GDP/Fed), geopolitical events affecting crude/USD. Noise to ignore: sports, lifestyle, IPL, entertainment.
-
-Rules: Do NOT cite headlines verbatim. Do NOT invent causation. DO connect material headlines to themes when data confirms the connection.
+These Pulse headlines are CONTEXT. Search the web for SPECIFIC CATALYSTS and FRESH DEVELOPMENTS that the Pulse feed may not capture — particularly: overnight Fed/ECB/BoJ commentary, large brokerage calls from this morning, geopolitical developments affecting crude/USD, sector-specific regulatory news. Do NOT cite headlines verbatim. Do NOT invent causation.
 
 Now write the strategist pre-market briefing:"""
 
@@ -1221,6 +1234,8 @@ POST_MARKET_PROMPT = """You are a senior equity strategist writing the POST-MARK
 
 {shared_principles}
 
+{grounding_block}
+
 YOUR TASK:
 Write a structured 20-24 line wrap. This is the day's THESIS — pull together pre-market setup, how the day actually unfolded across 13 intraday slots, the close, and implications for tomorrow. The central question: WHAT WAS THE MARKET TRYING TO DO TODAY, and did it succeed? Use markdown headers.
 
@@ -1233,7 +1248,7 @@ STRUCTURE:
 4-5 lines on how the day unfolded. Reference the pre-market expectation: did it play out, or did the day reject the setup? Walk through the arc: open, mid-morning, midday, close. Identify inflection points using the slot summaries. State what the market was TRYING TO DO and whether it succeeded.
 
 **Sector & Stock Highlights**
-4-5 lines on which sectors led/lagged AND why. Apply the INTERPRETING MOVES checklist. Name 2-3 individual stocks with context — what the move means, not just the magnitude. Apply CAUSAL CHAINS where the data supports them.
+4-5 lines on which sectors led/lagged AND why. Apply the INTERPRETING MOVES checklist. Name 2-3 individual stocks with context — what the move means, not just the magnitude. Apply CAUSAL CHAINS where the data supports them. Use grounded search if a large move needs a specific catalyst that Pulse didn't capture.
 
 **Technical Read**
 3-4 lines on where the close leaves Nifty technically: above/below 20D and 50D MAs, position vs 52W high/low, distance from recent support/resistance. India VIX direction. What does the technical setup imply for tomorrow?
@@ -1248,17 +1263,15 @@ STRUCTURE:
 One sentence — the day in a single insight a retail investor can take home. This MUST be a NON-OBVIOUS INSIGHT, not a recap.
 
 RULES:
-1. USE ONLY provided data. No invented numbers, news, or events.
+1. USE the data provided + Google Search for verifying catalysts and adding macro context. No invented numbers, news, or events.
 2. Reference SPECIFIC LEVELS in the technical section.
 3. Connect dots — what THEME explains today's price action?
 4. NO buy/sell advice. Use Rs. for currency.
 5. Professional desk voice.
 6. NEVER confess data gaps. If a section's input is missing, quietly omit. Do NOT write "data unavailable", "while not explicitly provided", or similar.
-7. NO INVENTION OF CAUSATION (CRITICAL): If a stock or sector had a big move and NEWS/FILINGS don't contain a specific catalyst, do NOT fabricate one. When cause is unknown but the move is real: "Titan's -6% decline was the day's most notable outlier — no specific catalyst visible in today's news or filings."
+7. NO INVENTION OF CAUSATION (CRITICAL): If a stock or sector had a big move and neither NEWS/FILINGS nor your grounded search yields a specific catalyst, do NOT fabricate one. When cause is unknown but the move is real: "Titan's -6% decline was the day's most notable outlier — no specific catalyst surfaced in today's news or filings."
 8. NO SELF-REFERENCE: Just write the analysis.
-9. ANTI-HEDGING (only when you HAVE evidence):
-   - EVIDENCE EXISTS — STRONG: "Auto's 1.93% rally alongside FMCG weakness (HUL -1.94%, ITC -1.06%) confirms defensive-to-cyclical rotation — likely election-driven."
-   - EVIDENCE MISSING — HONEST: "Titan's -6% decline was the day's most striking move; no specific catalyst surfaced in available news flow."
+9. ANTI-HEDGING (only when you HAVE evidence): direct claims when the evidence supports them; honest uncertainty when it doesn't.
 10. Calibrate certainty: when interpretation is genuinely uncertain, say so once. Don't hedge every sentence.
 
 === DATA FOR TODAY ({date}) ===
@@ -1301,18 +1314,16 @@ US MARKET STATUS (pre-open in New York):
 TODAY'S NSE FILINGS (first 10):
 {filings}
 
-RECENT MARKET NEWS HEADLINES (last 12 hours, Indian financial press via Pulse):
+RECENT MARKET NEWS HEADLINES (last 12 hours, Indian financial press via Pulse — curated baseline):
 {news_block}
 
-Material categories: election results, RBI/SEBI moves, named-company news, brokerage calls, macro data, geopolitical flashpoints. Noise: sports/lifestyle/IPL.
-
-Rules: Do NOT cite verbatim. DO connect headlines to themes when price action confirms. Apply MARKET IGNORING NEWS rule — explicit non-reactions are signal.
+These Pulse headlines are CONTEXT. Use grounded search to verify catalysts behind today's largest moves, capture closing-hour developments Pulse may not yet have, and check global wires (Fed/ECB speak, geopolitical flashpoints, commodity prints) that affect tomorrow's setup. Do NOT cite verbatim. DO connect headlines to themes when price action confirms. Apply MARKET IGNORING NEWS rule — explicit non-reactions are signal.
 
 Now write the strategist post-market wrap:"""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PROMPT BUILDERS — wire packet data + shared principles into prompt templates
+# PROMPT BUILDERS
 # ─────────────────────────────────────────────────────────────────────────────
 def _build_technicals_block(packet: dict) -> str:
     tech = packet.get("technicals") or {}
@@ -1341,11 +1352,12 @@ def _build_vix_line(packet: dict) -> str:
     return f"  India VIX: {last}{note}"
 
 
-def build_pre_market_prompt(packet: dict) -> str:
+def build_pre_market_prompt(packet: dict, use_grounding: bool = True) -> str:
     yest = packet.get("yesterday_post_text") or "(no recent post-market wrap on file)"
     sess_lbl = _last_session_label()
     return PRE_MARKET_PROMPT.format(
         shared_principles        = SHARED_PRINCIPLES,
+        grounding_block          = GROUNDING_DISCIPLINE if use_grounding else "",
         date                     = packet["date"],
         timestamp                = packet["timestamp_ist"],
         day_of_week              = _day_of_week_ist(),
@@ -1367,10 +1379,11 @@ def build_pre_market_prompt(packet: dict) -> str:
     )
 
 
-def build_post_market_prompt(packet: dict) -> str:
+def build_post_market_prompt(packet: dict, use_grounding: bool = True) -> str:
     prior = packet.get("prior") or {}
     return POST_MARKET_PROMPT.format(
         shared_principles   = SHARED_PRINCIPLES,
+        grounding_block     = GROUNDING_DISCIPLINE if use_grounding else "",
         date                = packet["date"],
         timestamp           = packet["timestamp_ist"],
         next_session_label  = _next_session_label(),
@@ -1415,7 +1428,6 @@ def build_intraday_prompt(packet: dict) -> str:
             breadth_line        = _format_breadth(packet.get("breadth") or {}),
             news_block          = _format_pulse_headlines(packet.get("news") or []),
         )
-    # Update slots
     prev_slot = prior.get("prev_slot") or "the prior slot"
     prev_ctx  = prior.get("prev_text") or "[INSTRUCTION: No prior intraday slot found. Write as a fresh update for this time. Do not mention prior context is missing.]"
     prev_pct  = prior.get("prev_nifty_pct")
@@ -1448,11 +1460,10 @@ def build_intraday_prompt(packet: dict) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# MODEL SELECTION (v2.1 — hybrid strategy)
+# MODEL SELECTION
 # ─────────────────────────────────────────────────────────────────────────────
 def _is_event_day(packet: dict) -> bool:
     """Detect whether today warrants stronger model for intraday."""
-    # 1. Nifty move >= 1.5% (absolute)
     nifty = packet.get("nifty")
     if not nifty and packet.get("india_prev"):
         for t in packet["india_prev"]:
@@ -1463,13 +1474,11 @@ def _is_event_day(packet: dict) -> bool:
         if abs(nifty.get("pct", 0)) >= 1.5:
             return True
 
-    # 2. India VIX moved >= 15% over 5D
     vix = packet.get("india_vix") or {}
     if vix.get("trend_5d_pct") is not None:
         if abs(vix["trend_5d_pct"]) >= 15:
             return True
 
-    # 3. Breadth extreme (>= 3:1 either way)
     breadth = packet.get("breadth") or {}
     ratio = breadth.get("ad_ratio")
     if ratio is not None and ratio > 0:
@@ -1487,9 +1496,8 @@ def _select_model(mode: str, packet: dict) -> tuple:
     if mode == "post":
         return (GEMINI_MODEL_STRONG, 8000)
     if mode == "pre":
-        if _is_event_day(packet):
-            return (GEMINI_MODEL_STRONG, 8000)
-        return (GEMINI_MODEL_FAST, 900)
+        # pre-market also goes to Pro (grounding works best on Pro)
+        return (GEMINI_MODEL_STRONG, 8000)
     # Intraday
     if _is_event_day(packet):
         return (GEMINI_MODEL_STRONG, 6000)
@@ -1497,9 +1505,10 @@ def _select_model(mode: str, packet: dict) -> tuple:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# GEMINI CALL (v2.2 — fixed timeout: 180s for Pro, 45s for Flash)
+# GEMINI CALLS — non-grounded (intraday) and grounded (pre/post)
 # ─────────────────────────────────────────────────────────────────────────────
 def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
+    """Non-grounded Gemini call — used for intraday slots."""
     if not GEMINI_AVAILABLE:
         _log("⚠️", "google-generativeai package not installed")
         return None, "error"
@@ -1511,8 +1520,6 @@ def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
         genai.configure(api_key=GEMINI_API_KEY)
         gen_model = genai.GenerativeModel(model)
         _log("🧠", f"Calling Gemini ({model}, max_tokens={max_tokens})...")
-        # Pro with thinking tokens can take 60-120s for long wraps.
-        # Flash-Lite is fast. Scale the timeout to the model.
         call_timeout = 180 if "pro" in model else 45
         response = gen_model.generate_content(
             prompt,
@@ -1536,6 +1543,132 @@ def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
     except Exception as e:
         _log("⚠️", f"Gemini API error: {e}")
         return None, "error"
+
+
+def _extract_grounding_sources(response) -> list:
+    """
+    Pulls the list of grounding citations from a grounded response.
+    Returns a list of {title, uri} dicts. Empty list if no grounding metadata
+    or the model decided not to ground this call.
+    """
+    sources = []
+    try:
+        candidates = getattr(response, "candidates", None) or []
+        if not candidates:
+            return sources
+        cand = candidates[0]
+        gm = getattr(cand, "grounding_metadata", None)
+        if gm is None:
+            # Some SDK versions nest it inside the response prototype
+            gm_dict = None
+            try:
+                gm_dict = response.to_dict().get("candidates", [{}])[0].get("grounding_metadata")
+            except Exception:
+                pass
+            if not gm_dict:
+                return sources
+            chunks = gm_dict.get("grounding_chunks") or gm_dict.get("groundingChunks") or []
+            for c in chunks:
+                web = c.get("web") or {}
+                title = web.get("title") or ""
+                uri   = web.get("uri")   or ""
+                if uri:
+                    sources.append({"title": title[:200], "uri": uri[:500]})
+            return sources
+
+        # Object-form access
+        chunks = getattr(gm, "grounding_chunks", None) or []
+        for c in chunks:
+            web = getattr(c, "web", None)
+            if not web:
+                continue
+            title = getattr(web, "title", "") or ""
+            uri   = getattr(web, "uri",   "") or ""
+            if uri:
+                sources.append({"title": title[:200], "uri": uri[:500]})
+    except Exception as e:
+        _log("⚠️", f"Could not parse grounding metadata: {e}")
+    return sources
+
+
+def call_gemini_grounded(prompt: str, model: str = None, max_tokens: int = 8000):
+    """
+    Grounded Gemini call — uses Google Search to fetch live web context.
+    Used for pre-market and post-market slots only.
+
+    Returns (text, source_tag, grounding_sources).
+    grounding_sources is a list of {title, uri} dicts for audit/storage.
+    """
+    if not GEMINI_AVAILABLE:
+        _log("⚠️", "google-generativeai package not installed")
+        return None, "error", []
+    if not GEMINI_API_KEY:
+        _log("⚠️", "GEMINI_API_KEY not set")
+        return None, "error", []
+
+    model = model or GEMINI_MODEL_STRONG
+    try:
+        genai.configure(api_key=GEMINI_API_KEY)
+        gen_model = genai.GenerativeModel(model)
+        _log("🌐", f"Calling Gemini GROUNDED ({model}, max_tokens={max_tokens})...")
+
+        # Grounded Pro calls can take 30-120s (search + thinking + generation).
+        call_timeout = 240
+
+        response = None
+        last_err = None
+        tools_used = None
+
+        # Gemini 2.0+ uses 'google_search'. Legacy SDK / older models use 'google_search_retrieval'.
+        # We try the modern form first and fall back if the SDK rejects it.
+        for tool_spec in ("google_search", "google_search_retrieval"):
+            try:
+                response = gen_model.generate_content(
+                    prompt,
+                    generation_config={
+                        "temperature":       0.5,
+                        "max_output_tokens": max_tokens,
+                        "top_p":             0.9,
+                    },
+                    tools=tool_spec,
+                    request_options={"timeout": call_timeout},
+                )
+                tools_used = tool_spec
+                _log("🔧", f"Grounding tool accepted: {tool_spec}")
+                break
+            except Exception as e:
+                last_err = e
+                msg = str(e).lower()
+                # Only fall through if the SDK explicitly rejected this tool name
+                if any(k in msg for k in ("tool", "unknown", "invalid", "not supported", "unsupported")):
+                    _log("🔄", f"{tool_spec} rejected by SDK ({type(e).__name__}), trying alternate form...")
+                    continue
+                # Any other error (timeout, auth, quota) — don't retry, just raise
+                raise
+
+        if response is None:
+            raise RuntimeError(f"Both grounding tool forms failed. Last error: {last_err}")
+
+        if not response.text:
+            _log("⚠️", "Gemini grounded call returned empty response")
+            return None, "error", []
+
+        text = response.text.strip()
+        if len(text) < 80:
+            _log("⚠️", f"Gemini grounded returned too-short text ({len(text)} chars)")
+            return None, "error", []
+
+        sources = _extract_grounding_sources(response)
+        _log("✅", f"Gemini grounded returned {len(text)} chars with {len(sources)} source(s) "
+                   f"[tool={tools_used}]")
+
+        source_tag = "gemini_pro_grounded" if sources else "gemini_pro_grounded_nosrc"
+        return text, source_tag, sources
+
+    except Exception as e:
+        _log("⚠️", f"Gemini grounded API error: {e}")
+        # Caller will fall back to non-grounded call
+        return None, "error", []
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1626,13 +1759,18 @@ def fallback_post_market(packet: dict) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 # SUPABASE CACHE WRITE
 # ─────────────────────────────────────────────────────────────────────────────
-def save_commentary(commentary_type: str, slot: str, text: str, source: str, packet: dict) -> bool:
+def save_commentary(commentary_type: str, slot: str, text: str, source: str,
+                    packet: dict, grounding_sources: list = None) -> bool:
     if not supabase:
         _log("⚠️", "Supabase not configured — skipping save")
         return False
     try:
         date = _today_ist()
         slot_full = f"{slot}:00"
+        # Persist grounding sources inside data_snapshot for audit
+        snapshot = dict(packet) if isinstance(packet, dict) else {}
+        if grounding_sources:
+            snapshot["_grounding_sources"] = grounding_sources
         supabase.table("market_commentary").upsert(
             {
                 "commentary_type": commentary_type,
@@ -1640,11 +1778,13 @@ def save_commentary(commentary_type: str, slot: str, text: str, source: str, pac
                 "slot_time":       slot_full,
                 "commentary_text": text,
                 "source":          source,
-                "data_snapshot":   json.dumps(packet, default=str),
+                "data_snapshot":   json.dumps(snapshot, default=str),
             },
             on_conflict="commentary_type,commentary_date,slot_time",
         ).execute()
-        _log("💾", f"Saved {commentary_type} commentary for {date} {slot} (source={source})")
+        src_count = len(grounding_sources) if grounding_sources else 0
+        _log("💾", f"Saved {commentary_type} commentary for {date} {slot} "
+                   f"(source={source}, grounded_sources={src_count})")
         return True
     except Exception as e:
         _log("⚠️", f"Supabase save failed: {e}")
@@ -1652,20 +1792,25 @@ def save_commentary(commentary_type: str, slot: str, text: str, source: str, pac
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ORCHESTRATION (v2.1 — uses _select_model)
+# ORCHESTRATION
 # ─────────────────────────────────────────────────────────────────────────────
-def generate_commentary(mode: str, slot: str = None, dry_run: bool = False):
-    _log("🚀", f"Starting {mode.upper()} commentary generation (slot={slot})")
+def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
+                        use_grounding: bool = True):
+    _log("🚀", f"Starting {mode.upper()} commentary generation (slot={slot}, grounding={use_grounding})")
     _log("📅", f"IST now: {_now_ist_str()}")
+
+    # Grounding is only used for pre/post — intraday always non-grounded
+    grounded_modes = {"pre", "post"}
+    will_ground = use_grounding and (mode in grounded_modes)
 
     if mode == "pre":
         slot   = slot or PRE_SLOT
         packet = build_pre_market_packet()
-        prompt = build_pre_market_prompt(packet)
+        prompt = build_pre_market_prompt(packet, use_grounding=will_ground)
     elif mode == "post":
         slot   = slot or POST_SLOT
         packet = build_post_market_packet()
-        prompt = build_post_market_prompt(packet)
+        prompt = build_post_market_prompt(packet, use_grounding=will_ground)
     elif mode == "intraday":
         if slot is None:
             now = datetime.now(IST)
@@ -1680,10 +1825,9 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False):
         _log("❌", f"Unknown mode: {mode}")
         return None
 
-    # v2.1: model + token limit chosen by hybrid strategy
     model, max_tokens = _select_model(mode, packet)
     is_event = _is_event_day(packet)
-    if is_event and mode != "post":
+    if is_event and mode == "intraday":
         _log("⚡", f"EVENT DAY detected — routing {mode} to {model}")
 
     # Sanity check
@@ -1697,12 +1841,24 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False):
 
     if dry_run:
         print("\n" + "=" * 70)
-        print(f"DRY RUN — prompt for {mode} {slot} (model={model}):")
+        print(f"DRY RUN — prompt for {mode} {slot} (model={model}, grounded={will_ground}):")
         print("=" * 70)
         print(prompt)
         print("=" * 70)
 
-    text, source = call_gemini(prompt, model=model, max_tokens=max_tokens)
+    # Dispatch: grounded for pre/post, non-grounded for intraday
+    grounding_sources = []
+    if will_ground:
+        text, source, grounding_sources = call_gemini_grounded(
+            prompt, model=model, max_tokens=max_tokens
+        )
+        # Fallback: if grounded call fails entirely, try a non-grounded call
+        # on the same model before falling all the way to rule-based.
+        if not text:
+            _log("🔁", "Grounded call failed — falling back to non-grounded Gemini")
+            text, source = call_gemini(prompt, model=model, max_tokens=max_tokens)
+    else:
+        text, source = call_gemini(prompt, model=model, max_tokens=max_tokens)
 
     if not text:
         _log("🔁", "Gemini failed — using rule-based fallback")
@@ -1718,29 +1874,43 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False):
     print(f"{mode.upper()} {slot} COMMENTARY  ({source})")
     print("=" * 70)
     print(text)
+    if grounding_sources:
+        print("\n--- GROUNDING SOURCES ---")
+        for i, s in enumerate(grounding_sources, 1):
+            print(f"  [{i}] {s.get('title', '?')[:80]}")
+            print(f"      {s.get('uri', '?')[:120]}")
     print("=" * 70 + "\n")
 
     if dry_run:
         _log("🏁", "Dry run complete — nothing saved")
-        return {"text": text, "source": source, "saved": False, "slot": slot, "model": model}
+        return {
+            "text": text, "source": source, "saved": False,
+            "slot": slot, "model": model,
+            "grounding_sources": grounding_sources,
+        }
 
-    saved = save_commentary(mode, slot, text, source, packet)
-    return {"text": text, "source": source, "saved": saved, "slot": slot, "model": model}
+    saved = save_commentary(mode, slot, text, source, packet,
+                            grounding_sources=grounding_sources)
+    return {
+        "text": text, "source": source, "saved": saved,
+        "slot": slot, "model": model,
+        "grounding_sources": grounding_sources,
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.2")
+    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.3")
     parser.add_argument("--mode", choices=["pre", "intraday", "post", "auto"], default="auto",
                         help="'auto' detects from current IST time (default)")
     parser.add_argument("--slot", default=None,
                         help="Intraday slot HH:MM (e.g. 10:30). Optional.")
     parser.add_argument("--dry-run", action="store_true",
                         help="Print prompt and output but do not save to Supabase")
-    parser.add_argument("--force-pro", action="store_true",
-                        help="Override model selection — use Gemini Pro for this run")
+    parser.add_argument("--no-grounding", action="store_true",
+                        help="Disable Google Search grounding for this run (pre/post only)")
     args = parser.parse_args()
 
     mode = args.mode
@@ -1755,16 +1925,6 @@ def main():
         slot = slot or auto_slot
         _log("🤖", f"Auto-detected: mode={mode}, slot={slot}")
 
-    # Optional manual override of model selection
-    if args.force_pro:
-        original_select_model = _select_model
-
-        def _select_model(m, p):
-            base_tokens = original_select_model(m, p)[1]
-            return (GEMINI_MODEL_STRONG, base_tokens)
-
-        _log("⚡", "FORCE-PRO override active — Gemini Pro for this run")
-
     missing = []
     if not SUPABASE_URL:        missing.append("SUPABASE_URL")
     if not SUPABASE_SECRET_KEY: missing.append("SUPABASE_SECRET_KEY")
@@ -1773,7 +1933,9 @@ def main():
         print(f"❌ Missing env vars: {', '.join(missing)}")
         sys.exit(1)
 
-    result = generate_commentary(mode, slot=slot, dry_run=args.dry_run)
+    use_grounding = not args.no_grounding
+    result = generate_commentary(mode, slot=slot, dry_run=args.dry_run,
+                                 use_grounding=use_grounding)
     if not result:
         sys.exit(2)
     sys.exit(0)
