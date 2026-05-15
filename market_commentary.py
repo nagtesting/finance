@@ -885,11 +885,6 @@ def build_post_market_packet():
 # ─────────────────────────────────────────────────────────────────────────────
 # SHARED REASONING PRINCIPLES  (v2.1 — injected into every prompt)
 # ─────────────────────────────────────────────────────────────────────────────
-# This block is the core of v2.1. It shifts every prompt from "describe the
-# market" to "interpret what the market is trying to do" — with explicit
-# silent chain-of-thought, banned phrases, an interpreting-moves checklist,
-# the market-ignoring-news rule, causal chains, and a non-obvious insight
-# requirement. Injected via {shared_principles} placeholder.
 SHARED_PRINCIPLES = """
 SILENT REASONING (do this BEFORE writing — do NOT print these answers, do NOT label your output with them):
 1. What is the dominant market force in the data right now?
@@ -1455,16 +1450,11 @@ def build_intraday_prompt(packet: dict) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 # MODEL SELECTION (v2.1 — hybrid strategy)
 # ─────────────────────────────────────────────────────────────────────────────
-# Post-market always uses Pro (best wrap quality, once per day).
-# Event days route intraday through Pro too — big moves, VIX spikes, extreme
-# breadth all signal a session where the cost premium pays back in quality.
-# Routine intraday and pre-market stay on Flash-Lite to control costs.
 def _is_event_day(packet: dict) -> bool:
     """Detect whether today warrants stronger model for intraday."""
     # 1. Nifty move >= 1.5% (absolute)
     nifty = packet.get("nifty")
     if not nifty and packet.get("india_prev"):
-        # Fallback for pre-market packet
         for t in packet["india_prev"]:
             if t and t.get("label") == "NIFTY 50":
                 nifty = t
@@ -1497,7 +1487,6 @@ def _select_model(mode: str, packet: dict) -> tuple:
     if mode == "post":
         return (GEMINI_MODEL_STRONG, 8000)
     if mode == "pre":
-        # Pre-market on Monday or after major event yesterday — upgrade.
         if _is_event_day(packet):
             return (GEMINI_MODEL_STRONG, 8000)
         return (GEMINI_MODEL_FAST, 900)
@@ -1508,7 +1497,7 @@ def _select_model(mode: str, packet: dict) -> tuple:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# GEMINI CALL (v2.1 — accepts model parameter)
+# GEMINI CALL (v2.2 — fixed timeout: 180s for Pro, 45s for Flash)
 # ─────────────────────────────────────────────────────────────────────────────
 def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
     if not GEMINI_AVAILABLE:
@@ -1522,7 +1511,7 @@ def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
         genai.configure(api_key=GEMINI_API_KEY)
         gen_model = genai.GenerativeModel(model)
         _log("🧠", f"Calling Gemini ({model}, max_tokens={max_tokens})...")
-         # Pro with thinking tokens can take 60-120s for long wraps.
+        # Pro with thinking tokens can take 60-120s for long wraps.
         # Flash-Lite is fast. Scale the timeout to the model.
         call_timeout = 180 if "pro" in model else 45
         response = gen_model.generate_content(
@@ -1534,28 +1523,12 @@ def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
             },
             request_options={"timeout": call_timeout},
         )
-
-Apply the call_gemini() timeout fix above (180s for Pro).
-While you're in the file, bump get_market_breadth() timeout from 15 to 30.
-Push to GitHub → Render auto-deploys.
-Test from Render Shell:
-
-bash   python market_commentary.py --mode post --dry-run
-Watch the timing — the Pro call should now run 60-120s and complete instead of timing out at 45s. You'll see ✅ Gemini returned XXXX characters (gemini-2.5-pro) and a full strategist wrap printed.
-Why each run failed — full picture now
-
-08:00 pre-market (event day → Pro, old 1100 tokens): failed on finish_reason: 2. Fixed by the token bump you already deployed.
-09:30 intraday (Flash-Lite): worked — Flash-Lite is fast and has no thinking-token issue.
-16:00 post-market (always Pro, 8000 tokens): failed on 504 timeout — Pro needs more than 45s. This is the fix above.
-
-Once the timeout fix is in, all three modes should work. Push it and run the dry-run test — tell me the timing and whether it completes.Opus 4.7Adaptive
         if response and response.text:
             text = response.text.strip()
             if len(text) < 80:
                 _log("⚠️", f"Gemini returned too-short text ({len(text)} chars)")
                 return None, "error"
             _log("✅", f"Gemini returned {len(text)} characters ({model})")
-            # source tag: "gemini_pro" or "gemini_flash" — useful for audit
             source_tag = "gemini_pro" if "pro" in model else "gemini_flash"
             return text, source_tag
         _log("⚠️", "Gemini returned empty response")
@@ -1566,7 +1539,7 @@ Once the timeout fix is in, all three modes should work. Push it and run the dry
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# RULE-BASED FALLBACKS (unchanged from v2.0)
+# RULE-BASED FALLBACKS
 # ─────────────────────────────────────────────────────────────────────────────
 def fallback_pre_market(packet: dict) -> str:
     us = packet.get("us_markets", [])
@@ -1759,7 +1732,7 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False):
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.1")
+    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.2")
     parser.add_argument("--mode", choices=["pre", "intraday", "post", "auto"], default="auto",
                         help="'auto' detects from current IST time (default)")
     parser.add_argument("--slot", default=None,
@@ -1784,11 +1757,12 @@ def main():
 
     # Optional manual override of model selection
     if args.force_pro:
-        global _select_model
-        _orig = _select_model
+        original_select_model = _select_model
+
         def _select_model(m, p):
-            base_tokens = _orig(m, p)[1]
+            base_tokens = original_select_model(m, p)[1]
             return (GEMINI_MODEL_STRONG, base_tokens)
+
         _log("⚡", "FORCE-PRO override active — Gemini Pro for this run")
 
     missing = []
