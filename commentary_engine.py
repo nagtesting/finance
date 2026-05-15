@@ -1,10 +1,10 @@
 """
-commentary_engine.py  ─  MoneyVeda Predictive Intelligence (v3.1)
+commentary_engine.py  ─  MoneyVeda Predictive Intelligence (v3.2)
 ===================================================================
 Detects significant price moves, then fetches every available
 data layer to produce plain-English "why it moved" commentary.
 
-Data layers (unchanged from v2):
+Data layers (unchanged):
   1. Live price + 52-week hi/lo + volume + 5-day trend  (yfinance)
   2. Today's NSE filings                                (Supabase)
   3. Sector / Nifty benchmark comparison                (yfinance)
@@ -12,14 +12,26 @@ Data layers (unchanged from v2):
   5. Historical pattern matching                        (yfinance)
   6. AI narrative generation                            (Gemini, with rule-based fallback)
 
-NEW in v3.1:
+v3.2 CHANGES (news quality + reliability):
+  - News headlines: junk-headline filter (drops "...Highlights..." trailing-off
+    titles, listicles, generic roundups), catalyst-relevance scoring, FULL
+    headline shown (no mid-sentence truncation), and honest "no clear catalyst"
+    when the best available headline is junk — no invented causation.
+  - _build_prompt(): explicitly tells the model to SUMMARISE WHAT THE NEWS SAYS
+    in plain words, and to say so plainly + not invent a cause when no headline
+    explains the move.
+  - Timeout scales to model: Flash-Lite 15s, Pro 120s (Pro is much slower).
+  - GEMINI_MODEL kept as Flash-Lite (fast, cheap, fine for 4-6 sentence stock
+    notes). GEMINI_MODEL_STRONG added for optional manual escalation.
+
+v3.1 (prior):
   - Supabase cache layer (daily_commentary table) — 1 Gemini call per stock per day max
-  - Swapped Claude/Anthropic → Gemini 2.5 Flash-Lite (free tier: 1000 req/day)
+  - Swapped Claude/Anthropic -> Gemini 2.5 Flash-Lite
   - Legacy ANTHROPIC_API_KEY still supported as a secondary fallback (optional)
 
 Run modes (unchanged):
-  python commentary_engine.py              → analyze all movers now
-  python commentary_engine.py RELIANCE     → analyze one stock
+  python commentary_engine.py              -> analyze all movers now
+  python commentary_engine.py RELIANCE     -> analyze one stock
 """
 
 import os
@@ -141,12 +153,21 @@ def _sector_for(symbol: str) -> str:
     return SECTOR_ETF.get(symbol, SECTOR_ETF_DEFAULT)
 
 MOVE_THRESHOLD = 1.0   # % move to trigger commentary
-GEMINI_MODEL = "gemini-2.5-flash-lite"   # free tier: 15 RPM, 1000 RPD
-GEMINI_TIMEOUT_SECONDS = 15
+
+# v3.2: Flash-Lite stays primary — it's fast and fine for short stock notes.
+# GEMINI_MODEL_STRONG is available if you ever want to escalate manually.
+GEMINI_MODEL        = "gemini-2.5-flash-lite"   # free tier: 15 RPM, 1000 RPD
+GEMINI_MODEL_STRONG = "gemini-2.5-pro"          # optional manual escalation
+
+# v3.2: timeout scales to model. Pro thinking tokens make it MUCH slower than
+# Flash-Lite — a 15s timeout would 504 on Pro every time (this is the same bug
+# that hit the post-market wrap in market_commentary.py).
+GEMINI_TIMEOUT_FAST   = 15    # Flash-Lite — fast
+GEMINI_TIMEOUT_STRONG = 120   # Pro — needs room for thinking
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CACHE LAYER (new in v3.1) — Supabase daily_commentary
+# CACHE LAYER — Supabase daily_commentary
 # ─────────────────────────────────────────────────────────────────────────────
 def _today_str() -> str:
     """Return today's date as YYYY-MM-DD (server timezone)."""
@@ -199,7 +220,7 @@ def save_commentary_to_cache(symbol: str, commentary_text: str, source: str) -> 
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LAYER 1 — Price context  (UNCHANGED from v2)
+# LAYER 1 — Price context
 # ─────────────────────────────────────────────────────────────────────────────
 def get_price_context(symbol_ns: str) -> dict:
     """Returns today's move, 52-week position, volume context."""
@@ -246,7 +267,7 @@ def get_price_context(symbol_ns: str) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LAYER 2 — NSE Filings from Supabase  (UNCHANGED)
+# LAYER 2 — NSE Filings from Supabase
 # ─────────────────────────────────────────────────────────────────────────────
 def get_today_filings(symbol: str) -> list:
     """Fetch today's filings for a symbol from Supabase."""
@@ -266,7 +287,7 @@ def get_today_filings(symbol: str) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LAYER 3 — Sector / Nifty comparison  (UNCHANGED)
+# LAYER 3 — Sector / Nifty comparison
 # ─────────────────────────────────────────────────────────────────────────────
 def get_sector_context(symbol: str) -> dict:
     """Compare today's stock move to its sector index and Nifty."""
@@ -290,7 +311,7 @@ def get_sector_context(symbol: str) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LAYER 4 — News headlines via yfinance  (UNCHANGED)
+# LAYER 4 — News headlines via yfinance
 # ─────────────────────────────────────────────────────────────────────────────
 HEADERS = {
     "User-Agent": (
@@ -312,15 +333,87 @@ def get_news_headlines(symbol: str) -> list:
                 title = n["content"]["title"]
                 if title and len(title) > 10:
                     headlines.append(title)
-            except:
+            except Exception:
                 pass
         return headlines
-    except:
+    except Exception:
         return []
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LAYER 5 — Historical pattern matching  (UNCHANGED)
+# NEWS QUALITY HELPERS  (new in v3.2)
+# ─────────────────────────────────────────────────────────────────────────────
+# Pulls the most informative headline out of the yfinance news list, filtering
+# the junk that pollutes the feed (GuruFocus "...Highlights..." titles that
+# trail off mid-sentence, generic listicles, market roundups). Used by BOTH the
+# rule-based fallback and — via the prompt — the AI path.
+
+# Words that signal a real, stock-moving catalyst.
+_CATALYST_WORDS = {
+    "result", "results", "profit", "loss", "revenue", "dividend", "bonus",
+    "acquire", "acquisition", "merger", "demerger", "partnership", "launch",
+    "wins", "bags", "secures", "quarterly", "earnings", "order", "contract",
+    "upgrade", "downgrade", "target price", "rating", "stake", "buyback",
+    "approval", "approved", "expansion", "guidance", "margin", "ipo", "qip",
+    "block deal", "bulk deal", "fundraise", "investment", "probe", "penalty",
+}
+
+# Patterns that mark a headline as junk — generic, non-specific, or truncated.
+_JUNK_MARKERS = (
+    "things to know", "stocks to watch", "top gainers", "top losers",
+    "market wrap", "closing bell", "opening bell", "market live",
+    "share price today", "stocks in news", "buzzing stocks",
+    "f&o ban", "trade setup", "stocks to buy",
+)
+
+
+def _is_junk_headline(h: str) -> bool:
+    """
+    True if the headline is generic boilerplate or a truncated 'highlights'
+    title that tells the reader nothing specific about why a stock moved.
+    """
+    hl = h.lower().strip()
+    # GuruFocus-style "...Earnings Call Highlights: Strong India Growth and ..."
+    # — trails off mid-sentence, conveys nothing concrete.
+    if "highlights" in hl and h.rstrip().endswith("..."):
+        return True
+    # Generic roundups / listicles.
+    if any(marker in hl for marker in _JUNK_MARKERS):
+        return True
+    return False
+
+
+def _pick_best_headline(symbol: str, news: list):
+    """
+    Score every headline and return (best_headline, score).
+    score > 0  -> a usable, catalyst-relevant headline
+    score <= 0 -> nothing informative; caller should NOT pretend news explains
+                  the move (anti-causation-invention rule).
+    Returns (None, 0) when the news list is empty.
+    """
+    if not news:
+        return None, 0
+
+    symbol_lower = symbol.lower()
+    scored = []
+    for h in news:
+        hl = h.lower()
+        score = 0
+        if symbol_lower in hl:
+            score += 2                                  # names the stock
+        if any(w in hl for w in _CATALYST_WORDS):
+            score += 2                                  # mentions a real catalyst
+        if _is_junk_headline(h):
+            score -= 4                                  # generic / truncated junk
+        scored.append((score, h))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    best_score, best_headline = scored[0]
+    return best_headline, best_score
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# LAYER 5 — Historical pattern matching
 # ─────────────────────────────────────────────────────────────────────────────
 def find_similar_historical_moves(symbol_ns: str, change_pct: float) -> dict:
     """Look back 1 year for similar % moves."""
@@ -375,15 +468,44 @@ def _build_prompt(symbol: str, data_packet: dict) -> str:
     change_pct = price.get("change_pct", 0)
     direction  = "fell" if change_pct < 0 else "rose"
 
+    # v3.2: surface the single most informative headline to the model, and flag
+    # whether it actually looks like a catalyst — so the model knows when it can
+    # cite news and when it must NOT invent a cause.
+    best_headline, best_score = _pick_best_headline(symbol, news)
+    if best_headline and best_score > 0:
+        news_guidance = (
+            f"MOST RELEVANT HEADLINE (looks catalyst-related): \"{best_headline}\"\n"
+            f"If this headline plausibly explains the move, SUMMARISE WHAT IT SAYS "
+            f"in plain words (e.g. 'rose after its Q4 results showed strong India "
+            f"growth and margin expansion'). Do NOT just say 'there was news'."
+        )
+    elif news:
+        news_guidance = (
+            "AVAILABLE HEADLINES ARE GENERIC (roundups / truncated 'highlights' "
+            "titles) — none clearly explains today's move. Do NOT cite them as a "
+            "cause. Say plainly that no clear news catalyst is visible and the "
+            "move may be technical, sector-driven, or flow-driven."
+        )
+    else:
+        news_guidance = (
+            "NO HEADLINES AVAILABLE. Do NOT invent a cause. Say the move has no "
+            "visible news catalyst and is likely technical or flow-driven."
+        )
+
     return f"""You are a senior Indian equity analyst writing for retail investors.
 A stock has moved significantly today. Analyze the data below and write a clear,
 concise commentary (4-6 sentences) explaining:
-  1. WHY the stock moved (most likely reasons based on evidence)
+  1. WHY the stock moved. If a news headline explains it, SUMMARISE WHAT THE NEWS
+     SAYS in plain words — don't just say "there was news". If no headline
+     explains the move, say so plainly and do NOT invent a cause.
   2. CONTEXT: Is this normal or unusual? Sector-driven or stock-specific?
   3. PREDICTION: What might happen in the next 3-5 days based on patterns?
 
 Keep language simple. Avoid jargon. Use INR (Rs.) for prices. Be factual, not sensational.
 Do NOT give direct buy/sell advice. End with one clear takeaway line for a retail investor.
+
+NEWS HANDLING (important):
+{news_guidance}
 
 === DATA ===
 Stock: {symbol}
@@ -396,7 +518,7 @@ Volume vs avg: {price.get('vol_ratio', 1.0)}x normal volume
 Nifty 50 today: {sector.get('nifty_change_pct', 'N/A')}%
 Sector index today: {sector.get('sector_change_pct', 'N/A')}%
 NSE Filings today: {json.dumps(filings, indent=2) if filings else 'None found'}
-Recent news headlines:
+All recent news headlines (for context — prefer the MOST RELEVANT one flagged above):
 {chr(10).join('- ' + h for h in news) if news else 'No headlines found'}
 Historical similar moves (past 1 year):
   Similar occurrences: {hist.get('similar_count', 'N/A')}
@@ -406,30 +528,38 @@ Historical similar moves (past 1 year):
 Write the commentary now:"""
 
 
-def _call_gemini(prompt: str):
-    """Call Gemini API. Returns text on success, None on any failure."""
+def _call_gemini(prompt: str, model: str = None):
+    """
+    Call Gemini API. Returns text on success, None on any failure.
+    v3.2: timeout scales to the model — Pro needs far longer than Flash-Lite.
+    """
     if not GEMINI_AVAILABLE or not GEMINI_API_KEY:
         return None
+    model = model or GEMINI_MODEL
+    # Pro's thinking tokens make it much slower; a short timeout 504s every time.
+    call_timeout = GEMINI_TIMEOUT_STRONG if "pro" in model else GEMINI_TIMEOUT_FAST
+    # Pro also needs a bigger output budget — thinking tokens count against it.
+    max_out = 2000 if "pro" in model else 400
     try:
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel(GEMINI_MODEL)
-        response = model.generate_content(
+        gen_model = genai.GenerativeModel(model)
+        response = gen_model.generate_content(
             prompt,
             generation_config={
                 "temperature":       0.4,
-                "max_output_tokens": 400,
+                "max_output_tokens": max_out,
                 "top_p":             0.9,
             },
-            request_options={"timeout": GEMINI_TIMEOUT_SECONDS},
+            request_options={"timeout": call_timeout},
         )
         if response and response.text:
             text = response.text.strip()
             if len(text) >= 30:
                 return text
-        print(f"   ⚠️  Gemini returned empty/short response")
+        print(f"   ⚠️  Gemini returned empty/short response ({model})")
         return None
     except Exception as e:
-        print(f"   ⚠️  Gemini API error: {e}")
+        print(f"   ⚠️  Gemini API error ({model}): {e}")
         return None
 
 
@@ -467,7 +597,7 @@ def generate_ai_commentary(symbol: str, data_packet: dict):
     """
     prompt = _build_prompt(symbol, data_packet)
 
-    # Primary: Gemini
+    # Primary: Gemini (Flash-Lite)
     text = _call_gemini(prompt)
     if text:
         return text, "gemini"
@@ -483,7 +613,7 @@ def generate_ai_commentary(symbol: str, data_packet: dict):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# RULE-BASED FALLBACK  (UNCHANGED from v2 — uses all 5 data layers)
+# RULE-BASED FALLBACK  (v3.2 — improved news handling)
 # ─────────────────────────────────────────────────────────────────────────────
 def _rule_based_commentary(symbol: str, data_packet: dict) -> str:
     """Plain-English fallback commentary without AI."""
@@ -532,20 +662,25 @@ def _rule_based_commentary(symbol: str, data_packet: dict) -> str:
                 f"unlikely to be the primary driver."
             )
     else:
-        parts.append("No major NSE filings detected today — the move appears to be price/news driven.")
+        parts.append("No major NSE filings detected today.")
 
-    # News — pick most relevant headline
-    if news:
-        symbol_lower = symbol.lower()
-        relevant = [h for h in news if symbol_lower in h.lower() or any(
-            w in h.lower() for w in [
-                'result', 'profit', 'revenue', 'dividend',
-                'acquire', 'merger', 'partnership', 'launch',
-                'wins', 'bags', 'secures', 'quarterly', 'earnings'
-            ]
-        )]
-        best_news = relevant[0] if relevant else news[0]
-        parts.append(f"Recent news: \"{best_news[:100]}\"")
+    # News — v3.2: use the scored picker. Show the FULL headline (no mid-sentence
+    # truncation), and only present it as a likely driver when it actually scores
+    # as catalyst-relevant. If the best headline is junk, say so honestly rather
+    # than pasting a meaningless "...Highlights..." title.
+    best_headline, best_score = _pick_best_headline(symbol, news)
+    if best_headline and best_score > 0:
+        parts.append(f"Likely news driver: \"{best_headline}\"")
+    elif news:
+        parts.append(
+            "No clear news catalyst in today's headlines — the move may be "
+            "technical, sector-driven, or flow-driven."
+        )
+    else:
+        parts.append(
+            "No news catalyst visible today — the move appears technical "
+            "or flow-driven."
+        )
 
     # 52-week context
     from_high = price.get("pct_from_high", 0)
@@ -569,7 +704,7 @@ def _rule_based_commentary(symbol: str, data_packet: dict) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# MAIN — Orchestrator  (MODIFIED: adds cache check + cache write)
+# MAIN — Orchestrator  (cache check + cache write)
 # ─────────────────────────────────────────────────────────────────────────────
 def analyze_stock(symbol: str, force_refresh: bool = False, ignore_threshold: bool = False):
     """
@@ -589,7 +724,7 @@ def analyze_stock(symbol: str, force_refresh: bool = False, ignore_threshold: bo
 
     print(f"\n🔍 Analyzing {symbol}...")
 
-    # --- CACHE CHECK (new in v3.1) ---
+    # --- CACHE CHECK ---
     if not force_refresh:
         cached = get_cached_commentary(symbol)
         if cached:
@@ -644,7 +779,7 @@ def analyze_stock(symbol: str, force_refresh: bool = False, ignore_threshold: bo
     }
     commentary, source = generate_ai_commentary(symbol, data_packet)
 
-    # --- CACHE WRITE (new in v3.1) ---
+    # --- CACHE WRITE ---
     # Only cache AI-generated commentary. Don't cache rule-based — we want
     # to retry the AI API on the next user click.
     if source in ("gemini", "anthropic"):
