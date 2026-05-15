@@ -1534,18 +1534,6 @@ def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
             },
             request_options={"timeout": call_timeout},
         )
-180 seconds for Pro. That's generous but Pro genuinely needs it, and a slow success beats a fast fallback to junk.
-Will Render allow a 3-minute run?
-Yes. Render cron jobs allow long runtimes (the limit is well beyond 3 minutes — they're for batch tasks). A post-market run that takes 2-3 minutes is completely fine. Your cron fires once at 16:00 IST; nothing else is waiting on it.
-Second issue in the same log — breadth fetch timed out
-⚠️ Breadth fetch failed: HTTPSConnectionPool(host='finance-bxyf.onrender.com'...): Read timed out. (read timeout=15)
-Your finance-bxyf Render service didn't respond within 15 seconds. This is the classic Render free-tier cold start — the service had spun down from inactivity, and waking it up took longer than 15 seconds. So today's post-market also had no breadth data (the _format_breadth() "not available" instruction fired).
-Not fatal — the commentary degrades gracefully — but it means breadth has been missing from several of your slots. Two options:
-Option A — bump the breadth timeout (quick, in get_market_breadth()):
-pythonr = requests.get(cache_url, headers=HEADERS, timeout=15)
-change timeout=15 to timeout=30. Gives the cold-starting service time to wake.
-Option B — keep finance-bxyf warm. A Render free service spins down after 15 min idle. If something pinged it every 10 minutes during market hours it would stay warm. But that's a bigger change — Option A is enough for now.
-What to do
 
 Apply the call_gemini() timeout fix above (180s for Pro).
 While you're in the file, bump get_market_breadth() timeout from 15 to 30.
