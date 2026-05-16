@@ -1,7 +1,24 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v2.3)
+market_commentary.py  ─  MoneyVeda Market Commentary (v2.4)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
+
+v2.4 CHANGES (event attribution made structural — post-market):
+  • POST_MARKET_PROMPT gains a MANDATORY **Catalysts** section directly
+    after **The Close** — names the concrete events/prints/developments
+    that drove the session as a [catalyst] -> [mechanism] -> [effect]
+    list, instead of letting attribution dissolve into prose.
+  • News-guidance block replaced with a grounding-conditional directive:
+      - EVENT_ATTRIBUTION_GROUNDED   (search ACTIVE → search mandated)
+      - EVENT_ATTRIBUTION_UNGROUNDED (search OFF → Pulse is primary)
+    Burden of proof flipped: every material move must be matched to a
+    NAMED catalyst or explicitly flagged as unexplained. "Price action
+    with no named cause" is now a failure, not an acceptable default.
+  • Post-market line budget raised 20-24 → 24-28 so the new section
+    doesn't starve The Story / Sector & Stock Highlights.
+  • generate_commentary(): when a grounded call fails and we fall back to
+    a non-grounded call, the prompt is now REBUILT with use_grounding=False
+    so we never tell a non-grounded model "Google Search is ACTIVE".
 
 v2.3 CHANGES (Google Search grounding for pre/post-market):
   • call_gemini_grounded() added — uses Gemini's built-in google_search tool
@@ -83,7 +100,7 @@ POST_SLOT = "16:00"
 
 HEADERS = {
     "User-Agent": (
-        "Mozilla/5.0 (MoneyVeda/2.3 MarketCommentary) "
+        "Mozilla/5.0 (MoneyVeda/2.4 MarketCommentary) "
         "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
     )
 }
@@ -518,7 +535,7 @@ from html import unescape as _html_unescape
 PULSE_FEED_URL = "http://pulse.zerodha.com/feed.php"
 PULSE_HEADERS = {
     "User-Agent": (
-        "MoneyVeda/2.3 MarketCommentary "
+        "MoneyVeda/2.4 MarketCommentary "
         "(https://moneyveda.org; analysis context use; contact via website)"
     )
 }
@@ -971,6 +988,18 @@ CROSS-CHECK:
 """.strip()
 
 
+# NEW in v2.4: grounding-conditional event-attribution directive for the
+# post-market news block. Flips the burden of proof — every material move
+# must be matched to a NAMED catalyst or explicitly flagged as unexplained.
+EVENT_ATTRIBUTION_GROUNDED = """
+These Pulse headlines are a CONTEXT BASELINE, not the full event picture. Grounded Google Search is ACTIVE for this run and you are REQUIRED to use it for event identification BEFORE writing the Catalysts section. Search specifically for: (a) any India macro print released today (CPI / IIP / GDP / trade / PMI / fiscal) — get the actual figure and whether it beat or missed expectations; (b) RBI / SEBI / government policy actions or statements today; (c) the specific driver of EVERY stock that moved >3% and EVERY sector that moved >0.8%; (d) global wires that transmitted into Indian sectors today (Fed/ECB/BoJ speak, OPEC, sanctions, conflict, tariffs, crude/gold prints); (e) the day's provisional FII/DII flow figure if reported. HARD RULE: every material move in the price data must be matched to a NAMED catalyst, or explicitly flagged as having no identifiable catalyst AFTER searching. "Price action analysis with no named cause" is a failure of this task, not an acceptable outcome. Do NOT cite or paraphrase articles — synthesize the event into the strategist voice. Do NOT invent causation: if search genuinely yields nothing for a move, say so plainly. Apply the MARKET IGNORING NEWS rule — a material headline that produced no price reaction is itself a catalyst-level signal and must be named in Catalysts.
+""".strip()
+
+EVENT_ATTRIBUTION_UNGROUNDED = """
+These Pulse headlines are your PRIMARY event source this run (grounded search is disabled). Mine them hard: every material move in the price data should be matched to a specific headline where one plausibly explains it, or explicitly flagged as unexplained by available news. Do NOT cite verbatim — synthesize into the strategist voice. Do NOT invent causation: if no headline explains a move, write "no specific catalyst surfaced in available news flow" rather than guessing. Apply the MARKET IGNORING NEWS rule — a material headline with no price reaction is itself a signal and must be named in Catalysts.
+""".strip()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PROMPT TEMPLATES
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1237,12 +1266,15 @@ POST_MARKET_PROMPT = """You are a senior equity strategist writing the POST-MARK
 {grounding_block}
 
 YOUR TASK:
-Write a structured 20-24 line wrap. This is the day's THESIS — pull together pre-market setup, how the day actually unfolded across 13 intraday slots, the close, and implications for tomorrow. The central question: WHAT WAS THE MARKET TRYING TO DO TODAY, and did it succeed? Use markdown headers.
+Write a structured 24-28 line wrap. This is the day's THESIS — pull together pre-market setup, how the day actually unfolded across 13 intraday slots, the close, and implications for tomorrow. The central question: WHAT WAS THE MARKET TRYING TO DO TODAY, and did it succeed? Use markdown headers.
 
 STRUCTURE:
 
 **The Close**
 2-3 lines on Nifty/Sensex close — direction, magnitude, where on the day's range we settled. Specific levels.
+
+**Catalysts**
+This section is MANDATORY and is the spine of the wrap — it answers "WHY did the market do what it did", not "what it did". List the 2-4 concrete events, prints, or developments that actually drove today's session, each on its own line, in the form: [named catalyst] -> [transmission mechanism] -> [observed market effect]. Draw from: India macro prints (CPI/IIP/GDP/trade/PMI — name the actual figure), RBI/SEBI/government action or commentary, the USD/INR move (name the level or record), crude and gold moves, global wires (Fed/ECB/BoJ/OPEC/geopolitics/tariffs), large stock-specific news (results/M&A/regulatory/brokerage calls), and FII/DII provisional flow direction. Apply the CAUSAL CHAINS framework to every entry. If a single dominant catalyst drove the whole session, say so explicitly and trace its transmission across sectors. A material move with no identifiable trigger even after grounded search must be stated honestly here ("the X% move had no catalyst in today's news or filings") — but this is a last resort AFTER searching, never the default. Do NOT relegate event attribution to a passing clause inside The Story; it lives here, named and explicit.
 
 **The Story**
 4-5 lines on how the day unfolded. Reference the pre-market expectation: did it play out, or did the day reject the setup? Walk through the arc: open, mid-morning, midday, close. Identify inflection points using the slot summaries. State what the market was TRYING TO DO and whether it succeeded.
@@ -1317,7 +1349,7 @@ TODAY'S NSE FILINGS (first 10):
 RECENT MARKET NEWS HEADLINES (last 12 hours, Indian financial press via Pulse — curated baseline):
 {news_block}
 
-These Pulse headlines are CONTEXT. Use grounded search to verify catalysts behind today's largest moves, capture closing-hour developments Pulse may not yet have, and check global wires (Fed/ECB speak, geopolitical flashpoints, commodity prints) that affect tomorrow's setup. Do NOT cite verbatim. DO connect headlines to themes when price action confirms. Apply MARKET IGNORING NEWS rule — explicit non-reactions are signal.
+{event_directive}
 
 Now write the strategist post-market wrap:"""
 
@@ -1381,9 +1413,14 @@ def build_pre_market_prompt(packet: dict, use_grounding: bool = True) -> str:
 
 def build_post_market_prompt(packet: dict, use_grounding: bool = True) -> str:
     prior = packet.get("prior") or {}
+    # v2.4: event-attribution directive is grounding-conditional, mirroring
+    # how grounding_block is gated. When grounding is live, search is mandated;
+    # when off, Pulse is the primary event source.
+    event_directive = EVENT_ATTRIBUTION_GROUNDED if use_grounding else EVENT_ATTRIBUTION_UNGROUNDED
     return POST_MARKET_PROMPT.format(
         shared_principles   = SHARED_PRINCIPLES,
         grounding_block     = GROUNDING_DISCIPLINE if use_grounding else "",
+        event_directive     = event_directive,
         date                = packet["date"],
         timestamp           = packet["timestamp_ist"],
         next_session_label  = _next_session_label(),
@@ -1854,8 +1891,14 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
         )
         # Fallback: if grounded call fails entirely, try a non-grounded call
         # on the same model before falling all the way to rule-based.
+        # v2.4: rebuild the prompt WITHOUT grounding directives first, so we
+        # don't instruct a non-grounded model that "Google Search is ACTIVE".
         if not text:
-            _log("🔁", "Grounded call failed — falling back to non-grounded Gemini")
+            _log("🔁", "Grounded call failed — rebuilding prompt non-grounded and retrying")
+            if mode == "pre":
+                prompt = build_pre_market_prompt(packet, use_grounding=False)
+            elif mode == "post":
+                prompt = build_post_market_prompt(packet, use_grounding=False)
             text, source = call_gemini(prompt, model=model, max_tokens=max_tokens)
     else:
         text, source = call_gemini(prompt, model=model, max_tokens=max_tokens)
@@ -1902,7 +1945,7 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.3")
+    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.4")
     parser.add_argument("--mode", choices=["pre", "intraday", "post", "auto"], default="auto",
                         help="'auto' detects from current IST time (default)")
     parser.add_argument("--slot", default=None,
