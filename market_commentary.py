@@ -1,7 +1,26 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v2.4)
+market_commentary.py  ─  MoneyVeda Market Commentary (v2.5)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
+
+v2.5 CHANGES (pre-market event attribution + timing hardening):
+  • PRE_MARKET_PROMPT gains a MANDATORY **Overnight Catalysts** section
+    directly after **Setup** — names the concrete overnight/pre-open
+    events as a [event] -> [mechanism] -> [expected effect on open]
+    list, killing generic "global cues look mixed" framing.
+  • Pre-market news-guidance block replaced with a grounding-conditional
+    directive:
+      - PRE_EVENT_ATTRIBUTION_GROUNDED   (search ACTIVE → search mandated)
+      - PRE_EVENT_ATTRIBUTION_UNGROUNDED (search OFF → Pulse is primary)
+  • Pre-market line budget raised 18-22 → 20-24 for the new section.
+  • TIMING FIX: pre-market detection window tightened from 08:00 ±15
+    (07:45–08:15) to 08:00 ±8 (07:52–08:08). The Render cron's earliest
+    tick (02:00 UTC = 07:30 IST) can no longer drift into the window
+    even under scheduler jitter.
+  • New hard guard in main(): an explicit `--mode pre` invoked outside
+    the 08:00 IST window exits cleanly (protects against a misconfigured
+    cron calling `--mode pre` at 07:30). --dry-run and new --force bypass.
+  • INTRADAY is untouched in this version.
 
 v2.4 CHANGES (event attribution made structural — post-market):
   • POST_MARKET_PROMPT gains a MANDATORY **Catalysts** section directly
@@ -49,10 +68,27 @@ USAGE:
   python market_commentary.py --mode pre
   python market_commentary.py --mode intraday --slot 10:30
   python market_commentary.py --mode pre --dry-run
+  python market_commentary.py --mode pre --force  # bypass 08:00 IST guard
   python market_commentary.py --no-grounding      # disable grounding for this run
 
 RENDER CRON SCHEDULE (Settings → Deploy → Schedule):
   0,30 2-10 * * 1-5
+
+  Render cron runs in UTC. This schedule fires at :00 and :30 of UTC
+  hours 02–10. Auto-detection maps them to IST as:
+    02:00 UTC = 07:30 IST  → clean exit (intentional no-op)
+    02:30 UTC = 08:00 IST  → PRE-MARKET   ← the only pre-market tick
+    03:00 UTC = 08:30 IST  → clean exit
+    03:30 UTC = 09:00 IST  → clean exit
+    04:00 UTC = 09:30 IST  → INTRADAY (first slot)
+    …                       → INTRADAY
+    10:00 UTC = 15:30 IST  → INTRADAY (last slot)
+    10:30 UTC = 16:00 IST  → POST-MARKET
+  Pre-market therefore runs ONLY at 08:00 IST (02:30 UTC). The 07:30 IST
+  tick is a deliberate no-op; the tightened ±8 window stops scheduler
+  jitter from leaking it into pre-market. Do NOT add a separate
+  `--mode pre` cron — auto-detection already handles the timing, and a
+  fixed `--mode pre` cron is exactly what produced the early-07:30 firing.
 
 EXIT CODES:
   0 = success OR clean exit (off-schedule fire)
@@ -100,7 +136,7 @@ POST_SLOT = "16:00"
 
 HEADERS = {
     "User-Agent": (
-        "Mozilla/5.0 (MoneyVeda/2.4 MarketCommentary) "
+        "Mozilla/5.0 (MoneyVeda/2.5 MarketCommentary) "
         "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
     )
 }
@@ -191,15 +227,27 @@ def detect_mode_and_slot():
     Auto-detect mode + slot from current IST time.
     Returns (None, None) for off-schedule fires (caller exits cleanly).
 
-    Valid windows (each ±15 min for cron drift tolerance):
-      - Pre-market: 08:00 IST  (07:45 – 08:15)
+    Render cron runs in UTC. The documented schedule '0,30 2-10 * * 1-5'
+    produces ticks at :00 and :30 of UTC hours 02-10, i.e. IST:
+      02:00 UTC = 07:30 IST  -> off-schedule, clean exit (intentional no-op)
+      02:30 UTC = 08:00 IST  -> PRE-MARKET
+      03:00 UTC = 08:30 IST  -> off-schedule, clean exit
+      03:30 UTC = 09:00 IST  -> off-schedule, clean exit
+      04:00 UTC = 09:30 IST  -> INTRADAY (first slot)
+      ...      ...           -> INTRADAY
+      10:00 UTC = 15:30 IST  -> INTRADAY (last slot)
+      10:30 UTC = 16:00 IST  -> POST-MARKET
+
+    Valid windows:
+      - Pre-market: 08:00 IST  (07:52 – 08:08, ±8 — tight, so a delayed
+                                07:30-IST tick can NEVER drift into it)
       - Intraday:   09:30, 10:00, ... 15:30 IST (each ±15 min)
       - Post-market: 16:00 IST (15:45 – 16:15)
     """
     now = datetime.now(IST)
     cur_min = now.hour * 60 + now.minute
 
-    if 465 <= cur_min <= 495:        # Pre-market 08:00 ± 15
+    if 472 <= cur_min <= 488:        # Pre-market 08:00 ± 8 (480 = 08:00)
         return "pre", PRE_SLOT
 
     if 945 <= cur_min <= 975:        # Post-market 16:00 ± 15
@@ -212,6 +260,16 @@ def detect_mode_and_slot():
             return "intraday", slot
 
     return None, None
+
+
+def _is_pre_market_time() -> bool:
+    """True only if current IST is inside the 08:00 pre-market window
+    (480 ± 8 min). Used to guard explicit `--mode pre` runs so a
+    misconfigured cron firing at 07:30 IST cannot produce a pre-market
+    briefing. Single source of truth shared with detect_mode_and_slot()."""
+    now = datetime.now(IST)
+    cur_min = now.hour * 60 + now.minute
+    return 472 <= cur_min <= 488
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -535,7 +593,7 @@ from html import unescape as _html_unescape
 PULSE_FEED_URL = "http://pulse.zerodha.com/feed.php"
 PULSE_HEADERS = {
     "User-Agent": (
-        "MoneyVeda/2.4 MarketCommentary "
+        "MoneyVeda/2.5 MarketCommentary "
         "(https://moneyveda.org; analysis context use; contact via website)"
     )
 }
@@ -1000,6 +1058,18 @@ These Pulse headlines are your PRIMARY event source this run (grounded search is
 """.strip()
 
 
+# NEW in v2.5: pre-market analog of the above. Pre-market is FORWARD-looking,
+# so the burden of proof is on naming the concrete OVERNIGHT/MORNING events
+# that set up today's open — not generic "global cues mixed" framing.
+PRE_EVENT_ATTRIBUTION_GROUNDED = """
+These Pulse headlines are a CONTEXT BASELINE, not the full overnight event picture. Grounded Google Search is ACTIVE for this run and you are REQUIRED to use it for event identification BEFORE writing the Overnight Catalysts section. Search specifically for: (a) overnight central-bank developments that set today's tone (Fed/FOMC speak or minutes, ECB, BoJ, RBI commentary) — get the specific message, not "dovish/hawkish" alone; (b) the actual driver of each major US index and US-tech move from the most recent close; (c) any macro print due or released in the last 24h relevant to India (US CPI/jobs, India CPI/IIP/trade, China data); (d) overnight moves in crude / gold / USD-INR / DXY and the specific trigger (OPEC, inventories, geopolitics, yields); (e) large brokerage calls or stock-specific news flagged for the Indian open this morning; (f) geopolitical flashpoints affecting risk appetite. HARD RULE: every cue you cite as setting up the open must be tied to a NAMED event/print, or explicitly flagged as "no specific trigger — drift only". "Global cues look mixed/positive/negative" with no named driver is a failure of this task, not an acceptable opening. Do NOT cite or paraphrase articles — synthesize into the strategist voice. Do NOT invent causation: if search yields nothing for a move, say so plainly. Restrict grounded sources to the last 48 hours for pre-market.
+""".strip()
+
+PRE_EVENT_ATTRIBUTION_UNGROUNDED = """
+These Pulse headlines are your PRIMARY overnight event source this run (grounded search is disabled). Mine them hard: every cue you cite as shaping today's open must be tied to a specific headline (overnight Fed/ECB/BoJ commentary, US close drivers, crude/USD triggers, brokerage calls), or explicitly flagged as drift with no named trigger. Do NOT cite verbatim — synthesize into the strategist voice. Do NOT invent causation: if no headline explains a move, write "no specific overnight trigger — positioning/drift only" rather than guessing. "Global cues look mixed" with no named driver is not acceptable.
+""".strip()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PROMPT TEMPLATES
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1010,7 +1080,7 @@ PRE_MARKET_PROMPT = """You are a senior equity strategist briefing the trading d
 {grounding_block}
 
 YOUR TASK:
-Write a structured 18-22 line strategist briefing in plain English. INTERPRETATION, not description. Identify 2-3 dominant themes; place today's setup against recent context (last week's range, last session's wrap); call out divergences worth watching; give a clear directional bias for the open and a clear view of what the market will be TRYING TO DO at open.
+Write a structured 20-24 line strategist briefing in plain English. INTERPRETATION, not description. Identify 2-3 dominant themes; place today's setup against recent context (last week's range, last session's wrap); call out divergences worth watching; give a clear directional bias for the open and a clear view of what the market will be TRYING TO DO at open.
 
 IMPORTANT: Today is {day_of_week} {date}. The most recent trading session was {india_session_label}. The most recent US close was {us_close_label}. Use these labels precisely — do NOT say "yesterday" or "overnight" if today is Monday or a post-holiday open. Use "Friday's" or "{india_session_label}" when that's the accurate reference.
 
@@ -1018,6 +1088,9 @@ STRUCTURE (use markdown headers exactly as shown — frontend renders them):
 
 **Setup**
 2-3 lines on the dominant narrative from {us_close_label} and what it means for today's open. Interpret US closes, don't just describe them. Note any major divergence from {india_session_label} domestic tone.
+
+**Overnight Catalysts**
+This section is MANDATORY and is the spine of the briefing — it answers "WHY is today's open being set up the way it is", not "what futures/cues did". List the 2-4 concrete overnight or pre-open events that actually shape today's session, each on its own line, in the form: [named event/print] -> [transmission mechanism] -> [expected effect on the Indian open]. Draw from: Fed/FOMC/ECB/BoJ/RBI commentary (name the specific message), the actual driver of the US close and US-tech moves, macro prints in the last 24h (US CPI/jobs, India CPI/IIP/trade, China data — name the figure), overnight crude/gold/USD-INR/DXY moves and their trigger, large brokerage calls flagged for the open, and geopolitical flashpoints. Apply the CAUSAL CHAINS framework to every entry. If one dominant overnight catalyst is driving the setup, say so explicitly and trace it into the affected Indian sectors. A cue with no identifiable trigger even after grounded search must be stated honestly here ("no specific overnight trigger — positioning/drift only") — but this is a last resort AFTER searching, never the default. Do NOT relegate event attribution to a passing clause inside Global Context; it lives here, named and explicit.
 
 **Global Context**
 3-4 lines covering US close (Dow/Nasdaq/S&P with one driver each), Asian markets this morning, USD/INR direction, and crude. Apply the CAUSAL CHAINS framework — connect movements where causally relevant.
@@ -1085,7 +1158,7 @@ INDIA VIX (volatility regime):
 RECENT MARKET NEWS HEADLINES (last 36 hours, Indian financial press via Pulse — curated baseline):
 {news_block}
 
-These Pulse headlines are CONTEXT. Search the web for SPECIFIC CATALYSTS and FRESH DEVELOPMENTS that the Pulse feed may not capture — particularly: overnight Fed/ECB/BoJ commentary, large brokerage calls from this morning, geopolitical developments affecting crude/USD, sector-specific regulatory news. Do NOT cite headlines verbatim. Do NOT invent causation.
+{event_directive}
 
 Now write the strategist pre-market briefing:"""
 
@@ -1387,9 +1460,14 @@ def _build_vix_line(packet: dict) -> str:
 def build_pre_market_prompt(packet: dict, use_grounding: bool = True) -> str:
     yest = packet.get("yesterday_post_text") or "(no recent post-market wrap on file)"
     sess_lbl = _last_session_label()
+    # v2.5: pre-market event-attribution directive, grounding-conditional,
+    # mirroring how grounding_block is gated.
+    event_directive = (PRE_EVENT_ATTRIBUTION_GROUNDED if use_grounding
+                       else PRE_EVENT_ATTRIBUTION_UNGROUNDED)
     return PRE_MARKET_PROMPT.format(
         shared_principles        = SHARED_PRINCIPLES,
         grounding_block          = GROUNDING_DISCIPLINE if use_grounding else "",
+        event_directive          = event_directive,
         date                     = packet["date"],
         timestamp                = packet["timestamp_ist"],
         day_of_week              = _day_of_week_ist(),
@@ -1945,7 +2023,7 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.4")
+    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.5")
     parser.add_argument("--mode", choices=["pre", "intraday", "post", "auto"], default="auto",
                         help="'auto' detects from current IST time (default)")
     parser.add_argument("--slot", default=None,
@@ -1954,6 +2032,9 @@ def main():
                         help="Print prompt and output but do not save to Supabase")
     parser.add_argument("--no-grounding", action="store_true",
                         help="Disable Google Search grounding for this run (pre/post only)")
+    parser.add_argument("--force", action="store_true",
+                        help="Bypass the pre-market 08:00 IST time guard "
+                             "(use only for manual/ad-hoc regeneration)")
     args = parser.parse_args()
 
     mode = args.mode
@@ -1967,6 +2048,17 @@ def main():
         mode = detected_mode
         slot = slot or auto_slot
         _log("🤖", f"Auto-detected: mode={mode}, slot={slot}")
+
+    # Hard guard: pre-market may ONLY run inside the 08:00 IST window.
+    # This protects against a misconfigured cron invoking `--mode pre`
+    # off-schedule (e.g. the 07:30 IST tick). --dry-run and --force bypass.
+    if mode == "pre" and not args.dry_run and not args.force:
+        if not _is_pre_market_time():
+            _log("⏭️", f"`--mode pre` invoked at {_now_ist_str()}, outside the "
+                       f"08:00 IST pre-market window (07:52–08:08). Exiting "
+                       f"cleanly — no pre-market briefing generated. "
+                       f"Use --force to override.")
+            sys.exit(0)
 
     missing = []
     if not SUPABASE_URL:        missing.append("SUPABASE_URL")
