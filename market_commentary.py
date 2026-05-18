@@ -1,7 +1,91 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v2.5)
+market_commentary.py  ─  MoneyVeda Market Commentary (v2.9)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
+
+v2.9 CHANGES (10-day sector rotation / satellite view — pre & post only):
+  • get_sector_rotation(): 10-session relative-strength rotation across an
+    11-sector set (Bank, IT, Auto, Pharma, FMCG, Metal, Energy, Realty,
+    Infra, PSU Bank, Cons Durables) vs Nifty 50. Per sector: period %,
+    relative-to-Nifty %, 1st-half vs 2nd-half split, trend shape
+    (accelerating / fading / steady), stance (accumulation / under
+    distribution / tracking market). yfinance only — same trusted path
+    as technicals; NO NSE/broker sourcing risk.
+  • CRITICAL FRAMING: this is a RELATIVE-STRENGTH PROXY, not measured
+    rupee flow. Formatter + prompt language explicitly forbid the LLM
+    from claiming "Rs. X cr flowed from sector A to B" — it must phrase
+    as relative strength / rotation only. Prevents invented-attribution.
+  • PRESENTATION: all 11 sectors are computed and ranked by strength vs
+    Nifty under the hood, but only TOP 3 inflow / BOTTOM 3 outflow are
+    shown (one tight line each + NET READ) — simple satellite scan, not
+    an 11-line table. Ranking stays on relative-to-Nifty (not raw %) so
+    a broad rally doesn't just surface high-beta sectors.
+  • Wired into PRE_MARKET_PROMPT (block + Themes to Watch now anchors a
+    theme in the period rotation) and POST_MARKET_PROMPT (block + Sector
+    & Stock Highlights now places today against the 10d satellite view:
+    extending or reversing the period rotation).
+  • Graceful degradation as usual: {} on total failure, partial on
+    per-symbol failure, model-instruction placeholder on empty, never
+    blocks commentary.
+  • INTRADAY untouched (period view is a pre/post satellite read; the
+    10d window barely moves intraday).
+
+v2.8 CHANGES (pre-market FII/DII exact-figure grounded search — pre only):
+  • PRE_EVENT_ATTRIBUTION_GROUNDED gains an explicit clause (g): if the
+    structured FII/DII block is empty, Gemini MUST grounded-search the
+    PREVIOUS session's provisional figures (Moneycontrol/NSE/ET/Mint —
+    public ~16h by 08:00) and state the EXACT Rs.-crore net for FII and
+    DII separately, each tagged with the trading date. Anti-staleness
+    guard: if only an older figure is found it must be labelled, never
+    presented as latest; no rounding a precise net to "over Rs. 3,000cr".
+  • Overnight Catalysts FII/DII clause hardened to demand exact net cash
+    figures + date, not a vague "net sellers".
+  • POST-market deliberately UNCHANGED: today's provisional figure is
+    often not yet published at 16:00, so post stays on the structured
+    fetch + descriptor (no grounded exact-figure mandate there).
+  • Pre-only, prompt-only change. No new data dependency, no sourcing
+    risk. INTRADAY untouched.
+
+v2.7 CHANGES (global macro telemetry — pre & post only):
+  • get_global_macro_telemetry(): DXY, US 10Y yield, Brent crude as
+    STRUCTURED numeric fields (value + day move; bps change for the
+    yield). yfinance only (DX-Y.NYB / ^TNX / BZ=F) — same trusted path
+    as technicals; NO NSE/broker sourcing risk. ^TNX yield/10 normalised.
+  • _format_global_macro(): regime annotations (strong-dollar, elevated
+    risk-free rate, high-crude CPI/OMC pressure) and the standard
+    graceful-degradation model-instruction placeholder on empty.
+  • Wired into PRE_MARKET_PROMPT (GLOBAL MACRO TELEMETRY block + Overnight
+    Catalysts now told to quote DXY/US10Y/Brent and trace each through
+    its inter-market chain) and POST_MARKET_PROMPT (block + Technical
+    Read now folds macro into the forward setup).
+  • Derivatives layer (PCR/Max-Pain/FII-futures/OI build-up) deliberately
+    NOT implemented: option-chain data has an unresolved source decision
+    (NSE-direct IP-block risk vs broker non-redistribution vs paid
+    vendor). Code is feasible; the source is a business decision and
+    must be settled before writing a fetcher that may not resolve in
+    production. Tracked for a later version.
+  • Semantic news filtering and stateful intraday velocity intentionally
+    deferred (low marginal return / reopens frozen intraday).
+  • INTRADAY remains untouched.
+
+v2.6 CHANGES (new structured data inputs — pre & post only):
+  • get_gift_nifty(): GIFT/SGX Nifty gap-direction indicator. In-house
+    market API first, yfinance fallback (delayed is fine for 08:00).
+    Returns implied_gap classification. Pre-market packet only.
+  • get_fii_dii(): provisional FII/DII net cash flow. In-house API first,
+    then NSE's own once-daily provisional report (cookie-primed Session,
+    authoritative — NOT intraday scraping). Pre packet (prev session) +
+    post packet (today's). Includes FII-vs-DII pattern descriptor.
+  • get_market_breadth() now also feeds the PRE-MARKET packet/prompt
+    (previously intraday + post only) for prev-session participation.
+  • All three fetchers degrade gracefully exactly like get_market_breadth:
+    {} on total failure, model-instruction placeholders in the formatter,
+    commentary is NEVER blocked.
+  • Wired into PRE_MARKET_PROMPT (GIFT/FII-DII/breadth blocks +
+    Overnight Catalysts now explicitly told to lead with GIFT and cite
+    FII/DII) and POST_MARKET_PROMPT (FII/DII block + Filings & Flows now
+    told to state provisional FII/DII figures).
+  • INTRADAY remains untouched (still breadth-only, no GIFT/FII-DII).
 
 v2.5 CHANGES (pre-market event attribution + timing hardening):
   • PRE_MARKET_PROMPT gains a MANDATORY **Overnight Catalysts** section
@@ -136,7 +220,7 @@ POST_SLOT = "16:00"
 
 HEADERS = {
     "User-Agent": (
-        "Mozilla/5.0 (MoneyVeda/2.5 MarketCommentary) "
+        "Mozilla/5.0 (MoneyVeda/2.9 MarketCommentary) "
         "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
     )
 }
@@ -553,6 +637,492 @@ def get_market_breadth() -> dict:
     return out
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# GIFT NIFTY (formerly SGX Nifty) — primary gap-direction indicator for
+# pre-market. Best-effort: tries the in-house market API first (label may be
+# "GIFT NIFTY" or legacy "SGX NIFTY"), then yfinance as fallback. Never blocks
+# commentary — returns {} on total failure exactly like get_market_breadth().
+# ─────────────────────────────────────────────────────────────────────────────
+def get_gift_nifty() -> dict:
+    """
+    Returns {} on failure, else:
+      {"value": float, "pct": float, "source": str,
+       "implied_gap": "gap-up|gap-down|flat", "ref_close": float|None}
+    pct is GIFT Nifty's move vs its own prior reference (proxy for the
+    implied gap vs yesterday's Nifty close).
+    """
+    out = {}
+
+    # 1) In-house market API (already authorized for our display) ----------
+    for mode in ("world", "india"):
+        try:
+            data = fetch_market_data(mode)
+            if not data:
+                continue
+            t = (find_ticker(data, "GIFT NIFTY")
+                 or find_ticker(data, "SGX NIFTY")
+                 or find_ticker(data, "GIFT NIFTY 50"))
+            if t and t.get("value") is not None:
+                pct = t.get("pct", 0) or 0
+                out = {
+                    "value":  t.get("value"),
+                    "pct":    round(pct, 2),
+                    "source": "market_api",
+                    "ref_close": None,
+                }
+                break
+        except Exception as e:
+            _log("⚠️", f"GIFT Nifty via {mode} API failed: {e}")
+
+    # 2) yfinance fallback (delayed, fine for an 08:00 briefing) -----------
+    if not out and YFINANCE_AVAILABLE:
+        # Common Yahoo symbols seen for GIFT Nifty futures; try in order.
+        for sym in ("GIFTNIFTY.NS", "^NSEI"):  # ^NSEI = last Nifty close as ref only
+            try:
+                tk = _yf.Ticker(sym)
+                h = tk.history(period="5d", interval="1d")
+                if h is None or h.empty or len(h) < 2:
+                    continue
+                last = float(h["Close"].iloc[-1])
+                prev = float(h["Close"].iloc[-2])
+                pct  = ((last - prev) / prev) * 100 if prev else 0
+                out = {
+                    "value":  round(last, 2),
+                    "pct":    round(pct, 2),
+                    "source": ("gift_yf" if sym.startswith("GIFT")
+                               else "nifty_close_proxy"),
+                    "ref_close": round(prev, 2),
+                }
+                break
+            except Exception as e:
+                _log("⚠️", f"GIFT Nifty yfinance {sym} failed: {e}")
+
+    if out:
+        p = out.get("pct", 0)
+        if   p >=  0.25: out["implied_gap"] = "gap-up"
+        elif p <= -0.25: out["implied_gap"] = "gap-down"
+        else:            out["implied_gap"] = "flat / muted"
+        _log("📶", f"GIFT Nifty: {out.get('value')} ({p:+.2f}%) "
+                   f"[{out.get('implied_gap')}, src={out.get('source')}]")
+    else:
+        _log("⚠️", "GIFT Nifty unavailable from all sources")
+    return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FII / DII net cash-market activity (provisional). Source priority:
+#   1) in-house market API (if it exposes an fii_dii payload)
+#   2) NSE's own published provisional report (authoritative, once-daily,
+#      low-rate — NOT intraday quote scraping)
+# Provisional figures in Rs. crore; net = buy - sell. Never blocks; {} on fail.
+# ─────────────────────────────────────────────────────────────────────────────
+NSE_FII_DII_URL = "https://www.nseindia.com/api/fiidiiTradeReact"
+NSE_BROWSER_HEADERS = {
+    "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                   "AppleWebKit/537.36 (KHTML, like Gecko) "
+                   "Chrome/120.0.0.0 Safari/537.36"),
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.nseindia.com/reports/fii-dii",
+}
+
+
+def get_fii_dii() -> dict:
+    """
+    Returns {} on failure, else:
+      {"fii_net": float, "dii_net": float, "date": str|None,
+       "fii_buy": float|None, "fii_sell": float|None,
+       "dii_buy": float|None, "dii_sell": float|None,
+       "source": str, "net_combined": float, "descriptor": str}
+    Figures in Rs. crore (provisional cash-market).
+    """
+    out = {}
+
+    # 1) In-house market API, if it surfaces fii_dii ----------------------
+    try:
+        url = f"{MARKET_API_BASE}?mode=fii_dii"
+        r = requests.get(url, headers=HEADERS, timeout=12)
+        if r.ok:
+            j = r.json()
+            blob = j.get("fii_dii") or j.get("data") or j
+            if isinstance(blob, dict) and (
+                blob.get("fii_net") is not None or blob.get("fiiNet") is not None
+            ):
+                fii = blob.get("fii_net", blob.get("fiiNet"))
+                dii = blob.get("dii_net", blob.get("diiNet"))
+                out = {
+                    "fii_net": float(fii), "dii_net": float(dii),
+                    "fii_buy": blob.get("fii_buy"), "fii_sell": blob.get("fii_sell"),
+                    "dii_buy": blob.get("dii_buy"), "dii_sell": blob.get("dii_sell"),
+                    "date": blob.get("date"), "source": "market_api",
+                }
+    except Exception as e:
+        _log("⚠️", f"FII/DII via market API failed: {e}")
+
+    # 2) NSE provisional report (once-daily, authoritative) ---------------
+    if not out:
+        try:
+            with requests.Session() as s:
+                s.headers.update(NSE_BROWSER_HEADERS)
+                # Prime cookies — NSE rejects direct API hits without a prior
+                # homepage visit. Single extra GET, once per run, not per-tick.
+                s.get("https://www.nseindia.com", timeout=12)
+                resp = s.get(NSE_FII_DII_URL, timeout=15)
+                resp.raise_for_status()
+                rows = resp.json()
+                fii_row = dii_row = None
+                for row in rows if isinstance(rows, list) else []:
+                    cat = (row.get("category") or "").upper()
+                    if "FII" in cat or "FPI" in cat:
+                        fii_row = row
+                    elif "DII" in cat:
+                        dii_row = row
+                if fii_row and dii_row:
+                    def _f(v):
+                        try:    return float(str(v).replace(",", ""))
+                        except Exception: return None
+                    out = {
+                        "fii_net": _f(fii_row.get("netValue")),
+                        "dii_net": _f(dii_row.get("netValue")),
+                        "fii_buy": _f(fii_row.get("buyValue")),
+                        "fii_sell": _f(fii_row.get("sellValue")),
+                        "dii_buy": _f(dii_row.get("buyValue")),
+                        "dii_sell": _f(dii_row.get("sellValue")),
+                        "date": fii_row.get("date") or dii_row.get("date"),
+                        "source": "nse_report",
+                    }
+        except Exception as e:
+            _log("⚠️", f"FII/DII via NSE report failed: {e}")
+
+    if out and out.get("fii_net") is not None and out.get("dii_net") is not None:
+        fn, dn = out["fii_net"], out["dii_net"]
+        out["net_combined"] = round(fn + dn, 2)
+        if   fn < 0 and dn > 0: desc = "FII selling absorbed by DII buying (domestic support)"
+        elif fn > 0 and dn < 0: desc = "FII buying while DII books profit"
+        elif fn > 0 and dn > 0: desc = "both FII and DII net buyers (broad institutional support)"
+        elif fn < 0 and dn < 0: desc = "both FII and DII net sellers (institutional risk-off)"
+        else:                   desc = "mixed/neutral institutional flow"
+        out["descriptor"] = desc
+        _log("🏦", f"FII/DII: FII {fn:+,.0f} | DII {dn:+,.0f} Rs.cr "
+                   f"[{out.get('source')}] — {desc}")
+        return out
+
+    _log("⚠️", "FII/DII unavailable from all sources")
+    return {}
+
+
+def _format_gift_nifty(g: dict) -> str:
+    if not g or g.get("value") is None:
+        return ("  GIFT Nifty: [INSTRUCTION TO MODEL: GIFT/SGX Nifty not "
+                "available this run. Infer likely open direction from US close "
+                "+ Asia + USD/INR instead. Do NOT state GIFT Nifty is "
+                "unavailable to the reader.]")
+    p = g.get("pct", 0)
+    src = g.get("source", "")
+    src_note = ""
+    if src == "nifty_close_proxy":
+        src_note = " (proxy: last Nifty close move — true GIFT feed unavailable)"
+    return (f"  GIFT Nifty: {g.get('value'):,.2f} ({p:+.2f}%) — "
+            f"implied open: {g.get('implied_gap', 'n/a')}{src_note}")
+
+
+def _format_fii_dii(f: dict) -> str:
+    if not f or f.get("fii_net") is None:
+        return ("  FII/DII (provisional): [INSTRUCTION TO MODEL: Provisional "
+                "FII/DII figures not available this run. If grounded search is "
+                "active, search for today's/yesterday's provisional FII-DII "
+                "cash figures; otherwise omit institutional-flow attribution "
+                "rather than guessing. Do NOT tell the reader the data is "
+                "missing.]")
+    d = f.get("date")
+    dstr = f" [{d}]" if d else ""
+    return (f"  FII/DII net (provisional, Rs. cr){dstr}: "
+            f"FII {f['fii_net']:+,.0f} | DII {f['dii_net']:+,.0f} | "
+            f"combined {f.get('net_combined', 0):+,.0f} — {f.get('descriptor','')}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GLOBAL MACRO TELEMETRY — DXY, US 10Y yield, Brent crude as STRUCTURED
+# numeric fields (not text). These are mathematical inter-market inputs that
+# drive algorithmic EM capital shifts; the prompt ties them to Indian sector
+# rotation via the CAUSAL CHAINS framework. yfinance only — same trusted code
+# path as _compute_index_technicals/GIFT fallback. No NSE/broker sourcing
+# risk. Never blocks: {} on total failure, per-symbol best-effort.
+# ─────────────────────────────────────────────────────────────────────────────
+_MACRO_SYMBOLS = {
+    # key            (yahoo symbol, label,                     unit)
+    "dxy":      ("DX-Y.NYB", "US Dollar Index (DXY)",          "idx"),
+    "us10y":    ("^TNX",     "US 10-Year Treasury Yield",      "yield"),
+    "brent":    ("BZ=F",     "Brent Crude (front-month)",      "usd"),
+}
+
+
+def get_global_macro_telemetry() -> dict:
+    """
+    Returns {} on total failure, else a dict keyed by dxy/us10y/brent, each:
+      {"value": float, "day_change_pct": float, "label": str, "unit": str,
+       "bps_change": float|None}   # bps_change only meaningful for us10y
+    ^TNX is quoted as yield*10 on Yahoo (e.g. 42.2 == 4.22%); we normalise.
+    """
+    if not YFINANCE_AVAILABLE:
+        _log("⚠️", "yfinance unavailable — skipping global macro telemetry")
+        return {}
+
+    out = {}
+    for key, (sym, label, unit) in _MACRO_SYMBOLS.items():
+        try:
+            tk = _yf.Ticker(sym)
+            h = tk.history(period="6d", interval="1d")
+            if h is None or h.empty or len(h) < 2:
+                continue
+            last = float(h["Close"].iloc[-1])
+            prev = float(h["Close"].iloc[-2])
+
+            # Yahoo quotes ^TNX as yield * 10 (42.20 -> 4.220%)
+            if key == "us10y":
+                last /= 10.0
+                prev /= 10.0
+
+            day_chg_pct = ((last - prev) / prev) * 100 if prev else 0.0
+            rec = {
+                "value":          round(last, 3 if key == "us10y" else 2),
+                "day_change_pct": round(day_chg_pct, 2),
+                "label":          label,
+                "unit":           unit,
+                "bps_change":     (round((last - prev) * 100, 1)
+                                   if key == "us10y" else None),
+            }
+            out[key] = rec
+        except Exception as e:
+            _log("⚠️", f"Macro telemetry {sym} failed: {e}")
+
+    if out:
+        bits = []
+        if "dxy" in out:
+            bits.append(f"DXY {out['dxy']['value']} "
+                        f"({out['dxy']['day_change_pct']:+.2f}%)")
+        if "us10y" in out:
+            bits.append(f"US10Y {out['us10y']['value']}% "
+                        f"({out['us10y']['bps_change']:+.0f}bps)")
+        if "brent" in out:
+            bits.append(f"Brent {out['brent']['value']} "
+                        f"({out['brent']['day_change_pct']:+.2f}%)")
+        _log("🌐", "Global macro: " + " | ".join(bits))
+    else:
+        _log("⚠️", "Global macro telemetry unavailable from all symbols")
+    return out
+
+
+def _format_global_macro(g: dict) -> str:
+    if not g:
+        return ("  Global macro: [INSTRUCTION TO MODEL: DXY / US10Y / Brent "
+                "structured telemetry not available this run. If grounded "
+                "search is active, fetch latest DXY level, US 10Y yield, and "
+                "Brent and apply the same inter-market causal chains; "
+                "otherwise lean on the qualitative global cues. Do NOT tell "
+                "the reader this data is missing.]")
+    lines = []
+    if "dxy" in g:
+        d = g["dxy"]
+        regime = ""
+        v = d["value"]
+        if   v >= 105:   regime = " — strong-dollar regime, acute EM/INR pressure"
+        elif v >= 103.5: regime = " — firm dollar, INR & FII-flow headwind"
+        elif v < 100:    regime = " — soft dollar, EM-supportive"
+        lines.append(f"  DXY: {v} ({d['day_change_pct']:+.2f}% day){regime}")
+    if "us10y" in g:
+        y = g["us10y"]
+        regime = ""
+        v = y["value"]
+        if   v >= 4.5:  regime = " — elevated risk-free rate, high-beta/growth headwind"
+        elif v <= 3.5:  regime = " — low yields, growth-supportive"
+        lines.append(f"  US 10Y yield: {v}% ({y['bps_change']:+.0f}bps day){regime}")
+    if "brent" in g:
+        b = g["brent"]
+        regime = ""
+        v = b["value"]
+        if   v >= 90:  regime = " — high crude: CPI/fiscal/OMC-margin pressure"
+        elif v <= 65:  regime = " — soft crude: importer & margin tailwind"
+        lines.append(f"  Brent crude: {v} ({b['day_change_pct']:+.2f}% day){regime}")
+    return "\n".join(lines)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 10-DAY SECTOR ROTATION — "satellite view" of where capital is rotating over
+# a period. yfinance only (same trusted path as _compute_index_technicals).
+# NO NSE/broker sourcing risk. Never blocks: {} on failure, partial on
+# per-symbol failure.
+#
+# IMPORTANT — this is a ROTATION / RELATIVE-STRENGTH PROXY, not measured
+# rupee flow. 10-day index performance shows which sectors are being bid up
+# vs sold down and how that compares to the Nifty; it does NOT measure
+# actual money moved. The formatter and prompt language label it as such so
+# the LLM never claims "Rs. X cr flowed from Auto to Pharma".
+# ─────────────────────────────────────────────────────────────────────────────
+_ROTATION_LOOKBACK_DAYS = 10
+
+# Broader 11-sector set (rotation shows best across cyclical/defensive/
+# rate-sensitive spread). To trim to the intraday 7, delete the last 4 rows.
+_ROTATION_SECTORS = {
+    "Nifty Bank":       "^NSEBANK",
+    "Nifty IT":         "^CNXIT",
+    "Nifty Auto":       "^CNXAUTO",
+    "Nifty Pharma":     "^CNXPHARMA",
+    "Nifty FMCG":       "^CNXFMCG",
+    "Nifty Metal":      "^CNXMETAL",
+    "Nifty Energy":     "^CNXENERGY",
+    "Nifty Realty":     "^CNXREALTY",
+    "Nifty Infra":      "^CNXINFRA",
+    "Nifty PSU Bank":   "^CNXPSUBANK",
+    "Nifty Cons Durables": "^CNXCONSUMER",
+}
+_ROTATION_BENCHMARK = ("Nifty 50", "^NSEI")
+
+
+def _pct_change_window(closes, lookback: int):
+    """Return (pct_full, pct_first_half, pct_second_half) over the last
+    `lookback` sessions, or None if insufficient history."""
+    if closes is None or len(closes) < lookback + 1:
+        return None
+    window = [float(x) for x in closes.tail(lookback + 1).tolist()]
+    start, end = window[0], window[-1]
+    if not start:
+        return None
+    pct_full = (end - start) / start * 100.0
+    mid_idx = len(window) // 2
+    s1, e1 = window[0], window[mid_idx]
+    s2, e2 = window[mid_idx], window[-1]
+    pct_h1 = ((e1 - s1) / s1 * 100.0) if s1 else 0.0
+    pct_h2 = ((e2 - s2) / s2 * 100.0) if s2 else 0.0
+    return round(pct_full, 2), round(pct_h1, 2), round(pct_h2, 2)
+
+
+def get_sector_rotation(lookback: int = _ROTATION_LOOKBACK_DAYS) -> dict:
+    """
+    Returns {} on total failure, else:
+      {"lookback": int, "benchmark_pct": float|None,
+       "sectors": [ {name, pct, rel_to_nifty, half1_pct, half2_pct,
+                     trend_shape, stance}, ... sorted by rel_to_nifty desc ]}
+    stance ∈ accumulation / under distribution / neutral (relative).
+    trend_shape ∈ accelerating / fading / steady (2nd half vs 1st half).
+    """
+    if not YFINANCE_AVAILABLE:
+        _log("⚠️", "yfinance unavailable — skipping sector rotation")
+        return {}
+
+    # period buffer: need lookback+1 sessions; fetch ~3x calendar to be safe
+    period = f"{max(30, (lookback + 1) * 3)}d"
+
+    bench_pct = None
+    try:
+        bh = _yf.Ticker(_ROTATION_BENCHMARK[1]).history(period=period, interval="1d")
+        if bh is not None and not bh.empty:
+            r = _pct_change_window(bh["Close"], lookback)
+            if r:
+                bench_pct = r[0]
+    except Exception as e:
+        _log("⚠️", f"Rotation benchmark fetch failed: {e}")
+
+    rows = []
+    for name, sym in _ROTATION_SECTORS.items():
+        try:
+            h = _yf.Ticker(sym).history(period=period, interval="1d")
+            if h is None or h.empty:
+                continue
+            r = _pct_change_window(h["Close"], lookback)
+            if not r:
+                continue
+            pct_full, pct_h1, pct_h2 = r
+            rel = round(pct_full - bench_pct, 2) if bench_pct is not None else None
+
+            # trend shape: is the move accelerating or fading across the window?
+            if   pct_h2 > pct_h1 + 0.75: shape = "accelerating"
+            elif pct_h2 < pct_h1 - 0.75: shape = "fading"
+            else:                        shape = "steady"
+
+            # stance is RELATIVE to Nifty (true rotation, not market beta)
+            if rel is None:
+                stance = ("accumulation" if pct_full > 1.0
+                          else "under distribution" if pct_full < -1.0
+                          else "neutral")
+            elif rel >= 1.0:   stance = "accumulation (outperforming Nifty)"
+            elif rel <= -1.0:  stance = "under distribution (lagging Nifty)"
+            else:              stance = "tracking the market (no clear rotation)"
+
+            rows.append({
+                "name": name, "pct": pct_full, "rel_to_nifty": rel,
+                "half1_pct": pct_h1, "half2_pct": pct_h2,
+                "trend_shape": shape, "stance": stance,
+            })
+        except Exception as e:
+            _log("⚠️", f"Rotation fetch {sym} failed: {e}")
+
+    if not rows:
+        _log("⚠️", "Sector rotation unavailable from all symbols")
+        return {}
+
+    rows.sort(key=lambda x: (x["rel_to_nifty"] if x["rel_to_nifty"] is not None
+                             else x["pct"]), reverse=True)
+    _log("🛰️", f"Sector rotation ({lookback}d): "
+               f"into [{rows[0]['name']}] / out of [{rows[-1]['name']}], "
+               f"Nifty {bench_pct if bench_pct is not None else 'n/a'}%")
+    return {"lookback": lookback, "benchmark_pct": bench_pct, "sectors": rows}
+
+
+def _format_sector_rotation(r: dict) -> str:
+    if not r or not r.get("sectors"):
+        return ("  Sector rotation (10D): [INSTRUCTION TO MODEL: 10-day "
+                "sector rotation data not available this run. If grounded "
+                "search is active you may infer period rotation from recent "
+                "sector commentary; otherwise omit the period/satellite view "
+                "rather than guessing. Do NOT tell the reader it is missing.]")
+    lb = r.get("lookback", 10)
+    bench = r.get("benchmark_pct")
+    secs = r["sectors"]            # already sorted by rel_to_nifty desc
+    head = (f"  {lb}-session sector rotation "
+            f"(RELATIVE-STRENGTH PROXY, not measured rupee flow; "
+            f"Nifty 50 {bench:+.2f}% over the period; "
+            f"ranked by strength vs Nifty across all 11 sectors, "
+            f"top/bottom 3 shown):"
+            if bench is not None else
+            f"  {lb}-session sector rotation (relative-strength proxy, "
+            f"top/bottom 3 of 11):")
+    lines = [head]
+
+    def _line(s, tag):
+        rel = (f"{s['rel_to_nifty']:+.2f}% vs Nifty"
+               if s['rel_to_nifty'] is not None
+               else f"{s['pct']:+.2f}% abs")
+        return (f"    {tag} {s['name']}: {rel} "
+                f"({s['pct']:+.2f}% abs) [{s['trend_shape']}]")
+
+    top3 = secs[:3]
+    bot3 = list(reversed(secs[-3:])) if len(secs) >= 3 else []
+    # Guard: if few sectors resolved (degraded fetch), top-3 and bottom-3 can
+    # overlap and read as a sector being both 'in' and 'out'. Split disjointly.
+    if len(secs) < 6:
+        half = max(1, len(secs) // 2)
+        top3 = secs[:half]
+        bot3 = list(reversed(secs[-half:]))
+        # drop any sector that still appears in both (odd-count middle)
+        top_names = {s["name"] for s in top3}
+        bot3 = [s for s in bot3 if s["name"] not in top_names]
+    lines.append("  INFLOW (capital rotating in — strongest vs Nifty):")
+    for s in top3:
+        lines.append(_line(s, "▲"))
+    lines.append("  OUTFLOW (capital rotating out — weakest vs Nifty):")
+    for s in bot3:
+        lines.append(_line(s, "▼"))
+
+    top = secs[0]; bot = secs[-1]
+    lines.append(
+        f"    NET READ: over {lb} sessions capital favouring {top['name']} "
+        f"({top['rel_to_nifty']:+.2f}% vs Nifty, {top['trend_shape']}); "
+        f"rotating out of {bot['name']} "
+        f"({bot['rel_to_nifty']:+.2f}% vs Nifty, {bot['trend_shape']}).")
+    return "\n".join(lines)
+
+
 def _format_technicals(label: str, tech: dict) -> str:
     if not tech:
         return f"  {label}: (technicals unavailable)"
@@ -593,7 +1163,7 @@ from html import unescape as _html_unescape
 PULSE_FEED_URL = "http://pulse.zerodha.com/feed.php"
 PULSE_HEADERS = {
     "User-Agent": (
-        "MoneyVeda/2.5 MarketCommentary "
+        "MoneyVeda/2.9 MarketCommentary "
         "(https://moneyveda.org; analysis context use; contact via website)"
     )
 }
@@ -810,6 +1380,11 @@ def build_pre_market_packet():
     packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
     prior = get_prior_intraday_context(packet["date"], "00:00")
     packet["yesterday_post_text"] = prior.get("yesterday_post_text")
+    packet["gift_nifty"] = get_gift_nifty()          # gap-direction indicator
+    packet["fii_dii"]    = get_fii_dii()             # prev session institutional flow
+    packet["breadth"]    = get_market_breadth()      # prev session A/D context
+    packet["global_macro"] = get_global_macro_telemetry()  # DXY/US10Y/Brent
+    packet["sector_rotation"] = get_sector_rotation()      # 10d satellite view
     packet["news"] = get_pulse_headlines(max_age_hours=36, limit=18)
 
     for key in packet:
@@ -935,6 +1510,9 @@ def build_post_market_packet():
     }
     packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
     packet["breadth"]   = get_market_breadth()
+    packet["fii_dii"]   = get_fii_dii()              # today's provisional cash flow
+    packet["global_macro"] = get_global_macro_telemetry()  # DXY/US10Y/Brent
+    packet["sector_rotation"] = get_sector_rotation()      # 10d satellite view
     packet["news"]      = get_pulse_headlines(max_age_hours=12, limit=15)
     packet["prior"]     = get_prior_intraday_context(packet["date"], "23:59")
     packet["filings"]   = get_todays_filings()
@@ -1062,7 +1640,7 @@ These Pulse headlines are your PRIMARY event source this run (grounded search is
 # so the burden of proof is on naming the concrete OVERNIGHT/MORNING events
 # that set up today's open — not generic "global cues mixed" framing.
 PRE_EVENT_ATTRIBUTION_GROUNDED = """
-These Pulse headlines are a CONTEXT BASELINE, not the full overnight event picture. Grounded Google Search is ACTIVE for this run and you are REQUIRED to use it for event identification BEFORE writing the Overnight Catalysts section. Search specifically for: (a) overnight central-bank developments that set today's tone (Fed/FOMC speak or minutes, ECB, BoJ, RBI commentary) — get the specific message, not "dovish/hawkish" alone; (b) the actual driver of each major US index and US-tech move from the most recent close; (c) any macro print due or released in the last 24h relevant to India (US CPI/jobs, India CPI/IIP/trade, China data); (d) overnight moves in crude / gold / USD-INR / DXY and the specific trigger (OPEC, inventories, geopolitics, yields); (e) large brokerage calls or stock-specific news flagged for the Indian open this morning; (f) geopolitical flashpoints affecting risk appetite. HARD RULE: every cue you cite as setting up the open must be tied to a NAMED event/print, or explicitly flagged as "no specific trigger — drift only". "Global cues look mixed/positive/negative" with no named driver is a failure of this task, not an acceptable opening. Do NOT cite or paraphrase articles — synthesize into the strategist voice. Do NOT invent causation: if search yields nothing for a move, say so plainly. Restrict grounded sources to the last 48 hours for pre-market.
+These Pulse headlines are a CONTEXT BASELINE, not the full overnight event picture. Grounded Google Search is ACTIVE for this run and you are REQUIRED to use it for event identification BEFORE writing the Overnight Catalysts section. Search specifically for: (a) overnight central-bank developments that set today's tone (Fed/FOMC speak or minutes, ECB, BoJ, RBI commentary) — get the specific message, not "dovish/hawkish" alone; (b) the actual driver of each major US index and US-tech move from the most recent close; (c) any macro print due or released in the last 24h relevant to India (US CPI/jobs, India CPI/IIP/trade, China data); (d) overnight moves in crude / gold / USD-INR / DXY and the specific trigger (OPEC, inventories, geopolitics, yields); (e) large brokerage calls or stock-specific news flagged for the Indian open this morning; (f) geopolitical flashpoints affecting risk appetite; (g) the PREVIOUS SESSION'S provisional FII/DII net cash figures — if the structured FII/DII data block above shows real numbers, use those verbatim; if it shows a model-instruction placeholder, you MUST search (Moneycontrol, NSE, ET, Mint all publish the previous day's provisional cash figures and they have been public ~16 hours by now) and state the EXACT net figures in Rs. crore (e.g. "FIIs net sold Rs. 3,245 cr, DIIs net bought Rs. 4,110 cr in the cash market"), each tagged with the trading date you are quoting. If the only figure you can find is older than the previous trading session, label it as such and do NOT present it as the latest; never round a precise published net to a vague "over Rs. 3,000 cr" when the exact number is available. HARD RULE: every cue you cite as setting up the open must be tied to a NAMED event/print, or explicitly flagged as "no specific trigger — drift only". "Global cues look mixed/positive/negative" with no named driver is a failure of this task, not an acceptable opening. Do NOT cite or paraphrase articles — synthesize into the strategist voice. Do NOT invent causation or numbers: if search yields nothing for a move or figure, say so plainly. Restrict grounded sources to the last 48 hours for pre-market.
 """.strip()
 
 PRE_EVENT_ATTRIBUTION_UNGROUNDED = """
@@ -1090,7 +1668,7 @@ STRUCTURE (use markdown headers exactly as shown — frontend renders them):
 2-3 lines on the dominant narrative from {us_close_label} and what it means for today's open. Interpret US closes, don't just describe them. Note any major divergence from {india_session_label} domestic tone.
 
 **Overnight Catalysts**
-This section is MANDATORY and is the spine of the briefing — it answers "WHY is today's open being set up the way it is", not "what futures/cues did". List the 2-4 concrete overnight or pre-open events that actually shape today's session, each on its own line, in the form: [named event/print] -> [transmission mechanism] -> [expected effect on the Indian open]. Draw from: Fed/FOMC/ECB/BoJ/RBI commentary (name the specific message), the actual driver of the US close and US-tech moves, macro prints in the last 24h (US CPI/jobs, India CPI/IIP/trade, China data — name the figure), overnight crude/gold/USD-INR/DXY moves and their trigger, large brokerage calls flagged for the open, and geopolitical flashpoints. Apply the CAUSAL CHAINS framework to every entry. If one dominant overnight catalyst is driving the setup, say so explicitly and trace it into the affected Indian sectors. A cue with no identifiable trigger even after grounded search must be stated honestly here ("no specific overnight trigger — positioning/drift only") — but this is a last resort AFTER searching, never the default. Do NOT relegate event attribution to a passing clause inside Global Context; it lives here, named and explicit.
+This section is MANDATORY and is the spine of the briefing — it answers "WHY is today's open being set up the way it is", not "what futures/cues did". List the 2-4 concrete overnight or pre-open events that actually shape today's session, each on its own line, in the form: [named event/print] -> [transmission mechanism] -> [expected effect on the Indian open]. Draw from: GIFT NIFTY (lead with the implied gap direction and tie it to a cause — it is the single highest-signal input for the open), {india_session_label} FII/DII provisional flow (state the EXACT net cash figures in Rs. crore for FII and DII separately, with the trading date, then read what the FII-vs-DII pattern implies for today's positioning — never a vague "institutions were net sellers" when the precise number is available), Fed/FOMC/ECB/BoJ/RBI commentary (name the specific message), the actual driver of the US close and US-tech moves, macro prints in the last 24h (US CPI/jobs, India CPI/IIP/trade, China data — name the figure), the structured GLOBAL MACRO TELEMETRY (DXY level + day move, US 10Y yield + bps change, Brent + day move — quote the numbers and trace each through its inter-market chain: rising DXY/yields -> FII EM outflow + INR pressure; Brent -> CPI/OMC margins), overnight crude/gold/USD-INR moves and their trigger, large brokerage calls flagged for the open, and geopolitical flashpoints. Apply the CAUSAL CHAINS framework to every entry. If one dominant overnight catalyst is driving the setup, say so explicitly and trace it into the affected Indian sectors. A cue with no identifiable trigger even after grounded search must be stated honestly here ("no specific overnight trigger — positioning/drift only") — but this is a last resort AFTER searching, never the default. Do NOT relegate event attribution to a passing clause inside Global Context; it lives here, named and explicit.
 
 **Global Context**
 3-4 lines covering US close (Dow/Nasdaq/S&P with one driver each), Asian markets this morning, USD/INR direction, and crude. Apply the CAUSAL CHAINS framework — connect movements where causally relevant.
@@ -1099,7 +1677,7 @@ This section is MANDATORY and is the spine of the briefing — it answers "WHY i
 3-4 lines on Nifty's recent range, where it sits vs 20D/50D MAs, support and resistance zones, India VIX level. Use specific levels: "Nifty closed {india_session_label} at X, with 23,950 having held twice last week as support."
 
 **Themes to Watch**
-3-4 lines on 2-3 themes likely to drive today's session — sector rotation continuation, an upcoming event, a divergence between sectors. Reference {india_session_label} wrap if relevant. Include at least one NON-OBVIOUS INSIGHT here.
+3-4 lines on 2-3 themes likely to drive today's session — sector rotation continuation, an upcoming event, a divergence between sectors. Anchor at least one theme in the 10-DAY SECTOR ROTATION block: state which sectors capital has been favouring vs exiting over the period and whether that rotation is accelerating or fading, framed explicitly as a relative-strength read (NOT "Rs. X flowed"), then say whether today's setup is likely to extend or break that period trend. Reference {india_session_label} wrap if relevant. Include at least one NON-OBVIOUS INSIGHT here.
 
 **Bias**
 2 lines: what the market will be TRYING TO DO at open (defend a level, follow through on yesterday's move, fade an overnight cue, etc.) and what would invalidate that view. Frame as expectation, not certainty.
@@ -1143,8 +1721,23 @@ COMMODITIES:
 CRYPTO (risk-appetite indicator):
 {crypto}
 
+GLOBAL MACRO TELEMETRY (structural inter-market inputs — tie these to Indian sectors via CAUSAL CHAINS):
+{global_macro_line}
+
 INDIA — {india_session_label_caps} CLOSE:
 {india_prev}
+
+10-DAY SECTOR ROTATION — PERIOD/SATELLITE VIEW (relative-strength proxy, NOT measured rupee flow):
+{sector_rotation_line}
+
+GIFT NIFTY (primary gap-direction indicator for today's open):
+{gift_line}
+
+FII / DII — {india_session_label_caps} PROVISIONAL CASH FLOW (institutional positioning into today):
+{fii_dii_line}
+
+MARKET BREADTH ({india_session_label} session — underlying participation):
+{breadth_line}
 
 INDIA TECHNICAL POSITION:
 {technicals_block}
@@ -1353,13 +1946,13 @@ This section is MANDATORY and is the spine of the wrap — it answers "WHY did t
 4-5 lines on how the day unfolded. Reference the pre-market expectation: did it play out, or did the day reject the setup? Walk through the arc: open, mid-morning, midday, close. Identify inflection points using the slot summaries. State what the market was TRYING TO DO and whether it succeeded.
 
 **Sector & Stock Highlights**
-4-5 lines on which sectors led/lagged AND why. Apply the INTERPRETING MOVES checklist. Name 2-3 individual stocks with context — what the move means, not just the magnitude. Apply CAUSAL CHAINS where the data supports them. Use grounded search if a large move needs a specific catalyst that Pulse didn't capture.
+4-5 lines on which sectors led/lagged AND why. Apply the INTERPRETING MOVES checklist. Name 2-3 individual stocks with context — what the move means, not just the magnitude. Apply CAUSAL CHAINS where the data supports them. Use grounded search if a large move needs a specific catalyst that Pulse didn't capture. Then place today's session against the 10-DAY SECTOR ROTATION block (the satellite/period view): did today extend the period's rotation (capital continuing into the favoured sectors) or reverse it? State the period read explicitly as relative strength, NOT measured rupee flow — e.g. "today's IT strength continues a 10-session rotation into exporters, accelerating; Metals remained under relative distribution".
 
 **Technical Read**
-3-4 lines on where the close leaves Nifty technically: above/below 20D and 50D MAs, position vs 52W high/low, distance from recent support/resistance. India VIX direction. What does the technical setup imply for tomorrow?
+3-4 lines on where the close leaves Nifty technically: above/below 20D and 50D MAs, position vs 52W high/low, distance from recent support/resistance. India VIX direction. Fold in the GLOBAL MACRO TELEMETRY where it shapes the forward setup — if DXY/US10Y are elevated or Brent is rising, state the specific headwind it imposes on tomorrow (FII-flow pressure, high-beta/growth drag, OMC-margin/CPI risk) rather than treating the technical picture in isolation. What does the combined technical + macro setup imply for tomorrow?
 
 **Filings & Flows**
-2-3 lines on the day's NSE filings if any were market-moving; note breadth (advance/decline) and what it says about institutional conviction. Apply the MARKET IGNORING NEWS rule — was there material news the market ignored?
+2-3 lines on the day's NSE filings if any were market-moving; state today's provisional FII/DII net cash figures and what the FII-vs-DII pattern reveals about who drove the session (e.g. FII selling absorbed by DII buying = domestic support under an FII-led decline), then read breadth (advance/decline) alongside it for conviction. Apply the MARKET IGNORING NEWS rule — was there material news the market ignored?
 
 **Tomorrow**
 2 lines on what matters {next_session_label} — a level being tested, a global event, a sector to watch. Frame as expectation. State what the market will likely be TRYING TO DO.
@@ -1400,6 +1993,15 @@ INDIA VIX:
 
 MARKET BREADTH:
 {breadth_line}
+
+FII / DII — TODAY'S PROVISIONAL CASH FLOW (institutional conviction):
+{fii_dii_line}
+
+GLOBAL MACRO TELEMETRY (structural inter-market inputs — tie to today's sector rotation via CAUSAL CHAINS):
+{global_macro_line}
+
+10-DAY SECTOR ROTATION — PERIOD/SATELLITE VIEW (relative-strength proxy, NOT measured rupee flow):
+{sector_rotation_line}
 
 SECTOR PERFORMANCE:
 {sectors}
@@ -1484,6 +2086,11 @@ def build_pre_market_prompt(packet: dict, use_grounding: bool = True) -> str:
         india_prev               = _format_ticker_list(packet.get("india_prev",   [])),
         technicals_block         = _build_technicals_block(packet),
         vix_line                 = _build_vix_line(packet),
+        gift_line                = _format_gift_nifty(packet.get("gift_nifty") or {}),
+        fii_dii_line             = _format_fii_dii(packet.get("fii_dii") or {}),
+        breadth_line             = _format_breadth(packet.get("breadth") or {}),
+        global_macro_line        = _format_global_macro(packet.get("global_macro") or {}),
+        sector_rotation_line     = _format_sector_rotation(packet.get("sector_rotation") or {}),
         yesterday_wrap           = yest,
         news_block               = _format_pulse_headlines(packet.get("news") or []),
     )
@@ -1513,6 +2120,9 @@ def build_post_market_prompt(packet: dict, use_grounding: bool = True) -> str:
         technicals_block    = _build_technicals_block(packet),
         vix_line            = _build_vix_line(packet),
         breadth_line        = _format_breadth(packet.get("breadth") or {}),
+        fii_dii_line        = _format_fii_dii(packet.get("fii_dii") or {}),
+        global_macro_line   = _format_global_macro(packet.get("global_macro") or {}),
+        sector_rotation_line = _format_sector_rotation(packet.get("sector_rotation") or {}),
         pre_context         = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP all 'compare to pre-market' comparisons. Do NOT mention pre-market is missing. Describe today's session on its own terms.]")[:1200],
         day_arc             = (prior.get("all_slots_compact") or "  [INSTRUCTION: No intraday slots recorded today. Skip the 'arc' walkthrough; describe the day from open to close using close-of-day data only.]"),
         news_block          = _format_pulse_headlines(packet.get("news") or []),
@@ -2023,7 +2633,7 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.5")
+    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.9")
     parser.add_argument("--mode", choices=["pre", "intraday", "post", "auto"], default="auto",
                         help="'auto' detects from current IST time (default)")
     parser.add_argument("--slot", default=None,
