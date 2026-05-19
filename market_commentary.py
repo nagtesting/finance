@@ -1,7 +1,68 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v3.0)
+market_commentary.py  ─  MoneyVeda Market Commentary (v3.2)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
+
+v3.2 CHANGES (advance/decline always-on + broader-market depth — intraday & post):
+  • A/D BREADTH NO LONGER GOES MISSING. The external market-cache
+    (free Render dyno) is often empty intraday, so commentary frequently
+    had no breadth line — the single best one-glance health gauge. FIX:
+    get_nifty100_movers() now also returns an advance/decline count
+    (advances/declines/unchanged/ratio/descriptor) computed FOR FREE
+    from the same Nifty-100 universe it already batch-downloads — no
+    extra fetch, same trusted yfinance path, zero sourcing risk.
+    _resolve_breadth() prefers the full-universe cache when present and
+    transparently falls back to this Nifty-100 A/D otherwise; the source
+    is tagged in the line so the reader/model knows the scope.
+  • BREADTH IS NOW MANDATED IN THE PROMPT. Both intraday structure
+    sections ("Levels in Play" / "Levels & Breadth") now REQUIRE an
+    explicit A/D number or ratio every slot the data exists, and require
+    flagging when a headline index masks weak underlying participation.
+  • BROADER-MARKET DEPTH (Nifty Midcap / Smallcap day %). New
+    get_broader_market(): trusted in-house india feed first (same path
+    as the sector lines), best-effort yfinance fallback, {} + model-
+    instruction placeholder on failure (never blocks). Wired into both
+    intraday prompts as its own block + an instruction to read mid/small
+    vs Nifty 50 as a participation gauge (broad vs narrow large-cap-led
+    tape). Complements the v3.1 narrow-leadership detection.
+  • POST-MARKET also gets the resilient breadth + broader-market inputs
+    (free — it already fetched both legs); post prompt unchanged, it
+    just gets a populated breadth line more often.
+  • PRE-MARKET deliberately UNCHANGED (movers/broader market are a
+    session read, not a pre-open input — same rationale as v3.0).
+
+v3.1 CHANGES (generic policy / regulatory catalyst coverage — intraday):
+  • PROBLEM THIS SOLVES: a sector or its constituents move hard on a
+    POLICY / REGULATORY break (fuel-price revision → OMCs, RBI → banks,
+    USFDA/NPPA → pharma, import/export duty → metals, TRAI/AGR → telecom,
+    GST/emission → autos, divestment → PSUs, …). Non-grounded intraday
+    slots could not see these: (a) the slot had no live search, and
+    (b) the Pulse relevance whitelist had no policy vocabulary, so such
+    headlines were SILENTLY DROPPED before the model ever saw them.
+    Generic fix — NOT a per-event keyword patch.
+  • RELEVANCE FILTER WIDENED (no silent drops). _is_market_relevant()
+    now passes a headline if it matches the original market whitelist OR
+    a new _POLICY_REGULATORY_HITS set (regulators, ministries, and policy
+    action verbs — hike/cut/ban/cap/duty/levy/subsidy/notification/recall
+    /price-control/MSP/…) OR a Nifty-100 constituent NAME auto-derived
+    from NIFTY_100_SYMBOLS (self-updates on reconstitution, zero
+    maintenance). Sports/lifestyle still filtered out (no token match).
+  • DATA-TRIGGERED GROUNDING (the real lever). Model strength ≠ news
+    access; only grounding can DISCOVER a breaking catalyst. _sector_
+    dislocation() reads the LIVE packet: a sharp idiosyncratic sector
+    move (or a heavyweight gapping vs a muted sector) is the signature
+    of a policy/news catalyst. When it fires, that intraday slot is
+    auto-promoted to the grounded Pro path (same machinery + fallback as
+    the 15:30 grounded slot) so the cause can be SEARCHED and NAMED.
+    Spends the expensive path only when the data says a sector was hit —
+    cost-aware. Thresholds are tunable constants. NO-INVENTION rule still
+    governs: no catalyst found after searching → say so, never fabricate.
+  • PROMPT DIRECTIVE. A compact POLICY_TRANSMISSION map (sector → its
+    standard policy channel) is wired into both intraday prompts: for any
+    sector/stock with a material move, check that channel (grounded
+    search if active, else Pulse) and name the catalyst or honestly flag
+    none. Generalises today's fuel/OMC case to every sector.
+  • PRE / POST deliberately UNCHANGED (already fully grounded).
 
 v3.0 CHANGES (grounded close slot + post-market reschedule + Nifty 100 movers):
   • POST-MARKET RESCHEDULED 16:00 IST → 17:00 IST. POST_SLOT, the
@@ -260,6 +321,15 @@ POST_SLOT = "17:00"          # v3.0: was 16:00 — moved to 17:00 IST
 # live event attribution, so it is grounded; all other intraday slots stay
 # on the cheap non-grounded path.
 GROUNDED_INTRADAY_SLOTS = {"15:30"}
+
+# v3.1: data-triggered grounding. A sharp idiosyncratic sector move (or a
+# heavyweight gapping vs a muted sector) is the signature of a policy /
+# regulatory / news catalyst. When _sector_dislocation() fires on the live
+# packet, that intraday slot is auto-promoted to the grounded Pro path so
+# the cause can be searched for and NAMED. Tune these to trade cost vs reach.
+_DISLOC_SECTOR_ABS_PCT = 1.5   # a sector moving this hard on its own …
+_DISLOC_SECTOR_GAP_PCT = 1.2   # … AND this far from the index = idiosyncratic
+_DISLOC_STOCK_ABS_PCT  = 4.0   # a single heavyweight this far = likely a catalyst
 
 HEADERS = {
     "User-Agent": (
@@ -679,6 +749,96 @@ def get_market_breadth() -> dict:
         else:                out["breadth_descriptor"] = "evenly split breadth"
     except Exception as e:
         _log("⚠️", f"Breadth fetch failed: {e}")
+    return out
+
+
+def _resolve_breadth(external: dict, movers: dict) -> dict:
+    """v3.2: A/D breadth is one of the best at-a-glance participation reads,
+    but the external market-cache is often empty intraday (free Render dyno),
+    which left commentary with no breadth line at all. Prefer the external
+    full-universe figure when it has real counts; otherwise fall back to the
+    Nifty-100 advance/decline derived for free from get_nifty100_movers().
+    Never raises — returns whatever is best, or the empty external dict so the
+    formatter can still emit its model instruction."""
+    ext = external or {}
+    if (ext.get("advances", 0) or 0) + (ext.get("declines", 0) or 0) > 0:
+        ext.setdefault("source", "market-cache (full universe)")
+        return ext
+    nb = (movers or {}).get("breadth") or {}
+    if (nb.get("advances", 0) or 0) + (nb.get("declines", 0) or 0) > 0:
+        _log("🔁", "External breadth empty — using Nifty-100 A/D fallback")
+        return nb
+    return ext
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# BROADER MARKET — Nifty Midcap / Smallcap day move (participation depth).
+# Trusted in-house india feed first (same source as the sector lines), then a
+# best-effort yfinance fallback. Degrades to {} like every other fetcher and
+# NEVER blocks commentary.
+# ─────────────────────────────────────────────────────────────────────────────
+_BROADER_FEED_LABELS = {
+    "midcap": ["NIFTY MIDCAP 100", "NIFTY MIDCAP 150", "NIFTY MIDCAP 50",
+               "NIFTY MIDCAP", "NIFTY MIDCAP SELECT"],
+    "smallcap": ["NIFTY SMALLCAP 100", "NIFTY SMALLCAP 250",
+                 "NIFTY SMLCAP 100", "NIFTY SMALLCAP", "NIFTY SMLCAP 250"],
+}
+_BROADER_YF_FALLBACK = {
+    "midcap":   ["^NSEMDCP50", "NIFTY_MIDCAP_100.NS", "NIFTYMIDCAP150.NS"],
+    "smallcap": ["^CNXSC", "NIFTYSMLCAP250.NS", "NIFTY_SMLCAP_100.NS"],
+}
+
+
+def _yf_day_pct(symbol: str):
+    """Return (last, pct) day move for a symbol via yfinance, or None."""
+    if not YFINANCE_AVAILABLE:
+        return None
+    try:
+        h = _yf.Ticker(symbol).history(period="5d", interval="1d")
+        if h is None or h.empty or len(h) < 2:
+            return None
+        closes = h["Close"].dropna()
+        if len(closes) < 2:
+            return None
+        last = float(closes.iloc[-1]); prev = float(closes.iloc[-2])
+        if not prev:
+            return None
+        return round(last, 2), round((last - prev) / prev * 100.0, 2)
+    except Exception:
+        return None
+
+
+def get_broader_market(india_tickers: list = None) -> dict:
+    """Returns {} on total failure, else:
+      {"midcap": {"pct": float, "last": float|None, "source": str},
+       "smallcap": {...}}  — either key may be absent if unresolved."""
+    out = {}
+    for kind in ("midcap", "smallcap"):
+        rec = None
+        # 1) trusted in-house feed (same path as the sector lines)
+        if india_tickers:
+            for lbl in _BROADER_FEED_LABELS[kind]:
+                t = find_ticker(india_tickers, lbl)
+                if t and t.get("pct") is not None:
+                    rec = {"pct": round(float(t["pct"]), 2),
+                           "last": t.get("value"),
+                           "label": lbl, "source": "feed"}
+                    break
+        # 2) yfinance fallback
+        if rec is None:
+            for sym in _BROADER_YF_FALLBACK[kind]:
+                got = _yf_day_pct(sym)
+                if got is not None:
+                    rec = {"pct": got[1], "last": got[0],
+                           "label": sym, "source": "yfinance"}
+                    break
+        if rec is not None:
+            out[kind] = rec
+    if out:
+        bits = " | ".join(f"{k} {v['pct']:+.2f}%" for k, v in out.items())
+        _log("🟦", f"Broader market: {bits}")
+    else:
+        _log("⚠️", "Broader market (midcap/smallcap) unavailable this run")
     return out
 
 
@@ -1305,11 +1465,31 @@ def get_nifty100_movers(top_n: int = _NIFTY100_TOP_N) -> dict:
     rows.sort(key=lambda r: r["pct"], reverse=True)
     gainers = rows[:top_n]
     losers  = list(reversed(rows[-top_n:]))  # most-negative first
-    out = {"asof": asof, "gainers": gainers, "losers": losers}
+
+    # v3.2: advance/decline breadth is FREE here — same resolved universe.
+    # ±0.1% dead-band matches get_market_breadth() so the two are comparable.
+    adv = sum(1 for r in rows if r["pct"] >  0.1)
+    dec = sum(1 for r in rows if r["pct"] < -0.1)
+    unc = len(rows) - adv - dec
+    if   adv > dec * 2:  desc = "broad-based rally (>2:1 advancers)"
+    elif adv > dec:      desc = "more advancers than decliners"
+    elif dec > adv * 2:  desc = "broad-based selling (>2:1 decliners)"
+    elif dec > adv:      desc = "more decliners than advancers"
+    else:                desc = "evenly split breadth"
+    breadth = {
+        "advances": adv, "declines": dec, "unchanged": unc,
+        "universe": len(rows),
+        "ad_ratio": round(adv / dec, 2) if dec else None,
+        "breadth_descriptor": desc,
+        "source": "Nifty 100",
+    }
+
+    out = {"asof": asof, "gainers": gainers, "losers": losers,
+           "breadth": breadth}
     g0, l0 = gainers[0], losers[0]
     _log("📈", f"Nifty 100 movers: top {g0['name']} ({g0['pct']:+.2f}%) | "
                f"bottom {l0['name']} ({l0['pct']:+.2f}%) "
-               f"[{len(rows)} symbols]")
+               f"[{len(rows)} symbols | A/D {adv}-{dec}]")
     return out
 
 
@@ -1356,10 +1536,42 @@ def _format_technicals(label: str, tech: dict) -> str:
 
 
 def _format_breadth(b: dict) -> str:
-    if not b or (b.get("advances") == 0 and b.get("declines") == 0):
-        return "  Breadth: [INSTRUCTION TO MODEL: Breadth ratio not available this slot. Infer conviction from sector dispersion (count green vs red sectors in the SECTOR PERFORMANCE block) and from top-mover skew (lopsided gainers vs losers). Do NOT mention that breadth is unavailable.]"
-    return (f"  Breadth: {b.get('advances')} advancers vs {b.get('declines')} decliners "
-            f"({b.get('breadth_descriptor')})")
+    if not b or ((b.get("advances") or 0) == 0 and (b.get("declines") or 0) == 0):
+        return ("  Breadth: [INSTRUCTION TO MODEL: Breadth ratio not available "
+                "this slot. Infer conviction from sector dispersion (count green "
+                "vs red sectors in SECTOR PERFORMANCE), the BROADER MARKET "
+                "midcap/smallcap line, and top-mover skew. Do NOT mention "
+                "breadth is unavailable.]")
+    adv, dec = b.get("advances"), b.get("declines")
+    uni  = b.get("universe")
+    ratio = b.get("ad_ratio")
+    src  = b.get("source", "")
+    scope = f" of {uni}" if uni else ""
+    tail = f", A/D {ratio}" if ratio is not None else ""
+    src_tag = f" [{src}]" if src else ""
+    return (f"  Breadth: {adv} advancing vs {dec} declining{scope} "
+            f"({b.get('breadth_descriptor')}{tail}){src_tag}")
+
+
+def _format_broader_market(bm: dict) -> str:
+    if not bm:
+        return ("  Broader market: [INSTRUCTION TO MODEL: Midcap/Smallcap "
+                "moves not available this slot. Judge participation breadth "
+                "from the A/D line and sector dispersion instead; do NOT say "
+                "this is missing.]")
+    parts = []
+    for kind, lbl in (("midcap", "Nifty Midcap"), ("smallcap", "Nifty Smallcap")):
+        r = bm.get(kind)
+        if r:
+            last = f", {r['last']:,}" if r.get("last") is not None else ""
+            parts.append(f"{lbl} {r['pct']:+.2f}%{last}")
+    if not parts:
+        return ("  Broader market: [INSTRUCTION TO MODEL: not available this "
+                "slot — use A/D and sector dispersion; do NOT flag as missing.]")
+    return ("  Broader market (since prior close): " + "  |  ".join(parts)
+            + "\n  [Read vs Nifty 50: mid/small OUTpacing large-caps = broad "
+              "participation; LAGGING a large-cap-led index = narrow, "
+              "low-quality breadth — say which.]")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1434,7 +1646,66 @@ _PULSE_RELEVANCE_HITS = {
     "investigation", "probe", "raid", "penalty",
     "ban", "approval", "license", "tax", "duty", "levy",
     "subsidy", "scheme", "psu",
+    # v3.1: fuel / OMC vocabulary (today's concrete miss)
+    "fuel", "petrol", "diesel", "fuel price", "petrol price", "diesel price",
+    "fuel prices", "pump price", "retail fuel", "auto fuel",
+    "omc", "omcs", "oil marketing", "marketing margin", "refining margin",
+    "indian oil", "bharat petroleum", "hindustan petroleum",
 }
+
+# ── v3.1: generic POLICY / REGULATORY layer ──────────────────────────────────
+# A headline is relevant if it hits the market whitelist ABOVE *or* any
+# regulator / ministry / policy-action token here *or* a Nifty-100
+# constituent name (auto-derived). This makes the filter sector-agnostic:
+# RBI→banks, USFDA/NPPA→pharma, duty→metals, TRAI/AGR→telecom, GST→autos,
+# divestment→PSUs, fuel revision→OMCs all survive instead of being dropped.
+_POLICY_REGULATORY_HITS = {
+    # regulators / bodies
+    "rbi", "sebi", "trai", "irdai", "cci", "dgft", "dgca", "cdsco",
+    "usfda", "us fda", "fda", "nppa", "cerc", "serc", "pngrb", "ngt",
+    "competition commission", "enforcement directorate", "income tax dept",
+    "gst council", "finance ministry", "ministry of finance",
+    "petroleum ministry", "oil ministry", "steel ministry", "coal ministry",
+    "power ministry", "commerce ministry", "telecom department", "dot",
+    "cabinet", "union cabinet", "cabinet committee", "pmo", "niti aayog",
+    "supreme court", "high court", "tribunal", "nclat", "nclt",
+    # policy-action verbs / instruments (sector-agnostic)
+    "hike", "hiked", "price hike", "price cut", "price revision",
+    "deregulate", "decontrol", "price control", "price cap", "cap on",
+    "floor price", "msp", "minimum support price", "administered price",
+    "import duty", "export duty", "customs duty", "anti-dumping",
+    "windfall tax", "cess", "surcharge", "tariff", "tariff hike",
+    "notification", "circular", "ordinance", "gazette", "amendment",
+    "moratorium", "waiver", "relief package", "stimulus", "incentive",
+    "pli", "production linked", "capex push", "divestment", "disinvestment",
+    "stake sale by govt", "strategic sale", "privatisation", "privatization",
+    "recall", "import curb", "export curb", "export ban", "quota",
+    "spectrum", "agr", "licence fee", "uso", "fdi", "fdi limit",
+    "rate cut", "rate hike", "repo", "crr", "slr", "liquidity measure",
+}
+
+# Nifty-100 constituent names, lower-cased, auto-derived from the maintained
+# symbol map further down the file. Any headline that names a constituent is
+# relevant. Self-updates on index reconstitution — zero extra maintenance.
+def _build_constituent_name_hits() -> set:
+    hits = set()
+    try:
+        for name in NIFTY_100_SYMBOLS.keys():
+            n = name.lower().strip()
+            if len(n) >= 3:
+                hits.add(n)
+            # also index the bare ticker root (e.g. RELIANCE.NS -> reliance)
+        for sym in NIFTY_100_SYMBOLS.values():
+            root = sym.split(".")[0].lower()
+            if len(root) >= 3:
+                hits.add(root)
+    except Exception:
+        pass
+    return hits
+
+
+_CONSTITUENT_NAME_HITS = None  # lazily built on first relevance check
+
 
 
 def _parse_pubdate(raw: str):
@@ -1450,8 +1721,17 @@ def _parse_pubdate(raw: str):
 
 
 def _is_market_relevant(title: str, summary: str) -> bool:
+    global _CONSTITUENT_NAME_HITS
     blob = f"{title} {summary}".lower()
-    return any(k in blob for k in _PULSE_RELEVANCE_HITS)
+    if any(k in blob for k in _PULSE_RELEVANCE_HITS):
+        return True
+    if any(k in blob for k in _POLICY_REGULATORY_HITS):
+        return True
+    # v3.1: build the constituent-name set lazily — NIFTY_100_SYMBOLS is
+    # defined later in the module, so we cannot reference it at import time.
+    if _CONSTITUENT_NAME_HITS is None:
+        _CONSTITUENT_NAME_HITS = _build_constituent_name_hits()
+    return any(k in blob for k in _CONSTITUENT_NAME_HITS)
 
 
 def get_pulse_headlines(max_age_hours: int = 12, limit: int = 12) -> list:
@@ -1660,8 +1940,12 @@ def build_intraday_packet(slot: str):
         "NIFTY IT":   _compute_index_technicals("^CNXIT"),
     }
     packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
-    packet["breadth"]   = get_market_breadth()
     packet["nifty100_movers"] = get_nifty100_movers()   # v3.0 (not in pre)
+    # v3.2: A/D prefers the full-universe cache, else the Nifty-100 fallback
+    # derived for free from the movers fetch above.
+    packet["breadth"]   = _resolve_breadth(get_market_breadth(),
+                                            packet["nifty100_movers"])
+    packet["broader_market"] = get_broader_market(india)   # v3.2 mid/small cap
     packet["news"]      = get_pulse_headlines(max_age_hours=6, limit=10)
     packet["prior"]     = get_prior_intraday_context(today, slot)
     return packet
@@ -1719,11 +2003,13 @@ def build_post_market_packet():
         "NIFTY IT":   _compute_index_technicals("^CNXIT"),
     }
     packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
-    packet["breadth"]   = get_market_breadth()
+    packet["nifty100_movers"] = get_nifty100_movers()      # v3.0 (not in pre)
+    packet["breadth"]   = _resolve_breadth(get_market_breadth(),
+                                            packet["nifty100_movers"])  # v3.2
+    packet["broader_market"] = get_broader_market(india)   # v3.2 mid/small cap
     packet["fii_dii"]   = get_fii_dii()              # today's provisional cash flow
     packet["global_macro"] = get_global_macro_telemetry()  # DXY/US10Y/Brent
     packet["sector_rotation"] = get_sector_rotation()      # 10d satellite view
-    packet["nifty100_movers"] = get_nifty100_movers()      # v3.0 (not in pre)
     packet["news"]      = get_pulse_headlines(max_age_hours=12, limit=15)
     packet["prior"]     = get_prior_intraday_context(packet["date"], "23:59")
     packet["filings"]   = get_todays_filings()
@@ -1967,11 +2253,34 @@ RECENT MARKET NEWS HEADLINES (last 36 hours, Indian financial press via Pulse �
 Now write the strategist pre-market briefing:"""
 
 
+# ── v3.1: generic policy/regulatory transmission directive (intraday) ────────
+# Sector-agnostic. Tells the model that material moves often originate from a
+# POLICY/REGULATORY break and to check the relevant channel before defaulting
+# to "no catalyst". The NO-INVENTION rule still governs: channel checked,
+# nothing found → say so; never fabricate a policy cause.
+POLICY_TRANSMISSION = """POLICY / REGULATORY TRANSMISSION (check before concluding "no catalyst"):
+Sector and stock moves are frequently driven by a government / regulator action, not just earnings or global cues. For ANY sector or heavyweight with a material move, test the relevant channel below — use grounded search if it is ACTIVE this run, otherwise mine the Pulse headlines — and NAME the catalyst if one exists. If the channel is checked and nothing surfaces, state that plainly (NO-INVENTION rule); do NOT manufacture a policy reason.
+  • Energy / OMC (IOC, BPCL, HPCL, ONGC, GAIL): retail fuel price revision, excise/windfall tax change, crude move, subsidy/under-recovery, gas pricing.
+  • Banks / NBFC / PSU banks: RBI repo/CRR/SLR or liquidity action, NPA/provisioning norms, recap/merger, lending-rate or deposit moves.
+  • IT services: US/EU visa & immigration policy, client-country macro, USD/INR, deal/guidance commentary.
+  • Pharma / Healthcare: USFDA action (483/import alert/approval), NPPA price control, USTR/IP, export curb.
+  • Metals & Mining: import/export duty, anti-dumping, China demand/output policy, mineral royalty, windfall levy.
+  • Auto: GST/cess change, emission/scrappage norms, EV/PLI incentive, fuel-price pass-through to demand.
+  • Telecom: TRAI tariff/floor-price, AGR/SUC, spectrum, licence-fee change.
+  • Power / Utilities / PSU: tariff order (CERC/SERC), divestment/stake sale, capex push, fuel-cost pass-through.
+  • Realty / Cement / Infra: rate cycle, housing/infra scheme, input-cost or duty change.
+  • FMCG / Consumption: GST slab, MSP/farm policy, rural scheme, commodity-cost pass-through.
+Apply the MARKET-IGNORING-NEWS logic too: a policy headline that produced NO sector reaction is itself a signal worth naming.
+"""
+
+
 INTRADAY_OPENING_PROMPT = """You are a senior equity strategist writing the FIRST INTRADAY UPDATE of the day for MoneyVeda. You are NOT a news summarizer. NSE opened at 9:15 AM IST. It is now {timestamp}, slot 09:30 IST.
 
 {shared_principles}
 
 IMPORTANT: Today is {day_of_week} {date}. The most recent prior trading session was {india_session_label} (NOT "yesterday" if today is Monday or post-holiday). Use "{india_session_label}" or "Friday's" precisely — never substitute "yesterday" when that's inaccurate.
+
+{policy_transmission}
 
 YOUR TASK:
 Write a structured 10-12 line briefing on how the opening 15 minutes played out. The KEY angle: did the market open as the pre-market expected, or is reality diverging? AND what is the market TRYING TO DO in the first 15 minutes — confirm yesterday's trend, fade an overnight gap, defend a level? Use markdown headers.
@@ -1988,7 +2297,7 @@ STRUCTURE:
 2-3 lines on sector behavior + 1-2 individual names worth flagging, drawing the names from the NIFTY 100 TOP-5 GAINERS / TOP-5 LOSERS block where they sharpen the picture. Apply the INTERPRETING MOVES checklist: is the move confirmed by breadth, volume, peers? Give any flagged mover a NAMED reason from the Pulse headlines, or state the move with "no specific catalyst visible" per the NO-INVENTION rule. Use technicals — e.g. "Bank Nifty opening below 20D MA confirms the weakness pre-market flagged."
 
 **Levels in Play**
-1-2 lines: the key support/resistance the market is testing, and what a break would signal. This is where you say what the market is TRYING TO DO.
+1-2 lines: the key support/resistance the market is testing, and what a break would signal. This is where you say what the market is TRYING TO DO. ALWAYS state the breadth read explicitly here — the advance/decline count or A/D ratio, plus whether midcap/smallcap are confirming or diverging from the Nifty (large-cap-only strength with lagging broader market = narrow, low-conviction open; broad participation = healthy). This is the single best one-glance gauge for the reader — never omit it when the data is present.
 
 **Watch**
 1 line on what to monitor in the next 30 minutes.
@@ -2022,6 +2331,9 @@ INDIA VIX:
 
 MARKET BREADTH:
 {breadth_line}
+
+BROADER MARKET (Midcap / Smallcap):
+{broader_market_line}
 
 SECTOR PERFORMANCE (live):
 {sectors}
@@ -2057,6 +2369,8 @@ INTRADAY_UPDATE_PROMPT = """You are a senior equity strategist writing an INTRAD
 
 {grounding_block}
 
+{policy_transmission}
+
 YOUR TASK:
 Write a 10-12 line delta update on what has CHANGED since the last slot — and connect to the day's overall arc. This is a continuation, not a recap. What is the market TRYING TO DO right now — extend a move, reverse one, defend a level, rotate? Use markdown headers.
 
@@ -2072,7 +2386,7 @@ STRUCTURE:
 2-3 lines: where does this slot fit in today's story so far? Reference the day-so-far summary. If open expected one thing and we're seeing another, say so. State what the market is TRYING TO DO.
 
 **Levels & Breadth**
-1-2 lines: which level is being tested or held? What does breadth tell us about conviction? Include at least one NON-OBVIOUS INSIGHT here if not earlier.
+2 lines: which level is being tested or held, AND an explicit breadth read — quote the advance/decline count or A/D ratio and say whether midcap/smallcap are confirming or diverging from the Nifty (broad participation vs a narrow large-cap-led tape). This A/D + broader-market read is the reader's best one-glance health check; state it in plain numbers every slot the data exists, and flag when the headline index masks weak underlying breadth. Include at least one NON-OBVIOUS INSIGHT here if not earlier.
 
 **Nifty 100 Movers**
 2-3 lines on the day's standout names from the NIFTY 100 TOP-5 GAINERS / TOP-5 LOSERS block. Do NOT just list ten tickers — pick the 2-3 that actually matter (largest move, a name confirming/contradicting the sector story, an outlier vs its peers) and give each a NAMED reason: if grounding is active, search for the specific catalyst; otherwise use the Pulse headlines; if neither yields a cause, state the move with "no specific catalyst visible" per the NO-INVENTION rule. Tie at least one mover back to the sector rotation or breadth picture.
@@ -2118,6 +2432,9 @@ INDIA VIX:
 
 MARKET BREADTH:
 {breadth_line}
+
+BROADER MARKET (Midcap / Smallcap):
+{broader_market_line}
 
 SECTOR PERFORMANCE (live now):
 {sectors}
@@ -2363,6 +2680,7 @@ def build_intraday_prompt(packet: dict, use_grounding: bool = False) -> str:
         pre_ctx = prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing exists for today. SKIP all 'vs pre-market' comparisons. Describe the opening on its own merits. Do NOT mention pre-market is missing.]"
         return INTRADAY_OPENING_PROMPT.format(
             shared_principles   = SHARED_PRINCIPLES,
+            policy_transmission = POLICY_TRANSMISSION,
             date                = packet["date"],
             timestamp           = packet["timestamp_ist"],
             day_of_week         = _day_of_week_ist(),
@@ -2379,6 +2697,7 @@ def build_intraday_prompt(packet: dict, use_grounding: bool = False) -> str:
             technicals_block    = _build_technicals_block(packet),
             vix_line            = _build_vix_line(packet),
             breadth_line        = _format_breadth(packet.get("breadth") or {}),
+            broader_market_line = _format_broader_market(packet.get("broader_market") or {}),
             news_block          = _format_pulse_headlines(packet.get("news") or []),
         )
     prev_slot = prior.get("prev_slot") or "the prior slot"
@@ -2391,6 +2710,7 @@ def build_intraday_prompt(packet: dict, use_grounding: bool = False) -> str:
     return INTRADAY_UPDATE_PROMPT.format(
         shared_principles  = SHARED_PRINCIPLES,
         grounding_block    = GROUNDING_DISCIPLINE if use_grounding else "",
+        policy_transmission = POLICY_TRANSMISSION,
         date               = packet["date"],
         timestamp          = packet["timestamp_ist"],
         slot               = packet["slot"],
@@ -2410,8 +2730,51 @@ def build_intraday_prompt(packet: dict, use_grounding: bool = False) -> str:
         technicals_block   = _build_technicals_block(packet),
         vix_line           = _build_vix_line(packet),
         breadth_line       = _format_breadth(packet.get("breadth") or {}),
+        broader_market_line = _format_broader_market(packet.get("broader_market") or {}),
         news_block         = _format_pulse_headlines(packet.get("news") or []),
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GROUNDING TRIGGER (v3.1)
+# ─────────────────────────────────────────────────────────────────────────────
+def _sector_dislocation(packet: dict) -> str:
+    """v3.1: detect the *signature* of a policy / regulatory / news catalyst
+    in the LIVE intraday packet — a sector moving sharply and idiosyncratically
+    vs the index, or a heavyweight gapping while its sector is muted.
+
+    Returns a short human-readable reason string when it fires (used both for
+    the grounding decision and the log line), or "" when nothing stands out.
+    This is deliberately a DATA signal, not a news signal: it tells us a
+    catalyst probably exists so we should turn ON grounded search to find and
+    NAME it — it never asserts what the catalyst is (NO-INVENTION rule still
+    governs the prompt)."""
+    nifty = packet.get("nifty") or {}
+    n_pct = nifty.get("pct")
+    if not isinstance(n_pct, (int, float)):
+        n_pct = 0.0
+
+    # 1) idiosyncratic sector move
+    for s in packet.get("sectors", []) or []:
+        if not isinstance(s, dict):
+            continue
+        sp = s.get("pct")
+        if not isinstance(sp, (int, float)):
+            continue
+        if abs(sp) >= _DISLOC_SECTOR_ABS_PCT and \
+           abs(sp - n_pct) >= _DISLOC_SECTOR_GAP_PCT:
+            return (f"{s.get('label', 'a sector')} {sp:+.2f}% vs "
+                    f"Nifty {n_pct:+.2f}%")
+
+    # 2) single heavyweight dislocation
+    for st in packet.get("top_stocks", []) or []:
+        if not isinstance(st, dict):
+            continue
+        p = st.get("pct")
+        if isinstance(p, (int, float)) and abs(p) >= _DISLOC_STOCK_ABS_PCT:
+            return f"{st.get('label', 'a heavyweight')} {p:+.2f}%"
+
+    return ""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2781,12 +3144,27 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
             _log("⚠️", f"Slot {slot} not in canonical list — snapping")
             sh, sm = map(int, slot.split(":"))
             slot = _snap_to_intraday_slot(sh, sm)
-        # v3.0: resolve grounding now that the intraday slot is known.
-        will_ground = use_grounding and slot in GROUNDED_INTRADAY_SLOTS
-        if will_ground:
-            _log("🌐", f"Intraday slot {slot} is a GROUNDED slot — "
-                       f"routing to grounded Pro path")
+        # Build the packet FIRST — v3.1 grounding is data-triggered, so the
+        # decision needs the live sector/stock numbers.
         packet = build_intraday_packet(slot)
+
+        # Grounding resolution:
+        #   v3.0 — configured grounded slots (the 15:30 close).
+        #   v3.1 — a sharp idiosyncratic sector/heavyweight dislocation is the
+        #          signature of a policy/regulatory/news catalyst; auto-promote
+        #          this slot to the grounded Pro path so the cause can be
+        #          searched for and NAMED (NO-INVENTION rule still governs).
+        slot_grounded = slot in GROUNDED_INTRADAY_SLOTS
+        disloc = _sector_dislocation(packet)
+        will_ground = use_grounding and (slot_grounded or bool(disloc))
+        if will_ground:
+            why = ("configured grounded slot" if slot_grounded
+                   else f"sector dislocation [{disloc}]")
+            _log("🌐", f"Intraday {slot} → grounded Pro path ({why})")
+        elif disloc:
+            # dislocation seen but grounding disabled via --no-grounding
+            _log("⚠️", f"Intraday {slot}: dislocation [{disloc}] detected but "
+                       f"grounding is off — catalyst may go unnamed")
         prompt = build_intraday_prompt(packet, use_grounding=will_ground)
     else:
         _log("❌", f"Unknown mode: {mode}")
