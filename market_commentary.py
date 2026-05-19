@@ -1,7 +1,36 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v2.9)
+market_commentary.py  ─  MoneyVeda Market Commentary (v3.0)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
+
+v3.0 CHANGES (grounded close slot + post-market reschedule + Nifty 100 movers):
+  • POST-MARKET RESCHEDULED 16:00 IST → 17:00 IST. POST_SLOT, the
+    detect_mode_and_slot() post window, the _is_pre_market_time-style
+    timing docs, and the documented Render cron all updated. The cron
+    schedule must now extend one UTC hour (0,30 2-10 → 0,30 2-11) so the
+    11:30 UTC tick (= 17:00 IST) actually fires post-market. 17:00 gives
+    today's provisional FII/DII figures more time to publish before the
+    wrap is written.
+  • 15:30 IST INTRADAY SLOT IS NOW GOOGLE-GROUNDED, exactly like pre and
+    post. New GROUNDED_INTRADAY_SLOTS set drives this. The close-of-
+    session 15:30 update now routes to Gemini Pro + google_search,
+    inherits the GROUNDING DISCIPLINE block, and falls back to a
+    rebuilt non-grounded prompt on grounded failure (same pattern as
+    pre/post). All other intraday slots are UNCHANGED (Flash-Lite /
+    Pro on event days, Pulse only, no grounding).
+  • NIFTY 100 TOP-5 GAINERS / TOP-5 LOSERS added to every commentary
+    EXCEPT pre-market (intraday slots + post-market). get_nifty100_movers()
+    is yfinance-only (batched download of the Nifty 100 universe) — the
+    same trusted code path as technicals / sector rotation, NO NSE/broker
+    sourcing risk. The prompt requires a NAMED reason per mover (grounded
+    search where active, Pulse headlines otherwise) and falls back to the
+    existing NO-INVENTION-OF-CAUSATION rule when no catalyst surfaces.
+    Pre-market deliberately excluded (movers are a session read, not a
+    pre-open input). Graceful degradation as usual: {} on total failure,
+    partial on per-symbol failure, model-instruction placeholder on empty.
+  • NIFTY_100_SYMBOLS is a maintained static constituent list (Nifty 50 +
+    Nifty Next 50). Refresh it when the index reconstitutes; yfinance
+    silently skips any symbol that errors so a stale entry never blocks.
 
 v2.9 CHANGES (10-day sector rotation / satellite view — pre & post only):
   • get_sector_rotation(): 10-session relative-strength rotation across an
@@ -144,8 +173,10 @@ v2.2 CHANGES (Render scheduling fix) — unchanged:
 
 THREE MODES:
   1. PRE-MARKET   (08:00 IST)  — Gemini Pro + Google Search grounding
-  2. INTRADAY     (09:30–15:30, 13 slots) — Flash-Lite / Pro (event days), Pulse only
-  3. POST-MARKET  (16:00 IST)  — Gemini Pro + Google Search grounding
+  2. INTRADAY     (09:30–15:30, 13 slots) — Flash-Lite / Pro (event days),
+                   Pulse only. EXCEPTION: the 15:30 IST close slot is
+                   Gemini Pro + Google Search grounding (v3.0).
+  3. POST-MARKET  (17:00 IST)  — Gemini Pro + Google Search grounding
 
 USAGE:
   python market_commentary.py                     # auto-detect from IST time
@@ -156,23 +187,29 @@ USAGE:
   python market_commentary.py --no-grounding      # disable grounding for this run
 
 RENDER CRON SCHEDULE (Settings → Deploy → Schedule):
-  0,30 2-10 * * 1-5
+  0,30 2-11 * * 1-5
 
   Render cron runs in UTC. This schedule fires at :00 and :30 of UTC
-  hours 02–10. Auto-detection maps them to IST as:
+  hours 02–11. Auto-detection maps them to IST as:
     02:00 UTC = 07:30 IST  → clean exit (intentional no-op)
     02:30 UTC = 08:00 IST  → PRE-MARKET   ← the only pre-market tick
     03:00 UTC = 08:30 IST  → clean exit
     03:30 UTC = 09:00 IST  → clean exit
     04:00 UTC = 09:30 IST  → INTRADAY (first slot)
     …                       → INTRADAY
-    10:00 UTC = 15:30 IST  → INTRADAY (last slot)
-    10:30 UTC = 16:00 IST  → POST-MARKET
+    10:00 UTC = 15:30 IST  → INTRADAY (last slot, GROUNDED — v3.0)
+    10:30 UTC = 16:00 IST  → clean exit (post moved to 17:00)
+    11:00 UTC = 16:30 IST  → clean exit
+    11:30 UTC = 17:00 IST  → POST-MARKET  ← the only post-market tick
   Pre-market therefore runs ONLY at 08:00 IST (02:30 UTC). The 07:30 IST
   tick is a deliberate no-op; the tightened ±8 window stops scheduler
   jitter from leaking it into pre-market. Do NOT add a separate
   `--mode pre` cron — auto-detection already handles the timing, and a
   fixed `--mode pre` cron is exactly what produced the early-07:30 firing.
+  v3.0: the cron now extends to UTC hour 11 so the 11:30 UTC tick
+  (= 17:00 IST) reaches post-market; the old 10:30 UTC (= 16:00 IST)
+  tick is now a clean exit since post-market moved to 17:00. The 15:30
+  IST intraday tick is unchanged in timing but now runs grounded.
 
 EXIT CODES:
   0 = success OR clean exit (off-schedule fire)
@@ -216,11 +253,17 @@ INTRADAY_SLOTS = [
     "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
 ]
 PRE_SLOT  = "08:00"
-POST_SLOT = "16:00"
+POST_SLOT = "17:00"          # v3.0: was 16:00 — moved to 17:00 IST
+
+# v3.0: intraday slots that run Google-grounded (Gemini Pro + google_search)
+# exactly like pre/post. The close-of-session 15:30 read benefits most from
+# live event attribution, so it is grounded; all other intraday slots stay
+# on the cheap non-grounded path.
+GROUNDED_INTRADAY_SLOTS = {"15:30"}
 
 HEADERS = {
     "User-Agent": (
-        "Mozilla/5.0 (MoneyVeda/2.9 MarketCommentary) "
+        "Mozilla/5.0 (MoneyVeda/3.0 MarketCommentary) "
         "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
     )
 }
@@ -311,22 +354,24 @@ def detect_mode_and_slot():
     Auto-detect mode + slot from current IST time.
     Returns (None, None) for off-schedule fires (caller exits cleanly).
 
-    Render cron runs in UTC. The documented schedule '0,30 2-10 * * 1-5'
-    produces ticks at :00 and :30 of UTC hours 02-10, i.e. IST:
+    Render cron runs in UTC. The documented schedule '0,30 2-11 * * 1-5'
+    produces ticks at :00 and :30 of UTC hours 02-11, i.e. IST:
       02:00 UTC = 07:30 IST  -> off-schedule, clean exit (intentional no-op)
       02:30 UTC = 08:00 IST  -> PRE-MARKET
       03:00 UTC = 08:30 IST  -> off-schedule, clean exit
       03:30 UTC = 09:00 IST  -> off-schedule, clean exit
       04:00 UTC = 09:30 IST  -> INTRADAY (first slot)
       ...      ...           -> INTRADAY
-      10:00 UTC = 15:30 IST  -> INTRADAY (last slot)
-      10:30 UTC = 16:00 IST  -> POST-MARKET
+      10:00 UTC = 15:30 IST  -> INTRADAY (last slot, grounded — v3.0)
+      10:30 UTC = 16:00 IST  -> off-schedule, clean exit (post moved)
+      11:00 UTC = 16:30 IST  -> off-schedule, clean exit
+      11:30 UTC = 17:00 IST  -> POST-MARKET
 
     Valid windows:
       - Pre-market: 08:00 IST  (07:52 – 08:08, ±8 — tight, so a delayed
                                 07:30-IST tick can NEVER drift into it)
       - Intraday:   09:30, 10:00, ... 15:30 IST (each ±15 min)
-      - Post-market: 16:00 IST (15:45 – 16:15)
+      - Post-market: 17:00 IST (16:45 – 17:15)   ← v3.0: was 16:00 IST
     """
     now = datetime.now(IST)
     cur_min = now.hour * 60 + now.minute
@@ -334,7 +379,7 @@ def detect_mode_and_slot():
     if 472 <= cur_min <= 488:        # Pre-market 08:00 ± 8 (480 = 08:00)
         return "pre", PRE_SLOT
 
-    if 945 <= cur_min <= 975:        # Post-market 16:00 ± 15
+    if 1005 <= cur_min <= 1035:      # Post-market 17:00 ± 15 (1020 = 17:00)
         return "post", POST_SLOT
 
     for slot in INTRADAY_SLOTS:
@@ -1123,6 +1168,170 @@ def _format_sector_rotation(r: dict) -> str:
     return "\n".join(lines)
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# NIFTY 100 TOP-5 GAINERS / TOP-5 LOSERS (v3.0) — included in every commentary
+# EXCEPT pre-market (intraday + post). yfinance only, ONE batched download for
+# the whole universe — same trusted code path as technicals / sector rotation,
+# NO NSE/broker sourcing risk. The day % is (latest close vs prior close);
+# during market hours Yahoo's "latest" row tracks the (delayed) live price, so
+# this reads as the day move, consistent with how _compute_index_technicals
+# already uses yfinance intraday. Never blocks: {} on total failure, partial
+# on per-symbol failure.
+#
+# NIFTY_100_SYMBOLS is a MAINTAINED static list (Nifty 50 + Nifty Next 50).
+# Refresh on index reconstitution. yfinance silently skips a bad symbol so a
+# stale entry degrades to "one fewer name", never an exception.
+# ─────────────────────────────────────────────────────────────────────────────
+NIFTY_100_SYMBOLS = {
+    # ---- Nifty 50 ----
+    "Reliance": "RELIANCE.NS", "TCS": "TCS.NS", "HDFC Bank": "HDFCBANK.NS",
+    "ICICI Bank": "ICICIBANK.NS", "Infosys": "INFY.NS", "HUL": "HINDUNILVR.NS",
+    "Bharti Airtel": "BHARTIARTL.NS", "ITC": "ITC.NS", "SBI": "SBIN.NS",
+    "L&T": "LT.NS", "Kotak Bank": "KOTAKBANK.NS", "Axis Bank": "AXISBANK.NS",
+    "Bajaj Finance": "BAJFINANCE.NS", "Asian Paints": "ASIANPAINT.NS",
+    "Maruti Suzuki": "MARUTI.NS", "HCL Tech": "HCLTECH.NS",
+    "Sun Pharma": "SUNPHARMA.NS", "Titan": "TITAN.NS",
+    "UltraTech Cement": "ULTRACEMCO.NS", "NTPC": "NTPC.NS",
+    "Power Grid": "POWERGRID.NS", "Tata Motors": "TATAMOTORS.NS",
+    "Nestle India": "NESTLEIND.NS", "Bajaj Finserv": "BAJAJFINSV.NS",
+    "Wipro": "WIPRO.NS", "Tata Steel": "TATASTEEL.NS",
+    "JSW Steel": "JSWSTEEL.NS", "ONGC": "ONGC.NS",
+    "Adani Enterprises": "ADANIENT.NS", "Adani Ports": "ADANIPORTS.NS",
+    "Coal India": "COALINDIA.NS", "Hindalco": "HINDALCO.NS",
+    "Tech Mahindra": "TECHM.NS", "Grasim": "GRASIM.NS",
+    "Dr Reddy's": "DRREDDY.NS", "Cipla": "CIPLA.NS",
+    "Eicher Motors": "EICHERMOT.NS", "Britannia": "BRITANNIA.NS",
+    "Apollo Hospitals": "APOLLOHOSP.NS", "Tata Consumer": "TATACONSUM.NS",
+    "Bajaj Auto": "BAJAJ-AUTO.NS", "Hero MotoCorp": "HEROMOTOCO.NS",
+    "Divi's Labs": "DIVISLAB.NS", "SBI Life": "SBILIFE.NS",
+    "HDFC Life": "HDFCLIFE.NS", "IndusInd Bank": "INDUSINDBK.NS",
+    "Shriram Finance": "SHRIRAMFIN.NS", "BPCL": "BPCL.NS",
+    "Trent": "TRENT.NS", "Jio Financial": "JIOFIN.NS",
+    # ---- Nifty Next 50 ----
+    "LTIMindtree": "LTIM.NS", "Adani Green": "ADANIGREEN.NS",
+    "Adani Energy Sol": "ADANIENSOL.NS", "Adani Power": "ADANIPOWER.NS",
+    "Ambuja Cements": "AMBUJACEM.NS", "ACC": "ACC.NS",
+    "Bank of Baroda": "BANKBARODA.NS", "PNB": "PNB.NS",
+    "Canara Bank": "CANBK.NS", "Union Bank": "UNIONBANK.NS",
+    "DLF": "DLF.NS", "Godrej Consumer": "GODREJCP.NS", "Dabur": "DABUR.NS",
+    "Marico": "MARICO.NS", "Colgate": "COLPAL.NS",
+    "Pidilite": "PIDILITIND.NS", "Berger Paints": "BERGEPAINT.NS",
+    "Havells": "HAVELLS.NS", "Siemens": "SIEMENS.NS", "ABB": "ABB.NS",
+    "Bharat Electronics": "BEL.NS", "HAL": "HAL.NS",
+    "Indian Oil": "IOC.NS", "GAIL": "GAIL.NS", "Vedanta": "VEDL.NS",
+    "Jindal Steel": "JINDALSTEL.NS", "Tata Power": "TATAPOWER.NS",
+    "Power Finance": "PFC.NS", "REC": "RECLTD.NS", "IRFC": "IRFC.NS",
+    "LIC": "LICI.NS", "Eternal": "ETERNAL.NS", "Info Edge": "NAUKRI.NS",
+    "DMart": "DMART.NS", "Varun Beverages": "VBL.NS",
+    "United Spirits": "UNITDSPR.NS", "Mankind Pharma": "MANKIND.NS",
+    "Zydus Life": "ZYDUSLIFE.NS", "Torrent Pharma": "TORNTPHARM.NS",
+    "Lupin": "LUPIN.NS", "Aurobindo Pharma": "AUROPHARMA.NS",
+    "Max Healthcare": "MAXHEALTH.NS", "Bosch": "BOSCHLTD.NS",
+    "TVS Motor": "TVSMOTOR.NS", "Hyundai India": "HYUNDAI.NS",
+    "InterGlobe (IndiGo)": "INDIGO.NS", "ICICI Pru Life": "ICICIPRULI.NS",
+    "ICICI Lombard": "ICICIGI.NS", "Cholamandalam": "CHOLAFIN.NS",
+    "Bajaj Holdings": "BAJAJHLDNG.NS",
+}
+
+_NIFTY100_TOP_N = 5
+
+
+def get_nifty100_movers(top_n: int = _NIFTY100_TOP_N) -> dict:
+    """
+    Returns {} on total failure, else:
+      {"asof": str|None,
+       "gainers": [{"name", "symbol", "pct", "last"}, ... top_n],
+       "losers":  [{"name", "symbol", "pct", "last"}, ... top_n]}
+    Day % = (latest close - prior close) / prior close * 100.
+    """
+    if not YFINANCE_AVAILABLE:
+        _log("⚠️", "yfinance unavailable — skipping Nifty 100 movers")
+        return {}
+
+    symbols = list(NIFTY_100_SYMBOLS.values())
+    by_symbol = {v: k for k, v in NIFTY_100_SYMBOLS.items()}
+
+    try:
+        df = _yf.download(
+            symbols, period="2d", interval="1d",
+            group_by="ticker", progress=False, threads=True,
+            auto_adjust=False,
+        )
+    except Exception as e:
+        _log("⚠️", f"Nifty 100 batch download failed: {e}")
+        return {}
+
+    if df is None or len(df) == 0:
+        _log("⚠️", "Nifty 100 download returned no data")
+        return {}
+
+    rows = []
+    asof = None
+    for sym in symbols:
+        try:
+            # group_by='ticker' → df[sym]['Close'] is a MultiIndex slice.
+            # Missing/failed symbols raise KeyError here and are skipped.
+            try:
+                closes = df[sym]["Close"].dropna()
+            except Exception:
+                continue
+            if closes is None or len(closes) < 2:
+                continue
+            last = float(closes.iloc[-1])
+            prev = float(closes.iloc[-2])
+            if not prev:
+                continue
+            pct = (last - prev) / prev * 100.0
+            rows.append({
+                "name":   by_symbol.get(sym, sym),
+                "symbol": sym,
+                "pct":    round(pct, 2),
+                "last":   round(last, 2),
+            })
+            try:
+                asof = closes.index[-1].strftime("%Y-%m-%d")
+            except Exception:
+                pass
+        except Exception:
+            continue
+
+    if len(rows) < (top_n * 2):
+        # Not necessarily fatal, but flag thin coverage.
+        _log("⚠️", f"Nifty 100 movers thin coverage ({len(rows)} symbols resolved)")
+    if not rows:
+        _log("⚠️", "Nifty 100 movers unavailable from all symbols")
+        return {}
+
+    rows.sort(key=lambda r: r["pct"], reverse=True)
+    gainers = rows[:top_n]
+    losers  = list(reversed(rows[-top_n:]))  # most-negative first
+    out = {"asof": asof, "gainers": gainers, "losers": losers}
+    g0, l0 = gainers[0], losers[0]
+    _log("📈", f"Nifty 100 movers: top {g0['name']} ({g0['pct']:+.2f}%) | "
+               f"bottom {l0['name']} ({l0['pct']:+.2f}%) "
+               f"[{len(rows)} symbols]")
+    return out
+
+
+def _format_nifty100_movers(m: dict) -> str:
+    if not m or not m.get("gainers"):
+        return ("  Nifty 100 movers: [INSTRUCTION TO MODEL: Top-5 Nifty 100 "
+                "gainers/losers not available this run. Use the TOP MOVERS / "
+                "SECTOR data already provided instead and do NOT tell the "
+                "reader this list is missing.]")
+    asof = m.get("asof")
+    head = (f"  Nifty 100 — Top {len(m['gainers'])} gainers / "
+            f"Top {len(m['losers'])} losers"
+            + (f" (as of {asof})" if asof else "") + ":")
+    lines = [head, "  GAINERS:"]
+    for s in m["gainers"]:
+        lines.append(f"    ▲ {s['name']}: {s['pct']:+.2f}% (last {s['last']:,.2f})")
+    lines.append("  LOSERS:")
+    for s in m["losers"]:
+        lines.append(f"    ▼ {s['name']}: {s['pct']:+.2f}% (last {s['last']:,.2f})")
+    return "\n".join(lines)
+
+
 def _format_technicals(label: str, tech: dict) -> str:
     if not tech:
         return f"  {label}: (technicals unavailable)"
@@ -1163,7 +1372,7 @@ from html import unescape as _html_unescape
 PULSE_FEED_URL = "http://pulse.zerodha.com/feed.php"
 PULSE_HEADERS = {
     "User-Agent": (
-        "MoneyVeda/2.9 MarketCommentary "
+        "MoneyVeda/3.0 MarketCommentary "
         "(https://moneyveda.org; analysis context use; contact via website)"
     )
 }
@@ -1452,6 +1661,7 @@ def build_intraday_packet(slot: str):
     }
     packet["india_vix"] = _compute_index_technicals("^INDIAVIX")
     packet["breadth"]   = get_market_breadth()
+    packet["nifty100_movers"] = get_nifty100_movers()   # v3.0 (not in pre)
     packet["news"]      = get_pulse_headlines(max_age_hours=6, limit=10)
     packet["prior"]     = get_prior_intraday_context(today, slot)
     return packet
@@ -1513,6 +1723,7 @@ def build_post_market_packet():
     packet["fii_dii"]   = get_fii_dii()              # today's provisional cash flow
     packet["global_macro"] = get_global_macro_telemetry()  # DXY/US10Y/Brent
     packet["sector_rotation"] = get_sector_rotation()      # 10d satellite view
+    packet["nifty100_movers"] = get_nifty100_movers()      # v3.0 (not in pre)
     packet["news"]      = get_pulse_headlines(max_age_hours=12, limit=15)
     packet["prior"]     = get_prior_intraday_context(packet["date"], "23:59")
     packet["filings"]   = get_todays_filings()
@@ -1774,7 +1985,7 @@ STRUCTURE:
 2-3 lines comparing actual vs expected. Where confirmed? Where diverging? Most important section — interpret, don't describe.
 
 **Sectors & Movers**
-2-3 lines on sector behavior + 1-2 individual names worth flagging. Apply the INTERPRETING MOVES checklist: is the move confirmed by breadth, volume, peers? Use technicals — e.g. "Bank Nifty opening below 20D MA confirms the weakness pre-market flagged."
+2-3 lines on sector behavior + 1-2 individual names worth flagging, drawing the names from the NIFTY 100 TOP-5 GAINERS / TOP-5 LOSERS block where they sharpen the picture. Apply the INTERPRETING MOVES checklist: is the move confirmed by breadth, volume, peers? Give any flagged mover a NAMED reason from the Pulse headlines, or state the move with "no specific catalyst visible" per the NO-INVENTION rule. Use technicals — e.g. "Bank Nifty opening below 20D MA confirms the weakness pre-market flagged."
 
 **Levels in Play**
 1-2 lines: the key support/resistance the market is testing, and what a break would signal. This is where you say what the market is TRYING TO DO.
@@ -1818,6 +2029,9 @@ SECTOR PERFORMANCE (live):
 TOP MOVERS (live, by magnitude):
 {top_stocks}
 
+NIFTY 100 — TOP 5 GAINERS / TOP 5 LOSERS (give each highlighted name a NAMED reason from Pulse, else honest "no catalyst"):
+{nifty100_movers_block}
+
 ASIA-PACIFIC (still trading):
 {asia_pacific}
 
@@ -1841,6 +2055,8 @@ INTRADAY_UPDATE_PROMPT = """You are a senior equity strategist writing an INTRAD
 
 {shared_principles}
 
+{grounding_block}
+
 YOUR TASK:
 Write a 10-12 line delta update on what has CHANGED since the last slot — and connect to the day's overall arc. This is a continuation, not a recap. What is the market TRYING TO DO right now — extend a move, reverse one, defend a level, rotate? Use markdown headers.
 
@@ -1858,6 +2074,9 @@ STRUCTURE:
 **Levels & Breadth**
 1-2 lines: which level is being tested or held? What does breadth tell us about conviction? Include at least one NON-OBVIOUS INSIGHT here if not earlier.
 
+**Nifty 100 Movers**
+2-3 lines on the day's standout names from the NIFTY 100 TOP-5 GAINERS / TOP-5 LOSERS block. Do NOT just list ten tickers — pick the 2-3 that actually matter (largest move, a name confirming/contradicting the sector story, an outlier vs its peers) and give each a NAMED reason: if grounding is active, search for the specific catalyst; otherwise use the Pulse headlines; if neither yields a cause, state the move with "no specific catalyst visible" per the NO-INVENTION rule. Tie at least one mover back to the sector rotation or breadth picture.
+
 **Watch**
 1 line on what to monitor in the next 30 minutes.
 
@@ -1867,7 +2086,7 @@ RULES:
 3. Use specific numbers and levels. No vague "the market is mixed."
 4. Use only provided data. No buy/sell advice. Professional voice.
 5. NEVER confess data gaps. If breadth unavailable, infer conviction from sector dispersion. Do NOT write "breadth data unavailable".
-6. NO INVENTION OF CAUSATION (CRITICAL): If a stock is moving sharply and NEWS doesn't contain a specific catalyst for THAT stock, do NOT fabricate one. When cause is unknown: "X moved Y% on no specific visible catalyst" is FAR better than inventing one.
+6. NO INVENTION OF CAUSATION (CRITICAL): If a stock (including a Nifty 100 mover) is moving sharply and NEWS / grounded search doesn't contain a specific catalyst for THAT stock, do NOT fabricate one. When cause is unknown: "X moved Y% on no specific visible catalyst" is FAR better than inventing one.
 7. NO SELF-REFERENCE: You are writing the commentary, not narrating writing it. Phrases like "this slot represents...", "our analysis suggests" break immersion.
 8. ANTI-HEDGING (only when you HAVE evidence):
    - EVIDENCE EXISTS — STRONG: "Auto giving back 0.4% of the morning's 1.5% gain — profit-taking after the upgrade-driven rally."
@@ -1905,6 +2124,9 @@ SECTOR PERFORMANCE (live now):
 
 TOP MOVERS (live now):
 {top_stocks}
+
+NIFTY 100 — TOP 5 GAINERS / TOP 5 LOSERS (give each highlighted name a NAMED reason; grounded search if active, else Pulse, else honest "no catalyst"):
+{nifty100_movers_block}
 
 CURRENCIES:
 {currencies}
@@ -1946,7 +2168,7 @@ This section is MANDATORY and is the spine of the wrap — it answers "WHY did t
 4-5 lines on how the day unfolded. Reference the pre-market expectation: did it play out, or did the day reject the setup? Walk through the arc: open, mid-morning, midday, close. Identify inflection points using the slot summaries. State what the market was TRYING TO DO and whether it succeeded.
 
 **Sector & Stock Highlights**
-4-5 lines on which sectors led/lagged AND why. Apply the INTERPRETING MOVES checklist. Name 2-3 individual stocks with context — what the move means, not just the magnitude. Apply CAUSAL CHAINS where the data supports them. Use grounded search if a large move needs a specific catalyst that Pulse didn't capture. Then place today's session against the 10-DAY SECTOR ROTATION block (the satellite/period view): did today extend the period's rotation (capital continuing into the favoured sectors) or reverse it? State the period read explicitly as relative strength, NOT measured rupee flow — e.g. "today's IT strength continues a 10-session rotation into exporters, accelerating; Metals remained under relative distribution".
+4-5 lines on which sectors led/lagged AND why. Apply the INTERPRETING MOVES checklist. Name 2-3 individual stocks with context — what the move means, not just the magnitude. Anchor at least two of these in the NIFTY 100 TOP-5 GAINERS / TOP-5 LOSERS block: take the standout gainer and standout loser of the Nifty 100 and give each a NAMED catalyst — use grounded search to identify the specific driver, fall back to the Pulse headlines/filings, and only if neither yields a cause state it honestly per the NO-INVENTION rule (do NOT just recite the ten percentages as a list). Apply CAUSAL CHAINS where the data supports them. Use grounded search if a large move needs a specific catalyst that Pulse didn't capture. Then place today's session against the 10-DAY SECTOR ROTATION block (the satellite/period view): did today extend the period's rotation (capital continuing into the favoured sectors) or reverse it? State the period read explicitly as relative strength, NOT measured rupee flow — e.g. "today's IT strength continues a 10-session rotation into exporters, accelerating; Metals remained under relative distribution".
 
 **Technical Read**
 3-4 lines on where the close leaves Nifty technically: above/below 20D and 50D MAs, position vs 52W high/low, distance from recent support/resistance. India VIX direction. Fold in the GLOBAL MACRO TELEMETRY where it shapes the forward setup — if DXY/US10Y are elevated or Brent is rising, state the specific headwind it imposes on tomorrow (FII-flow pressure, high-beta/growth drag, OMC-margin/CPI risk) rather than treating the technical picture in isolation. What does the combined technical + macro setup imply for tomorrow?
@@ -2008,6 +2230,9 @@ SECTOR PERFORMANCE:
 
 TOP STOCK MOVERS (by % change magnitude):
 {top_stocks}
+
+NIFTY 100 — TOP 5 GAINERS / TOP 5 LOSERS (anchor the Sector & Stock Highlights here; give the standout gainer and loser a NAMED catalyst via grounded search, else Pulse/filings, else honest "no catalyst"):
+{nifty100_movers_block}
 
 CURRENCIES:
 {currencies}
@@ -2123,15 +2348,17 @@ def build_post_market_prompt(packet: dict, use_grounding: bool = True) -> str:
         fii_dii_line        = _format_fii_dii(packet.get("fii_dii") or {}),
         global_macro_line   = _format_global_macro(packet.get("global_macro") or {}),
         sector_rotation_line = _format_sector_rotation(packet.get("sector_rotation") or {}),
+        nifty100_movers_block = _format_nifty100_movers(packet.get("nifty100_movers") or {}),
         pre_context         = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP all 'compare to pre-market' comparisons. Do NOT mention pre-market is missing. Describe today's session on its own terms.]")[:1200],
         day_arc             = (prior.get("all_slots_compact") or "  [INSTRUCTION: No intraday slots recorded today. Skip the 'arc' walkthrough; describe the day from open to close using close-of-day data only.]"),
         news_block          = _format_pulse_headlines(packet.get("news") or []),
     )
 
 
-def build_intraday_prompt(packet: dict) -> str:
+def build_intraday_prompt(packet: dict, use_grounding: bool = False) -> str:
     prior = packet.get("prior", {}) or {}
     sess_lbl = _last_session_label()
+    movers_block = _format_nifty100_movers(packet.get("nifty100_movers") or {})
     if packet.get("is_opening"):
         pre_ctx = prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing exists for today. SKIP all 'vs pre-market' comparisons. Describe the opening on its own merits. Do NOT mention pre-market is missing.]"
         return INTRADAY_OPENING_PROMPT.format(
@@ -2145,6 +2372,7 @@ def build_intraday_prompt(packet: dict) -> str:
             nifty               = format_ticker_line(packet.get("nifty")),
             sectors             = _format_ticker_list(packet.get("sectors",      [])),
             top_stocks          = _format_ticker_list(packet.get("top_stocks",   [])),
+            nifty100_movers_block = movers_block,
             asia_pacific        = _format_ticker_list(packet.get("asia_pacific", [])),
             currencies          = _format_ticker_list(packet.get("currencies",   [])),
             commodities         = _format_ticker_list(packet.get("commodities",  [])),
@@ -2162,6 +2390,7 @@ def build_intraday_prompt(packet: dict) -> str:
     day_arc = prior.get("all_slots_compact") or "  [INSTRUCTION: This is the first intraday update of the day; no earlier slots to reference.]"
     return INTRADAY_UPDATE_PROMPT.format(
         shared_principles  = SHARED_PRINCIPLES,
+        grounding_block    = GROUNDING_DISCIPLINE if use_grounding else "",
         date               = packet["date"],
         timestamp          = packet["timestamp_ist"],
         slot               = packet["slot"],
@@ -2174,6 +2403,7 @@ def build_intraday_prompt(packet: dict) -> str:
         nifty              = format_ticker_line(packet.get("nifty")),
         sectors            = _format_ticker_list(packet.get("sectors",      [])),
         top_stocks         = _format_ticker_list(packet.get("top_stocks",   [])),
+        nifty100_movers_block = movers_block,
         currencies         = _format_ticker_list(packet.get("currencies",   [])),
         commodities        = _format_ticker_list(packet.get("commodities",  [])),
         asia_pacific       = _format_ticker_list(packet.get("asia_pacific", [])),
@@ -2213,10 +2443,13 @@ def _is_event_day(packet: dict) -> bool:
     return False
 
 
-def _select_model(mode: str, packet: dict) -> tuple:
+def _select_model(mode: str, packet: dict, will_ground: bool = False) -> tuple:
     """
     Returns (model_name, max_output_tokens).
-    Post-market always Pro. Intraday/pre-market upgrade to Pro on event days.
+    Post-market always Pro. Pre-market always Pro. Intraday upgrades to Pro
+    on event days OR when grounded (v3.0: the 15:30 close slot is grounded
+    and grounding works best on Pro, with a larger token budget than the
+    cheap Flash-Lite intraday default).
     """
     if mode == "post":
         return (GEMINI_MODEL_STRONG, 8000)
@@ -2224,6 +2457,9 @@ def _select_model(mode: str, packet: dict) -> tuple:
         # pre-market also goes to Pro (grounding works best on Pro)
         return (GEMINI_MODEL_STRONG, 8000)
     # Intraday
+    if will_ground:
+        # grounded intraday (15:30 close) — Pro + room for the wrap-style read
+        return (GEMINI_MODEL_STRONG, 6000)
     if _is_event_day(packet):
         return (GEMINI_MODEL_STRONG, 6000)
     return (GEMINI_MODEL_FAST, 500)
@@ -2524,7 +2760,8 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
     _log("🚀", f"Starting {mode.upper()} commentary generation (slot={slot}, grounding={use_grounding})")
     _log("📅", f"IST now: {_now_ist_str()}")
 
-    # Grounding is only used for pre/post — intraday always non-grounded
+    # Grounding is used for pre/post and for the grounded intraday slots
+    # (v3.0: the 15:30 close slot). All other intraday slots stay non-grounded.
     grounded_modes = {"pre", "post"}
     will_ground = use_grounding and (mode in grounded_modes)
 
@@ -2544,13 +2781,18 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
             _log("⚠️", f"Slot {slot} not in canonical list — snapping")
             sh, sm = map(int, slot.split(":"))
             slot = _snap_to_intraday_slot(sh, sm)
+        # v3.0: resolve grounding now that the intraday slot is known.
+        will_ground = use_grounding and slot in GROUNDED_INTRADAY_SLOTS
+        if will_ground:
+            _log("🌐", f"Intraday slot {slot} is a GROUNDED slot — "
+                       f"routing to grounded Pro path")
         packet = build_intraday_packet(slot)
-        prompt = build_intraday_prompt(packet)
+        prompt = build_intraday_prompt(packet, use_grounding=will_ground)
     else:
         _log("❌", f"Unknown mode: {mode}")
         return None
 
-    model, max_tokens = _select_model(mode, packet)
+    model, max_tokens = _select_model(mode, packet, will_ground=will_ground)
     is_event = _is_event_day(packet)
     if is_event and mode == "intraday":
         _log("⚡", f"EVENT DAY detected — routing {mode} to {model}")
@@ -2571,7 +2813,8 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
         print(prompt)
         print("=" * 70)
 
-    # Dispatch: grounded for pre/post, non-grounded for intraday
+    # Dispatch: grounded for pre/post and the grounded intraday slot,
+    # non-grounded for all other intraday slots.
     grounding_sources = []
     if will_ground:
         text, source, grounding_sources = call_gemini_grounded(
@@ -2587,6 +2830,8 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
                 prompt = build_pre_market_prompt(packet, use_grounding=False)
             elif mode == "post":
                 prompt = build_post_market_prompt(packet, use_grounding=False)
+            elif mode == "intraday":
+                prompt = build_intraday_prompt(packet, use_grounding=False)
             text, source = call_gemini(prompt, model=model, max_tokens=max_tokens)
     else:
         text, source = call_gemini(prompt, model=model, max_tokens=max_tokens)
@@ -2633,7 +2878,7 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v2.9")
+    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v3.0")
     parser.add_argument("--mode", choices=["pre", "intraday", "post", "auto"], default="auto",
                         help="'auto' detects from current IST time (default)")
     parser.add_argument("--slot", default=None,
