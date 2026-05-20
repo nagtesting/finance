@@ -449,7 +449,10 @@ body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;
   </div>
 </div>
 <script>
-const API_BASE = 'https://moneyveda-backend.onrender.com';
+// v2: same-origin Vercel proxy (api/backend/[...path].js).
+// Eliminates CORS, edge-caches every response, hides the Render URL,
+// and lets the proxy authenticate to Render with a shared secret.
+const API_BASE = '/api/backend';
 let allSignals = [], allFilings = [], currentTab = 'commentary', currentFilter = 'all';
 
 function fmtDateTime(iso) {
@@ -466,6 +469,87 @@ function fmt(val, decimals, prefix, suffix) {
   const n = Number(val);
   return (prefix || '') + n.toFixed(decimals ?? 2) + (suffix || '');
 }
+
+// ─── v2 — stale-while-revalidate cache (THE 'second visit is instant' fix) ──
+// Backend JSON is stored in localStorage, keyed on the full URL. swrFetch()
+// returns cached data immediately (any age), and re-fetches in the background.
+// When fresh data lands AND it actually differs from the cache, the optional
+// onFresh callback fires so the UI can re-render in place.
+//
+// On network failure with a usable cache, we serve stale → graceful
+// degradation through Render free-dyno cold starts.
+const _CACHE_PREFIX = 'mv:pulse:v2:';
+const _TTL_MS = {
+  '/api/backend/market-commentary':       60 * 1000,         // 1 min — earlier-slots list grows
+  '/api/backend/market-cache':            30 * 1000,         // 30 s — live prices
+  '/api/backend/market-cache/symbols':    24 * 60 * 60 * 1000, // 1 day — static catalog
+  '/api/backend/summary':                 60 * 1000,
+  '/api/backend/signals':                 60 * 1000,
+  '/api/backend/filings':                 60 * 1000,
+  '/api/backend/prices':                  30 * 1000,
+  '/api/backend/commentary':              5 * 60 * 1000,    // 5 min per symbol (LLM call)
+  '*':                                    60 * 1000,
+};
+function _ttlForUrl(url) {
+  const path = url.split('?')[0];
+  return _TTL_MS[path] != null ? _TTL_MS[path] : _TTL_MS['*'];
+}
+function _cacheRead(url) {
+  try {
+    const raw = localStorage.getItem(_CACHE_PREFIX + url);
+    if (!raw) return null;
+    const o = JSON.parse(raw);
+    return (o && typeof o.t === 'number') ? o : null;
+  } catch (_) { return null; }
+}
+function _cacheWrite(url, data) {
+  try {
+    localStorage.setItem(_CACHE_PREFIX + url, JSON.stringify({ t: Date.now(), d: data }));
+  } catch (_) {
+    // Quota exceeded → purge our own keys, retry once, then give up silently.
+    try {
+      for (const k of Object.keys(localStorage)) {
+        if (k.startsWith(_CACHE_PREFIX)) localStorage.removeItem(k);
+      }
+      localStorage.setItem(_CACHE_PREFIX + url, JSON.stringify({ t: Date.now(), d: data }));
+    } catch (_) {}
+  }
+}
+async function swrFetch(url, onFresh) {
+  const cached = _cacheRead(url);
+  const ttl    = _ttlForUrl(url);
+
+  // Always launch the network — keeps cache warm. If it fails AND we have a
+  // cached body, serve stale.
+  const netP = fetch(url, { headers: { 'accept': 'application/json' } })
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(d => { _cacheWrite(url, d); return d; })
+    .catch(err => {
+      if (cached) {
+        console.warn('swrFetch: network failed, serving stale —', url, err && err.message);
+        return cached.d;
+      }
+      throw err;
+    });
+
+  if (cached) {
+    // BG refresh only when cache is past its TTL — avoids busywork on hot reloads.
+    const past = (Date.now() - cached.t) >= ttl;
+    if (onFresh && past) {
+      netP.then(fresh => {
+        let differs = true;
+        try { differs = JSON.stringify(fresh) !== JSON.stringify(cached.d); } catch (_) {}
+        if (differs) onFresh(fresh);
+      }).catch(() => {});
+    }
+    return cached.d;
+  }
+  return netP;
+}
+// Drop-in replacement for `(await fetch(url)).json()` that transparently
+// uses the cache. Use where SWR-style BG refresh isn't useful (e.g. one-shot
+// user actions like clicking "Get Commentary" for a particular symbol).
+async function cachedFetchJson(url) { return swrFetch(url); }
 
 async function init() {
   switchTab('commentary');  // Stock Commentary is the default secondary tab
@@ -496,7 +580,7 @@ async function loadSummary() {
 
 async function loadSignals() {
   try {
-    const d = await (await fetch(API_BASE+'/api/signals?limit=50')).json();
+    const d = await cachedFetchJson(API_BASE+'/api/signals?limit=50');  // v2
     allSignals = d.signals||[];
     renderSignals(); renderSignalDist();
   } catch(e) { renderSignalsFallback(); }
@@ -563,7 +647,7 @@ function renderSignalDist() {
 
 async function loadFilings() {
   try {
-    const d = await (await fetch(API_BASE+'/api/filings?limit=40')).json();
+    const d = await cachedFetchJson(API_BASE+'/api/filings?limit=40');  // v2
     allFilings = d.filings||[]; renderFilings();
   } catch(e) { renderFilingsFallback(); }
 }
@@ -650,7 +734,7 @@ async function loadPrices() {
   } else {
     el.innerHTML = '<div class="loading-card"><div class="skeleton"></div><div class="skeleton" style="width:50%;"></div></div>';
     try {
-      const d = await (await fetch(API_BASE + '/api/prices')).json();
+      const d = await cachedFetchJson(API_BASE + '/api/prices');  // v2
       if (!d.prices || !d.prices.length) throw new Error();
       rows = d.prices.map(p => ({
         symbol: p.symbol.replace('.NS','').replace('^NSEI','NIFTY 50'),
@@ -778,8 +862,8 @@ async function loadCommentary() {
   result.style.display = 'none';
 
   try {
-    const resp = await fetch(API_BASE+'/api/commentary?symbol='+encodeURIComponent(symbol));
-    const d = await resp.json();
+    // v2: cached per symbol for 5 minutes; LLM-generated, expensive.
+    const d = await cachedFetchJson(API_BASE+'/api/commentary?symbol='+encodeURIComponent(symbol));
 
     if (d.status !== 'success') {
       // Inline error render — no popup, no alert()
@@ -906,8 +990,13 @@ async function loadStory(type, isManualRefresh) {
   earlierEl.style.display = 'none';
 
   try {
-    const resp = await fetch(API_BASE + '/api/market-commentary?type=' + type);
-    const d    = await resp.json();
+    // v2: SWR — paint from cache instantly, fetch fresh in background.
+    // If fresh data differs, re-render by re-entering loadStory (which then
+    // sees the now-fresh cache and short-circuits without further refresh).
+    const d = await swrFetch(
+      API_BASE + '/api/market-commentary?type=' + type,
+      () => loadStory(type, false)
+    );
     loadEl.style.display = 'none';
 
     if (d.status === 'empty' || d.status === 'error' || !d.commentary) {
@@ -965,8 +1054,8 @@ async function loadStory(type, isManualRefresh) {
     // Fetch earlier-today timeline only for intraday
     if (type === 'intraday') {
       try {
-        const tlResp = await fetch(API_BASE + '/api/market-commentary?type=intraday&all=1');
-        const tlData = await tlResp.json();
+        // v2: cached for 1 min; new intraday slots typically arrive every 30 min.
+        const tlData = await swrFetch(API_BASE + '/api/market-commentary?type=intraday&all=1');
         if (tlData.status === 'success' && Array.isArray(tlData.rows) && tlData.rows.length > 1) {
           _earlierRows = tlData.rows;
           renderEarlier(d.slot);
@@ -1099,30 +1188,31 @@ let _nifty100Symbols = [];      // [{symbol, name}] — for search
 let _nifty100UpdatedAt = null;
 
 async function loadNifty100Cache() {
-  try {
-    const resp = await fetch(API_BASE + '/api/market-cache');
-    const data = await resp.json();
+  // v2: SWR — top movers strip paints instantly on revisit.
+  const _apply = (data) => {
+    if (!data) return;
     if (data.status === 'success' && Array.isArray(data.tickers)) {
       _nifty100Cache = data.tickers;
       _nifty100UpdatedAt = data.updated_at;
       renderTopMovers();
-      // If user is on Prices tab right now, refresh it too
       if (currentTab === 'prices') loadPrices();
     } else if (data.status === 'building') {
-      // Cache not ready yet — try again in 8 seconds
       setTimeout(loadNifty100Cache, 8000);
     }
+  };
+  try {
+    const data = await swrFetch(API_BASE + '/api/market-cache', fresh => _apply(fresh));
+    _apply(data);
   } catch (e) {
     console.error('Nifty 100 cache fetch failed:', e);
   }
 }
 
 async function loadSymbolCatalog() {
-  // Fetch the static (symbol, name) list once at startup for the search input
+  // v2: 24h cache — Nifty 100 constituents only change on reconstitution.
   try {
-    const resp = await fetch(API_BASE + '/api/market-cache/symbols');
-    const data = await resp.json();
-    if (data.status === 'success' && Array.isArray(data.symbols)) {
+    const data = await swrFetch(API_BASE + '/api/market-cache/symbols');
+    if (data && data.status === 'success' && Array.isArray(data.symbols)) {
       _nifty100Symbols = data.symbols;
     }
   } catch (e) {
