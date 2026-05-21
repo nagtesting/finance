@@ -320,7 +320,7 @@ POST_SLOT = "17:00"          # v3.0: was 16:00 — moved to 17:00 IST
 # exactly like pre/post. The close-of-session 15:30 read benefits most from
 # live event attribution, so it is grounded; all other intraday slots stay
 # on the cheap non-grounded path.
-GROUNDED_INTRADAY_SLOTS = {"15:30"}
+GROUNDED_INTRADAY_SLOTS = {"12:00", "15:30"}
 
 # v3.1: data-triggered grounding. A sharp idiosyncratic sector move (or a
 # heavyweight gapping vs a muted sector) is the signature of a policy /
