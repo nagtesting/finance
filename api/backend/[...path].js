@@ -1,96 +1,91 @@
 // api/backend/[...path].js
 //
-// Same-origin proxy from www.moneyveda.org → the Render backend.
-// This is what the market-pulse.html v2 patches call instead of hitting
-// moneyveda-backend.onrender.com directly from the browser.
+// Same-origin proxy from www.moneyveda.org → the Render Flask backend.
+// This is what market-pulse.html v2 calls instead of hitting the Render URL
+// from the browser directly. Solves CORS, edge-caches every response, hides
+// the Render URL, and (with the matching env var) authenticates to Render so
+// direct public access can be blocked.
 //
-// WHY THIS EXISTS
-// ===============
-// 1. CORS: the browser refuses to read responses from onrender.com because
-//    that host doesn't send Access-Control-Allow-Origin. By proxying through
-//    our own origin, every browser request is same-origin — no CORS at all.
-// 2. Performance: Vercel edge-caches every response based on the
-//    Cache-Control header we set below. Once the edge has a hot entry, the
-//    browser gets it in ~30 ms — masking Render's 300–800 ms (or 10+ s when
-//    it cold-starts from sleep).
-// 3. Security / abuse control: the Render URL is no longer visible in the
-//    page source. Render can be locked down further by checking the
-//    x-proxy-secret header below — anyone hitting Render directly without
-//    that header gets refused.
+// CHANGELOG
+// ─────────
+// v2 — Parse the backend path from req.url directly. Earlier version relied
+//      on req.query.path being populated from the [...path] catch-all bracket
+//      filename, which Vercel (without Next.js) does not actually populate
+//      reliably — the function received an empty path on every request and
+//      returned {"error":"Unknown endpoint","path":""} for everything.
+//      Reading req.url avoids the catch-all-routing assumption entirely.
 //
-// REQUIRED VERCEL ENV VARS (set in the Vercel dashboard, not committed)
-// ====================================================================
-//   RENDER_BACKEND_URL   — e.g. https://moneyveda-backend.onrender.com
-//   RENDER_PROXY_SECRET  — any long random string; pass the same value to
-//                          Render and have Render reject requests where
-//                          x-proxy-secret doesn't match.
-//
-// ROUTING
-// =======
-// Filename `api/backend/[...path].js` is Vercel's catch-all pattern: any
-// request to `/api/backend/anything/here?x=1` lands here with
-// req.query.path = ['anything', 'here'].
-//
-// ENDPOINT ALLOWLIST
-// ==================
-// We deliberately enumerate the endpoints the frontend uses. Anything not
-// in the list returns 404 — no surprises if the Render backend exposes
-// internal routes we don't want to surface.
+// ENV VARS (set in Vercel dashboard, NOT committed)
+//   RENDER_BACKEND_URL    https://moneyveda-backend.onrender.com
+//   RENDER_PROXY_SECRET   <long random string; same value in Render>
 
-const RENDER_BASE   = process.env.RENDER_BACKEND_URL  || 'https://moneyveda-backend.onrender.com';
-const PROXY_SECRET  = process.env.RENDER_PROXY_SECRET || '';
+const RENDER_BASE  = process.env.RENDER_BACKEND_URL  || 'https://moneyveda-backend.onrender.com';
+const PROXY_SECRET = process.env.RENDER_PROXY_SECRET || '';
 
-// path → seconds at the Vercel edge. Browser-side localStorage SWR has its
-// own (shorter) TTLs; this layer is purely about Vercel edge cache.
+// Edge cache TTLs (seconds). Browser-side localStorage SWR layers a separate
+// cache on top — this is purely about Vercel's global edge cache.
 const EDGE_TTL = {
-  'market-commentary':    60,         // commentary updates every 30 min
-  'market-cache':         30,         // live prices
-  'market-cache/symbols': 24 * 3600,  // static catalog
+  'market-commentary':    60,
+  'market-cache':         30,
+  'market-cache/symbols': 24 * 3600,
   'summary':              60,
   'signals':              60,
   'filings':              60,
   'prices':               30,
-  'commentary':           300,        // LLM-generated per-symbol commentary
+  'commentary':           300,
 };
 
 const ALLOWED = new Set(Object.keys(EDGE_TTL));
 
-// Lightweight per-IP rate limit (best-effort, in-memory; resets per cold
-// start). Real protection sits behind RENDER_PROXY_SECRET, but this stops
-// a single bad actor from spamming the proxy.
-const RATE = new Map();   // ip → { count, resetAt }
+// Best-effort in-memory rate limit (per Vercel function instance).
+const RATE = new Map();
 const RATE_WINDOW_MS = 60_000;
-const RATE_MAX = 120;     // 2 req/sec per IP per minute, plenty for a UI
-
+const RATE_MAX = 120;
 function clientIp(req) {
   const xf = req.headers['x-forwarded-for'];
   return (xf && xf.split(',')[0].trim()) || req.socket?.remoteAddress || 'anon';
 }
-
 function rateLimited(ip) {
   const now = Date.now();
   let rec = RATE.get(ip);
-  if (!rec || rec.resetAt < now) {
-    rec = { count: 0, resetAt: now + RATE_WINDOW_MS };
-    RATE.set(ip, rec);
-  }
+  if (!rec || rec.resetAt < now) { rec = { count: 0, resetAt: now + RATE_WINDOW_MS }; RATE.set(ip, rec); }
   rec.count += 1;
   return rec.count > RATE_MAX;
 }
 
 module.exports = async (req, res) => {
-  // Only GET is supported — every endpoint we proxy is read-only.
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.setHeader('Allow', 'GET, HEAD');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Build the target path from the catch-all segments.
-  const segs = req.query.path;
-  const path = Array.isArray(segs) ? segs.join('/') : (segs || '');
+  // ── Parse path from req.url directly (the v2 fix) ────────────────────────
+  // req.url looks like `/api/backend/market-cache?foo=bar` — we strip the
+  // `/api/backend/` prefix to get the backend endpoint name, then forward
+  // any query string to Render. No reliance on req.query.path.
+  let urlObj;
+  try {
+    urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  } catch (e) {
+    return res.status(400).json({ error: 'Bad request URL', detail: req.url });
+  }
+
+  const PREFIX = '/api/backend/';
+  let path = urlObj.pathname;
+  if (path.startsWith(PREFIX)) {
+    path = path.slice(PREFIX.length).replace(/\/+$/, '');
+  } else if (path === '/api/backend') {
+    path = '';
+  }
 
   if (!ALLOWED.has(path)) {
-    return res.status(404).json({ error: 'Unknown endpoint', path });
+    // Include the URL we actually saw — makes diagnosis trivial if this fires.
+    return res.status(404).json({
+      error: 'Unknown endpoint',
+      path,
+      received_pathname: urlObj.pathname,
+      allowed: [...ALLOWED],
+    });
   }
 
   if (rateLimited(clientIp(req))) {
@@ -98,22 +93,15 @@ module.exports = async (req, res) => {
     return res.status(429).json({ error: 'Rate limit exceeded' });
   }
 
-  // Forward all query params except the routing `path` itself.
+  // ── Build the upstream URL and forward query params ─────────────────────
   const target = new URL(`${RENDER_BASE}/api/${path}`);
-  for (const [k, v] of Object.entries(req.query)) {
-    if (k === 'path') continue;
-    target.searchParams.set(k, Array.isArray(v) ? v[0] : v);
-  }
+  urlObj.searchParams.forEach((v, k) => target.searchParams.set(k, v));
 
-  // Auth header for Render. Render-side: check `x-proxy-secret` equals the
-  // same env var and 401 anything else. That cuts the Render endpoint off
-  // from direct public access.
   const headers = { accept: 'application/json' };
   if (PROXY_SECRET) headers['x-proxy-secret'] = PROXY_SECRET;
 
-  // AbortController gives us a hard timeout — Render free dynos that fail
-  // to wake within 15 s shouldn't hang our function.
-  const ctrl = new AbortController();
+  // Hard 15 s timeout — protects against Render free dynos that fail to wake.
+  const ctrl  = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 15_000);
 
   let upstream;
@@ -122,19 +110,16 @@ module.exports = async (req, res) => {
   } catch (err) {
     clearTimeout(timer);
     const reason = err && err.name === 'AbortError' ? 'timeout' : (err && err.message) || 'unknown';
-    return res.status(502).json({ error: 'Backend unreachable', reason });
+    return res.status(502).json({ error: 'Backend unreachable', reason, target: target.toString() });
   }
   clearTimeout(timer);
 
   const body = await upstream.text();
 
-  // Edge cache: cache the response for EDGE_TTL[path] seconds, and serve a
-  // stale copy for up to 10× that while fresh data fetches.
+  // Edge cache — TTL per endpoint, plus a generous stale-while-revalidate.
   const ttl = EDGE_TTL[path] || 60;
   res.setHeader('Cache-Control', `public, s-maxage=${ttl}, stale-while-revalidate=${ttl * 10}`);
-  // Mirror upstream content type when present; default to JSON.
-  const ct = upstream.headers.get('content-type') || 'application/json; charset=utf-8';
-  res.setHeader('Content-Type', ct);
+  res.setHeader('Content-Type', upstream.headers.get('content-type') || 'application/json; charset=utf-8');
 
   return res.status(upstream.status).send(body);
 };
