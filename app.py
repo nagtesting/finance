@@ -33,20 +33,28 @@ supabase = create_client(
 )
 
 # ═════════════════════════════════════════════════════════════════
-# NIFTY 100 LIVE CACHE (lazy fetch via yfinance, gunicorn-compatible)
+# NIFTY 100 LIVE CACHE (background daemon refresh, gunicorn-safe)
 # ═════════════════════════════════════════════════════════════════
-# Architecture (revised May 2026 after gunicorn worker thread issue):
-#   • No background thread (gunicorn pre-fork model kills/restarts threads
-#     unpredictably across workers). Instead the cache refreshes lazily.
-#   • First request to /api/market-cache after the cache goes stale
-#     triggers a synchronous yfinance fetch (~3-6 seconds for 100 tickers).
-#   • While one request is fetching, others get the previous cache (locked)
-#     so users never see "building" repeatedly.
-#   • yfinance handles Yahoo's auth/headers/cookies automatically — much
-#     more reliable than raw HTTP which Yahoo has been blocking.
+# Architecture (revised May 21 2026):
+#   • Refresh runs in a DAEMON THREAD so the request handler never blocks
+#     on yfinance. Previously the refresh was synchronous (~10-50 s for 100
+#     sequential fast_info calls) which exceeded Render's ~30 s request
+#     timeout and returned 502 Bad Gateway, killing the worker and
+#     cascading 502s onto sibling endpoints.
+#   • Coordination uses a TIMESTAMP-BASED in-progress flag, not a lock.
+#     If a worker dies mid-refresh (gunicorn restart, OOM, etc.), the flag
+#     auto-expires after REFRESH_GRACE_SECONDS and the next request kicks
+#     off a fresh refresh. No leaked locks, no permanently stuck state.
+#   • Multiple gunicorn workers each maintain their own in-process cache
+#     (Python doesn't share memory across pre-forked workers) — that's
+#     fine because each worker independently keeps its own copy fresh,
+#     and load balancing across workers averages out.
+#   • The /api/market-cache endpoint never blocks: if the cache is empty
+#     it returns {"status":"building"} and the frontend retries in 8 s.
 import yfinance as yf
 
-CACHE_MAX_AGE_SECONDS = 60   # Refresh threshold
+CACHE_MAX_AGE_SECONDS = 60      # Refresh threshold
+REFRESH_GRACE_SECONDS = 60      # Assume an in-progress refresh died if it runs longer
 
 NIFTY100_CACHE = {
     "tickers":         [],          # list of dicts: {symbol, name, value, pct, ok}
@@ -56,24 +64,21 @@ NIFTY100_CACHE = {
     "fetch_failures":  0,
     "last_error":      None,        # last exception string for debugging
 }
-_cache_lock = threading.Lock()
-_refresh_lock = threading.Lock()    # prevents concurrent refresh attempts
+_refresh_in_progress_since = 0.0    # unix ts; 0 means "no refresh running"
 
 
 def _refresh_nifty100_cache():
     """
-    One synchronous refresh pass via yfinance. ~3-6 seconds for 100 tickers.
-    Returns True on success (any tickers fetched), False on total failure.
-    Caller should hold _refresh_lock.
+    One refresh pass via yfinance. Runs in a background daemon thread,
+    NEVER inside a request handler. Mutates NIFTY100_CACHE in place.
     """
     NIFTY100_CACHE["fetch_attempts"] += 1
-    print(f"[cache] refresh starting attempt #{NIFTY100_CACHE['fetch_attempts']}")
+    print(f"[cache] bg refresh starting attempt #{NIFTY100_CACHE['fetch_attempts']}")
 
     new_tickers = []
     success_count = 0
 
     try:
-        # yfinance.Tickers() handles batching internally — pass space-separated
         tickers_str = " ".join(ALL_YAHOO_SYMS)
         yf_tickers = yf.Tickers(tickers_str)
 
@@ -107,8 +112,7 @@ def _refresh_nifty100_cache():
                     "ok":     True,
                 })
                 success_count += 1
-            except Exception as e:
-                # Per-ticker failure — keep the placeholder, don't kill the batch
+            except Exception:
                 new_tickers.append({
                     "symbol": sym, "name": name,
                     "value": None, "pct": None, "ok": False,
@@ -117,49 +121,54 @@ def _refresh_nifty100_cache():
     except Exception as e:
         NIFTY100_CACHE["fetch_failures"] += 1
         NIFTY100_CACHE["last_error"] = f"{type(e).__name__}: {e}"
-        print(f"[cache] refresh FAILED: {NIFTY100_CACHE['last_error']}")
+        print(f"[cache] bg refresh FAILED: {NIFTY100_CACHE['last_error']}")
         return False
 
     if success_count == 0:
         NIFTY100_CACHE["fetch_failures"] += 1
         NIFTY100_CACHE["last_error"] = "All tickers returned None price"
-        print(f"[cache] refresh got 0/{len(NIFTY_100)} tickers")
+        print(f"[cache] bg refresh got 0/{len(NIFTY_100)} tickers")
         return False
 
-    with _cache_lock:
-        NIFTY100_CACHE["tickers"]         = new_tickers
-        NIFTY100_CACHE["updated_at"]      = datetime.now(timezone.utc).isoformat()
-        NIFTY100_CACHE["updated_at_unix"] = time.time()
-        NIFTY100_CACHE["last_error"]      = None
-    print(f"[cache] refresh OK: {success_count}/{len(NIFTY_100)} tickers")
+    # Atomic-ish update — these three writes happen fast enough that
+    # readers won't see a partially-updated state in practice.
+    NIFTY100_CACHE["tickers"]         = new_tickers
+    NIFTY100_CACHE["updated_at"]      = datetime.now(timezone.utc).isoformat()
+    NIFTY100_CACHE["updated_at_unix"] = time.time()
+    NIFTY100_CACHE["last_error"]      = None
+    print(f"[cache] bg refresh OK: {success_count}/{len(NIFTY_100)} tickers")
     return True
 
 
-def _ensure_cache_fresh(force: bool = False) -> None:
+def _maybe_kick_refresh(force: bool = False) -> None:
     """
-    If cache is stale or empty, refresh it. Held under _refresh_lock so
-    concurrent requests don't all trigger a refresh — one fetches, others
-    see the new data when it lands.
+    Non-blocking: if cache is stale and no refresh is currently in flight,
+    spawn a daemon thread to refresh. Returns immediately. The request
+    handler never waits on yfinance.
     """
+    global _refresh_in_progress_since
+
     age = time.time() - NIFTY100_CACHE["updated_at_unix"]
     is_stale = age > CACHE_MAX_AGE_SECONDS or not NIFTY100_CACHE["tickers"]
-
     if not is_stale and not force:
         return
 
-    # Try to acquire the refresh lock — if another request is already
-    # refreshing, just return whatever is currently cached.
-    acquired = _refresh_lock.acquire(blocking=False)
-    if not acquired:
+    # Suppress concurrent refresh storms — but auto-expire so a dead worker
+    # doesn't lock us out permanently.
+    if (time.time() - _refresh_in_progress_since) < REFRESH_GRACE_SECONDS:
         return
-    try:
-        # Re-check after acquiring (another request may have just refreshed)
-        age = time.time() - NIFTY100_CACHE["updated_at_unix"]
-        if age <= CACHE_MAX_AGE_SECONDS and NIFTY100_CACHE["tickers"] and not force:
-            return
-        _refresh_nifty100_cache()
-    finally:
-        _refresh_lock.release()
+    _refresh_in_progress_since = time.time()
+
+    def _bg():
+        global _refresh_in_progress_since
+        try:
+            _refresh_nifty100_cache()
+        except Exception as e:
+            print(f"[cache] bg thread crashed: {type(e).__name__}: {e}")
+        finally:
+            _refresh_in_progress_since = 0.0
+
+    threading.Thread(target=_bg, daemon=True, name="cache-refresh").start()
 
 
 # ─────────────────────────────────────────
@@ -690,9 +699,10 @@ def get_commentary():
 # NIFTY 100 LIVE CACHE — read endpoint
 # ─────────────────────────────────────────
 # Returns the in-memory snapshot of all 100 stock prices + % changes.
-# Refreshes lazily on demand: if cache is older than 60 sec when this
-# endpoint is hit, a fresh yfinance fetch runs synchronously (~3-6 sec
-# for first request, instant for subsequent ones within the window).
+# Refresh is ALWAYS non-blocking: if the cache is stale, a daemon thread is
+# kicked off to refresh in background while the request returns immediately
+# with whatever data is currently cached (or {"status":"building"} on first
+# call when the cache is empty — the frontend retries in 8 seconds).
 #
 # Query params:
 #   sort=movers   → sorted by abs(pct) descending (top movers first)
@@ -703,20 +713,19 @@ def get_market_cache():
         sort_mode = request.args.get("sort", "default").lower()
         limit = request.args.get("limit", type=int)
 
-        # Trigger a refresh if cache is stale or empty (synchronous on first hit,
-        # ~3-6 seconds; subsequent hits within 60 sec return cached data instantly)
-        _ensure_cache_fresh()
+        # Non-blocking: kicks a daemon thread if stale; returns immediately.
+        _maybe_kick_refresh()
 
-        with _cache_lock:
-            tickers = list(NIFTY100_CACHE["tickers"])
-            updated_at = NIFTY100_CACHE["updated_at"]
-            last_error = NIFTY100_CACHE["last_error"]
+        tickers    = list(NIFTY100_CACHE["tickers"])
+        updated_at = NIFTY100_CACHE["updated_at"]
+        last_error = NIFTY100_CACHE["last_error"]
 
-        # If we still have no data after attempting refresh, surface the error
+        # Empty cache (first request, or previous refresh failed entirely)
+        # → tell the frontend to retry. Don't wait for the bg thread.
         if not tickers:
             return jsonify({
                 "status":     "building",
-                "message":    "Cache fetch failed. Try again in 30 seconds.",
+                "message":    "Cache is being built. Try again in a few seconds.",
                 "error":      last_error,
                 "tickers":    [],
                 "updated_at": None,
