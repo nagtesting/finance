@@ -111,7 +111,7 @@ module.exports = async (req, res) => {
   if (PROXY_SECRET) headers['x-proxy-secret'] = PROXY_SECRET;
 
   const ctrl  = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 15_000);
+  const timer = setTimeout(() => ctrl.abort(), 25_000);
   let upstream;
   try {
     upstream = await fetch(target.toString(), { headers, signal: ctrl.signal });
