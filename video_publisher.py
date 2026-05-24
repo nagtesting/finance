@@ -197,11 +197,11 @@ RULES:
 - Short, sharp, financial-press tone.
 - OUTPUT MUST BE VALID JSON. No trailing commas, no comments, no markdown.
 
-COMMENTARY MODE: {mode}
-COMMENTARY DATE: {date}
+COMMENTARY MODE: __MODE__
+COMMENTARY DATE: __DATE__
 
 FULL COMMENTARY:
-{commentary}
+__COMMENTARY__
 
 Output the JSON now:"""
 
@@ -214,7 +214,16 @@ def _generate_script(mode: str, date_str: str, commentary_text: str) -> dict:
 
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel(GEMINI_MODEL)
-    prompt = SCRIPT_PROMPT.format(mode=mode, date=date_str, commentary=commentary_text)
+
+    # CRITICAL: do NOT use str.format() here. The prompt template contains
+    # literal JSON examples with `{"label": ...}` curly braces, which
+    # str.format() interprets as placeholders and crashes with
+    # KeyError: '"label"'. Use plain .replace() against unique sentinels
+    # that never appear elsewhere in the template.
+    prompt = (SCRIPT_PROMPT
+              .replace("__MODE__", mode)
+              .replace("__DATE__", date_str)
+              .replace("__COMMENTARY__", commentary_text))
 
     _log("🧠", f"Calling Gemini ({GEMINI_MODEL}) for slide extraction…")
     resp = model.generate_content(
