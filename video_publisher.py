@@ -158,33 +158,50 @@ SCRIPT_PROMPT = """You are converting a long-form market commentary into a 6-sli
 
 The video is a 60-second vertical Short. Six slides. Total reading budget is tight — every line must earn its place.
 
-The commentary is provided below. Extract the most important content and structure it into these EXACT 6 slides:
+EXPECTED JSON SHAPE (output exactly this structure — `headline` and `tagline` are top-level fields; the `slides` array contains EXACTLY the 4 MIDDLE slides, NOT the cover or outro):
 
-1. COVER:
-   - "headline": a 5-9 word hook capturing the day's central thesis. No filler.
+{
+  "headline":   "<cover headline — 5-9 words>",
+  "slides": [
+    { "kind": "section", "eyebrow": "Setup",                       "accent_value": "<Nifty level>", "accent_change": "<+/-pct>", "body": "<22-28 words>" },
+    { "kind": "bullets", "eyebrow": "<Catalysts label>",           "bullets": [ {"label": "<5-7 words>", "detail": "<6-10 words>"}, {"label": "...", "detail": "..."}, {"label": "...", "detail": "..."} ] },
+    { "kind": "section", "eyebrow": "<Technical Position/Read>",   "body": "<22-28 words>" },
+    { "kind": "bullets", "eyebrow": "<Themes/Highlights label>",   "bullets": [ {"label": "...", "detail": "..."}, {"label": "...", "detail": "..."}, {"label": "...", "detail": "..."} ] }
+  ],
+  "tagline":    "<outro tagline — 6-10 words in Playfair italic voice>"
+}
+
+The commentary is provided below. Extract the most important content and structure it as follows:
+
+COVER (top-level "headline" field, NOT inside slides[]):
+   - A 5-9 word hook capturing the day's central thesis. No filler.
    - Example: "Defending 24,200 — banks hold the line."
 
-2. SECTION 1 (Setup — the where we are right now):
+SLIDE 1 of slides[] — SECTION (Setup — where we are right now):
+   - "kind": "section"
    - "eyebrow": "Setup" (literal, do not change)
    - "accent_value": Nifty 50 level (e.g. "24,247")
    - "accent_change": Nifty 50 % change with sign (e.g. "-0.34%" or "+1.20%")
    - "body": 22-28 words on the dominant setup / context
 
-3. BULLETS 1 (3 key drivers / catalysts):
+SLIDE 2 of slides[] — BULLETS (3 key drivers / catalysts):
+   - "kind": "bullets"
    - "eyebrow": "Overnight Catalysts" for pre-market, "Today's Catalysts" for post-market
    - "bullets": array of EXACTLY 3 items, each {"label": "<5-7 words>", "detail": "<6-10 word context>"}
    - Examples of good labels: "GIFT Nifty -0.4%", "FII -₹2,140 cr · DII +₹3,890 cr", "Brent +1.8%, DXY 104.6"
 
-4. SECTION 2 (Technical Position or Bottom Line):
+SLIDE 3 of slides[] — SECTION (Technical Position or Technical Read):
+   - "kind": "section"
    - "eyebrow": "Technical Position" for pre-market, "Technical Read" for post-market
    - "body": 22-28 words on key levels / MAs / VIX
 
-5. BULLETS 2 (Themes / Sector highlights):
+SLIDE 4 of slides[] — BULLETS (Themes / Sector highlights):
+   - "kind": "bullets"
    - "eyebrow": "Themes to Watch" for pre-market, "Sector Highlights" for post-market
    - "bullets": array of EXACTLY 3 items, each {"label": "<5-7 words>", "detail": "<6-10 word context>"}
 
-6. OUTRO:
-   - "tagline": Punchy 6-10 word takeaway in Playfair italic voice. Examples:
+OUTRO (top-level "tagline" field, NOT inside slides[]):
+   - Punchy 6-10 word takeaway in Playfair italic voice. Examples:
      "Defend the support · let the breadth lead."
      "Banks led · IT lagged · breadth confirmed."
      "Domestic absorption holds · global cues still soft."
@@ -256,12 +273,53 @@ def _generate_script(mode: str, date_str: str, commentary_text: str) -> dict:
 # ═════════════════════════════════════════════════════════════════════════════
 # 3) Render frames using render_frames module
 # ═════════════════════════════════════════════════════════════════════════════
+def _normalize_script(script: dict) -> dict:
+    """Normalize Gemini's response shape into the canonical form we render
+    from: a dict with `headline`, `tagline`, and `slides` (a list of EXACTLY
+    4 middle slides, no cover, no outro).
+
+    Gemini sometimes returns the 4 middle slides in `slides[]` (the shape
+    documented in the prompt's JSON schema), and sometimes returns all 6
+    slides including cover & outro inside `slides[]` (because the prompt
+    described "6 slides" numerically). Both shapes are valid interpretations
+    of the instructions, so this function accepts both and converts to the
+    canonical form rather than fighting the model. Returns a shallow copy
+    so the caller can keep using `script` for top-level fields it added."""
+    s = dict(script or {})
+    slides = list(s.get("slides") or [])
+
+    # Detect cover / outro entries by their distinctive keys, regardless of
+    # position. A 'cover' slide has 'headline' (the only one that does);
+    # an 'outro' slide has 'tagline'.
+    cover_idx  = next((i for i, sl in enumerate(slides) if isinstance(sl, dict) and "headline" in sl), None)
+    outro_idx  = next((i for i, sl in enumerate(slides) if isinstance(sl, dict) and "tagline"  in sl), None)
+
+    if cover_idx is not None and not s.get("headline"):
+        s["headline"] = slides[cover_idx].get("headline") or "Today's Market Pulse"
+    if outro_idx is not None and not s.get("tagline"):
+        s["tagline"] = slides[outro_idx].get("tagline") or "Read the full briefing on moneyveda.org"
+
+    # Strip cover / outro entries from the middle-slide list
+    middle = [sl for i, sl in enumerate(slides)
+              if i != cover_idx and i != outro_idx]
+    s["slides"] = middle
+    return s
+
+
 def _render_all_frames(script: dict, slot_label: str, date_label: str,
                        frames_dir: Path) -> list[Path]:
     frames_dir.mkdir(parents=True, exist_ok=True)
+    script = _normalize_script(script)
     slides_data = script.get("slides", [])
     if len(slides_data) != 4:
-        raise ValueError(f"Expected exactly 4 middle slides, got {len(slides_data)}")
+        # Helpful diagnostic — show what we actually got so debugging is
+        # easier when Gemini occasionally returns an off-count list.
+        kinds = [sl.get("eyebrow") or list(sl.keys())[:3] for sl in slides_data
+                 if isinstance(sl, dict)]
+        raise ValueError(
+            f"Expected 4 middle slides after normalization, got "
+            f"{len(slides_data)}. Slide shapes: {kinds}"
+        )
 
     total = 6
     paths = []
