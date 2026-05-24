@@ -1,7 +1,32 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v3.2)
+market_commentary.py  ─  MoneyVeda Market Commentary (v3.3)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
+
+v3.3 CHANGES (video Shorts pipeline integration — pre & post only):
+  • PRE-MARKET and POST-MARKET commentary now auto-generate a 60-second
+    vertical (1080×1920) video Short for YouTube/Instagram upload. The
+    video pipeline (video_publisher.py + render_frames.py at repo root)
+    runs IMMEDIATELY AFTER save_commentary() succeeds, on the same Render
+    dyno, so no extra cron and no extra dyno cost.
+  • NON-BLOCKING BY DESIGN. The publisher invocation is wrapped in a
+    try/except that swallows ALL exceptions and logs them. A video
+    failure can NEVER undo the commentary save above — the commentary
+    is the source of truth and its persistence is independent. Lazy
+    import (`from video_publisher import publish_video` inside the try
+    block) ensures a missing dep on the video side cannot import-fail
+    the commentary module at boot.
+  • GATED to (mode in pre/post) AND (saved is True) — intraday slots
+    are untouched; a failed commentary save does not trigger a video.
+  • KILL SWITCH. New env var ENABLE_VIDEO_PIPELINE (defaults to "1").
+    Setting it to "0" / "false" / "no" / "off" in the Render dashboard
+    skips the video step on every invocation without redeploying. The
+    commentary cron keeps running normally.
+  • Returns dict gains a "video" key with {mode, date, url, size_mb,
+    duration_s} on success, None on skip/failure. Downstream callers /
+    logs can read it; nothing inside this module branches on it.
+  • Intraday slots, all data-fetching, all prompts, grounding logic,
+    fallbacks, and Supabase persistence are UNCHANGED.
 
 v3.2 CHANGES (advance/decline always-on + broader-market depth — intraday & post):
   • A/D BREADTH NO LONGER GOES MISSING. The external market-cache
@@ -301,6 +326,11 @@ load_dotenv()
 SUPABASE_URL        = os.getenv("SUPABASE_URL")
 SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY")
 GEMINI_API_KEY      = os.getenv("GEMINI_API_KEY")
+
+# v3.3: kill-switch for the video Shorts pipeline. Defaults to ON. Flip to
+# "0" / "false" / "no" / "off" in the Render dashboard to disable without
+# redeploying — the commentary cron keeps running normally.
+ENABLE_VIDEO = os.getenv("ENABLE_VIDEO_PIPELINE", "1") not in ("0", "false", "no", "off")
 
 MARKET_API_BASE = "https://moneyveda.org/api/market"
 
@@ -3245,10 +3275,33 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
 
     saved = save_commentary(mode, slot, text, source, packet,
                             grounding_sources=grounding_sources)
+
+    # ─── v3.3: Video Shorts pipeline (pre/post only; non-blocking) ───
+    # Bolted onto the existing cron — runs ONLY after the commentary is
+    # safely persisted to Supabase. A video failure NEVER affects the
+    # commentary save above, which remains the source of truth. Lazy
+    # import so a missing video-side dep cannot break this module at boot.
+    video_result = None
+    if ENABLE_VIDEO and mode in ("pre", "post") and saved:
+        try:
+            from video_publisher import publish_video
+            video_result = publish_video(
+                mode=mode,
+                date_str=_today_ist(),
+                dry_run=False,
+            )
+            if video_result:
+                _log("🎬", f"Video published: {video_result.get('url')}")
+        except Exception as e:
+            _log("⚠️", f"Video pipeline failed (non-fatal): {e}")
+            import traceback
+            traceback.print_exc()
+
     return {
         "text": text, "source": source, "saved": saved,
         "slot": slot, "model": model,
         "grounding_sources": grounding_sources,
+        "video": video_result,
     }
 
 
@@ -3256,7 +3309,7 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v3.0")
+    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v3.3")
     parser.add_argument("--mode", choices=["pre", "intraday", "post", "auto"], default="auto",
                         help="'auto' detects from current IST time (default)")
     parser.add_argument("--slot", default=None,
