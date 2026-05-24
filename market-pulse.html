@@ -994,6 +994,95 @@ body{
 .hero,.story-wrap{animation:fadeUp .6s ease both;}
 .story-wrap{animation-delay:.1s;}
 
+/* ═══════ Video download card ═══════ */
+.videos-card{
+  background:
+    radial-gradient(ellipse 60% 50% at 100% 0%, rgba(201,168,76,.06), transparent 60%),
+    linear-gradient(180deg, var(--dark2), var(--dark3));
+  border:1px solid rgba(201,168,76,.2);
+  border-radius:var(--radius-lg);
+  padding:22px;
+  margin:28px 0;
+  display:none;
+  box-shadow:var(--shadow-card);
+}
+.videos-card.has-videos{display:block;}
+.videos-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;flex-wrap:wrap;gap:8px;
+}
+.videos-eyebrow{
+  font-size:10px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--gold);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.videos-eyebrow::before{
+  content:'';width:24px;height:1px;
+  background:var(--gold);opacity:.6;
+}
+.videos-helper{font-size:11px;color:var(--muted);font-style:italic;}
+.videos-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:640px){.videos-grid{grid-template-columns:1fr;}}
+.video-tile{
+  background:var(--dark4);
+  border:1px solid rgba(201,168,76,.15);
+  border-radius:var(--radius-md);
+  padding:16px;
+  display:flex;flex-direction:column;gap:10px;
+  transition:all .2s ease;
+}
+.video-tile.empty{border-style:dashed;border-color:rgba(255,255,255,.08);opacity:.55;}
+.video-tile:not(.empty):hover{
+  border-color:rgba(201,168,76,.4);
+  transform:translateY(-1px);
+  box-shadow:0 6px 18px -8px rgba(0,0,0,.5);
+}
+.video-tile-head{display:flex;align-items:center;justify-content:space-between;}
+.video-tile-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--cream);}
+.video-tile-slot{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold-light);font-weight:600;letter-spacing:1px;}
+.video-tile-meta{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;}
+.video-tile-meta span{color:var(--cream-dim);}
+.video-tile-actions{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;}
+.video-btn{
+  flex:1;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  background:linear-gradient(135deg,rgba(201,168,76,.18),rgba(201,168,76,.08));
+  border:1px solid rgba(201,168,76,.35);
+  color:var(--gold-light);
+  padding:10px 14px;border-radius:8px;
+  font-size:12px;font-weight:700;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;text-decoration:none;
+  transition:all .2s ease;letter-spacing:.3px;
+  min-width:max-content;
+}
+.video-btn:hover{
+  background:linear-gradient(135deg,rgba(201,168,76,.28),rgba(201,168,76,.15));
+  border-color:rgba(201,168,76,.55);
+}
+.video-btn svg{width:14px;height:14px;fill:none;}
+.video-btn.secondary{background:transparent;border-color:rgba(255,255,255,.1);color:var(--cream-dim);}
+.video-btn.secondary:hover{border-color:rgba(201,168,76,.4);color:var(--gold-light);background:rgba(201,168,76,.06);}
+.video-tile-empty-msg{font-size:12px;color:var(--muted);line-height:1.55;font-style:italic;}
+.videos-recent{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.05);font-size:11px;color:var(--muted);}
+.videos-recent-toggle{
+  background:transparent;border:none;
+  color:var(--gold-light);
+  font-size:11px;font-weight:600;cursor:pointer;padding:0;
+  font-family:'DM Sans',sans-serif;letter-spacing:.3px;
+}
+.videos-recent-toggle:hover{color:var(--gold);}
+.videos-recent-list{display:none;margin-top:10px;flex-direction:column;gap:6px;}
+.videos-recent-list.open{display:flex;}
+.videos-recent-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 12px;background:rgba(255,255,255,.02);
+  border-radius:6px;font-size:11.5px;
+}
+.videos-recent-row a{color:var(--gold-light);text-decoration:none;font-family:'DM Mono',monospace;font-size:10.5px;}
+.videos-recent-row a:hover{text-decoration:underline;}
+.videos-recent-date{color:var(--cream-dim);font-family:'DM Mono',monospace;}
+
 </style>
 </head>
 <body>
@@ -1116,6 +1205,31 @@ body{
       <div id="timeline-list"></div>
     </div>
   </div>
+
+  <section class="videos-card" id="videos-card">
+    <div class="videos-head">
+      <span class="videos-eyebrow">📹 Today's Videos · for YouTube Shorts</span>
+      <span class="videos-helper">Download · upload to your channel</span>
+    </div>
+    <div class="videos-grid">
+      <div class="video-tile" id="video-tile-pre">
+        <div class="video-tile-head">
+          <span class="video-tile-title">Pre-Market</span>
+          <span class="video-tile-slot">08:00 IST</span>
+        </div>
+        <div class="video-tile-meta" id="video-tile-pre-meta">—</div>
+        <div class="video-tile-actions" id="video-tile-pre-actions"></div>
+      </div>
+      <div class="video-tile" id="video-tile-post">
+        <div class="video-tile-head">
+          <span class="video-tile-title">Post-Market</span>
+          <span class="video-tile-slot">17:00 IST</span>
+        </div>
+        <div class="video-tile-meta" id="video-tile-post-meta">—</div>
+        <div class="video-tile-actions" id="video-tile-post-actions"></div>
+      </div>
+    </div>
+  </section>
 
   <div class="gold-rule"></div>
 
@@ -2294,6 +2408,87 @@ setInterval(loadNifty100Cache, 60 * 1000);
 
 init();
 setInterval(()=>{loadSignals();loadFilings();},5*60*1000);
+
+// ════════════════════════════════════════════════════════════════
+// DAILY VIDEO DOWNLOADS  (pre-market + post-market for YouTube Shorts)
+// ════════════════════════════════════════════════════════════════
+async function loadDailyVideos() {
+  try {
+    const data = await swrFetch('/api/videos', fresh => _renderDailyVideos(fresh));
+    _renderDailyVideos(data);
+  } catch (e) {
+    console.error('Daily video fetch failed:', e);
+    document.getElementById('videos-card').classList.remove('has-videos');
+  }
+}
+
+function _fmtSize(bytes) {
+  if (!bytes) return '—';
+  const mb = bytes / 1024 / 1024;
+  return mb.toFixed(1) + ' MB';
+}
+function _fmtDuration(s) {
+  if (!s) return '—';
+  return Math.round(s) + 's';
+}
+
+function _renderDailyVideos(data) {
+  const card = document.getElementById('videos-card');
+  if (!data || data.status !== 'success') {
+    card.classList.remove('has-videos');
+    return;
+  }
+  const todayPre  = data.today && data.today.pre;
+  const todayPost = data.today && data.today.post;
+  const hasAnyToday = !!(todayPre || todayPost);
+
+  if (!hasAnyToday) {
+    card.classList.remove('has-videos');
+    return;
+  }
+  card.classList.add('has-videos');
+
+  _renderVideoTile('pre',  todayPre);
+  _renderVideoTile('post', todayPost);
+}
+
+function _renderVideoTile(mode, row) {
+  const tile = document.getElementById('video-tile-' + mode);
+  const meta = document.getElementById('video-tile-' + mode + '-meta');
+  const actions = document.getElementById('video-tile-' + mode + '-actions');
+
+  if (!row || !row.video_url) {
+    tile.classList.add('empty');
+    const sched = mode === 'pre'
+      ? 'Publishes daily at 08:00 IST · Mon–Fri'
+      : 'Publishes daily at 17:00 IST · Mon–Fri';
+    meta.innerHTML = `<span class="video-tile-empty-msg">Not ready yet · ${sched}</span>`;
+    actions.innerHTML = '';
+    return;
+  }
+  tile.classList.remove('empty');
+  meta.innerHTML =
+    `<span>${_fmtDuration(row.duration_s)}</span> · ` +
+    `<span>${_fmtSize(row.size_bytes)}</span> · ` +
+    `<span>1080 × 1920</span>`;
+
+  const dlUrl = row.download_url || row.video_url;
+  const fileName = `moneyveda-${row.video_date}-${row.video_type}.mp4`;
+
+  actions.innerHTML = `
+    <a class="video-btn" href="${dlUrl}" download="${fileName}" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download MP4
+    </a>
+    <a class="video-btn secondary" href="${row.video_url}" target="_blank" rel="noopener" title="Preview in a new tab">
+      <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Preview
+    </a>
+  `;
+}
+
+loadDailyVideos();
+setInterval(loadDailyVideos, 5 * 60 * 1000);
 </script>
 </body>
 </html>
