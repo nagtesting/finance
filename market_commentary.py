@@ -3276,68 +3276,18 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
     saved = save_commentary(mode, slot, text, source, packet,
                             grounding_sources=grounding_sources)
 
-    # ─── v3.3.1: Video Shorts pipeline (pre/post only; OOM-safe) ───
-    # SUBPROCESS strategy on Render Starter (512 MB):
-    #   • In-process import OOM-killed the cron at 08:00 IST (Render log:
-    #     "Ran out of memory (used over 512MB)"). Reason: commentary's
-    #     yfinance dataframes, Gemini Pro grounded response, supabase
-    #     payloads, the full data packet etc are still resident when
-    #     Pillow+ffmpeg+vercel_blob start loading; combined peak > 512 MB.
-    #   • Solution: spawn video_publisher.py as a separate Python
-    #     subprocess. It gets a FRESH interpreter — does not inherit
-    #     commentary's loaded objects. Before spawning we explicitly drop
-    #     references and gc.collect() so the parent's RSS is minimised
-    #     during the child's run (Render Cron Jobs share parent RSS with
-    #     children; the container's RAM budget is shared, not per-process).
-    #   • subprocess.run() (BLOCKING). Cron Jobs kill detached children
-    #     when the entrypoint exits, so fire-and-forget is not viable on
-    #     Render. We wait for the child synchronously and return after.
-    if ENABLE_VIDEO and mode in ("pre", "post") and saved:
-        try:
-            import subprocess as _sub
-            import gc as _gc
-
-            # Free commentary's loaded objects so the child sees a lean parent.
-            # Names below are the heavy locals in this function's scope.
-            try:
-                del prompt, response, text_or_resp, sources
-            except (NameError, UnboundLocalError):
-                pass
-            try:
-                del packet
-            except (NameError, UnboundLocalError):
-                pass
-            _gc.collect()
-
-            _video_cmd = [
-                sys.executable, "-u", "video_publisher.py",
-                "--mode", mode,
-                "--date", _today_ist(),
-            ]
-            _log("🎬", f"Spawning video pipeline subprocess for {mode} (separate interpreter)…")
-            _result = _sub.run(
-                _video_cmd,
-                cwd=os.path.dirname(os.path.abspath(__file__)) or ".",
-                timeout=300,        # 5-minute hard cap — videos finish in 60-90s
-                capture_output=True,
-                text=True,
-            )
-            if _result.returncode == 0:
-                _log("✅", f"Video pipeline subprocess completed cleanly")
-                # Echo a few key lines from the child's stdout so the parent
-                # log shows the Vercel Blob URL and Supabase save status.
-                for ln in (_result.stdout or "").splitlines()[-15:]:
-                    print(ln)
-            else:
-                _log("⚠️", f"Video pipeline exited {_result.returncode} (non-fatal — commentary already saved)")
-                # Tail the child's stderr / last stdout lines for diagnostics
-                tail = (_result.stderr or _result.stdout or "")[-2000:]
-                if tail.strip():
-                    print(f"--- video_publisher.py output (tail) ---\n{tail}\n--- end ---")
-        except _sub.TimeoutExpired:
-            _log("⚠️", "Video pipeline timed out after 300s (non-fatal — commentary already saved)")
-        except Exception as e:
-            _log("⚠️", f"Video pipeline spawn failed (non-fatal): {e}")
+    # ─── v3.3.2: Video pipeline DECOUPLED from commentary cron (OOM fix) ───
+    # v3.3 and v3.3.1 tried in-process import and same-container subprocess
+    # respectively; both OOM'd on Render Starter (512 MB ceiling shared
+    # across parent + child). v3.3.2 moves the video pipeline to its OWN
+    # Render cron job ('market-video') scheduled 15 min after each
+    # commentary tick (08:15 and 17:15 IST). The video cron reads the
+    # just-saved commentary from Supabase and runs in a clean 512 MB
+    # container. Commentary cron is now lean again — no Pillow/ffmpeg/
+    # vercel_blob imports here, period.
+    #
+    # If you ever want to disable the separate video cron, just delete the
+    # 'market-video' service in Render — nothing here needs to change.
 
     return {
         "text": text, "source": source, "saved": saved,
