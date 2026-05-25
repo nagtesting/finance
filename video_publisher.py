@@ -701,21 +701,50 @@ def publish_video(mode: str, date_str: str | None = None,
         }
 
 
+def _detect_mode_from_ist() -> str | None:
+    """Auto-detect 'pre' or 'post' from current IST time.
+
+    The companion 'market-video' Render cron is scheduled at 08:15 and 17:15
+    IST (15 min after each commentary cron), so this function maps:
+       08:00 IST ± 45 min  → 'pre'
+       17:00 IST ± 45 min  → 'post'
+    Returns None outside those windows (manual --mode arg required)."""
+    now = datetime.now(IST)
+    cur_min = now.hour * 60 + now.minute
+    # Pre-market band: 07:15 – 08:45 IST  (435 – 525)
+    if 435 <= cur_min <= 525:
+        return "pre"
+    # Post-market band: 16:15 – 17:45 IST  (975 – 1065)
+    if 975 <= cur_min <= 1065:
+        return "post"
+    return None
+
+
 # ═════════════════════════════════════════════════════════════════════════════
 # CLI
 # ═════════════════════════════════════════════════════════════════════════════
 def _main():
     parser = argparse.ArgumentParser(description="MoneyVeda Market Pulse video publisher")
-    parser.add_argument("--mode", choices=["pre", "post"], required=True,
-                        help="Which commentary to render")
+    parser.add_argument("--mode", choices=["pre", "post"], default=None,
+                        help="Which commentary to render (auto-detected from IST time if omitted)")
     parser.add_argument("--date", default=None,
                         help="Commentary date YYYY-MM-DD (default: today IST)")
     parser.add_argument("--dry-run", action="store_true",
                         help="Build the video locally but do NOT upload to Vercel Blob")
     args = parser.parse_args()
 
+    mode = args.mode
+    if mode is None:
+        mode = _detect_mode_from_ist()
+        if mode is None:
+            _log("⏭️", f"Current IST time ({datetime.now(IST).strftime('%H:%M')}) "
+                       f"is outside the pre/post auto-detect windows. "
+                       f"Pass --mode pre or --mode post for manual runs. Exiting cleanly.")
+            sys.exit(0)
+        _log("🤖", f"Auto-detected mode={mode} from current IST time")
+
     try:
-        result = publish_video(mode=args.mode, date_str=args.date, dry_run=args.dry_run)
+        result = publish_video(mode=mode, date_str=args.date, dry_run=args.dry_run)
         if result:
             print(f"\n✅ DONE: {json.dumps(result, indent=2)}")
             sys.exit(0)
