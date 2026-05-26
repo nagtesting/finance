@@ -395,11 +395,16 @@ def _stitch_video(frame_paths: list[Path], durations: list[float],
     for p, dur in zip(frame_paths, durations):
         inputs += ["-loop", "1", "-t", f"{dur}", "-i", str(p)]
 
-    # Video filter: scale to 1080x1920 yuv420p, chain xfades
+    # Video filter: each input PNG is rendered by Pillow at 1080x1920 for
+    # font quality, but we DOWNSAMPLE to 720x1280 at encode time to fit
+    # Render Starter's 512MB container. ffmpeg's xfade filter + libx264's
+    # reference frame buffer scale with output resolution^2, so 720p uses
+    # ~44% the memory of 1080p. Output is still YouTube Shorts-eligible.
+    OUT_W, OUT_H = 720, 1280
     filter_parts = []
     for i in range(len(frame_paths)):
         filter_parts.append(
-            f"[{i}:v]format=yuv420p,fps=30,scale=1080:1920,setsar=1[v{i}]"
+            f"[{i}:v]format=yuv420p,fps=30,scale={OUT_W}:{OUT_H},setsar=1[v{i}]"
         )
     running_offset = durations[0] - CROSSFADE_S
     chain = "[v0]"
@@ -450,10 +455,20 @@ def _stitch_video(frame_paths: list[Path], durations: list[float],
         "-c:v", "libx264",
         "-pix_fmt", "yuv420p",
         "-r", "30",
-        "-preset", "medium",
-        "-crf", "20",
+        # Memory-frugal encoding for Render Starter (512MB):
+        #   • 'ultrafast' uses minimal lookahead/reference frames
+        #   • -refs 1: keep only one reference frame in memory
+        #   • -bf 0: no B-frames (no DPB lookback buffer)
+        #   • -threads 2: cap thread-local buffers (Render Starter has 2 vCPU anyway)
+        # Output file size grows ~2× vs 'medium' but well within Shorts limits.
+        "-preset", "ultrafast",
+        "-tune", "stillimage",     # we're encoding mostly-static slides
+        "-refs", "1",
+        "-bf", "0",
+        "-threads", "2",
+        "-crf", "23",              # bumped from 20 to compensate for ultrafast preset
         "-c:a", "aac",
-        "-b:a", "128k",
+        "-b:a", "96k",             # bumped down from 128k — voice/music doesn't need it
         "-shortest",
         "-movflags", "+faststart",
         str(output_path),
