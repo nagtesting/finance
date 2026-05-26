@@ -1,7 +1,58 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v3.3)
+market_commentary.py  ─  MoneyVeda Market Commentary (v3.4)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
+
+v3.4 CHANGES (Gemini 3.1 Pro thinking=high + commodity dislocation +
+              grounding observability — grounded slots only):
+  • LATEST MODEL ON ALL GROUNDED CALLS. Pre-market (08:00), midday
+    grounded intraday (12:00), close grounded intraday (15:30), and
+    post-market (17:00) now call Gemini 3.1 Pro Preview with
+    thinking_level="high" (maximum reasoning depth) via the new
+    google-genai SDK. 3.1 Pro is Google DeepMind's most advanced model
+    (Feb 2026), with significant reasoning gains over 2.5 Pro and the
+    same google_search grounding tool. Non-grounded intraday slots are
+    UNCHANGED (Flash-Lite, cost-aware).
+  • RESILIENT FALLBACK CHAIN. If 3.1 Pro grounded fails for any reason
+    (SDK issue, rate limit, preview instability, timeout): fall back to
+    2.5 Pro grounded (existing path) -> 2.5 Pro non-grounded on a
+    rebuilt prompt (no grounding directives) -> rule-based. The
+    grounding outcome is logged at every step. A 3.1 Pro hiccup
+    degrades gracefully; it can never break the commentary cron.
+  • COMMODITY DISLOCATION — the v3.1 sector-dislocation pattern applied
+    to commodities. The problem this solves: a commodity (especially
+    crude) moving hard intraday is virtually never an "ignored by
+    equities" story — it IS the story, driven by a named geopolitical /
+    OPEC / supply / inventory event (Hormuz/Iran, OPEC+ output, SPR,
+    EIA prints, sanctions, refinery outage). Today's miss: Brent
+    reversed 7% on US strikes on Iranian missile sites/boats near
+    Bandar Abbas; the post-market wrap framed it as "ignored by
+    equities" because the underlying Iran catalyst was never named.
+    FIX: _commodity_dislocation() reads Brent (via global_macro
+    telemetry, with the commodities ticker list as fallback) and Gold
+    from the live packet. When the move clears the threshold, two
+    things happen: (1) for intraday it auto-promotes that slot to the
+    grounded Pro path (parallel to v3.1 sector logic); (2) for ANY
+    grounded slot (pre/12:00/15:30/post) a COMMODITY_DISLOCATION_
+    DIRECTIVE is injected into the prompt, mandating a grounded search
+    across geopolitics / OPEC / SPR / inventories / sanctions / refinery
+    outages / China demand, and forbidding the "ignored by equities"
+    framing without a NAMED offsetting risk. NO-INVENTION rule still
+    governs — the directive demands the search, never asserts what the
+    cause is.
+  • GROUNDING OBSERVABILITY. New grounding_status field persisted into
+    data_snapshot._grounding_status. Values: grounded_ok,
+    grounded_no_sources, fallback_v25_grounded_ok,
+    fallback_v25_grounded_no_sources, fallback_nongrounded,
+    all_grounded_failed, v3_sdk_unavailable, not_attempted. The missing
+    piece that made today's silent grounding failure hard to diagnose
+    after the fact — now queryable directly from Supabase.
+  • THINKING LEVEL TUNABLE. GEMINI_THINKING_LEVEL constant ("high" by
+    default). Set to "medium" for cost reduction without major quality
+    loss; "low" for fast turnaround.
+  • COST NOTE. gemini-3.1-pro-preview pricing is $2/M input, $12/M
+    output. For ~4 grounded calls/day at typical token counts, expect
+    ~$0.50-0.80/day, ~$15-25/month. No free tier on the API.
 
 v3.3 CHANGES (video Shorts pipeline integration — pre & post only):
   • PRE-MARKET and POST-MARKET commentary now auto-generate a 60-second
@@ -318,6 +369,17 @@ try:
 except ImportError:
     GEMINI_AVAILABLE = False
 
+# v3.4: new google-genai SDK for Gemini 3.1 Pro grounded path. Coexists with
+# the legacy google-generativeai package above (still used by the 2.5 Pro
+# fallback and the non-grounded intraday calls). If the new SDK isn't
+# installed yet, the v3 path silently skips and we fall through to 2.5 Pro.
+try:
+    from google import genai as _genai_v3
+    from google.genai import types as _genai_v3_types
+    GENAI_V3_AVAILABLE = True
+except ImportError:
+    GENAI_V3_AVAILABLE = False
+
 load_dotenv()
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -336,6 +398,12 @@ MARKET_API_BASE = "https://moneyveda.org/api/market"
 
 GEMINI_MODEL_FAST   = "gemini-2.5-flash-lite"   # cheap, fast — default intraday
 GEMINI_MODEL_STRONG = "gemini-2.5-pro"          # post-market + event days + grounded
+
+# v3.4: latest grounded model with maximum thinking depth. Used ONLY for
+# grounded calls (pre / 12:00 / 15:30 / post). Falls back to 2.5 Pro grounded,
+# then 2.5 Pro non-grounded, then rule-based — see generate_commentary().
+GEMINI_MODEL_GROUNDED = "gemini-3.1-pro-preview"
+GEMINI_THINKING_LEVEL = "high"   # low | medium | high — high = max reasoning
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -360,6 +428,17 @@ GROUNDED_INTRADAY_SLOTS = {"12:00", "15:30"}
 _DISLOC_SECTOR_ABS_PCT = 1.5   # a sector moving this hard on its own …
 _DISLOC_SECTOR_GAP_PCT = 1.2   # … AND this far from the index = idiosyncratic
 _DISLOC_STOCK_ABS_PCT  = 4.0   # a single heavyweight this far = likely a catalyst
+
+# v3.4: commodity dislocation thresholds — parallel to _DISLOC_SECTOR_*.
+# A commodity moving this hard is virtually never an "ignored by equities"
+# story; it IS the story (Iran/Hormuz, OPEC+, SPR, inventory shock, refinery
+# outage, sanctions, hurricane). When fired we inject a hard prompt clause
+# AND, for intraday, auto-promote the slot to the grounded Pro path
+# (parallel to v3.1 sector logic). NO-INVENTION rule still governs — the
+# directive demands the search, never asserts what the cause is.
+_DISLOC_BRENT_DAY_PCT   = 3.0   # Brent day move (abs)
+_DISLOC_BRENT_RANGE_PCT = 5.0   # Brent intraday high-low range (if available)
+_DISLOC_GOLD_DAY_PCT    = 2.0   # Gold day move (abs) — secondary risk-off
 
 HEADERS = {
     "User-Agent": (
@@ -2175,6 +2254,21 @@ These Pulse headlines are your PRIMARY overnight event source this run (grounded
 """.strip()
 
 
+# v3.4: data-triggered, GROUNDED-ONLY directive. Injected when
+# _commodity_dislocation() fires AND use_grounding is True. The whole point
+# is to mandate a grounded search across geopolitics / OPEC / SPR /
+# inventories / sanctions / refinery outages / China demand — categories
+# that Indian financial press systematically under-covers but which drive
+# crude, gold, DXY, INR, FII flow, and EM risk appetite. Does NOT appear
+# in non-grounded prompts (would be useless without search). NO-INVENTION
+# rule still governs — the directive demands the search, never asserts
+# what the cause is.
+COMMODITY_DISLOCATION_DIRECTIVE = """
+COMMODITY DISLOCATION (data-triggered — grounded search is MANDATORY for this run):
+A commodity has moved hard enough today that a named geopolitical / OPEC / supply / inventory event almost certainly caused it: {dislocation_summary}. A move of this size is essentially NEVER an "ignored by equities" story — it IS the story, or it is responding to the same underlying catalyst that is also driving equities, INR, DXY, and FII flow today. Before writing Catalysts / Overnight Catalysts you MUST use grounded search to identify the SPECIFIC trigger from the last 24-48 hours. Search categories: (1) active military conflicts and ceasefire status (Iran / Strait of Hormuz / Bandar Abbas, Israel / Gaza, Russia / Ukraine, Houthi / Red Sea, China / Taiwan); (2) OPEC+ output decisions, production guidance, or compliance updates; (3) US SPR action and EIA / API inventory prints; (4) US, EU, or UN sanctions announcements / waivers / enforcement actions; (5) refinery outages, pipeline incidents, hurricane / weather supply disruption; (6) major demand prints from China that move oil sentiment. NAME the specific event in plain language and quote the source date — then trace its transmission into Indian sectors via CAUSAL CHAINS (e.g. crude up on Hormuz escalation -> OMC margin compression + CPI/INR pressure + FII outflow risk + EM-defensive rotation; crude down on ceasefire/talks progress -> OMC margin relief + disinflation tailwind + INR support). Apply the MARKET-IGNORING-NEWS lens correctly: if equities and the commodity moved in the SAME direction in response to a geopolitical catalyst, that is ONE story (geopolitics), not two. If equities IGNORED a genuine disinflationary commodity move, the offsetting risk MUST be named explicitly (usually the same geopolitics — unresolved tail risk, FII outflow concern, INR weakness, EM risk-off) rather than dismissed as "ignored". HARD RULE: "no catalyst found" is NOT acceptable for a commodity move of this size — search until you can name it, or honestly state which specific event surfaced as the most likely driver with a confidence note.
+""".strip()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PROMPT TEMPLATES
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2183,6 +2277,8 @@ PRE_MARKET_PROMPT = """You are a senior equity strategist briefing the trading d
 {shared_principles}
 
 {grounding_block}
+
+{commodity_dislocation_block}
 
 YOUR TASK:
 Write a structured 20-24 line strategist briefing in plain English. INTERPRETATION, not description. Identify 2-3 dominant themes; place today's setup against recent context (last week's range, last session's wrap); call out divergences worth watching; give a clear directional bias for the open and a clear view of what the market will be TRYING TO DO at open.
@@ -2399,6 +2495,8 @@ INTRADAY_UPDATE_PROMPT = """You are a senior equity strategist writing an INTRAD
 
 {grounding_block}
 
+{commodity_dislocation_block}
+
 {policy_transmission}
 
 YOUR TASK:
@@ -2499,6 +2597,8 @@ POST_MARKET_PROMPT = """You are a senior equity strategist writing the POST-MARK
 {shared_principles}
 
 {grounding_block}
+
+{commodity_dislocation_block}
 
 YOUR TASK:
 Write a structured 24-28 line wrap. This is the day's THESIS — pull together pre-market setup, how the day actually unfolded across 13 intraday slots, the close, and implications for tomorrow. The central question: WHAT WAS THE MARKET TRYING TO DO TODAY, and did it succeed? Use markdown headers.
@@ -2638,9 +2738,17 @@ def build_pre_market_prompt(packet: dict, use_grounding: bool = True) -> str:
     # mirroring how grounding_block is gated.
     event_directive = (PRE_EVENT_ATTRIBUTION_GROUNDED if use_grounding
                        else PRE_EVENT_ATTRIBUTION_UNGROUNDED)
+    # v3.4: commodity dislocation directive — grounded calls only, fires only
+    # when a commodity has moved hard enough to imply a named catalyst. Empty
+    # string when not triggered (the placeholder collapses cleanly).
+    commodity_dis = _commodity_dislocation(packet) if use_grounding else ""
+    commodity_block = (COMMODITY_DISLOCATION_DIRECTIVE.format(
+                          dislocation_summary=commodity_dis)
+                       if commodity_dis else "")
     return PRE_MARKET_PROMPT.format(
         shared_principles        = SHARED_PRINCIPLES,
         grounding_block          = GROUNDING_DISCIPLINE if use_grounding else "",
+        commodity_dislocation_block = commodity_block,
         event_directive          = event_directive,
         date                     = packet["date"],
         timestamp                = packet["timestamp_ist"],
@@ -2674,9 +2782,15 @@ def build_post_market_prompt(packet: dict, use_grounding: bool = True) -> str:
     # how grounding_block is gated. When grounding is live, search is mandated;
     # when off, Pulse is the primary event source.
     event_directive = EVENT_ATTRIBUTION_GROUNDED if use_grounding else EVENT_ATTRIBUTION_UNGROUNDED
+    # v3.4: commodity dislocation directive — grounded calls only.
+    commodity_dis = _commodity_dislocation(packet) if use_grounding else ""
+    commodity_block = (COMMODITY_DISLOCATION_DIRECTIVE.format(
+                          dislocation_summary=commodity_dis)
+                       if commodity_dis else "")
     return POST_MARKET_PROMPT.format(
         shared_principles   = SHARED_PRINCIPLES,
         grounding_block     = GROUNDING_DISCIPLINE if use_grounding else "",
+        commodity_dislocation_block = commodity_block,
         event_directive     = event_directive,
         date                = packet["date"],
         timestamp           = packet["timestamp_ist"],
@@ -2737,9 +2851,17 @@ def build_intraday_prompt(packet: dict, use_grounding: bool = False) -> str:
                     else "not recorded")
     pre_ctx_short = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP 'vs pre-market' framing. Do NOT mention pre-market is missing.]")[:900]
     day_arc = prior.get("all_slots_compact") or "  [INSTRUCTION: This is the first intraday update of the day; no earlier slots to reference.]"
+    # v3.4: commodity dislocation directive — only when grounding is active
+    # for this intraday slot (configured grounded slot or data-triggered
+    # auto-promote). Empty string when not triggered.
+    commodity_dis = _commodity_dislocation(packet) if use_grounding else ""
+    commodity_block = (COMMODITY_DISLOCATION_DIRECTIVE.format(
+                          dislocation_summary=commodity_dis)
+                       if commodity_dis else "")
     return INTRADAY_UPDATE_PROMPT.format(
         shared_principles  = SHARED_PRINCIPLES,
         grounding_block    = GROUNDING_DISCIPLINE if use_grounding else "",
+        commodity_dislocation_block = commodity_block,
         policy_transmission = POLICY_TRANSMISSION,
         date               = packet["date"],
         timestamp          = packet["timestamp_ist"],
@@ -2805,6 +2927,62 @@ def _sector_dislocation(packet: dict) -> str:
             return f"{st.get('label', 'a heavyweight')} {p:+.2f}%"
 
     return ""
+
+
+def _commodity_dislocation(packet: dict) -> str:
+    """v3.4: detect a commodity move large enough that a named geopolitical /
+    OPEC / supply / inventory event almost certainly drove it. Returns a
+    short reason string when it fires, or "" otherwise. Like
+    _sector_dislocation(), this is a DATA signal — it tells us a catalyst
+    probably exists so we should turn ON grounded search to find and NAME
+    it. It NEVER asserts what the catalyst is (NO-INVENTION rule still
+    governs the prompt). Brent is checked first via the structured
+    global_macro telemetry (cleanest day_change_pct), with the commodity
+    ticker list as fallback (intraday packets may not have global_macro
+    populated). Gold is a secondary check — large gold moves often mean
+    risk-off / war-premium that equities should not ignore.
+
+    Today's miss this is designed to catch: Brent reversed 7% on US strikes
+    on Iranian missile sites/boats near Bandar Abbas — equities sold off
+    because of the underlying Iran catalyst, NOT because they "ignored" the
+    crude tailwind. With this trigger active, the prompt would mandate a
+    grounded search across geopolitics / OPEC / SPR / inventories /
+    sanctions / refinery outages / China demand, surfacing the Iran story
+    and forbidding the "ignored by equities" framing without a named risk."""
+    hits = []
+
+    # Brent — prefer structured global_macro telemetry (cleanest signal)
+    gm = packet.get("global_macro") or {}
+    brent = gm.get("brent") or {}
+    bp = brent.get("day_change_pct")
+    if isinstance(bp, (int, float)) and abs(bp) >= _DISLOC_BRENT_DAY_PCT:
+        hits.append(f"Brent {bp:+.2f}% day")
+
+    # Brent fallback via commodity ticker list (intraday packets often have
+    # no global_macro populated since the v2.7 fetcher is pre/post only)
+    if not hits:
+        for t in packet.get("commodities", []) or []:
+            if not isinstance(t, dict):
+                continue
+            lbl = (t.get("label") or "").upper()
+            p = t.get("pct")
+            if not isinstance(p, (int, float)):
+                continue
+            if ("CRUDE" in lbl or "BRENT" in lbl) and abs(p) >= _DISLOC_BRENT_DAY_PCT:
+                hits.append(f"{t.get('label')} {p:+.2f}%")
+                break
+
+    # Gold — secondary risk-off / war-premium check
+    for t in packet.get("commodities", []) or []:
+        if not isinstance(t, dict):
+            continue
+        if (t.get("label") or "").upper() == "GOLD":
+            p = t.get("pct")
+            if isinstance(p, (int, float)) and abs(p) >= _DISLOC_GOLD_DAY_PCT:
+                hits.append(f"Gold {p:+.2f}%")
+            break
+
+    return "; ".join(hits)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -3026,6 +3204,106 @@ def call_gemini_grounded(prompt: str, model: str = None, max_tokens: int = 8000)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# v3.4: Gemini 3.1 Pro Preview grounded call (new google-genai SDK).
+# Used for pre-market (08:00), midday grounded intraday (12:00), close
+# grounded intraday (15:30), and post-market (17:00). Thinking level
+# defaults to "high" (maximum reasoning depth). Returns
+# (text, source_tag, grounding_sources, status) — the extra status field
+# is the v3.4 observability fix; persisted into data_snapshot so the
+# grounding outcome of every run is queryable from Supabase.
+# ─────────────────────────────────────────────────────────────────────────────
+def call_gemini_3_grounded(prompt: str, max_tokens: int = 8000,
+                            thinking_level: str = None):
+    """v3.4: Gemini 3.1 Pro Preview grounded call using the new google-genai
+    SDK. Uses thinking_level (default 'high' = max reasoning depth) and the
+    google_search tool. Returns (text, source_tag, grounding_sources, status).
+    Status is added for observability — saved into data_snapshot so the
+    grounding outcome of each run is auditable after the fact (the missing
+    observability piece that made silent grounding failures hard to
+    diagnose)."""
+    if not GENAI_V3_AVAILABLE:
+        _log("⚠️", "google-genai SDK not installed — v3 grounded path unavailable")
+        return None, "error", [], "v3_sdk_unavailable"
+    if not GEMINI_API_KEY:
+        _log("⚠️", "GEMINI_API_KEY not set")
+        return None, "error", [], "no_api_key"
+
+    model = GEMINI_MODEL_GROUNDED
+    thinking_level = thinking_level or GEMINI_THINKING_LEVEL
+    try:
+        client = _genai_v3.Client(api_key=GEMINI_API_KEY)
+        _log("🌐", f"Calling Gemini 3 GROUNDED ({model}, "
+                   f"thinking_level={thinking_level}, max_tokens={max_tokens})")
+
+        # Build config with thinking + google_search tool. Some SDK versions
+        # use ThinkingConfig.thinking_level (lowercase string), some use an
+        # enum. We pass the string form, which the current SDK accepts.
+        try:
+            thinking_cfg = _genai_v3_types.ThinkingConfig(
+                thinking_level=thinking_level)
+        except Exception:
+            # Fallback for older SDK versions that may not accept the string
+            # form directly — try the enum.
+            thinking_cfg = _genai_v3_types.ThinkingConfig(
+                thinking_level=getattr(_genai_v3_types.ThinkingLevel,
+                                       thinking_level.upper(), None))
+
+        config = _genai_v3_types.GenerateContentConfig(
+            temperature       = 0.5,
+            max_output_tokens = max_tokens,
+            top_p             = 0.9,
+            thinking_config   = thinking_cfg,
+            tools             = [_genai_v3_types.Tool(
+                                    google_search=_genai_v3_types.GoogleSearch())],
+        )
+
+        response = client.models.generate_content(
+            model    = model,
+            contents = prompt,
+            config   = config,
+        )
+
+        if not response or not getattr(response, "text", None):
+            _log("⚠️", "Gemini 3 grounded returned empty response")
+            return None, "error", [], "empty_response"
+
+        text = response.text.strip()
+        if len(text) < 80:
+            _log("⚠️", f"Gemini 3 grounded returned too-short text ({len(text)} chars)")
+            return None, "error", [], "short_response"
+
+        # Extract grounding citations from the new SDK response shape.
+        # The new SDK exposes grounding_metadata on candidates[0]; structure
+        # mirrors the legacy SDK closely.
+        sources = []
+        try:
+            cands = response.candidates or []
+            if cands:
+                gm = getattr(cands[0], "grounding_metadata", None)
+                if gm:
+                    chunks = getattr(gm, "grounding_chunks", None) or []
+                    for c in chunks:
+                        web = getattr(c, "web", None)
+                        if not web:
+                            continue
+                        sources.append({
+                            "title": (getattr(web, "title", "") or "")[:200],
+                            "uri":   (getattr(web, "uri",   "") or "")[:500],
+                        })
+        except Exception as e:
+            _log("⚠️", f"Could not parse v3 grounding metadata: {e}")
+
+        status = "grounded_ok" if sources else "grounded_no_sources"
+        _log("✅", f"Gemini 3 grounded returned {len(text)} chars with "
+                   f"{len(sources)} source(s) [{status}]")
+        return text, "gemini_3.1_pro_grounded", sources, status
+
+    except Exception as e:
+        _log("⚠️", f"Gemini 3.1 Pro grounded call failed: {e}")
+        return None, "error", [], f"v3_call_failed:{type(e).__name__}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # RULE-BASED FALLBACKS
 # ─────────────────────────────────────────────────────────────────────────────
 def fallback_pre_market(packet: dict) -> str:
@@ -3114,17 +3392,23 @@ def fallback_post_market(packet: dict) -> str:
 # SUPABASE CACHE WRITE
 # ─────────────────────────────────────────────────────────────────────────────
 def save_commentary(commentary_type: str, slot: str, text: str, source: str,
-                    packet: dict, grounding_sources: list = None) -> bool:
+                    packet: dict, grounding_sources: list = None,
+                    grounding_status: str = None) -> bool:
     if not supabase:
         _log("⚠️", "Supabase not configured — skipping save")
         return False
     try:
         date = _today_ist()
         slot_full = f"{slot}:00"
-        # Persist grounding sources inside data_snapshot for audit
+        # Persist grounding sources + status inside data_snapshot for audit.
+        # v3.4: grounding_status is the observability fix that lets us
+        # query Supabase after the fact to confirm which path actually fired
+        # (3.1 Pro grounded ok / 2.5 fallback / non-grounded / etc.).
         snapshot = dict(packet) if isinstance(packet, dict) else {}
         if grounding_sources:
             snapshot["_grounding_sources"] = grounding_sources
+        if grounding_status:
+            snapshot["_grounding_status"] = grounding_status
         supabase.table("market_commentary").upsert(
             {
                 "commentary_type": commentary_type,
@@ -3138,7 +3422,8 @@ def save_commentary(commentary_type: str, slot: str, text: str, source: str,
         ).execute()
         src_count = len(grounding_sources) if grounding_sources else 0
         _log("💾", f"Saved {commentary_type} commentary for {date} {slot} "
-                   f"(source={source}, grounded_sources={src_count})")
+                   f"(source={source}, grounded_sources={src_count}, "
+                   f"status={grounding_status or 'n/a'})")
         return True
     except Exception as e:
         _log("⚠️", f"Supabase save failed: {e}")
@@ -3179,22 +3464,31 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
         packet = build_intraday_packet(slot)
 
         # Grounding resolution:
-        #   v3.0 — configured grounded slots (the 15:30 close).
+        #   v3.0 — configured grounded slots (12:00 + 15:30 close).
         #   v3.1 — a sharp idiosyncratic sector/heavyweight dislocation is the
         #          signature of a policy/regulatory/news catalyst; auto-promote
         #          this slot to the grounded Pro path so the cause can be
         #          searched for and NAMED (NO-INVENTION rule still governs).
+        #   v3.4 — same logic extended to commodity moves. A Brent move >=3%
+        #          or Gold >=2% is virtually always driven by a named
+        #          geopolitical/OPEC/supply event; auto-promote so the search
+        #          can find and name the catalyst.
         slot_grounded = slot in GROUNDED_INTRADAY_SLOTS
-        disloc = _sector_dislocation(packet)
-        will_ground = use_grounding and (slot_grounded or bool(disloc))
+        disloc        = _sector_dislocation(packet)
+        commodity_dis = _commodity_dislocation(packet)
+        will_ground = use_grounding and (slot_grounded or bool(disloc)
+                                          or bool(commodity_dis))
         if will_ground:
-            why = ("configured grounded slot" if slot_grounded
-                   else f"sector dislocation [{disloc}]")
-            _log("🌐", f"Intraday {slot} → grounded Pro path ({why})")
-        elif disloc:
+            reasons = []
+            if slot_grounded: reasons.append("configured grounded slot")
+            if disloc:        reasons.append(f"sector dislocation [{disloc}]")
+            if commodity_dis: reasons.append(f"commodity dislocation [{commodity_dis}]")
+            _log("🌐", f"Intraday {slot} → grounded Pro path ({'; '.join(reasons)})")
+        elif disloc or commodity_dis:
             # dislocation seen but grounding disabled via --no-grounding
-            _log("⚠️", f"Intraday {slot}: dislocation [{disloc}] detected but "
-                       f"grounding is off — catalyst may go unnamed")
+            _log("⚠️", f"Intraday {slot}: dislocation seen "
+                       f"[sector={disloc or 'none'}, commodity={commodity_dis or 'none'}] "
+                       f"but grounding is off — catalyst may go unnamed")
         prompt = build_intraday_prompt(packet, use_grounding=will_ground)
     else:
         _log("❌", f"Unknown mode: {mode}")
@@ -3221,28 +3515,60 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
         print(prompt)
         print("=" * 70)
 
-    # Dispatch: grounded for pre/post and the grounded intraday slot,
-    # non-grounded for all other intraday slots.
+    # Dispatch: grounded for pre/post and grounded intraday slots, non-
+    # grounded for all other intraday slots.
+    #
+    # v3.4 grounded chain (4 levels of degradation, last-resort = rule-based):
+    #   1. Gemini 3.1 Pro Preview, thinking_level=high, google_search
+    #   2. Gemini 2.5 Pro grounded (existing path)
+    #   3. Gemini 2.5 Pro non-grounded on a REBUILT prompt (no grounding
+    #      directives — we never tell a non-grounded model "search is ACTIVE")
+    #   4. Rule-based template (handled below in the `if not text:` block)
+    #
+    # grounding_status is persisted into the saved data_snapshot so the
+    # grounding outcome of every run is queryable from Supabase — the
+    # observability fix that was missing in v3.3.
     grounding_sources = []
+    grounding_status  = "not_attempted"
+
     if will_ground:
-        text, source, grounding_sources = call_gemini_grounded(
-            prompt, model=model, max_tokens=max_tokens
+        # 1) Latest: Gemini 3.1 Pro Preview, thinking_level=high
+        text, source, grounding_sources, grounding_status = call_gemini_3_grounded(
+            prompt, max_tokens=max_tokens
         )
-        # Fallback: if grounded call fails entirely, try a non-grounded call
-        # on the same model before falling all the way to rule-based.
-        # v2.4: rebuild the prompt WITHOUT grounding directives first, so we
-        # don't instruct a non-grounded model that "Google Search is ACTIVE".
+
+        # 2) Fallback: Gemini 2.5 Pro grounded (existing path)
         if not text:
-            _log("🔁", "Grounded call failed — rebuilding prompt non-grounded and retrying")
+            _log("🔁", f"Gemini 3.1 Pro grounded failed ({grounding_status}) — "
+                       f"falling back to 2.5 Pro grounded")
+            text, source, grounding_sources = call_gemini_grounded(
+                prompt, model=GEMINI_MODEL_STRONG, max_tokens=max_tokens
+            )
+            if text and grounding_sources:
+                grounding_status = "fallback_v25_grounded_ok"
+            elif text:
+                grounding_status = "fallback_v25_grounded_no_sources"
+            else:
+                grounding_status = "all_grounded_failed"
+
+        # 3) Fallback: non-grounded 2.5 Pro on a REBUILT prompt (no grounding
+        #    directives, so we don't instruct a non-grounded model that
+        #    "Google Search is ACTIVE")
+        if not text:
+            _log("🔁", "All grounded paths failed — rebuilding prompt "
+                       "non-grounded and retrying with 2.5 Pro")
             if mode == "pre":
                 prompt = build_pre_market_prompt(packet, use_grounding=False)
             elif mode == "post":
                 prompt = build_post_market_prompt(packet, use_grounding=False)
             elif mode == "intraday":
                 prompt = build_intraday_prompt(packet, use_grounding=False)
-            text, source = call_gemini(prompt, model=model, max_tokens=max_tokens)
+            text, source = call_gemini(prompt, model=GEMINI_MODEL_STRONG,
+                                        max_tokens=max_tokens)
+            grounding_status = "fallback_nongrounded"
     else:
         text, source = call_gemini(prompt, model=model, max_tokens=max_tokens)
+        grounding_status = "not_attempted"
 
     if not text:
         _log("🔁", "Gemini failed — using rule-based fallback")
@@ -3271,10 +3597,12 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
             "text": text, "source": source, "saved": False,
             "slot": slot, "model": model,
             "grounding_sources": grounding_sources,
+            "grounding_status": grounding_status,
         }
 
     saved = save_commentary(mode, slot, text, source, packet,
-                            grounding_sources=grounding_sources)
+                            grounding_sources=grounding_sources,
+                            grounding_status=grounding_status)
 
     # ─── v3.3.2: Video pipeline DECOUPLED from commentary cron (OOM fix) ───
     # v3.3 and v3.3.1 tried in-process import and same-container subprocess
@@ -3293,6 +3621,7 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
         "text": text, "source": source, "saved": saved,
         "slot": slot, "model": model,
         "grounding_sources": grounding_sources,
+        "grounding_status": grounding_status,
     }
 
 
@@ -3300,7 +3629,7 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v3.3")
+    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v3.4")
     parser.add_argument("--mode", choices=["pre", "intraday", "post", "auto"], default="auto",
                         help="'auto' detects from current IST time (default)")
     parser.add_argument("--slot", default=None,
