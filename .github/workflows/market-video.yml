@@ -1,0 +1,100 @@
+# .github/workflows/market-video.yml
+# ────────────────────────────────────────────────────────────────────────────
+# MoneyVeda Market Pulse — daily 60-second video Shorts pipeline
+# ────────────────────────────────────────────────────────────────────────────
+# Replaces the Render `market-video` cron job (which OOM'd on Starter's 512MB).
+# GitHub-hosted ubuntu-latest runners have 7GB RAM and ffmpeg pre-installed,
+# so the full-quality 1080×1920 pipeline runs comfortably here.
+#
+# Schedule:
+#   • Cron expression is UTC. Two daily ticks Mon-Fri:
+#       02:45 UTC = 08:15 IST  → publishes pre-market video (auto-detected)
+#       11:45 UTC = 17:15 IST  → publishes post-market video (auto-detected)
+#   • 15 min AFTER each Render commentary cron, giving commentary time to
+#     save to Supabase before the video reads it.
+#
+# Manual trigger: workflow_dispatch — fire from GitHub UI to test on demand.
+
+name: market-video
+
+on:
+  schedule:
+    # Pre-market: 08:15 IST = 02:45 UTC
+    # Post-market: 17:15 IST = 11:45 UTC
+    - cron: '45 2,11 * * 1-5'
+  workflow_dispatch:        # allow manual "Run workflow" button in GitHub UI
+    inputs:
+      mode:
+        description: 'Mode to publish (pre/post/auto)'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - pre
+          - post
+      date:
+        description: 'Commentary date YYYY-MM-DD (blank = today IST)'
+        required: false
+        default: ''
+
+# Don't allow two video runs to overlap if a previous one is still going
+concurrency:
+  group: market-video
+  cancel-in-progress: false
+
+jobs:
+  publish-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8        # videos finish in 90-120s; abort if much slower
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Verify ffmpeg is present (GitHub runner pre-installs it)
+        run: |
+          which ffmpeg
+          ffmpeg -version | head -1
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Only the deps needed by video_publisher.py + render_frames.py —
+          # we don't need the full commentary stack (yfinance, etc.)
+          pip install \
+            supabase \
+            google-generativeai \
+            python-dotenv \
+            requests \
+            Pillow \
+            qrcode \
+            vercel_blob
+
+      - name: Build and publish video
+        env:
+          SUPABASE_URL:           ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY:    ${{ secrets.SUPABASE_SECRET_KEY }}
+          GEMINI_API_KEY:         ${{ secrets.GEMINI_API_KEY }}
+          BLOB_READ_WRITE_TOKEN:  ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          PUBLIC_SITE_URL:        https://www.moneyveda.org
+        run: |
+          # Build the mode/date args from the manual-dispatch inputs (if any).
+          # Schedule-triggered runs use auto-detect from IST time.
+          ARGS=""
+          MODE='${{ github.event.inputs.mode }}'
+          DATE='${{ github.event.inputs.date }}'
+          if [ -n "$MODE" ] && [ "$MODE" != "auto" ]; then
+            ARGS="$ARGS --mode $MODE"
+          fi
+          if [ -n "$DATE" ]; then
+            ARGS="$ARGS --date $DATE"
+          fi
+          echo "Running: python video_publisher.py $ARGS"
+          python video_publisher.py $ARGS
