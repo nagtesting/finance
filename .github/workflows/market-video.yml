@@ -2,9 +2,13 @@
 # ────────────────────────────────────────────────────────────────────────────
 # MoneyVeda Market Pulse — daily 60-second video Shorts pipeline
 # ────────────────────────────────────────────────────────────────────────────
-# Replaces the Render `market-video` cron job (which OOM'd on Starter's 512MB).
-# GitHub-hosted ubuntu-latest runners have 7GB RAM and we install ffmpeg
-# explicitly, so the full-quality 1080×1920 pipeline runs comfortably here.
+# GitHub-hosted ubuntu-latest runners have 7GB RAM, so the full-quality
+# 1080×1920 pipeline runs comfortably (Render Starter's 512MB ceiling OOM'd).
+#
+# Pipeline: Python builds the MP4, a tiny Node helper uploads it to the
+# PRIVATE Vercel Blob store (because the Python vercel_blob SDK hardcodes
+# access:public and can't talk to private stores), Python writes the row
+# to Supabase market_videos and runs retention cleanup.
 #
 # Schedule:
 #   • Cron expression is UTC. Two daily ticks Mon-Fri:
@@ -22,7 +26,7 @@ on:
     # Pre-market: 08:15 IST = 02:45 UTC
     # Post-market: 17:15 IST = 11:45 UTC
     - cron: '45 2,11 * * 1-5'
-  workflow_dispatch:        # allow manual "Run workflow" button in GitHub UI
+  workflow_dispatch:        # manual "Run workflow" button in GitHub UI
     inputs:
       mode:
         description: 'Mode to publish (pre/post/auto)'
@@ -58,6 +62,11 @@ jobs:
           python-version: '3.12'
           cache: 'pip'
 
+      - name: Set up Node.js (for @vercel/blob private uploads)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Install ffmpeg (not pre-installed on current ubuntu-latest)
         run: |
           sudo apt-get update -qq
@@ -68,8 +77,8 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          # Only the deps needed by video_publisher.py + render_frames.py —
-          # we don't need the full commentary stack (yfinance, etc.)
+          # Only what video_publisher.py + render_frames.py need.
+          # No yfinance / pandas / etc — commentary stack stays on Render.
           pip install \
             supabase \
             google-generativeai \
@@ -78,6 +87,15 @@ jobs:
             Pillow \
             qrcode \
             vercel_blob
+          # Note: vercel_blob is still needed for the delete() call in
+          # retention cleanup. The upload uses @vercel/blob (Node) instead
+          # because the Python SDK can't write to private stores.
+
+      - name: Install @vercel/blob (Node SDK for private blob uploads)
+        run: |
+          npm install --silent --no-save --no-package-lock @vercel/blob
+          # Verify the install
+          node -e "const b = require('@vercel/blob'); console.log('@vercel/blob put fn:', typeof b.put);"
 
       - name: Build and publish video
         env:
