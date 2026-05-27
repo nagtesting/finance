@@ -492,13 +492,18 @@ def _upload_to_vercel_blob(local_path: Path, blob_path: str) -> dict:
         data = f.read()
 
     _log("☁️", f"Uploading {len(data)/1024/1024:.2f} MB to Vercel Blob as '{blob_path}'…")
+    # Store is configured as PRIVATE access — do NOT request public access here.
+    # The website serves downloads via /api/video-download/[mode] which streams
+    # the file through Vercel using the BLOB_READ_WRITE_TOKEN. This means the
+    # raw blob URL is unguessable AND useless without the token; only the
+    # download route can serve the file to end users.
     resp = vercel_blob.put(
         blob_path,
         data,
         {
-            "addRandomSuffix": "false",   # we control the path; deterministic URL
+            "addRandomSuffix": "true",        # private store: random suffix is safer
             "contentType": "video/mp4",
-            "cacheControlMaxAge": "604800",  # 7 days CDN cache
+            "cacheControlMaxAge": "604800",   # 7 days CDN cache for the route handler
         },
     )
     _log("✅", f"Uploaded → {resp.get('url')}")
