@@ -7,27 +7,47 @@
 // API directly, so this works on a Vercel project that has no package.json
 // (i.e. a Python-primary repo).
 //
-// Past videos are auto-deleted by the Render `market-video` cron after
-// 4 trading days; this endpoint only reports TODAY.
+// PRIVATE BLOB STORE: the raw video_url from Supabase is NOT accessible
+// without an auth token, so we return a download_url that points at
+// /api/video-download — a server-side proxy that fetches the private blob
+// using the BLOB_READ_WRITE_TOKEN and streams it to the user.
 //
-// Required env vars on the Vercel project:
-//   SUPABASE_URL          — e.g. https://<project>.supabase.co
-//   SUPABASE_SECRET_KEY   — service_role key (or SUPABASE_ANON_KEY — SELECT
-//                           on market_videos is allowed under the public RLS
-//                           policy, so anon works too)
+// Required env vars on Vercel:
+//   SUPABASE_URL
+//   SUPABASE_SECRET_KEY (or SUPABASE_ANON_KEY)
 // ────────────────────────────────────────────────────────────────────────────
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY =
   process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_ANON_KEY;
 
-// IST date as YYYY-MM-DD. videos are keyed by IST date so this needs to be
-// timezone-correct even when Vercel runs us in a non-IST region.
 function todayIST() {
   const now = new Date();
-  // 5h30 = 330 min offset from UTC to IST
   const istMs = now.getTime() + (now.getTimezoneOffset() + 330) * 60_000;
   return new Date(istMs).toISOString().slice(0, 10);
+}
+
+// Rewrite the raw private blob URL to our public proxy route. The website
+// shows this URL as the Download MP4 / Preview link, so the user never
+// touches the private blob URL directly.
+function buildDownloadUrl(videoType, videoDate) {
+  return `/api/video-download?mode=${encodeURIComponent(videoType)}&date=${encodeURIComponent(videoDate)}`;
+}
+
+function shapeRow(row) {
+  if (!row) return null;
+  return {
+    video_type:   row.video_type,
+    video_date:   row.video_date,
+    // Rewrite — original `video_url` would be the private blob, useless to
+    // browsers. Replace both fields with the public proxy URL so the
+    // website's Download and Preview buttons both go through /api/video-download.
+    video_url:    buildDownloadUrl(row.video_type, row.video_date),
+    download_url: buildDownloadUrl(row.video_type, row.video_date),
+    duration_s:   row.duration_s,
+    size_bytes:   row.size_bytes,
+    generated_at: row.generated_at,
+  };
 }
 
 export default async function handler(req, res) {
@@ -47,10 +67,6 @@ export default async function handler(req, res) {
   }
 
   const today = todayIST();
-
-  // Direct PostgREST query. Same as the Supabase client would issue under the
-  // hood. select=cols&filter=eq.value is the standard PostgREST query syntax.
-  // Endpoint: GET <SUPABASE_URL>/rest/v1/market_videos?video_date=eq.<today>
   const cols =
     "video_type,video_date,video_url,download_url,duration_s,size_bytes,generated_at";
   const url =
@@ -64,7 +80,6 @@ export default async function handler(req, res) {
       headers: {
         apikey: SUPABASE_KEY,
         Authorization: `Bearer ${SUPABASE_KEY}`,
-        // Accept compact JSON, no count header (we don't need a count)
         Accept: "application/json",
       },
     });
@@ -77,10 +92,10 @@ export default async function handler(req, res) {
       });
     }
 
-    const rows = await r.json(); // PostgREST returns an array
+    const rows = await r.json();
     const safeRows = Array.isArray(rows) ? rows : [];
-    const pre = safeRows.find((x) => x.video_type === "pre") || null;
-    const post = safeRows.find((x) => x.video_type === "post") || null;
+    const pre = shapeRow(safeRows.find((x) => x.video_type === "pre"));
+    const post = shapeRow(safeRows.find((x) => x.video_type === "post"));
 
     return res.status(200).json({
       status: "success",
