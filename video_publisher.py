@@ -798,7 +798,14 @@ def _main():
         if result:
             print(f"\n✅ DONE: {json.dumps(result, indent=2)}")
             sys.exit(0)
-        sys.exit(2)  # no commentary found
+        # No commentary found for the requested (mode, date). Exit 0, not 2:
+        # GitHub Actions emails on any non-zero exit, and weekends/holidays/
+        # pre-commentary execution times legitimately have no commentary to
+        # publish — those aren't failures, just no-ops. The "⚠️ No <mode>
+        # commentary for <date>" log line above this is enough signal for
+        # debugging when it genuinely matters.
+        _log("✅", "Exiting cleanly (nothing to publish; not a failure).")
+        sys.exit(0)
     except Exception as e:
         _log("❌", f"Fatal: {e}")
         import traceback
