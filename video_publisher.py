@@ -481,33 +481,58 @@ def _stitch_video(frame_paths: list[Path], durations: list[float],
 # 5) Upload to Vercel Blob
 # ═════════════════════════════════════════════════════════════════════════════
 def _upload_to_vercel_blob(local_path: Path, blob_path: str) -> dict:
-    """Upload an MP4 to Vercel Blob. Returns {url, downloadUrl, pathname, ...}."""
-    if not VERCEL_BLOB_AVAILABLE:
-        raise RuntimeError("vercel_blob package not installed (pip install vercel_blob)")
+    """Upload an MP4 to Vercel Blob with PRIVATE access.
+
+    The official `vercel_blob` Python package (v0.4.x) HARDCODES
+    `access: public` in its upload headers and explicitly comments that
+    private uploads are 'not yet supported' — yet Vercel's REST API has
+    supported `access: private` since 2024. We bypass the SDK and call
+    the REST API directly with the right header.
+
+    Endpoint:  PUT https://blob.vercel-storage.com/{pathname}
+    Required headers:
+        authorization:        Bearer {BLOB_READ_WRITE_TOKEN}
+        access:               private        ← the one the SDK won't send
+        x-content-type:       video/mp4
+        x-api-version:        10
+        x-cache-control-max-age: 604800
+        x-add-random-suffix:  1               ← unguessable suffix for defense in depth
+    Body: raw file bytes
+
+    Returns the same shape the SDK's put() returns: {url, downloadUrl, pathname, contentType, contentDisposition}.
+    """
     if not BLOB_READ_WRITE_TOKEN:
         raise RuntimeError("BLOB_READ_WRITE_TOKEN env var not set")
 
-    # The vercel_blob package reads BLOB_READ_WRITE_TOKEN from env automatically.
     with open(local_path, "rb") as f:
         data = f.read()
 
-    _log("☁️", f"Uploading {len(data)/1024/1024:.2f} MB to Vercel Blob as '{blob_path}'…")
-    # Store is configured as PRIVATE access — do NOT request public access here.
-    # The website serves downloads via /api/video-download/[mode] which streams
-    # the file through Vercel using the BLOB_READ_WRITE_TOKEN. This means the
-    # raw blob URL is unguessable AND useless without the token; only the
-    # download route can serve the file to end users.
-    resp = vercel_blob.put(
-        blob_path,
-        data,
-        {
-            "addRandomSuffix": "true",        # private store: random suffix is safer
-            "contentType": "video/mp4",
-            "cacheControlMaxAge": "604800",   # 7 days CDN cache for the route handler
-        },
-    )
-    _log("✅", f"Uploaded → {resp.get('url')}")
-    return resp
+    _log("☁️", f"Uploading {len(data)/1024/1024:.2f} MB to Vercel Blob as '{blob_path}' (access=private)…")
+
+    api_url = f"https://blob.vercel-storage.com/{blob_path}"
+    headers = {
+        "authorization":           f"Bearer {BLOB_READ_WRITE_TOKEN}",
+        "access":                  "private",      # ← the critical bit
+        "x-content-type":          "video/mp4",
+        "x-api-version":           "10",
+        "x-cache-control-max-age": "604800",       # 7 days
+        "x-add-random-suffix":     "1",            # unguessable filename suffix
+    }
+    resp = requests.put(api_url, data=data, headers=headers, timeout=120)
+    if not resp.ok:
+        # Surface the upstream error in the same shape the SDK would have
+        try:
+            err_body = resp.json()
+        except Exception:
+            err_body = resp.text[:500]
+        raise RuntimeError(
+            f"Vercel Blob upload failed (status {resp.status_code}): {err_body}"
+        )
+
+    out = resp.json()
+    # Vercel returns {url, downloadUrl, pathname, contentType, contentDisposition}
+    _log("✅", f"Uploaded → {out.get('url')}")
+    return out
 
 
 # ═════════════════════════════════════════════════════════════════════════════
