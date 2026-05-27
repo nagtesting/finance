@@ -483,56 +483,69 @@ def _stitch_video(frame_paths: list[Path], durations: list[float],
 def _upload_to_vercel_blob(local_path: Path, blob_path: str) -> dict:
     """Upload an MP4 to Vercel Blob with PRIVATE access.
 
-    The official `vercel_blob` Python package (v0.4.x) HARDCODES
-    `access: public` in its upload headers and explicitly comments that
-    private uploads are 'not yet supported' — yet Vercel's REST API has
-    supported `access: private` since 2024. We bypass the SDK and call
-    the REST API directly with the right header.
+    HONEST IMPLEMENTATION NOTE:
+      The Python `vercel_blob` package (v0.4.x) hardcodes `access: public`
+      in its upload headers and explicitly comments that private uploads are
+      "not yet supported". Vercel's REST API for private uploads is not
+      publicly documented (only the @vercel/blob TS SDK exposes it). After
+      several attempts to reverse-engineer the wire format via direct
+      requests.put() calls — all rejected with the same 400 "Cannot use
+      public access on a private store" error — we now delegate to a small
+      Node.js helper that uses @vercel/blob directly. The Node SDK is the
+      only client that actually works against private stores.
 
-    Endpoint:  PUT https://blob.vercel-storage.com/{pathname}
-    Required headers:
-        authorization:        Bearer {BLOB_READ_WRITE_TOKEN}
-        access:               private        ← the one the SDK won't send
-        x-content-type:       video/mp4
-        x-api-version:        10
-        x-cache-control-max-age: 604800
-        x-add-random-suffix:  1               ← unguessable suffix for defense in depth
-    Body: raw file bytes
+    The Node script is at scripts/upload_blob.mjs in the repo root. The
+    GitHub Actions workflow runs `npm install @vercel/blob` before invoking
+    Python, so node_modules is available when this function shells out.
 
-    Returns the same shape the SDK's put() returns: {url, downloadUrl, pathname, contentType, contentDisposition}.
+    The helper prints a single line of machine-readable JSON to stdout
+    matching what @vercel/blob's put() returns:
+      {"url": "...", "downloadUrl": "...", "pathname": "...", ...}
     """
     if not BLOB_READ_WRITE_TOKEN:
         raise RuntimeError("BLOB_READ_WRITE_TOKEN env var not set")
 
-    with open(local_path, "rb") as f:
-        data = f.read()
+    file_size_mb = local_path.stat().st_size / 1024 / 1024
+    _log("☁️", f"Uploading {file_size_mb:.2f} MB to Vercel Blob as '{blob_path}' (via Node @vercel/blob, access=private)…")
 
-    _log("☁️", f"Uploading {len(data)/1024/1024:.2f} MB to Vercel Blob as '{blob_path}' (access=private)…")
-
-    api_url = f"https://blob.vercel-storage.com/{blob_path}"
-    headers = {
-        "authorization":           f"Bearer {BLOB_READ_WRITE_TOKEN}",
-        "access":                  "private",      # ← the critical bit
-        "x-content-type":          "video/mp4",
-        "x-api-version":           "10",
-        "x-cache-control-max-age": "604800",       # 7 days
-        "x-add-random-suffix":     "1",            # unguessable filename suffix
-    }
-    resp = requests.put(api_url, data=data, headers=headers, timeout=120)
-    if not resp.ok:
-        # Surface the upstream error in the same shape the SDK would have
-        try:
-            err_body = resp.json()
-        except Exception:
-            err_body = resp.text[:500]
+    node_script = BASE_DIR / "scripts" / "upload_blob.mjs"
+    if not node_script.exists():
         raise RuntimeError(
-            f"Vercel Blob upload failed (status {resp.status_code}): {err_body}"
+            f"Node uploader missing at {node_script}. The GitHub Actions "
+            f"workflow must install @vercel/blob and the scripts/ folder "
+            f"must be committed to the repo root."
         )
 
-    out = resp.json()
-    # Vercel returns {url, downloadUrl, pathname, contentType, contentDisposition}
-    _log("✅", f"Uploaded → {out.get('url')}")
-    return out
+    cmd = [
+        "node", str(node_script),
+        "--file", str(local_path),
+        "--path", blob_path,
+        "--content-type", "video/mp4",
+    ]
+    # The Node helper inherits BLOB_READ_WRITE_TOKEN from the environment;
+    # we don't need to pass it explicitly.
+    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
+    if proc.stderr:
+        # The Node helper's progress logs go to stderr — surface them.
+        for ln in proc.stderr.rstrip().splitlines()[-10:]:
+            _log("   ", ln)
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"Node uploader exited {proc.returncode}. Stderr tail: "
+            f"{(proc.stderr or '')[-500:]}"
+        )
+
+    # stdout should be one line of JSON
+    out_line = (proc.stdout or "").strip().splitlines()[-1] if proc.stdout.strip() else ""
+    try:
+        blob_info = json.loads(out_line)
+    except json.JSONDecodeError:
+        raise RuntimeError(
+            f"Node uploader returned non-JSON on stdout: {out_line!r}"
+        )
+
+    _log("✅", f"Uploaded → {blob_info.get('url')}")
+    return blob_info
 
 
 # ═════════════════════════════════════════════════════════════════════════════
