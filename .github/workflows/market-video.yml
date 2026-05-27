@@ -3,8 +3,8 @@
 # MoneyVeda Market Pulse — daily 60-second video Shorts pipeline
 # ────────────────────────────────────────────────────────────────────────────
 # Replaces the Render `market-video` cron job (which OOM'd on Starter's 512MB).
-# GitHub-hosted ubuntu-latest runners have 7GB RAM and ffmpeg pre-installed,
-# so the full-quality 1080×1920 pipeline runs comfortably here.
+# GitHub-hosted ubuntu-latest runners have 7GB RAM and we install ffmpeg
+# explicitly, so the full-quality 1080×1920 pipeline runs comfortably here.
 #
 # Schedule:
 #   • Cron expression is UTC. Two daily ticks Mon-Fri:
@@ -58,8 +58,10 @@ jobs:
           python-version: '3.12'
           cache: 'pip'
 
-      - name: Verify ffmpeg is present (GitHub runner pre-installs it)
+      - name: Install ffmpeg (not pre-installed on current ubuntu-latest)
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
           which ffmpeg
           ffmpeg -version | head -1
 
