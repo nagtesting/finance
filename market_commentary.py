@@ -1,7 +1,41 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v3.4)
+market_commentary.py  ─  MoneyVeda Market Commentary (v3.5)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
+
+v3.5 CHANGES (NSE trading-holiday awareness + post-market gap framing):
+  • HOLIDAY GUARD. The Render cron schedule `0,30 2-11 * * 1-5` filters
+    weekends but had no concept of NSE festival holidays — pre/intraday/
+    post commentary fired on declared holidays (e.g. Bakri Id, Thu May
+    28 2026) producing forward briefings for sessions that never happened.
+    FIX: NSE_HOLIDAYS dict (weekday holidays only; weekends already
+    handled by the cron) + _is_nse_holiday() / _is_nse_trading_day()
+    predicates + a guard in main() that exits 0 for pre/intraday/post on
+    declared NSE equity-segment holidays. --dry-run and --force bypass
+    so prompts can still be tested and ad-hoc regeneration is possible.
+  • LABEL HELPERS NOW HOLIDAY-AWARE. _last_trading_day_ist() walks the
+    calendar (skipping weekends + holidays) instead of using fixed
+    weekday offsets. _last_session_label() uses it — so the day AFTER
+    a holiday correctly says "Wednesday's close" instead of "yesterday's
+    close", and the classic Monday case still gives "Friday's".
+  • POST-MARKET GAP FRAMING. New _next_session_info() returns full
+    next-session structure (date, gap_days, intervening holidays). The
+    post-market prompt now gets: (a) a NEXT TRADING SESSION data block
+    as structured ground truth; (b) a dynamic section header that flips
+    "Tomorrow" -> "Next Session" when there's a gap; (c) a GAP DIRECTIVE
+    that names the actual next-session date (e.g. "Monday June 29, 2026"),
+    names the intervening holiday(s), counts non-trading days, and
+    explicitly forbids the word "tomorrow" across a gap. Fixes the
+    Friday post-market saying "tomorrow" when markets reopen Monday;
+    also handles Wednesday-before-Thursday-holiday, day-before-long-
+    weekend, etc. The pre/intraday templates are untouched (intraday
+    has no forward-looking gap framing; pre-market is already forward-
+    looking by design).
+  • REFRESH CADENCE. The NSE_HOLIDAYS dict is hardcoded and must be
+    refreshed annually when NSE publishes the next year's circular
+    (typically December). A stale list degrades safely — a missing
+    future-year entry just means commentary runs as if it were a normal
+    trading day on that date. Set a December reminder.
 
 v3.4 CHANGES (Gemini 3.1 Pro thinking=high + commodity dislocation +
               grounding observability — grounded slots only):
@@ -453,54 +487,212 @@ if SUPABASE_URL and SUPABASE_SECRET_KEY:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# NSE TRADING HOLIDAY CALENDAR (v3.5)
+# ─────────────────────────────────────────────────────────────────────────────
+# Equity-segment trading holidays declared by NSE. Only WEEKDAY holidays
+# matter for cron firing — weekend holidays are already excluded by the
+# Mon-Fri cron schedule (`0,30 2-11 * * 1-5`).
+#
+# Refresh ONCE A YEAR when NSE publishes the next year's circular (usually
+# in December). Source of truth:
+#   https://www.nseindia.com/resources/exchange-communication-holidays
+# A stale list degrades safely: a missing future-year entry just means
+# commentary runs as if it were a normal trading day on that date. Set a
+# December reminder to refresh.
+#
+# Last refresh: 2026 list verified May 2026 against NSE + cleartax + sahi.
+NSE_HOLIDAYS = {
+    # ---- 2026 (weekday holidays only) ----
+    "2026-01-15": "Maharashtra municipal elections",
+    "2026-01-26": "Republic Day",
+    "2026-03-03": "Holi",
+    "2026-03-26": "Shri Ram Navami",
+    "2026-03-31": "Shri Mahavir Jayanti",
+    "2026-04-03": "Good Friday",
+    "2026-04-14": "Dr. Baba Saheb Ambedkar Jayanti",
+    "2026-05-01": "Maharashtra Day",
+    "2026-05-28": "Bakri Id",
+    "2026-06-26": "Muharram",
+    "2026-09-14": "Ganesh Chaturthi",
+    "2026-10-02": "Mahatma Gandhi Jayanti",
+    "2026-10-20": "Dussehra",
+    "2026-11-10": "Diwali - Balipratipada",
+    "2026-11-24": "Prakash Gurpurb Sri Guru Nanak Dev",
+    "2026-12-25": "Christmas",
+    # ---- 2027: add when NSE publishes the circular (usually Dec 2026) ----
+}
+
+
+def _is_nse_holiday(d=None):
+    """Returns (True, holiday_name) if `d` is an NSE equity trading holiday,
+    else (False, None). Defaults to today's IST date. Does NOT consider
+    weekends — use _is_nse_trading_day() for the combined check."""
+    if d is None:
+        d = datetime.now(IST).date()
+    iso = d.strftime("%Y-%m-%d")
+    if iso in NSE_HOLIDAYS:
+        return True, NSE_HOLIDAYS[iso]
+    return False, None
+
+
+def _is_nse_trading_day(d=None) -> bool:
+    """True iff `d` is Mon-Fri AND not an NSE holiday. Default: today IST."""
+    if d is None:
+        d = datetime.now(IST).date()
+    if d.weekday() >= 5:
+        return False
+    return d.strftime("%Y-%m-%d") not in NSE_HOLIDAYS
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # UTILITIES
 # ─────────────────────────────────────────────────────────────────────────────
 def _today_ist() -> str:
     return datetime.now(IST).strftime("%Y-%m-%d")
 
 
-def _last_trading_day_ist():
-    today = datetime.now(IST).date()
-    if today.weekday() == 0:        # Monday → last Friday
-        return today - timedelta(days=3)
-    elif today.weekday() == 6:      # Sunday → last Friday
-        return today - timedelta(days=2)
-    elif today.weekday() == 5:      # Saturday → last Friday
-        return today - timedelta(days=1)
-    else:
-        return today - timedelta(days=1)
+def _last_trading_day_ist(reference=None):
+    """Most recent NSE trading day strictly BEFORE `reference` (default
+    today IST). Walks back skipping weekends AND NSE holidays. Capped at
+    15 days for safety (no realistic gap should approach that)."""
+    if reference is None:
+        reference = datetime.now(IST).date()
+    d = reference - timedelta(days=1)
+    for _ in range(15):
+        if _is_nse_trading_day(d):
+            return d
+        d -= timedelta(days=1)
+    return reference - timedelta(days=1)   # safety fallback
 
 
 def _last_session_label() -> str:
-    today_dow = datetime.now(IST).weekday()
-    if today_dow == 0:
-        return "Friday's"
-    elif today_dow == 5 or today_dow == 6:
-        return "Friday's"
-    else:
+    """Human label for the most recent NSE trading session. Handles
+    holidays correctly: after a Thursday holiday → 'Wednesday's', after
+    a Friday holiday following Thursday → 'Thursday's', normal Tue-Fri
+    → 'yesterday's', Monday → 'Friday's'."""
+    today = datetime.now(IST).date()
+    last_session = _last_trading_day_ist(today)
+    if (today - last_session).days == 1:
         return "yesterday's"
+    return last_session.strftime("%A's")
 
 
 def _overnight_label() -> str:
+    """Label for the overnight US session referenced in pre-market.
+    US markets follow their own calendar, so this stays IST-weekday-based —
+    purely about which US session(s) closed since the last Indian session."""
     today_dow = datetime.now(IST).weekday()
-    if today_dow == 0:
+    if today_dow == 0 or today_dow == 5 or today_dow == 6:
         return "Friday's US close"
-    elif today_dow == 5 or today_dow == 6:
-        return "Friday's US close"
-    else:
-        return "overnight US session"
+    return "overnight US session"
+
+
+def _next_session_info(reference=None) -> dict:
+    """v3.5: full info on the next NSE trading session — used by the
+    post-market wrap so it can frame multi-day gaps (Fri->Mon weekends,
+    holiday-extended weekends, mid-week holidays) accurately instead of
+    blindly saying 'tomorrow'.
+
+    Returns:
+      {"date": date, "iso": str, "label": str,
+       "gap_days": int,         # calendar days from reference to next session
+       "is_gap": bool,          # True iff > 1 calendar day away
+       "holidays_between": [(iso_str, name), ...],  # weekday holidays only
+       "non_trading_days": int} # gap_days - 1
+    """
+    if reference is None:
+        reference = datetime.now(IST).date()
+    d = reference + timedelta(days=1)
+    holidays_between = []
+    for _ in range(15):
+        if _is_nse_trading_day(d):
+            break
+        # Record weekday holidays blocking the path (weekends are routine)
+        if d.weekday() < 5:
+            is_hol, name = _is_nse_holiday(d)
+            if is_hol:
+                holidays_between.append((d.strftime("%Y-%m-%d"), name))
+        d += timedelta(days=1)
+
+    gap_days = (d - reference).days
+    is_gap = gap_days > 1
+    label = "tomorrow" if gap_days == 1 else d.strftime("%A")
+    return {
+        "date": d,
+        "iso": d.strftime("%Y-%m-%d"),
+        "label": label,
+        "gap_days": gap_days,
+        "is_gap": is_gap,
+        "holidays_between": holidays_between,
+        "non_trading_days": gap_days - 1,
+    }
 
 
 def _next_session_label() -> str:
-    today_dow = datetime.now(IST).weekday()
-    if today_dow == 4:
-        return "Monday"
-    elif today_dow == 5:
-        return "Monday"
-    elif today_dow == 6:
-        return "Monday"
+    """Thin wrapper for backward compatibility — delegates to the new
+    _next_session_info()."""
+    return _next_session_info()["label"]
+
+
+def _format_next_session_block(info: dict) -> str:
+    """Data-section block for the post-market wrap — tells the model
+    exactly when markets reopen, with the gap and intervening NSE
+    holidays named. Always emitted so the model has structured ground
+    truth on the next session in the data packet."""
+    date_str = info["date"].strftime("%A, %B %d, %Y")
+    lines = [f"  Next NSE trading session: {date_str} ({info['iso']})"]
+    lines.append(
+        f"  Calendar-day gap from today: {info['gap_days']} "
+        f"{'day' if info['gap_days'] == 1 else 'days'} "
+        f"({info['non_trading_days']} non-trading "
+        f"day{'s' if info['non_trading_days'] != 1 else ''} in between)"
+    )
+    if info["holidays_between"]:
+        names = "; ".join(f"{iso} — {nm}" for iso, nm in info["holidays_between"])
+        lines.append(f"  NSE holidays in this gap: {names}")
+    if info["is_gap"]:
+        lines.append(
+            "  GAP NOTE: more than one calendar day to the next session — "
+            "global events (US closes, Asia, USD-INR, crude, weekend wires, "
+            "geopolitics) will COMPOUND across this window before Indian "
+            "markets reopen. Flag the specific risks worth watching."
+        )
+    return "\n".join(lines)
+
+
+def _build_next_session_directive(info: dict) -> str:
+    """Instructional block injected into the **Next Session** section of
+    the post-market prompt. Empty for the normal next-day case; carries
+    explicit gap framing when the next session is more than one calendar
+    day away. Prevents the model from saying 'tomorrow' across a weekend
+    or holiday gap."""
+    if not info["is_gap"]:
+        return ""
+    when = info["date"].strftime("%A, %B %d")
+    if info["holidays_between"]:
+        holiday_str = ", ".join(nm for _, nm in info["holidays_between"])
+        gap_reason = (
+            f"Markets are closed for {holiday_str} "
+            f"({info['non_trading_days']} non-trading "
+            f"day{'s' if info['non_trading_days'] != 1 else ''} between "
+            f"today's close and the next open)."
+        )
     else:
-        return "tomorrow"
+        # Pure weekend gap (Friday close)
+        gap_reason = (
+            f"This is a weekend gap ({info['non_trading_days']} "
+            f"non-trading days between today's close and the next open)."
+        )
+    return (
+        f"GAP DIRECTIVE: the next NSE trading session is {when} "
+        f"({info['iso']}), NOT tomorrow. {gap_reason} LEAD this section "
+        f"by stating when markets reopen and explicitly acknowledge the "
+        f"gap. Over {info['gap_days']} calendar days, global events (US "
+        f"closes, Asia, USD-INR, crude, weekend wires, geopolitics) will "
+        f"COMPOUND into the reopen — flag the specific risks worth "
+        f"watching during the gap. Do NOT use the word 'tomorrow' "
+        f"anywhere in this section."
+    )
 
 
 def _day_of_week_ist() -> str:
@@ -2122,6 +2314,7 @@ def build_post_market_packet():
     packet["news"]      = get_pulse_headlines(max_age_hours=12, limit=15)
     packet["prior"]     = get_prior_intraday_context(packet["date"], "23:59")
     packet["filings"]   = get_todays_filings()
+    packet["next_session"] = _next_session_info()   # v3.5: gap-aware reopen info
     return packet
 
 
@@ -2623,8 +2816,9 @@ This section is MANDATORY and is the spine of the wrap — it answers "WHY did t
 **Filings & Flows**
 2-3 lines on the day's NSE filings if any were market-moving; state today's provisional FII/DII net cash figures and what the FII-vs-DII pattern reveals about who drove the session (e.g. FII selling absorbed by DII buying = domestic support under an FII-led decline), then read breadth (advance/decline) alongside it for conviction. Apply the MARKET IGNORING NEWS rule — was there material news the market ignored?
 
-**Tomorrow**
-2 lines on what matters {next_session_label} — a level being tested, a global event, a sector to watch. Frame as expectation. State what the market will likely be TRYING TO DO.
+**{next_session_header}**
+{next_session_directive}
+2 lines on what matters at the next open — a level being tested, a global event, a sector to watch. Frame as expectation. State what the market will likely be TRYING TO DO. If a GAP DIRECTIVE is present above, you MUST name the actual next-session date (e.g. "Monday's open" or "Friday's open after the Bakri Id holiday") and not say "tomorrow". If no gap directive is present, the next session is simply the next calendar day and "tomorrow" is fine.
 
 **Bottom Line**
 One sentence — the day in a single insight a retail investor can take home. This MUST be a NON-OBVIOUS INSIGHT, not a recap.
@@ -2692,6 +2886,9 @@ US MARKET STATUS (pre-open in New York):
 
 TODAY'S NSE FILINGS (first 10):
 {filings}
+
+NEXT TRADING SESSION (structured ground truth — use to frame the **{next_session_header}** section accurately, especially across weekend or holiday gaps):
+{next_session_block}
 
 RECENT MARKET NEWS HEADLINES (last 12 hours, Indian financial press via Pulse — curated baseline):
 {news_block}
@@ -2787,6 +2984,13 @@ def build_post_market_prompt(packet: dict, use_grounding: bool = True) -> str:
     commodity_block = (COMMODITY_DISLOCATION_DIRECTIVE.format(
                           dislocation_summary=commodity_dis)
                        if commodity_dis else "")
+    # v3.5: gap-aware next-session framing. Header flips Tomorrow -> Next
+    # Session when there's a gap, directive carries explicit hold-period
+    # framing for the model, data block gives structured ground truth.
+    next_info = packet.get("next_session") or _next_session_info()
+    next_session_header    = "Next Session" if next_info["is_gap"] else "Tomorrow"
+    next_session_directive = _build_next_session_directive(next_info)
+    next_session_block     = _format_next_session_block(next_info)
     return POST_MARKET_PROMPT.format(
         shared_principles   = SHARED_PRINCIPLES,
         grounding_block     = GROUNDING_DISCIPLINE if use_grounding else "",
@@ -2794,7 +2998,10 @@ def build_post_market_prompt(packet: dict, use_grounding: bool = True) -> str:
         event_directive     = event_directive,
         date                = packet["date"],
         timestamp           = packet["timestamp_ist"],
-        next_session_label  = _next_session_label(),
+        next_session_label  = next_info["label"],
+        next_session_header = next_session_header,
+        next_session_directive = next_session_directive,
+        next_session_block  = next_session_block,
         sensex              = format_ticker_line(packet.get("sensex")),
         nifty               = format_ticker_line(packet.get("nifty")),
         sectors             = _format_ticker_list(packet.get("sectors",     [])),
@@ -3629,7 +3836,7 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v3.4")
+    parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v3.5")
     parser.add_argument("--mode", choices=["pre", "intraday", "post", "auto"], default="auto",
                         help="'auto' detects from current IST time (default)")
     parser.add_argument("--slot", default=None,
@@ -3654,6 +3861,19 @@ def main():
         mode = detected_mode
         slot = slot or auto_slot
         _log("🤖", f"Auto-detected: mode={mode}, slot={slot}")
+
+    # v3.5: NSE trading-holiday guard. Markets are closed on declared NSE
+    # equity-segment holidays — pre/intraday/post all make no sense, so
+    # exit cleanly. The Mon-Fri cron already covers weekends; this covers
+    # festival/national holidays. --dry-run bypasses (so prompts can still
+    # be tested off-hours), --force bypasses (for manual ad-hoc regeneration).
+    if not args.dry_run and not args.force:
+        is_holiday, holiday_name = _is_nse_holiday()
+        if is_holiday and mode in ("pre", "intraday", "post"):
+            _log("🇮🇳", f"NSE is closed today ({holiday_name}) — markets do "
+                       f"not trade. Exiting cleanly; no commentary generated. "
+                       f"Use --force to override.")
+            sys.exit(0)
 
     # Hard guard: pre-market may ONLY run inside the 08:00 IST window.
     # This protects against a misconfigured cron invoking `--mode pre`
