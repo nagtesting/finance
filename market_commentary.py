@@ -1028,7 +1028,7 @@ def get_market_breadth() -> dict:
         "ad_ratio": None, "breadth_descriptor": "n/a",
     }
     try:
-        cache_url = "https://finance-bxyf.onrender.com/api/market-cache"
+        cache_url = "https://moneyveda-backend.onrender.com/api/market-cache"
         r = requests.get(cache_url, headers=HEADERS, timeout=30)
         r.raise_for_status()
         data = r.json()
