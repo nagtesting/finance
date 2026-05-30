@@ -431,19 +431,21 @@ ENABLE_VIDEO = os.getenv("ENABLE_VIDEO_PIPELINE", "1") not in ("0", "false", "no
 MARKET_API_BASE = "https://moneyveda.org/api/market"
 
 GEMINI_MODEL_FAST   = "gemini-2.5-flash-lite"   # cheap, fast — default intraday
-GEMINI_MODEL_STRONG = "gemini-2.5-flash"        # post-market + event days + grounded (free-tier; was 2.5-pro, paywalled Apr-2026)
+GEMINI_MODEL_STRONG = "gemini-2.5-flash"        # grounded fallback tier (old-SDK path); cheap+reliable, was 2.5-pro (50 RPD)
 
-# v3.4: latest grounded model with maximum thinking depth. Used ONLY for
-# grounded calls (pre / 12:00 / 15:30 / post). Falls back to GEMINI_MODEL_STRONG
-# grounded, then non-grounded, then rule-based — see generate_commentary().
+# Primary grounded model for pre / 12:00 / 15:30 / post. Uses the new
+# google-genai SDK with thinking_level="high" (see call_gemini_3_grounded).
+# Falls back to GEMINI_MODEL_STRONG grounded, then non-grounded, then
+# rule-based — see generate_commentary().
 #
-# NOTE (May-2026): gemini-3.1-pro-preview is a PAID-TIER-ONLY preview model.
-# On a free-tier GEMINI_API_KEY this call 429s instantly and the chain falls
-# through to GEMINI_MODEL_STRONG (now gemini-2.5-flash, free + grounded), which
-# is where grounding actually succeeds. Left in place intentionally: if billing
-# is ever enabled on the key, the premium grounded path resumes automatically
-# with no code change. To force the free path only, set this to "gemini-2.5-flash".
-GEMINI_MODEL_GROUNDED = "gemini-3.1-pro-preview"
+# gemini-3.5-flash (GA, May-2026): stable frontier Flash with native
+# google_search grounding and the SAME thinking_level API as the 3.1 line,
+# so no config change is needed. Chosen over gemini-3.1-pro-preview because
+# it's production-stable (preview models have no SLA / shifting quotas) at
+# sub-Pro cost, with quality more than sufficient for grounded commentary.
+# Requires PAID API billing on the key's project. To go max-reasoning,
+# swap to "gemini-3.1-pro-preview" (preview; paid-only).
+GEMINI_MODEL_GROUNDED = "gemini-3.5-flash"
 GEMINI_THINKING_LEVEL = "high"   # low | medium | high — high = max reasoning
 
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -3462,10 +3464,12 @@ def call_gemini_3_grounded(prompt: str, max_tokens: int = 8000,
                 thinking_level=getattr(_genai_v3_types.ThinkingLevel,
                                        thinking_level.upper(), None))
 
+        # Gemini 3.x guidance: do NOT set temperature / top_p / top_k — the
+        # reasoning layers are calibrated around defaults, and Google
+        # recommends removing them for 3.5. Only max_output_tokens, thinking,
+        # and the grounding tool are set here.
         config = _genai_v3_types.GenerateContentConfig(
-            temperature       = 0.5,
             max_output_tokens = max_tokens,
-            top_p             = 0.9,
             thinking_config   = thinking_cfg,
             tools             = [_genai_v3_types.Tool(
                                     google_search=_genai_v3_types.GoogleSearch())],
