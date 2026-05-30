@@ -397,22 +397,18 @@ from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
 from supabase import create_client
 
-try:
-    import google.generativeai as genai
-    GEMINI_AVAILABLE = True
-except ImportError:
-    GEMINI_AVAILABLE = False
-
-# v3.4: new google-genai SDK for Gemini 3.1 Pro grounded path. Coexists with
-# the legacy google-generativeai package above (still used by the 2.5 Pro
-# fallback and the non-grounded intraday calls). If the new SDK isn't
-# installed yet, the v3 path silently skips and we fall through to 2.5 Pro.
+# Unified on the new google-genai SDK (the legacy google-generativeai package
+# is end-of-life). ALL Gemini calls — grounded and non-grounded — go through
+# this single client. GEMINI_AVAILABLE is kept as an alias of GENAI_V3_AVAILABLE
+# so the existing availability guards throughout the file keep working.
 try:
     from google import genai as _genai_v3
     from google.genai import types as _genai_v3_types
     GENAI_V3_AVAILABLE = True
 except ImportError:
     GENAI_V3_AVAILABLE = False
+
+GEMINI_AVAILABLE = GENAI_V3_AVAILABLE
 
 load_dotenv()
 
@@ -3258,27 +3254,28 @@ def _select_model(mode: str, packet: dict, will_ground: bool = False) -> tuple:
 def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
     """Non-grounded Gemini call — used for intraday slots."""
     if not GEMINI_AVAILABLE:
-        _log("⚠️", "google-generativeai package not installed")
+        _log("⚠️", "google-genai SDK not installed")
         return None, "error"
     if not GEMINI_API_KEY:
         _log("⚠️", "GEMINI_API_KEY not set")
         return None, "error"
     model = model or GEMINI_MODEL_FAST
     try:
-        genai.configure(api_key=GEMINI_API_KEY)
-        gen_model = genai.GenerativeModel(model)
+        client = _genai_v3.Client(api_key=GEMINI_API_KEY)
         _log("🧠", f"Calling Gemini ({model}, max_tokens={max_tokens})...")
         call_timeout = 180 if "pro" in model else 45
-        response = gen_model.generate_content(
-            prompt,
-            generation_config={
-                "temperature":       0.5,
-                "max_output_tokens": max_tokens,
-                "top_p":             0.9,
-            },
-            request_options={"timeout": call_timeout},
+        response = client.models.generate_content(
+            model    = model,
+            contents = prompt,
+            config   = _genai_v3_types.GenerateContentConfig(
+                temperature       = 0.5,
+                max_output_tokens = max_tokens,
+                top_p             = 0.9,
+                http_options      = _genai_v3_types.HttpOptions(
+                                        timeout=call_timeout * 1000),  # ms
+            ),
         )
-        if response and response.text:
+        if response and getattr(response, "text", None):
             text = response.text.strip()
             if len(text) < 80:
                 _log("⚠️", f"Gemini returned too-short text ({len(text)} chars)")
@@ -3348,7 +3345,7 @@ def call_gemini_grounded(prompt: str, model: str = None, max_tokens: int = 8000)
     grounding_sources is a list of {title, uri} dicts for audit/storage.
     """
     if not GEMINI_AVAILABLE:
-        _log("⚠️", "google-generativeai package not installed")
+        _log("⚠️", "google-genai SDK not installed")
         return None, "error", []
     if not GEMINI_API_KEY:
         _log("⚠️", "GEMINI_API_KEY not set")
@@ -3356,48 +3353,30 @@ def call_gemini_grounded(prompt: str, model: str = None, max_tokens: int = 8000)
 
     model = model or GEMINI_MODEL_STRONG
     try:
-        genai.configure(api_key=GEMINI_API_KEY)
-        gen_model = genai.GenerativeModel(model)
+        client = _genai_v3.Client(api_key=GEMINI_API_KEY)
         _log("🌐", f"Calling Gemini GROUNDED ({model}, max_tokens={max_tokens})...")
 
-        # Grounded Pro calls can take 30-120s (search + thinking + generation).
+        # Grounded calls can take 30-120s (search + thinking + generation).
         call_timeout = 240
 
-        response = None
-        last_err = None
-        tools_used = None
+        # New SDK: grounding is the typed google_search tool (same form used by
+        # the v3 grounded path). The legacy string-based 'google_search' /
+        # 'google_search_retrieval' retry dance is no longer needed.
+        response = client.models.generate_content(
+            model    = model,
+            contents = prompt,
+            config   = _genai_v3_types.GenerateContentConfig(
+                temperature       = 0.5,
+                max_output_tokens = max_tokens,
+                top_p             = 0.9,
+                tools             = [_genai_v3_types.Tool(
+                                        google_search=_genai_v3_types.GoogleSearch())],
+                http_options      = _genai_v3_types.HttpOptions(
+                                        timeout=call_timeout * 1000),  # ms
+            ),
+        )
 
-        # Gemini 2.0+ uses 'google_search'. Legacy SDK / older models use 'google_search_retrieval'.
-        # We try the modern form first and fall back if the SDK rejects it.
-        for tool_spec in ("google_search", "google_search_retrieval"):
-            try:
-                response = gen_model.generate_content(
-                    prompt,
-                    generation_config={
-                        "temperature":       0.5,
-                        "max_output_tokens": max_tokens,
-                        "top_p":             0.9,
-                    },
-                    tools=tool_spec,
-                    request_options={"timeout": call_timeout},
-                )
-                tools_used = tool_spec
-                _log("🔧", f"Grounding tool accepted: {tool_spec}")
-                break
-            except Exception as e:
-                last_err = e
-                msg = str(e).lower()
-                # Only fall through if the SDK explicitly rejected this tool name
-                if any(k in msg for k in ("tool", "unknown", "invalid", "not supported", "unsupported")):
-                    _log("🔄", f"{tool_spec} rejected by SDK ({type(e).__name__}), trying alternate form...")
-                    continue
-                # Any other error (timeout, auth, quota) — don't retry, just raise
-                raise
-
-        if response is None:
-            raise RuntimeError(f"Both grounding tool forms failed. Last error: {last_err}")
-
-        if not response.text:
+        if not response or not getattr(response, "text", None):
             _log("⚠️", "Gemini grounded call returned empty response")
             return None, "error", []
 
@@ -3407,8 +3386,7 @@ def call_gemini_grounded(prompt: str, model: str = None, max_tokens: int = 8000)
             return None, "error", []
 
         sources = _extract_grounding_sources(response)
-        _log("✅", f"Gemini grounded returned {len(text)} chars with {len(sources)} source(s) "
-                   f"[tool={tools_used}]")
+        _log("✅", f"Gemini grounded returned {len(text)} chars with {len(sources)} source(s)")
 
         source_tag = "gemini_pro_grounded" if sources else "gemini_pro_grounded_nosrc"
         return text, source_tag, sources
