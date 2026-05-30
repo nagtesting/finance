@@ -431,11 +431,18 @@ ENABLE_VIDEO = os.getenv("ENABLE_VIDEO_PIPELINE", "1") not in ("0", "false", "no
 MARKET_API_BASE = "https://moneyveda.org/api/market"
 
 GEMINI_MODEL_FAST   = "gemini-2.5-flash-lite"   # cheap, fast — default intraday
-GEMINI_MODEL_STRONG = "gemini-2.5-pro"          # post-market + event days + grounded
+GEMINI_MODEL_STRONG = "gemini-2.5-flash"        # post-market + event days + grounded (free-tier; was 2.5-pro, paywalled Apr-2026)
 
 # v3.4: latest grounded model with maximum thinking depth. Used ONLY for
-# grounded calls (pre / 12:00 / 15:30 / post). Falls back to 2.5 Pro grounded,
-# then 2.5 Pro non-grounded, then rule-based — see generate_commentary().
+# grounded calls (pre / 12:00 / 15:30 / post). Falls back to GEMINI_MODEL_STRONG
+# grounded, then non-grounded, then rule-based — see generate_commentary().
+#
+# NOTE (May-2026): gemini-3.1-pro-preview is a PAID-TIER-ONLY preview model.
+# On a free-tier GEMINI_API_KEY this call 429s instantly and the chain falls
+# through to GEMINI_MODEL_STRONG (now gemini-2.5-flash, free + grounded), which
+# is where grounding actually succeeds. Left in place intentionally: if billing
+# is ever enabled on the key, the premium grounded path resumes automatically
+# with no code change. To force the free path only, set this to "gemini-2.5-flash".
 GEMINI_MODEL_GROUNDED = "gemini-3.1-pro-preview"
 GEMINI_THINKING_LEVEL = "high"   # low | medium | high — high = max reasoning
 
