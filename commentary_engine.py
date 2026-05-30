@@ -47,7 +47,8 @@ from bs4 import BeautifulSoup
 
 # Gemini SDK (optional import — rule-based fallback works without it)
 try:
-    import google.generativeai as genai
+    from google import genai as _genai
+    from google.genai import types as _genai_types
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -541,18 +542,19 @@ def _call_gemini(prompt: str, model: str = None):
     # Pro also needs a bigger output budget — thinking tokens count against it.
     max_out = 2000 if "pro" in model else 400
     try:
-        genai.configure(api_key=GEMINI_API_KEY)
-        gen_model = genai.GenerativeModel(model)
-        response = gen_model.generate_content(
-            prompt,
-            generation_config={
-                "temperature":       0.4,
-                "max_output_tokens": max_out,
-                "top_p":             0.9,
-            },
-            request_options={"timeout": call_timeout},
+        client = _genai.Client(api_key=GEMINI_API_KEY)
+        response = client.models.generate_content(
+            model    = model,
+            contents = prompt,
+            config   = _genai_types.GenerateContentConfig(
+                temperature       = 0.4,
+                max_output_tokens = max_out,
+                top_p             = 0.9,
+                http_options      = _genai_types.HttpOptions(
+                                        timeout=call_timeout * 1000),  # ms
+            ),
         )
-        if response and response.text:
+        if response and getattr(response, "text", None):
             text = response.text.strip()
             if len(text) >= 30:
                 return text
