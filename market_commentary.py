@@ -444,6 +444,13 @@ GEMINI_MODEL_STRONG = "gemini-2.5-flash"        # grounded fallback tier (old-SD
 GEMINI_MODEL_GROUNDED = "gemini-3.5-flash"
 GEMINI_THINKING_LEVEL = "high"   # low | medium | high — high = max reasoning
 
+# v3.6: ICICI Breeze F&O depth (futures basis + option open interest). Kill
+# switch — set ENABLE_BREEZE_DERIVATIVES=0/false/no/off in Render to disable
+# without redeploying. Defaults ON. Derivatives are purely additive: when off,
+# unavailable, or the token is stale, commentary runs exactly as before.
+ENABLE_BREEZE_DERIVATIVES = os.getenv("ENABLE_BREEZE_DERIVATIVES", "1").lower() \
+    not in ("0", "false", "no", "off")
+
 IST = timezone(timedelta(hours=5, minutes=30))
 
 INTRADAY_SLOTS = [
@@ -1881,6 +1888,99 @@ def _format_broader_market(bm: dict) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# DERIVATIVES (ICICI Breeze F&O depth) — v3.6
+# Import-isolated + fail-closed: any problem (kill-switch off, breeze_data
+# missing, stale/absent token, API failure) returns {} and commentary proceeds
+# unchanged. The formatter emits a SILENT no-invention placeholder when data is
+# absent, so the model never references OI/PCR/basis it doesn't have.
+# Scope is deliberately small (indices + the day's movers, NOT all 100) to stay
+# inside the Breeze 100/min · 5000/day rate budget.
+# ─────────────────────────────────────────────────────────────────────────────
+def _build_derivatives_underlyings(packet: dict, max_stocks: int = 8) -> list:
+    """Indices + the day's top movers → the small F&O universe we query."""
+    unders = [
+        {"label": "NIFTY 50",   "yahoo": "^NSEI"},
+        {"label": "NIFTY BANK", "yahoo": "^NSEBANK"},
+    ]
+    m = packet.get("nifty100_movers") or {}
+    seen, stocks = set(), []
+    for bucket in ("gainers", "losers"):
+        for s in (m.get(bucket) or []):
+            sym = s.get("symbol")
+            if sym and sym not in seen:
+                seen.add(sym)
+                stocks.append({"label": s.get("name") or sym, "yahoo": sym})
+    return unders + stocks[:max_stocks]
+
+
+def _fetch_derivatives(packet: dict) -> dict:
+    """Best-effort Breeze derivatives. NEVER raises; {} on any issue."""
+    if not ENABLE_BREEZE_DERIVATIVES:
+        return {}
+    try:
+        from breeze_data import get_derivatives          # lazy, isolated import
+    except Exception as e:
+        _log("⚠️", f"breeze_data unavailable ({e}) — skipping derivatives.")
+        return {}
+    try:
+        unders = _build_derivatives_underlyings(packet)
+        out = get_derivatives(unders) or {}
+        if out:
+            _log("📐", f"Derivatives attached for {out.get('count', 0)} underlyings.")
+        return out
+    except Exception as e:
+        _log("⚠️", f"Derivatives fetch failed ({e}) — continuing without.")
+        return {}
+
+
+def _format_derivatives(d: dict) -> str:
+    """Render the F&O block, or a SILENT placeholder that forbids OI/PCR/basis
+    talk when data is absent (no-invention discipline)."""
+    if not d or not d.get("underlyings"):
+        return ("  Derivatives (F&O): [INSTRUCTION TO MODEL: Futures / option "
+                "open-interest data is NOT available this run. Read conviction "
+                "from price, breadth, sector dispersion and volume only. Do NOT "
+                "mention OI, PCR, basis, futures or 'derivatives' anywhere — "
+                "write as if this block does not exist.]")
+
+    def num(x, fmt="{:,.2f}"):
+        try:
+            return fmt.format(x) if x is not None else "n/a"
+        except Exception:
+            return "n/a"
+
+    lines = [f"  Derivatives (F&O) — ICICI Breeze (as of {d.get('asof', '?')}). "
+             f"Confirmation layer only; fold into the level/breadth read, do NOT "
+             f"add a separate derivatives section or jargon dump:"]
+    for u in d.get("underlyings", []):
+        bits = []
+        if u.get("future_ltp") is not None:
+            bits.append(f"fut {num(u.get('future_ltp'))} "
+                        f"({num(u.get('future_pct'), '{:+.2f}')}%)")
+        if u.get("basis") is not None:
+            bits.append(f"basis {num(u.get('basis'), '{:+.2f}')} "
+                        f"({num(u.get('basis_pct'), '{:+.3f}')}%)")
+        if u.get("pcr_oi") is not None:
+            bits.append(f"PCR-OI {num(u.get('pcr_oi'))}")
+        if u.get("max_call_oi_strike") is not None:
+            bits.append(f"call-OI wall {num(u.get('max_call_oi_strike'))} (resistance)")
+        if u.get("max_put_oi_strike") is not None:
+            bits.append(f"put-OI wall {num(u.get('max_put_oi_strike'))} (support)")
+        detail = "; ".join(bits) if bits else "no derivative fields resolved"
+        lines.append(f"    • {u.get('label', '?')} "
+                     f"[{u.get('expiry_used', '?')}]: {detail}")
+    lines.append("  READ: a widening futures premium = leveraged long "
+                 "conviction; a discount/backwardation = hedging or underlying "
+                 "weakness. PCR-OI >1.2 = put-writing support below; <0.7 = "
+                 "call-writing resistance above. Max-OI strikes tend to cap "
+                 "(calls) / floor (puts) — cite a strike ONLY when it reinforces "
+                 "a level you are already making from price/technicals. "
+                 "NO-INVENTION still applies: never state an OI/PCR/basis number "
+                 "that is not in this block.")
+    return "\n".join(lines)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # NEWS HEADLINES (Pulse by Zerodha) — used for intraday + as Pulse baseline
 # in pre/post (grounding adds depth on top)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2252,6 +2352,7 @@ def build_intraday_packet(slot: str):
     packet["breadth"]   = _resolve_breadth(get_market_breadth(),
                                             packet["nifty100_movers"])
     packet["broader_market"] = get_broader_market(india)   # v3.2 mid/small cap
+    packet["derivatives"] = _fetch_derivatives(packet)      # v3.6 Breeze F&O depth
     packet["news"]      = get_pulse_headlines(max_age_hours=6, limit=10)
     packet["prior"]     = get_prior_intraday_context(today, slot)
     return packet
@@ -2313,6 +2414,7 @@ def build_post_market_packet():
     packet["breadth"]   = _resolve_breadth(get_market_breadth(),
                                             packet["nifty100_movers"])  # v3.2
     packet["broader_market"] = get_broader_market(india)   # v3.2 mid/small cap
+    packet["derivatives"] = _fetch_derivatives(packet)      # v3.6 Breeze F&O depth
     packet["fii_dii"]   = get_fii_dii()              # today's provisional cash flow
     packet["global_macro"] = get_global_macro_telemetry()  # DXY/US10Y/Brent
     packet["sector_rotation"] = get_sector_rotation()      # 10d satellite view
@@ -2668,6 +2770,9 @@ TOP MOVERS (live, by magnitude):
 NIFTY 100 — TOP 5 GAINERS / TOP 5 LOSERS (give each highlighted name a NAMED reason from Pulse, else honest "no catalyst"):
 {nifty100_movers_block}
 
+DERIVATIVES (F&O — futures basis & option open interest; confirm levels, integrate into the breadth/level read, no separate section):
+{derivatives_block}
+
 ASIA-PACIFIC (still trading):
 {asia_pacific}
 
@@ -2770,6 +2875,9 @@ TOP MOVERS (live now):
 
 NIFTY 100 — TOP 5 GAINERS / TOP 5 LOSERS (give each highlighted name a NAMED reason; grounded search if active, else Pulse, else honest "no catalyst"):
 {nifty100_movers_block}
+
+DERIVATIVES (F&O — futures basis & option open interest; confirm levels, integrate into the breadth/level read, no separate section):
+{derivatives_block}
 
 CURRENCIES:
 {currencies}
@@ -2879,6 +2987,9 @@ TOP STOCK MOVERS (by % change magnitude):
 
 NIFTY 100 — TOP 5 GAINERS / TOP 5 LOSERS (anchor the Sector & Stock Highlights here; give the standout gainer and loser a NAMED catalyst via grounded search, else Pulse/filings, else honest "no catalyst"):
 {nifty100_movers_block}
+
+DERIVATIVES (F&O — futures basis & option open interest; confirm where the close leaves key levels, integrate into the read, no separate section):
+{derivatives_block}
 
 CURRENCIES:
 {currencies}
@@ -3022,6 +3133,7 @@ def build_post_market_prompt(packet: dict, use_grounding: bool = True) -> str:
         global_macro_line   = _format_global_macro(packet.get("global_macro") or {}),
         sector_rotation_line = _format_sector_rotation(packet.get("sector_rotation") or {}),
         nifty100_movers_block = _format_nifty100_movers(packet.get("nifty100_movers") or {}),
+        derivatives_block   = _format_derivatives(packet.get("derivatives") or {}),
         pre_context         = (prior.get("pre_text") or "[INSTRUCTION TO MODEL: No pre-market briefing on file. SKIP all 'compare to pre-market' comparisons. Do NOT mention pre-market is missing. Describe today's session on its own terms.]")[:1200],
         day_arc             = (prior.get("all_slots_compact") or "  [INSTRUCTION: No intraday slots recorded today. Skip the 'arc' walkthrough; describe the day from open to close using close-of-day data only.]"),
         news_block          = _format_pulse_headlines(packet.get("news") or []),
@@ -3047,6 +3159,7 @@ def build_intraday_prompt(packet: dict, use_grounding: bool = False) -> str:
             sectors             = _format_ticker_list(packet.get("sectors",      [])),
             top_stocks          = _format_ticker_list(packet.get("top_stocks",   [])),
             nifty100_movers_block = movers_block,
+            derivatives_block   = _format_derivatives(packet.get("derivatives") or {}),
             asia_pacific        = _format_ticker_list(packet.get("asia_pacific", [])),
             currencies          = _format_ticker_list(packet.get("currencies",   [])),
             commodities         = _format_ticker_list(packet.get("commodities",  [])),
@@ -3088,6 +3201,7 @@ def build_intraday_prompt(packet: dict, use_grounding: bool = False) -> str:
         sectors            = _format_ticker_list(packet.get("sectors",      [])),
         top_stocks         = _format_ticker_list(packet.get("top_stocks",   [])),
         nifty100_movers_block = movers_block,
+        derivatives_block  = _format_derivatives(packet.get("derivatives") or {}),
         currencies         = _format_ticker_list(packet.get("currencies",   [])),
         commodities        = _format_ticker_list(packet.get("commodities",  [])),
         asia_pacific       = _format_ticker_list(packet.get("asia_pacific", [])),
