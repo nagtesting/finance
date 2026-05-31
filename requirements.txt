@@ -10,3 +10,4 @@ google-genai>=2.0.0
 Pillow>=10.0.0
 qrcode>=7.4
 vercel_blob>=0.4.0
+breeze-connect==1.0.69
