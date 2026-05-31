@@ -3,123 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoneyVeda — API Control Panel</title>
+    <title>MoneyVeda — Breeze Session Guard</title>
     <style>
         body {
-            background-color: #0A0A0F;
-            color: #E2E8F0;
-            font-family: 'DM Sans', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            background-color: #0A0A0F; color: #E2E8F0;
+            font-family: 'DM Sans', system-ui, sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0;
         }
         .admin-card {
-            background: #12121A;
-            border: 1px solid #1E1E2F;
-            border-radius: 12px;
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            background: #12121A; border: 1px solid #1E1E2F; border-radius: 12px;
+            padding: 2rem; width: 100%; max-width: 420px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
-        h2 { margin-top: 0; color: #38BDF8; font-size: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: #94A3B8; }
+        h2 { margin-top: 0; color: #38BDF8; font-size: 1.4rem; }
+        p.sub { font-size: 0.85rem; color: #64748B; margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.4rem; font-size: 0.8rem; color: #94A3B8; }
         input {
-            width: 100%;
-            padding: 0.75rem;
-            background: #1E1E2F;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            color: #FFF;
-            font-size: 1rem;
-            box-sizing: border-box;
-            margin-bottom: 1.25rem;
+            width: 100%; padding: 0.7rem; background: #1E1E2F;
+            border: 1px solid #334155; border-radius: 6px; color: #FFF;
+            font-size: 1rem; box-sizing: border-box; margin-bottom: 1.1rem;
         }
         input:focus { border-color: #38BDF8; outline: none; }
         button {
-            width: 100%;
-            padding: 0.75rem;
-            background: #0284C7;
-            border: none;
-            border-radius: 6px;
-            color: #FFF;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
+            width: 100%; padding: 0.75rem; background: #0284C7; border: none;
+            border-radius: 6px; color: #FFF; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: background 0.2s;
         }
         button:hover { background: #0369A1; }
-        .msg { font-size: 0.875rem; text-align: center; margin-top: 1rem; display: none; }
+        button:disabled { background: #334155; cursor: default; }
+        .msg { font-size: 0.85rem; text-align: center; margin-top: 1rem; display: none; }
         .success { color: #4ADE80; }
         .error { color: #F87171; }
+        .hint { font-size: 0.75rem; color: #475569; margin-top: 1.25rem; line-height: 1.4; }
+        .captured { color: #4ADE80; font-size: 0.75rem; margin: -0.6rem 0 1rem; display: none; }
     </style>
 </head>
 <body>
 
 <div class="admin-card">
-    <h2>Breeze API Session Guard</h2>
-    <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1.5rem;">Update the global execution token before the 08:00 IST cron invocation window.</p>
-    
-    <label for="tokenInput">Today's 8-Digit Session Token</label>
-    <input type="text" id="tokenInput" placeholder="e.g., 55791960" autocomplete="off">
-    
-    <button onclick="updateBreezeToken()">Sync to Supabase Cloud</button>
+    <h2>Breeze Session Guard</h2>
+    <p class="sub">Sync today's Breeze session token before the 08:00 IST cron window. The token is written to Supabase by the backend — no keys live in this page.</p>
+
+    <label for="tokenInput">Today's session token</label>
+    <input type="text" id="tokenInput" placeholder="paste / auto-filled after login" autocomplete="off" spellcheck="false">
+    <div id="capturedMsg" class="captured">✓ Token auto-captured from the login redirect.</div>
+
+    <label for="secretInput">Admin secret</label>
+    <input type="password" id="secretInput" placeholder="your BREEZE_ADMIN_SECRET" autocomplete="current-password">
+
+    <button id="syncBtn" onclick="syncToken()">Sync to backend</button>
     <div id="statusMsg" class="msg"></div>
+
+    <p class="hint">
+        Flow: tap the ICICI login bookmark → log in with OTP → you land back here
+        with the token pre-filled → enter your admin secret once → Sync. If the
+        token field stays empty, copy it from the address bar manually.
+    </p>
 </div>
 
 <script>
-    // 1. Replace these configuration markers with your active Supabase endpoints
-    const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL"; 
-    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_OR_SERVICE_KEY";
+    // ── CONFIG ───────────────────────────────────────────────────────────────
+    // Point this at YOUR Flask backend on Render (the one that has app.py).
+    const BACKEND_URL = "https://finance-bxyf.onrender.com";   // ← confirm/change
 
-    async function updateBreezeToken() {
-        const tokenValue = document.getElementById('tokenInput').value.trim();
-        const statusMsg = document.getElementById('statusMsg');
-        
-        if (!tokenValue) {
-            showStatus("Please provide a valid token string.", "error");
-            return;
+    // ── 1) Auto-capture the token from the redirect URL ──────────────────────
+    // After a successful Breeze login, ICICI sends you to your app's redirect
+    // URL with the session token in the address bar. The exact param name has
+    // varied across ICICI's stack, so we look for several spellings in BOTH the
+    // query string (?x=) and the hash (#x=).
+    (function captureFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const hash   = new URLSearchParams((window.location.hash || "").replace(/^#/, ""));
+        const keys = ["apisession", "API_Session", "api_session",
+                      "session_token", "sessionToken", "SessionToken", "token"];
+        let found = null;
+        for (const k of keys) {
+            found = params.get(k) || hash.get(k);
+            if (found) break;
         }
+        if (found) {
+            document.getElementById("tokenInput").value = found.trim();
+            document.getElementById("capturedMsg").style.display = "block";
+            // Scrub the token out of the address bar / history so it isn't left
+            // sitting in the URL after capture.
+            try { history.replaceState({}, document.title, window.location.pathname); } catch (e) {}
+        }
+    })();
 
-        statusMsg.style.display = "block";
-        statusMsg.className = "msg";
-        statusMsg.innerText = "Transmitting payload...";
+    // ── 2) POST token to the backend (backend writes to Supabase) ────────────
+    async function syncToken() {
+        const token  = document.getElementById("tokenInput").value.trim();
+        const secret = document.getElementById("secretInput").value;
+        const btn    = document.getElementById("syncBtn");
 
-        // 2. Direct REST Upsert request to match your table layout schema
+        if (!token)  { return showStatus("Paste or capture a token first.", "error"); }
+        if (!secret) { return showStatus("Enter your admin secret.", "error"); }
+
+        btn.disabled = true;
+        showStatus("Syncing…", "");
+
         try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/api_sessions?id=eq.icici_breeze`, {
-                method: 'PATCH',
+            const res = await fetch(`${BACKEND_URL}/api/admin/breeze-token`, {
+                method: "POST",
                 headers: {
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=representation'
+                    "Content-Type": "application/json",
+                    "X-Admin-Secret": secret,
                 },
-                body: JSON.stringify({
-                    session_token: tokenValue,
-                    updated_at: new Date().toISOString()
-                })
+                body: JSON.stringify({ session_token: token }),
             });
-
-            if (response.ok) {
-                showStatus("✅ Handshake token synchronized successfully! Your Render cron engines are cleared for execution.", "success");
-                document.getElementById('tokenInput').value = "";
+            const data = await res.json().catch(() => ({}));
+            if (res.ok && data.ok) {
+                showStatus("✅ Token synced. The cron is cleared for today.", "success");
+                document.getElementById("tokenInput").value = "";
             } else {
-                const errData = await response.json();
-                showStatus(`Sync error: ${errData.message || response.statusText}`, "error");
+                showStatus(`Sync failed: ${data.error || res.statusText}`, "error");
             }
         } catch (err) {
-            showStatus(`Network deployment failure: ${err.message}`, "error");
+            showStatus(`Network error: ${err.message}`, "error");
+        } finally {
+            btn.disabled = false;
         }
     }
 
     function showStatus(text, type) {
-        const statusMsg = document.getElementById('statusMsg');
-        statusMsg.style.display = "block";
-        statusMsg.className = `msg ${type}`;
-        statusMsg.innerText = text;
+        const m = document.getElementById("statusMsg");
+        m.style.display = "block";
+        m.className = `msg ${type}`;
+        m.innerText = text;
     }
 </script>
 
