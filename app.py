@@ -620,6 +620,55 @@ def record_all_pending_outcomes():
         except Exception as e:
             print(f"Error: {sig.get('symbol','?')} — {e}")
 
+
+# ─────────────────────────────────────────
+# BREEZE SESSION TOKEN — admin write (v3.6)
+# ─────────────────────────────────────────
+# Receives today's ICICI Breeze session token from admin-login-breeze.html and
+# writes it to Supabase `api_sessions` (id='icici_breeze') using the SERVICE key
+# that already lives in this process. The service key never touches the browser;
+# a shared secret gates who may write, so the public admin page URL can't be
+# abused to poison the token. breeze_data.py reads this row with a same-IST-day
+# staleness guard, so a stale/missing token simply means "no derivatives".
+#
+# Auth: a DEDICATED env var BREEZE_ADMIN_SECRET, fail-closed (401 until it is
+# set — no insecure default). You may set it to the same string as ADMIN_SECRET
+# if you prefer to remember one, but keep it as its own variable so the weak
+# "moneyveda-admin" default used elsewhere can never apply to this write.
+#
+# CORS: handled by the existing global CORS(app, origins=[...]) — moneyveda.org
+# is already allowed, and /api/accuracy/run-recorder already proves the
+# X-Admin-Secret header works cross-origin under that config. No change needed.
+@app.route("/api/admin/breeze-token", methods=["POST"])
+def save_breeze_token():
+    expected = os.getenv("BREEZE_ADMIN_SECRET")
+    sent = request.headers.get("X-Admin-Secret", "")
+    if not expected or sent != expected:
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+
+    data = request.get_json(silent=True) or {}
+    token = (data.get("session_token") or "").strip()
+    if not token:
+        return jsonify({"status": "error", "message": "missing session_token"}), 400
+    # Breeze tokens are short alphanumeric; reject obvious garbage / HTML.
+    if len(token) > 128 or any(c in token for c in "<>{}\"' "):
+        return jsonify({"status": "error", "message": "token looks malformed"}), 400
+
+    try:
+        supabase.table("api_sessions").upsert({
+            "id": "icici_breeze",
+            "session_token": token,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }).execute()
+        return jsonify({
+            "status": "success",
+            "message": "Breeze token synced",
+            "saved_at": datetime.now(timezone.utc).isoformat(),
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 # ─────────────────────────────────────────
 # COMMENTARY  (v3.1 — uses cache + Gemini + rule-based fallback)
 # ─────────────────────────────────────────
