@@ -7,7 +7,11 @@ import threading
 import requests
 from datetime import datetime, timezone
 from flask_cors import CORS
-from commentary_engine import analyze_stock
+try:
+    from commentary_engine import analyze_stock
+except Exception as _ce_err:
+    analyze_stock = None
+    print(f"⚠️  commentary_engine import failed — /api/commentary degraded: {_ce_err}")
 from nifty100 import NIFTY_100, SYMBOL_TO_NAME, ALL_YAHOO_SYMS
 
 load_dotenv()
