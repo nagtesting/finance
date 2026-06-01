@@ -64,8 +64,12 @@
 
 <script>
     // ── CONFIG ───────────────────────────────────────────────────────────────
-    // Point this at YOUR Flask backend on Render (the one that has app.py).
-    const BACKEND_URL = "https://finance-bxyf.onrender.com";   // ← confirm/change
+    // The LIVE Flask backend on Render (the one that has app.py + the
+    // /api/admin/breeze-token route). This is a DIRECT call — NOT the
+    // /api/backend proxy, because the proxy's allowlist deliberately excludes
+    // admin writes. CORS on the backend already permits moneyveda.org, so the
+    // direct cross-origin POST is allowed.
+    const BACKEND_URL = "https://moneyveda-backend.onrender.com";
 
     // ── 1) Auto-capture the token from the redirect URL ──────────────────────
     // After a successful Breeze login, ICICI sends you to your app's redirect
@@ -113,11 +117,15 @@
                 body: JSON.stringify({ session_token: token }),
             });
             const data = await res.json().catch(() => ({}));
-            if (res.ok && data.ok) {
-                showStatus("✅ Token synced. The cron is cleared for today.", "success");
+            // The backend returns {"status": "success"|"error", "message": "..."}.
+            // (The page previously checked data.ok / data.error, which the
+            // backend never sends — so a SUCCESSFUL save showed as "failed".)
+            if (res.ok && data.status === "success") {
+                showStatus("✅ " + (data.message || "Token synced. The cron is cleared for today."), "success");
                 document.getElementById("tokenInput").value = "";
             } else {
-                showStatus(`Sync failed: ${data.error || res.statusText}`, "error");
+                const reason = data.message || res.statusText || ("HTTP " + res.status);
+                showStatus(`Sync failed: ${reason}`, "error");
             }
         } catch (err) {
             showStatus(`Network error: ${err.message}`, "error");
