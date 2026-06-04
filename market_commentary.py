@@ -1948,7 +1948,8 @@ def _format_derivatives(d: dict) -> str:
             return fmt.format(x) if x is not None else "n/a"
         except Exception:
             return "n/a"
-lines = [f"  Derivatives (F&O) — ICICI Breeze (as of {d.get('asof', '?')}). "
+
+    lines = [f"  Derivatives (F&O) — ICICI Breeze (as of {d.get('asof', '?')}). "
              f"MANDATORY: explicitly state Nifty PCR-OI, max call-OI strike "
              f"(resistance) and max put-OI strike (support) with actual numbers "
              f"in Levels & Breadth. State futures basis direction. No separate section:"]
