@@ -3359,7 +3359,7 @@ def _select_model(mode: str, packet: dict, will_ground: bool = False) -> tuple:
         return (GEMINI_MODEL_STRONG, 6000)
     if _is_event_day(packet):
         return (GEMINI_MODEL_STRONG, 6000)
-    return (GEMINI_MODEL_FAST, 500)
+    return (GEMINI_MODEL_FAST, 1200)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
