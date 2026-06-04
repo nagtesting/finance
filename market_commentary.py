@@ -1665,7 +1665,7 @@ NIFTY_100_SYMBOLS = {
     "Maruti Suzuki": "MARUTI.NS", "HCL Tech": "HCLTECH.NS",
     "Sun Pharma": "SUNPHARMA.NS", "Titan": "TITAN.NS",
     "UltraTech Cement": "ULTRACEMCO.NS", "NTPC": "NTPC.NS",
-    "Power Grid": "POWERGRID.NS", "Tata Motors": "TATAMOTORS.NS",
+    "Power Grid": "POWERGRID.NS", "Tata Motors": "TATAMOTOR.NS",
     "Nestle India": "NESTLEIND.NS", "Bajaj Finserv": "BAJAJFINSV.NS",
     "Wipro": "WIPRO.NS", "Tata Steel": "TATASTEEL.NS",
     "JSW Steel": "JSWSTEEL.NS", "ONGC": "ONGC.NS",
@@ -1681,7 +1681,7 @@ NIFTY_100_SYMBOLS = {
     "Shriram Finance": "SHRIRAMFIN.NS", "BPCL": "BPCL.NS",
     "Trent": "TRENT.NS", "Jio Financial": "JIOFIN.NS",
     # ---- Nifty Next 50 ----
-    "LTIMindtree": "LTIM.NS", "Adani Green": "ADANIGREEN.NS",
+    "LTIMindtree": "LTIMINDTREE.NS", "Adani Green": "ADANIGREEN.NS",
     "Adani Energy Sol": "ADANIENSOL.NS", "Adani Power": "ADANIPOWER.NS",
     "Ambuja Cements": "AMBUJACEM.NS", "ACC": "ACC.NS",
     "Bank of Baroda": "BANKBARODA.NS", "PNB": "PNB.NS",
@@ -1948,10 +1948,10 @@ def _format_derivatives(d: dict) -> str:
             return fmt.format(x) if x is not None else "n/a"
         except Exception:
             return "n/a"
-
-    lines = [f"  Derivatives (F&O) — ICICI Breeze (as of {d.get('asof', '?')}). "
-             f"Confirmation layer only; fold into the level/breadth read, do NOT "
-             f"add a separate derivatives section or jargon dump:"]
+lines = [f"  Derivatives (F&O) — ICICI Breeze (as of {d.get('asof', '?')}). "
+             f"MANDATORY: explicitly state Nifty PCR-OI, max call-OI strike "
+             f"(resistance) and max put-OI strike (support) with actual numbers "
+             f"in Levels & Breadth. State futures basis direction. No separate section:"]
     for u in d.get("underlyings", []):
         bits = []
         if u.get("future_ltp") is not None:
@@ -1969,14 +1969,13 @@ def _format_derivatives(d: dict) -> str:
         detail = "; ".join(bits) if bits else "no derivative fields resolved"
         lines.append(f"    • {u.get('label', '?')} "
                      f"[{u.get('expiry_used', '?')}]: {detail}")
-    lines.append("  READ: a widening futures premium = leveraged long "
-                 "conviction; a discount/backwardation = hedging or underlying "
-                 "weakness. PCR-OI >1.2 = put-writing support below; <0.7 = "
-                 "call-writing resistance above. Max-OI strikes tend to cap "
-                 "(calls) / floor (puts) — cite a strike ONLY when it reinforces "
-                 "a level you are already making from price/technicals. "
-                 "NO-INVENTION still applies: never state an OI/PCR/basis number "
-                 "that is not in this block.")
+    lines.append("  MANDATORY RULES: (1) State Nifty PCR-OI explicitly — "
+                 "PCR >1.2 = put-writing support, <0.7 = call-writing resistance. "
+                 "(2) Name max call-OI strike as resistance and max put-OI strike "
+                 "as support with actual numbers in Levels & Breadth. "
+                 "(3) State futures basis — premium = long conviction, discount = hedging. "
+                 "These numbers MUST appear explicitly. NO-INVENTION: never state "
+                 "OI/PCR/basis not in this block.")
     return "\n".join(lines)
 
 
