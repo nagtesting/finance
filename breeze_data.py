@@ -362,6 +362,9 @@ def _fetch_future(bz, nfo_underlying: str, expiry_iso: str) -> dict:
         )
         rows = _success_rows(resp)
         if not rows:
+            # Log the raw response (truncated) so we can see what Breeze returned.
+            raw_preview = str(resp)[:300] if resp is not None else "None"
+            _log("⚠️", f"Futures empty [{nfo_underlying} {expiry_iso[:10]}]: {raw_preview}")
             return {}
         r = rows[0]
         return {
@@ -371,7 +374,7 @@ def _fetch_future(bz, nfo_underlying: str, expiry_iso: str) -> dict:
             "future_oi":   _i(_first(r, "open_interest", "oi", "OI")),  # best-effort
         }
     except Exception as e:
-        _log("⚠️", f"Futures fetch failed [{nfo_underlying} {expiry_iso}]: {e}")
+        _log("⚠️", f"Futures fetch failed [{nfo_underlying} {expiry_iso[:10]}]: {e}")
         return {}
 
 
@@ -384,9 +387,13 @@ def _fetch_option_side(bz, nfo_underlying: str, expiry_iso: str, right: str) -> 
             product_type="options", right=right,
             strike_price="", expiry_date=expiry_iso,
         )
-        return _success_rows(resp)
+        rows = _success_rows(resp)
+        if not rows:
+            raw_preview = str(resp)[:300] if resp is not None else "None"
+            _log("⚠️", f"Option chain ({right}) empty [{nfo_underlying} {expiry_iso[:10]}]: {raw_preview}")
+        return rows
     except Exception as e:
-        _log("⚠️", f"Option chain ({right}) failed [{nfo_underlying} {expiry_iso}]: {e}")
+        _log("⚠️", f"Option chain ({right}) failed [{nfo_underlying} {expiry_iso[:10]}]: {e}")
         return []
 
 
@@ -443,10 +450,12 @@ def _fetch_one(bz, label: str, yahoo: str, expiry_cache: dict) -> dict | None:
     """
     spot_code, nfo, kind = _resolve_codes(yahoo)
     if not nfo:
+        _log("⚠️", f"No NFO code resolved for {label} ({yahoo}) — skipping.")
         return None
 
     # Pick / reuse a working expiry for this underlying.
     expiries = [expiry_cache[nfo]] if nfo in expiry_cache else _expiry_candidates()
+    _log("🔍", f"Fetching {label} ({nfo}) — expiries: {[e[:10] for e in expiries]}")
     if not expiries:
         _log("⚠️", f"No future expiry candidates for {label} ({nfo}).")
         return None
