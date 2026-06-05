@@ -305,21 +305,39 @@ def _last_weekday_of_month(year: int, month: int, weekday: int) -> datetime:
 
 def _expiry_candidates() -> list[str]:
     """
-    Ordered ISO8601 expiry strings to try. We generate the last Thursday AND
-    last Tuesday of this month and next month (NSE has shuffled index expiry
-    weekdays via circulars), keep those >= today, sort ascending, dedup.
+    Ordered ISO8601 expiry strings to try, nearest first.
+
+    NIFTY / BANKNIFTY options expire EVERY Thursday (weekly contracts).
+    The old logic only generated the last Thursday of each month, so any
+    week that isn't the monthly-expiry week returned no data from Breeze —
+    the active near-term contract was never tried.
+
+    Fix: generate the next 5 weekly Thursdays first (covers all near-term
+    liquid contracts), then append the monthly last-Thursday backstop for
+    this month and next. Deduped, sorted ascending, all >= today.
     First candidate that returns data wins (cached per process by caller).
     """
     now = datetime.now(IST)
-    cands: list[datetime] = []
+    today = now.date()
+    cands: set = set()
+
+    # Weekly Thursdays — next 5 covers current week through ~5 weeks out.
+    d = today
+    while d.weekday() != calendar.THURSDAY:
+        d += timedelta(days=1)
+    for _ in range(5):
+        cands.add(d)
+        d += timedelta(weeks=1)
+
+    # Monthly last-Thursday backstop for this month and next.
     for delta_month in (0, 1):
         y = now.year + (now.month - 1 + delta_month) // 12
         m = (now.month - 1 + delta_month) % 12 + 1
-        cands.append(_last_weekday_of_month(y, m, calendar.THURSDAY))
-        cands.append(_last_weekday_of_month(y, m, calendar.TUESDAY))
-    today = now.date()
-    fut = sorted({c.date() for c in cands if c.date() >= today})
-    return [d.strftime("%Y-%m-%dT06:00:00.000Z") for d in fut]
+        monthly = _last_weekday_of_month(y, m, calendar.THURSDAY).date()
+        if monthly >= today:
+            cands.add(monthly)
+
+    return [d.strftime("%Y-%m-%dT06:00:00.000Z") for d in sorted(cands)]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
