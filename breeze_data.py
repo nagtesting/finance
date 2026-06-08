@@ -92,11 +92,15 @@ _INDEX_STRIKE_STEP = {"NIFTY": 50, "BANKNIFTY": 100, "NIFTYIT": 100}
 
 # Map Yahoo index tickers → (breeze spot stock_code, breeze NFO underlying).
 # Stocks are NOT listed here — they are resolved dynamically via get_names().
+# NOTE: Breeze uses its own ISEC code as the NFO stock_code too — NOT the NSE
+# trading symbol. Bank Nifty futures/options are queried as "CNXBAN" (passing
+# "BANKNIFTY" returns the T10:56 service error seen in the logs); Nifty IT as
+# "CNXIT". The spot code and the NFO code are therefore the same here.
 _INDEX_MAP = {
     "^NSEI":     ("NIFTY",  "NIFTY"),
-    "^NSEBANK":  ("CNXBAN", "BANKNIFTY"),
-    "^CNXIT":    ("CNXIT",  "NIFTYIT"),
-    "^NSEIT":    ("CNXIT",  "NIFTYIT"),
+    "^NSEBANK":  ("CNXBAN", "CNXBAN"),
+    "^CNXIT":    ("CNXIT",  "CNXIT"),
+    "^NSEIT":    ("CNXIT",  "CNXIT"),
 }
 
 
@@ -305,39 +309,49 @@ def _last_weekday_of_month(year: int, month: int, weekday: int) -> datetime:
 
 def _expiry_candidates() -> list[str]:
     """
-    Ordered ISO8601 expiry strings to try, nearest first.
+    Ordered ISO8601 monthly-futures expiry strings to try, nearest first.
 
-    NIFTY / BANKNIFTY options expire EVERY Thursday (weekly contracts).
-    The old logic only generated the last Thursday of each month, so any
-    week that isn't the monthly-expiry week returned no data from Breeze —
-    the active near-term contract was never tried.
+    Single-stock and index FUTURES are MONTHLY-only (there is no weekly futures
+    contract), so we only ever need monthly expiries here. Since NSE circular
+    NSE/FAOP/68747 (effective 2025-09-01), the monthly expiry for NIFTY,
+    BANKNIFTY, FINNIFTY, MIDCPNIFTY, NIFTYNXT50 and single stocks is the LAST
+    TUESDAY of the expiry month (it was the last Thursday before that date —
+    the old Thursday logic is why every futures fetch returned "No Data Found").
 
-    Fix: generate the next 5 weekly Thursdays first (covers all near-term
-    liquid contracts), then append the monthly last-Thursday backstop for
-    this month and next. Deduped, sorted ascending, all >= today.
-    First candidate that returns data wins (cached per process by caller).
+    Strategy (self-healing):
+      • Primary: last Tuesday of this + next two months.
+      • Fallbacks: last Monday (covers a Tuesday-holiday shift to prev session),
+        then last Wednesday / Thursday (covers any future NSE weekday change).
+    The first candidate that actually returns futures data wins and is cached
+    per process by the caller, so the fallbacks cost nothing on normal days.
     """
     now = datetime.now(IST)
     today = now.date()
-    cands: set = set()
+    seen: set = set()
+    ordered: list = []
 
-    # Weekly Thursdays — next 5 covers current week through ~5 weeks out.
-    d = today
-    while d.weekday() != calendar.THURSDAY:
-        d += timedelta(days=1)
-    for _ in range(5):
-        cands.add(d)
-        d += timedelta(weeks=1)
+    def _add(d):
+        if d >= today and d not in seen:
+            seen.add(d)
+            ordered.append(d)
 
-    # Monthly last-Thursday backstop for this month and next.
-    for delta_month in (0, 1):
+    def _month(delta_month: int):
         y = now.year + (now.month - 1 + delta_month) // 12
         m = (now.month - 1 + delta_month) % 12 + 1
-        monthly = _last_weekday_of_month(y, m, calendar.THURSDAY).date()
-        if monthly >= today:
-            cands.add(monthly)
+        return y, m
 
-    return [d.strftime("%Y-%m-%dT06:00:00.000Z") for d in sorted(cands)]
+    # Primary: last TUESDAY of this + next two months (correct monthly expiry).
+    for dm in (0, 1, 2):
+        y, m = _month(dm)
+        _add(_last_weekday_of_month(y, m, calendar.TUESDAY).date())
+
+    # Fallbacks: holiday-shift (Mon) + future rule-change safety (Wed, Thu).
+    for dm in (0, 1, 2):
+        y, m = _month(dm)
+        for wd in (calendar.MONDAY, calendar.WEDNESDAY, calendar.THURSDAY):
+            _add(_last_weekday_of_month(y, m, wd).date())
+
+    return [d.strftime("%Y-%m-%dT06:00:00.000Z") for d in ordered]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
