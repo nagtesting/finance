@@ -1,0 +1,325 @@
+"""
+oi_history.py  ─  MoneyVeda · per-strike OI snapshots + tick-over-tick ΔOI
+==========================================================================
+The Breeze snapshot has no OI-change field, so to get ΔOI (and the price/OI
+"buildup" read) we persist each tick's open interest and diff the next tick
+against it. This is the one piece that needs stored state.
+
+WHAT IT DOES (one call: process_oi)
+  1. Reads the latest PRIOR snapshot for (underlying, expiry) from Supabase.
+  2. Diffs current vs prior and ANNOTATES each option row in place with
+     row["change_in_oi"] — so greeks.compute_option_analytics() picks ΔOI up
+     automatically (no change needed in greeks.py: its _oi_change() reader
+     already looks for "change_in_oi").
+  3. Classifies the FUTURES price/OI buildup (only when futures OI is present;
+     never fabricated).
+  4. Persists the current snapshot (becomes the prior for the next tick).
+  5. Fail-closed: on ANY Supabase/parse error it returns {} and does NOT
+     annotate rows, so commentary proceeds exactly as before.
+
+Matches breeze_data.py's Supabase pattern (create_client + table().execute()).
+
+────────────────────────────────────────────────────────────────────────────
+ONE-TIME SUPABASE SETUP (run in the SQL editor):
+
+  create table if not exists oi_snapshots (
+    id            bigint generated always as identity primary key,
+    underlying    text        not null,
+    expiry        date        not null,
+    captured_at   timestamptz not null default now(),
+    trading_date  date        not null,
+    future_ltp    double precision,
+    future_oi     bigint,
+    oi_map        jsonb       not null      -- {"23000": {"c": 1234, "p": 567}, ...}
+  );
+  create index if not exists oi_snapshots_lookup
+    on oi_snapshots (underlying, expiry, captured_at desc);
+
+Retention: call prune_old() from a daily job to keep the free tier lean.
+────────────────────────────────────────────────────────────────────────────
+"""
+
+from __future__ import annotations
+
+import os
+import datetime as _dt
+from typing import Optional
+
+_IST = _dt.timezone(_dt.timedelta(hours=5, minutes=30))
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY")
+_TABLE = os.getenv("OI_SNAPSHOT_TABLE", "oi_snapshots")
+
+# If the latest stored snapshot is younger than this, treat the current call as
+# the SAME tick (a cron retry) and skip the insert — keeps diffs from collapsing
+# to ~0 because the "prior" was a duplicate written seconds earlier.
+_MIN_TICK_GAP_S = int(os.getenv("OI_MIN_TICK_GAP_S", "120"))
+
+
+def _log(emoji: str, msg: str) -> None:
+    ts = _dt.datetime.now(_IST).strftime("%H:%M:%S")
+    print(f"{emoji}  [{ts}]  {msg}", flush=True)
+
+
+def _sb():
+    """Supabase client or None (fail-closed). Patchable in tests."""
+    if not (SUPABASE_URL and SUPABASE_SECRET_KEY):
+        return None
+    try:
+        from supabase import create_client
+        return create_client(SUPABASE_URL, SUPABASE_SECRET_KEY)
+    except Exception as e:
+        _log("⚠️", f"Supabase client init failed: {e}")
+        return None
+
+
+# ── tolerant field readers (local, standalone) ──────────────────────────────
+def _i(v) -> Optional[int]:
+    try:
+        return int(float(v))
+    except (TypeError, ValueError):
+        return None
+
+
+def _f(v) -> Optional[float]:
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def _first(d: dict, *keys):
+    for k in keys:
+        if k in d and d[k] not in (None, "", "-"):
+            return d[k]
+    return None
+
+
+def _strike(row) -> Optional[float]:
+    return _f(_first(row, "strike_price", "strike"))
+
+
+def _oi(row) -> Optional[int]:
+    return _i(_first(row, "open_interest", "oi", "OI"))
+
+
+def _skey(strike: float) -> str:
+    """Stable JSON key for a strike: '23000', '2.5', etc."""
+    return "%g" % strike
+
+
+# ── PURE diff logic (no I/O — unit-tested directly) ──────────────────────────
+def _build_oi_map(call_rows: list, put_rows: list) -> dict:
+    """Current per-strike OI map: {strike_key: {'c': oi, 'p': oi}}."""
+    m: dict[str, dict] = {}
+    for rows, side in ((call_rows or [], "c"), (put_rows or [], "p")):
+        for row in rows:
+            k = _strike(row)
+            oi = _oi(row)
+            if k is None or oi is None:
+                continue
+            m.setdefault(_skey(k), {})[side] = oi
+    return m
+
+
+def _apply_deltas(prev_map: Optional[dict],
+                  call_rows: list, put_rows: list) -> dict:
+    """
+    Annotate each row in place with row['change_in_oi'] (current − prior) when
+    a prior value exists for that strike/side. Returns aggregate totals.
+    """
+    summary = {"call_oi_change": 0, "put_oi_change": 0,
+               "matched_strikes": 0, "annotated": False}
+    if not prev_map:
+        return summary
+
+    for rows, side in ((call_rows or [], "c"), (put_rows or [], "p")):
+        for row in rows:
+            k = _strike(row)
+            cur = _oi(row)
+            if k is None or cur is None:
+                continue
+            prev = (prev_map.get(_skey(k)) or {}).get(side)
+            if prev is None:
+                continue
+            d = cur - int(prev)
+            row["change_in_oi"] = d
+            summary["matched_strikes"] += 1
+            summary["annotated"] = True
+            if side == "c":
+                summary["call_oi_change"] += d
+            else:
+                summary["put_oi_change"] += d
+    return summary
+
+
+def classify_buildup(price_change_pct: Optional[float],
+                     oi_change_pct: Optional[float]) -> Optional[str]:
+    """price↑/OI↑ long buildup · price↓/OI↑ short buildup ·
+       price↑/OI↓ short covering · price↓/OI↓ long unwinding."""
+    if price_change_pct is None or oi_change_pct is None:
+        return None
+    up_p, up_oi = price_change_pct > 0, oi_change_pct > 0
+    if up_p and up_oi:        return "long buildup"
+    if (not up_p) and up_oi:  return "short buildup"
+    if up_p and (not up_oi):  return "short covering"
+    return "long unwinding"
+
+
+def _gap_label(prev_captured_at) -> Optional[str]:
+    """Human time-base for the diff, e.g. 'intraday, since 12:00' or
+    'since previous session (05-Jun 15:30)'."""
+    if not prev_captured_at:
+        return None
+    try:
+        s = str(prev_captured_at).replace("Z", "+00:00")
+        dt = _dt.datetime.fromisoformat(s)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=_dt.timezone.utc)
+        prev_ist = dt.astimezone(_IST)
+    except Exception:
+        return None
+    now_ist = _dt.datetime.now(_IST)
+    if prev_ist.date() == now_ist.date():
+        return f"intraday, since {prev_ist:%H:%M}"
+    return f"since previous session ({prev_ist:%d-%b %H:%M})"
+
+
+# ── Supabase I/O ─────────────────────────────────────────────────────────────
+def _read_prior(sb, underlying: str, expiry_date: str) -> Optional[dict]:
+    try:
+        res = (sb.table(_TABLE)
+               .select("captured_at, future_ltp, future_oi, oi_map")
+               .eq("underlying", underlying)
+               .eq("expiry", expiry_date)
+               .order("captured_at", desc=True)
+               .limit(1)
+               .execute())
+        rows = res.data or []
+        return rows[0] if rows else None
+    except Exception as e:
+        _log("⚠️", f"OI prior read failed [{underlying} {expiry_date}]: {e}")
+        return None
+
+
+def _too_soon(prior: Optional[dict]) -> bool:
+    if not prior:
+        return False
+    try:
+        s = str(prior.get("captured_at")).replace("Z", "+00:00")
+        dt = _dt.datetime.fromisoformat(s)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=_dt.timezone.utc)
+        return (_dt.datetime.now(_dt.timezone.utc) - dt).total_seconds() < _MIN_TICK_GAP_S
+    except Exception:
+        return False
+
+
+def _save(sb, underlying, expiry_date, future_ltp, future_oi, oi_map) -> None:
+    try:
+        sb.table(_TABLE).insert({
+            "underlying": underlying,
+            "expiry": expiry_date,
+            "trading_date": _dt.datetime.now(_IST).date().isoformat(),
+            "future_ltp": future_ltp,
+            "future_oi": future_oi,
+            "oi_map": oi_map,
+        }).execute()
+    except Exception as e:
+        _log("⚠️", f"OI snapshot save failed [{underlying} {expiry_date}]: {e}")
+
+
+# ── PUBLIC: read prior, diff+annotate, classify buildup, persist ─────────────
+def process_oi(underlying: str,
+               expiry: str,
+               call_rows: list,
+               put_rows: list,
+               future_ltp: Optional[float] = None,
+               future_oi: Optional[int] = None) -> dict:
+    """
+    Annotates rows in place with 'change_in_oi' and returns a flow summary:
+      {"available", "since", "call_oi_change", "put_oi_change",
+       "future_oi_change", "future_buildup"}
+    Always safe: returns {"available": False} on any problem.
+    """
+    expiry_date = (expiry or "")[:10]
+    sb = _sb()
+    if sb is None or not expiry_date:
+        return {"available": False}
+
+    prior = _read_prior(sb, underlying, expiry_date)
+    deltas = _apply_deltas(prior.get("oi_map") if prior else None,
+                           call_rows, put_rows)
+
+    # Futures price/OI buildup — only with real prior + current futures OI.
+    future_buildup = future_oi_change = None
+    if (prior and future_oi is not None and future_ltp is not None):
+        p_oi = _i(prior.get("future_oi"))
+        p_ltp = _f(prior.get("future_ltp"))
+        if p_oi and p_oi > 0 and p_ltp and p_ltp > 0:
+            future_oi_change = future_oi - p_oi
+            price_chg_pct = (future_ltp - p_ltp) / p_ltp * 100.0
+            oi_chg_pct = future_oi_change / p_oi * 100.0
+            future_buildup = classify_buildup(price_chg_pct, oi_chg_pct)
+
+    # Persist current (unless a near-duplicate retry tick).
+    if not _too_soon(prior):
+        _save(sb, underlying, expiry_date, future_ltp, future_oi,
+              _build_oi_map(call_rows, put_rows))
+
+    return {
+        "available": deltas["annotated"] or future_buildup is not None,
+        "since": _gap_label(prior.get("captured_at")) if prior else None,
+        "call_oi_change": deltas["call_oi_change"] if deltas["annotated"] else None,
+        "put_oi_change": deltas["put_oi_change"] if deltas["annotated"] else None,
+        "future_oi_change": future_oi_change,
+        "future_buildup": future_buildup,
+    }
+
+
+def prune_old(days: int = 30) -> None:
+    """Delete snapshots older than `days`. Call from a daily maintenance job."""
+    sb = _sb()
+    if sb is None:
+        return
+    cutoff = (_dt.datetime.now(_dt.timezone.utc)
+              - _dt.timedelta(days=days)).isoformat()
+    try:
+        sb.table(_TABLE).delete().lt("captured_at", cutoff).execute()
+        _log("🧹", f"Pruned OI snapshots older than {days}d.")
+    except Exception as e:
+        _log("⚠️", f"OI prune failed: {e}")
+
+
+# ── offline self-test of the pure diff logic (no Supabase needed) ────────────
+if __name__ == "__main__":
+    prior_map = {
+        "23000": {"c": 100000, "p": 120000},
+        "23100": {"c":  90000, "p":  80000},
+        "23200": {"c":  70000, "p":  60000},
+    }
+    calls = [{"strike_price": 23000, "open_interest": 130000},   # +30000
+             {"strike_price": 23100, "open_interest":  85000},   # -5000
+             {"strike_price": 23200, "open_interest":  72000}]   # +2000
+    puts  = [{"strike_price": 23000, "open_interest": 150000},   # +30000
+             {"strike_price": 23100, "open_interest":  88000},   # +8000
+             {"strike_price": 23200, "open_interest":  55000}]   # -5000
+
+    summ = _apply_deltas(prior_map, calls, puts)
+    print("call rows now carry change_in_oi:",
+          [r.get("change_in_oi") for r in calls])     # [30000, -5000, 2000]
+    print("put rows now carry change_in_oi: ",
+          [r.get("change_in_oi") for r in puts])      # [30000, 8000, -5000]
+    print("aggregate:", {k: summ[k] for k in
+          ("call_oi_change", "put_oi_change", "matched_strikes")})
+
+    # futures buildup quadrant
+    print("\nbuildup price+1.2% / OI+4%:",
+          classify_buildup(1.2, 4.0))      # long buildup
+    print("buildup price-0.8% / OI+3%:",
+          classify_buildup(-0.8, 3.0))     # short buildup
+    print("buildup price+0.5% / OI-2%:",
+          classify_buildup(0.5, -2.0))     # short covering
+    print("buildup price-1.0% / OI-3%:",
+          classify_buildup(-1.0, -3.0))    # long unwinding
