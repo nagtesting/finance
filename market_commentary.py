@@ -1967,6 +1967,31 @@ def _format_derivatives(d: dict) -> str:
             bits.append(f"call-OI wall {num(u.get('max_call_oi_strike'))} (resistance)")
         if u.get("max_put_oi_strike") is not None:
             bits.append(f"put-OI wall {num(u.get('max_put_oi_strike'))} (support)")
+
+        # v3.7: option Greeks (computed deterministically in greeks.py) ──────────
+        g = u.get("greeks") or {}
+        if g.get("available"):
+            if g.get("atm_iv_pct") is not None:
+                bits.append(f"ATM IV {num(g.get('atm_iv_pct'), '{:.1f}')}%")
+            if g.get("expected_move_pct") is not None:
+                bits.append(f"exp.move ±{num(g.get('expected_move_pct'), '{:.2f}')}% "
+                            f"(±{num(g.get('expected_move_abs'), '{:,.0f}')})")
+            if g.get("iv_skew_pct") is not None:
+                lean = "puts richer" if g["iv_skew_pct"] > 0 else "calls richer"
+                bits.append(f"IV skew {num(g.get('iv_skew_pct'), '{:+.2f}')}pts ({lean})")
+            if g.get("peak_gamma_strike") is not None:
+                bits.append(f"peak-gamma {num(g.get('peak_gamma_strike'), '{:,.0f}')}")
+
+        # v3.7: OI-flow — ΔOI vs prior tick + futures buildup (oi_history.py) ────
+        of = u.get("oi_flow") or {}
+        if of.get("available"):
+            if of.get("future_buildup"):
+                since = f" {of['since']}" if of.get("since") else ""
+                bits.append(f"futures {of['future_buildup']}{since}")
+            if of.get("call_oi_change") is not None or of.get("put_oi_change") is not None:
+                bits.append(f"ΔOI C {num(of.get('call_oi_change'), '{:+,.0f}')} / "
+                            f"P {num(of.get('put_oi_change'), '{:+,.0f}')}")
+
         detail = "; ".join(bits) if bits else "no derivative fields resolved"
         lines.append(f"    • {u.get('label', '?')} "
                      f"[{u.get('expiry_used', '?')}]: {detail}")
@@ -1977,6 +2002,17 @@ def _format_derivatives(d: dict) -> str:
                  "(3) State futures basis — premium = long conviction, discount = hedging. "
                  "These numbers MUST appear explicitly. NO-INVENTION: never state "
                  "OI/PCR/basis not in this block.")
+    lines.append("  GREEKS (DESCRIPTIVE ONLY — no targets, no buy/sell, no "
+                 "forecast): where ATM IV is shown, state it and frame the "
+                 "implied expected-move band as the range the market is PRICING, "
+                 "not a prediction. Positive IV skew = puts richer = downside "
+                 "hedging demand; negative = upside chase. Mention the peak-gamma "
+                 "strike as a positioning magnet/pin level. Read any futures "
+                 "buildup (long buildup / short buildup / short covering / long "
+                 "unwinding) and ΔOI as POSITIONING over the stated window — never "
+                 "as a directional call. NO-INVENTION: use only the IV, skew, "
+                 "expected-move, gamma and ΔOI figures printed above; if a figure "
+                 "is absent, do not mention that metric.")
     return "\n".join(lines)
 
 
