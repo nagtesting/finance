@@ -390,6 +390,7 @@ EXIT CODES:
 
 import os
 import sys
+import time
 import json
 import argparse
 import requests
@@ -3401,8 +3402,27 @@ def _select_model(mode: str, packet: dict, will_ground: bool = False) -> tuple:
 # ─────────────────────────────────────────────────────────────────────────────
 # GEMINI CALLS — non-grounded (intraday) and grounded (pre/post)
 # ─────────────────────────────────────────────────────────────────────────────
+def _is_transient_gemini_error(err: str) -> bool:
+    """True for errors worth retrying (model overloaded / rate-limited / timeout),
+    False for hard errors (bad key, bad request, model-not-found) where retrying
+    just wastes the slot window."""
+    e = (err or "").lower()
+    transient = ("503", "unavailable", "overloaded", "429", "resource_exhausted",
+                 "rate limit", "rate-limit", "timeout", "timed out", "deadline",
+                 "500", "internal error", "temporarily")
+    hard = ("400", "401", "403", "404", "invalid", "api key", "not found",
+            "permission", "unauthenticated")
+    if any(h in e for h in hard):
+        return False
+    return any(t in e for t in transient)
+
+
 def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
-    """Non-grounded Gemini call — used for intraday slots."""
+    """Non-grounded Gemini call — used for intraday slots.
+
+    v3.7: retries transient 503/429/timeout failures with exponential backoff
+    before giving up, so a momentary Google capacity spike no longer drops the
+    whole run to the rule-based template (which ignores the prompt)."""
     if not GEMINI_AVAILABLE:
         _log("⚠️", "google-genai SDK not installed")
         return None, "error"
@@ -3410,34 +3430,51 @@ def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
         _log("⚠️", "GEMINI_API_KEY not set")
         return None, "error"
     model = model or GEMINI_MODEL_FAST
-    try:
-        client = _genai_v3.Client(api_key=GEMINI_API_KEY)
-        _log("🧠", f"Calling Gemini ({model}, max_tokens={max_tokens})...")
-        call_timeout = 180 if "pro" in model else 45
-        response = client.models.generate_content(
-            model    = model,
-            contents = prompt,
-            config   = _genai_v3_types.GenerateContentConfig(
-                temperature       = 0.5,
-                max_output_tokens = max_tokens,
-                top_p             = 0.9,
-                http_options      = _genai_v3_types.HttpOptions(
-                                        timeout=call_timeout * 1000),  # ms
-            ),
-        )
-        if response and getattr(response, "text", None):
-            text = response.text.strip()
-            if len(text) < 80:
-                _log("⚠️", f"Gemini returned too-short text ({len(text)} chars)")
+    max_attempts = int(os.getenv("GEMINI_MAX_ATTEMPTS", "3"))
+    backoffs = [2, 5, 12]            # seconds between attempts; well within a slot window
+    call_timeout = 180 if "pro" in model else 45
+    last_err = ""
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            client = _genai_v3.Client(api_key=GEMINI_API_KEY)
+            if attempt == 1:
+                _log("🧠", f"Calling Gemini ({model}, max_tokens={max_tokens})...")
+            else:
+                _log("🔁", f"Gemini retry {attempt}/{max_attempts} ({model})...")
+            response = client.models.generate_content(
+                model    = model,
+                contents = prompt,
+                config   = _genai_v3_types.GenerateContentConfig(
+                    temperature       = 0.5,
+                    max_output_tokens = max_tokens,
+                    top_p             = 0.9,
+                    http_options      = _genai_v3_types.HttpOptions(
+                                            timeout=call_timeout * 1000),  # ms
+                ),
+            )
+            if response and getattr(response, "text", None):
+                text = response.text.strip()
+                if len(text) < 80:
+                    _log("⚠️", f"Gemini returned too-short text ({len(text)} chars)")
+                    return None, "error"
+                _log("✅", f"Gemini returned {len(text)} characters ({model})")
+                source_tag = "gemini_pro" if "pro" in model else "gemini_flash"
+                return text, source_tag
+            last_err = "empty response"
+            _log("⚠️", "Gemini returned empty response")
+        except Exception as e:
+            last_err = str(e)
+            if not _is_transient_gemini_error(last_err):
+                _log("⚠️", f"Gemini non-transient error ({model}): {e}")
                 return None, "error"
-            _log("✅", f"Gemini returned {len(text)} characters ({model})")
-            source_tag = "gemini_pro" if "pro" in model else "gemini_flash"
-            return text, source_tag
-        _log("⚠️", "Gemini returned empty response")
-        return None, "error"
-    except Exception as e:
-        _log("⚠️", f"Gemini API error: {e}")
-        return None, "error"
+            _log("⚠️", f"Gemini transient error attempt {attempt}/{max_attempts}: {e}")
+
+        if attempt < max_attempts:
+            time.sleep(backoffs[min(attempt - 1, len(backoffs) - 1)])
+
+    _log("⚠️", f"Gemini failed after {max_attempts} attempts ({model}): {last_err}")
+    return None, "error"
 
 
 def _extract_grounding_sources(response) -> list:
@@ -3914,6 +3951,13 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
             grounding_status = "fallback_nongrounded"
     else:
         text, source = call_gemini(prompt, model=model, max_tokens=max_tokens)
+        # v3.7: if the chosen model is still unavailable after its retries, try
+        # the lighter flash variant (often has spare capacity when flash is
+        # saturated) before conceding to the rule-based template.
+        if not text and model != GEMINI_MODEL_FAST:
+            _log("🔁", f"{model} unavailable after retries — trying {GEMINI_MODEL_FAST}")
+            text, source = call_gemini(prompt, model=GEMINI_MODEL_FAST,
+                                       max_tokens=max_tokens)
         grounding_status = "not_attempted"
 
     if not text:
