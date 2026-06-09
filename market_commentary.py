@@ -392,6 +392,8 @@ import os
 import sys
 import time
 import json
+import signal
+import socket
 import argparse
 import requests
 from datetime import datetime, timezone, timedelta
@@ -1099,7 +1101,7 @@ _BROADER_FEED_LABELS = {
 }
 _BROADER_YF_FALLBACK = {
     "midcap":   ["^NSEMDCP50", "NIFTY_MIDCAP_100.NS", "NIFTYMIDCAP150.NS"],
-    "smallcap": ["^CNXSC", "NIFTYSMLCAP250.NS", "NIFTY_SMLCAP_100.NS"],
+    "smallcap": ["^CNXSC", "NIFTYSMLCAP250.NS"],
 }
 
 
@@ -1666,7 +1668,7 @@ NIFTY_100_SYMBOLS = {
     "Maruti Suzuki": "MARUTI.NS", "HCL Tech": "HCLTECH.NS",
     "Sun Pharma": "SUNPHARMA.NS", "Titan": "TITAN.NS",
     "UltraTech Cement": "ULTRACEMCO.NS", "NTPC": "NTPC.NS",
-    "Power Grid": "POWERGRID.NS", "Tata Motors": "TATAMOTOR.NS",
+    "Power Grid": "POWERGRID.NS", "Tata Motors": "TMPV.NS",
     "Nestle India": "NESTLEIND.NS", "Bajaj Finserv": "BAJAJFINSV.NS",
     "Wipro": "WIPRO.NS", "Tata Steel": "TATASTEEL.NS",
     "JSW Steel": "JSWSTEEL.NS", "ONGC": "ONGC.NS",
@@ -1682,7 +1684,7 @@ NIFTY_100_SYMBOLS = {
     "Shriram Finance": "SHRIRAMFIN.NS", "BPCL": "BPCL.NS",
     "Trent": "TRENT.NS", "Jio Financial": "JIOFIN.NS",
     # ---- Nifty Next 50 ----
-    "LTIMindtree": "LTIMINDTREE.NS", "Adani Green": "ADANIGREEN.NS",
+    "LTIMindtree": "LTM.NS", "Adani Green": "ADANIGREEN.NS",
     "Adani Energy Sol": "ADANIENSOL.NS", "Adani Power": "ADANIPOWER.NS",
     "Ambuja Cements": "AMBUJACEM.NS", "ACC": "ACC.NS",
     "Bank of Baroda": "BANKBARODA.NS", "PNB": "PNB.NS",
@@ -1729,7 +1731,7 @@ def get_nifty100_movers(top_n: int = _NIFTY100_TOP_N) -> dict:
         df = _yf.download(
             symbols, period="2d", interval="1d",
             group_by="ticker", progress=False, threads=True,
-            auto_adjust=False,
+            auto_adjust=False, timeout=int(os.getenv("YF_TIMEOUT_SEC", "15")),
         )
     except Exception as e:
         _log("⚠️", f"Nifty 100 batch download failed: {e}")
@@ -4018,7 +4020,28 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
 # ─────────────────────────────────────────────────────────────────────────────
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
+def _hard_timeout_handler(signum, frame):
+    # A single run must NEVER hang. Render keeps at most one run of a cron job
+    # active at a time and DELAYS every later slot behind a still-running one,
+    # so a run that never exits blackholes the rest of the trading day. os._exit
+    # forces termination even if yfinance worker threads (threads=True) are still
+    # blocked on a stalled socket, so Render frees the schedule immediately.
+    _log("⏱️", "Run exceeded hard timeout — aborting so the cron schedule is "
+               "not blocked. (Tune via RUN_HARD_TIMEOUT_SEC.)")
+    os._exit(3)
+
+
 def main():
+    # Watchdog + network guards (see _hard_timeout_handler). Installed before any
+    # work so a stall anywhere — yfinance, Breeze, Gemini, Supabase — still exits
+    # well inside the 30-minute slot gap. SIGALRM is the hard guarantee (library-
+    # agnostic); the socket default timeout is a best-effort backstop.
+    hard_timeout = int(os.getenv("RUN_HARD_TIMEOUT_SEC", "360"))
+    if hasattr(signal, "SIGALRM"):
+        signal.signal(signal.SIGALRM, _hard_timeout_handler)
+        signal.alarm(hard_timeout)
+    socket.setdefaulttimeout(int(os.getenv("SOCKET_TIMEOUT_SEC", "20")))
+
     parser = argparse.ArgumentParser(description="MoneyVeda Market Commentary v3.5")
     parser.add_argument("--mode", choices=["pre", "intraday", "post", "auto"], default="auto",
                         help="'auto' detects from current IST time (default)")
