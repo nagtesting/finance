@@ -61,6 +61,20 @@ import time
 import calendar
 from datetime import datetime, timedelta, timezone
 
+# ── Analytics add-ons (greeks.py + oi_history.py). Import-isolated: if either
+#    module is absent or import-fails, we fall back to no-ops so the derivatives
+#    path keeps working (fail-closed, same discipline as the rest of this file).
+try:
+    from greeks import compute_option_analytics
+except Exception as _e:                                    # pragma: no cover
+    def compute_option_analytics(*_a, **_k):
+        return {"available": False, "reason": "greeks.py unavailable"}
+try:
+    from oi_history import process_oi
+except Exception as _e:                                    # pragma: no cover
+    def process_oi(*_a, **_k):
+        return {"available": False}
+
 # ── Conventions mirrored from market_commentary.py ───────────────────────────
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -489,7 +503,18 @@ def _fetch_one(bz, label: str, yahoo: str, expiry_cache: dict) -> dict | None:
     spot = fut.get("spot")
     call_rows = _fetch_option_side(bz, nfo, used_expiry, "call")
     put_rows  = _fetch_option_side(bz, nfo, used_expiry, "put")
-    chain = _summarise_chain(call_rows, put_rows, spot)
+
+    # ΔOI vs the previous stored tick: annotates call_rows/put_rows in place with
+    # "change_in_oi" (so compute_option_analytics picks it up automatically) and
+    # classifies the futures price/OI buildup. Safe no-op if Supabase/state absent.
+    oi_flow = process_oi(
+        nfo, used_expiry, call_rows, put_rows,
+        future_ltp=fut.get("future_ltp"),
+        future_oi=fut.get("future_oi"),
+    )
+
+    chain  = _summarise_chain(call_rows, put_rows, spot)
+    greeks = compute_option_analytics(call_rows, put_rows, spot, used_expiry)
 
     basis = basis_pct = None
     if fut.get("future_ltp") is not None and spot:
@@ -507,6 +532,8 @@ def _fetch_one(bz, label: str, yahoo: str, expiry_cache: dict) -> dict | None:
         "basis":       basis,
         "basis_pct":   basis_pct,
         **chain,
+        "greeks":      greeks,
+        "oi_flow":     oi_flow,
         "status":      "ok",
     }
     return metrics
