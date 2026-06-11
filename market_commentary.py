@@ -1,7 +1,25 @@
 """
-market_commentary.py  ─  MoneyVeda Market Commentary (v3.5)
+market_commentary.py  ─  MoneyVeda Market Commentary (v3.5.1)
 ====================================================================
 Generates daily AI-powered market commentary for Indian retail investors.
+
+v3.5.1 CHANGES (Yahoo Finance symbol fixes — patch):
+  • GIFTNIFTY.NS REMOVED. This symbol has never been valid on Yahoo Finance —
+    GIFT Nifty futures trade on NSE IX (GIFT City) and carry no .NS suffix on
+    Yahoo. The previous code would attempt the fetch, get a 404, then fall
+    through to the ^NSEI proxy anyway — but yfinance sometimes raises instead
+    of returning empty, which printed a noisy warning. Now ^NSEI (last Nifty
+    close) is used directly as the proxy. The _format_gift_nifty() formatter
+    already labels this as \"nifty_close_proxy\" so the pre-market model knows
+    it's a proxy and is told to infer gap direction from US close / Asia /
+    USD-INR instead. A proper GIFT Nifty source (broker API or NSE IX feed)
+    can replace this fallback in a future version.
+  • ^CNXCONSUMER → ^CNXCONSUMPTION in _ROTATION_SECTORS. NSE renamed all
+    \"CNX\" indices to the \"Nifty\" brand; ^CNXCONSUMER is the legacy symbol that
+    Yahoo no longer recognises. ^CNXCONSUMPTION is the current working symbol
+    for the Nifty India Consumption index. This was causing the 10-day sector
+    rotation fetch to silently drop the Cons Durables row and log a 404 error
+    that sometimes exited the cron with status 3.
 
 v3.5 CHANGES (NSE trading-holiday awareness + post-market gap framing):
   • HOLIDAY GUARD. The Render cron schedule `0,30 2-11 * * 1-5` filters
@@ -1197,8 +1215,13 @@ def get_gift_nifty() -> dict:
 
     # 2) yfinance fallback (delayed, fine for an 08:00 briefing) -----------
     if not out and YFINANCE_AVAILABLE:
-        # Common Yahoo symbols seen for GIFT Nifty futures; try in order.
-        for sym in ("GIFTNIFTY.NS", "^NSEI"):  # ^NSEI = last Nifty close as ref only
+        # GIFTNIFTY.NS is not a valid Yahoo Finance symbol — GIFT Nifty futures
+        # trade on NSE IX (GIFT City) and are not listed on NSE with a .NS suffix.
+        # Yahoo has no reliable GIFT Nifty feed. We fall back directly to ^NSEI
+        # (last Nifty 50 close) as a proxy for the implied open direction.
+        # If a proper GIFT Nifty data source is added later (e.g. a broker API),
+        # replace this entry. Do NOT restore GIFTNIFTY.NS — it always 404s.
+        for sym in ("^NSEI",):  # ^NSEI = last Nifty close as proxy; true GIFT feed unavailable via Yahoo
             try:
                 tk = _yf.Ticker(sym)
                 h = tk.history(period="5d", interval="1d")
@@ -1210,8 +1233,7 @@ def get_gift_nifty() -> dict:
                 out = {
                     "value":  round(last, 2),
                     "pct":    round(pct, 2),
-                    "source": ("gift_yf" if sym.startswith("GIFT")
-                               else "nifty_close_proxy"),
+                    "source": "nifty_close_proxy",
                     "ref_close": round(prev, 2),
                 }
                 break
@@ -1495,7 +1517,7 @@ _ROTATION_SECTORS = {
     "Nifty Realty":     "^CNXREALTY",
     "Nifty Infra":      "^CNXINFRA",
     "Nifty PSU Bank":   "^CNXPSUBANK",
-    "Nifty Cons Durables": "^CNXCONSUMER",
+    "Nifty Cons Durables": "^CNXCONSUMPTION",
 }
 _ROTATION_BENCHMARK = ("Nifty 50", "^NSEI")
 
