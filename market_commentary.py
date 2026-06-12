@@ -14,12 +14,14 @@ v3.5.1 CHANGES (Yahoo Finance symbol fixes — patch):
     it's a proxy and is told to infer gap direction from US close / Asia /
     USD-INR instead. A proper GIFT Nifty source (broker API or NSE IX feed)
     can replace this fallback in a future version.
-  • ^CNXCONSUMER → ^CNXCONSUMPTION in _ROTATION_SECTORS. NSE renamed all
-    \"CNX\" indices to the \"Nifty\" brand; ^CNXCONSUMER is the legacy symbol that
-    Yahoo no longer recognises. ^CNXCONSUMPTION is the current working symbol
-    for the Nifty India Consumption index. This was causing the 10-day sector
-    rotation fetch to silently drop the Cons Durables row and log a 404 error
-    that sometimes exited the cron with status 3.
+  • ^CNXCONSUMER → ^CNXCONSUMPTION: NSE renamed all
+    "CNX" indices to the "Nifty" brand, and ^CNXCONSUMER was the legacy
+    symbol Yahoo no longer recognised. However ^CNXCONSUMPTION is ALSO
+    delisted on Yahoo (404 "Quote not found"). No working Yahoo symbol for
+    the Nifty India Consumption / Cons Durables index could be found, so
+    the row has been REMOVED from _ROTATION_SECTORS entirely (was causing
+    repeated 404s, wasted retries, and contributing to hard-timeout exits
+    with status 3).
 
 v3.5 CHANGES (NSE trading-holiday awareness + post-market gap framing):
   • HOLIDAY GUARD. The Render cron schedule `0,30 2-11 * * 1-5` filters
@@ -1517,7 +1519,10 @@ _ROTATION_SECTORS = {
     "Nifty Realty":     "^CNXREALTY",
     "Nifty Infra":      "^CNXINFRA",
     "Nifty PSU Bank":   "^CNXPSUBANK",
-    "Nifty Cons Durables": "^CNXCONSUMPTION",
+    # "Nifty Cons Durables": "^CNXCONSUMPTION",  # delisted on Yahoo Finance
+    # (404 "Quote not found") — NSE renamed this index and Yahoo no longer
+    # carries it under any known symbol. Removed to avoid the wasted
+    # round-trip / retry latency that was contributing to hard-timeout exits.
 }
 _ROTATION_BENCHMARK = ("Nifty 50", "^NSEI")
 
@@ -1558,7 +1563,7 @@ def get_sector_rotation(lookback: int = _ROTATION_LOOKBACK_DAYS) -> dict:
 
     bench_pct = None
     try:
-        bh = _yf.Ticker(_ROTATION_BENCHMARK[1]).history(period=period, interval="1d")
+        bh = _yf.Ticker(_ROTATION_BENCHMARK[1]).history(period=period, interval="1d", timeout=10)
         if bh is not None and not bh.empty:
             r = _pct_change_window(bh["Close"], lookback)
             if r:
@@ -1569,7 +1574,7 @@ def get_sector_rotation(lookback: int = _ROTATION_LOOKBACK_DAYS) -> dict:
     rows = []
     for name, sym in _ROTATION_SECTORS.items():
         try:
-            h = _yf.Ticker(sym).history(period=period, interval="1d")
+            h = _yf.Ticker(sym).history(period=period, interval="1d", timeout=10)
             if h is None or h.empty:
                 continue
             r = _pct_change_window(h["Close"], lookback)
