@@ -419,6 +419,7 @@ import requests
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
 from supabase import create_client
+import market_calls
 
 # Unified on the new google-genai SDK (the legacy google-generativeai package
 # is end-of-life). ALL Gemini calls — grounded and non-grounded — go through
@@ -3855,14 +3856,49 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
     grounded_modes = {"pre", "post"}
     will_ground = use_grounding and (mode in grounded_modes)
 
+    # +++ continuity/scorecard ------------------------------------------------
+    # Every prompt gets the CALLS emission instruction (so the model logs
+    # falsifiable calls). pre/post additionally get the running track record so
+    # the voice opens by honestly settling its last call. `scorecard` is set
+    # per-branch below (after post grading) and read live by _decorate().
+    horizon_label = {
+        "pre":      "today's session and close",
+        "intraday": "today's close",
+        "post":     "the next trading session",
+    }.get(mode, "the next session")
+    scorecard = ""
+
+    def _decorate(p):
+        p += market_calls.CALLS_EMISSION_INSTRUCTION.format(horizon_label=horizon_label)
+        if scorecard:
+            p += "\n\n" + scorecard
+        return p
+    # +++ end -----------------------------------------------------------------
+
     if mode == "pre":
         slot   = slot or PRE_SLOT
         packet = build_pre_market_packet()
-        prompt = build_pre_market_prompt(packet, use_grounding=will_ground)
+        scorecard = market_calls.scorecard_directive(                      # +++ continuity/scorecard
+            market_calls.get_scorecard_block(supabase))                    # +++ continuity/scorecard
+        prompt = _decorate(build_pre_market_prompt(packet, use_grounding=will_ground))  # +++ continuity/scorecard
     elif mode == "post":
         slot   = slot or POST_SLOT
         packet = build_post_market_packet()
-        prompt = build_post_market_prompt(packet, use_grounding=will_ground)
+        # +++ continuity/scorecard --------------------------------------------
+        # Grade open calls against today's close BEFORE building the scorecard,
+        # so this wrap can settle calls made earlier today and the prior post's
+        # next-session calls. Ungradeable calls are simply left open.
+        vals = market_calls.build_index_vals(packet)
+        if vals:
+            market_calls.grade_open_calls(supabase, vals, _today_ist(),
+                                          ("today_close", "intraday"))
+            prev_day = _last_trading_day_ist().strftime("%Y-%m-%d")
+            market_calls.grade_open_calls(supabase, vals, prev_day,
+                                          ("next_session",))
+        scorecard = market_calls.scorecard_directive(
+            market_calls.get_scorecard_block(supabase))
+        prompt = _decorate(build_post_market_prompt(packet, use_grounding=will_ground))
+        # +++ end -------------------------------------------------------------
     elif mode == "intraday":
         if slot is None:
             now = datetime.now(IST)
@@ -3901,7 +3937,7 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
             _log("⚠️", f"Intraday {slot}: dislocation seen "
                        f"[sector={disloc or 'none'}, commodity={commodity_dis or 'none'}] "
                        f"but grounding is off — catalyst may go unnamed")
-        prompt = build_intraday_prompt(packet, use_grounding=will_ground)
+        prompt = _decorate(build_intraday_prompt(packet, use_grounding=will_ground))  # +++ continuity/scorecard
     else:
         _log("❌", f"Unknown mode: {mode}")
         return None
@@ -3970,11 +4006,11 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
             _log("🔁", "All grounded paths failed — rebuilding prompt "
                        "non-grounded and retrying with 2.5 Pro")
             if mode == "pre":
-                prompt = build_pre_market_prompt(packet, use_grounding=False)
+                prompt = _decorate(build_pre_market_prompt(packet, use_grounding=False))   # +++ continuity/scorecard
             elif mode == "post":
-                prompt = build_post_market_prompt(packet, use_grounding=False)
+                prompt = _decorate(build_post_market_prompt(packet, use_grounding=False))  # +++ continuity/scorecard
             elif mode == "intraday":
-                prompt = build_intraday_prompt(packet, use_grounding=False)
+                prompt = _decorate(build_intraday_prompt(packet, use_grounding=False))      # +++ continuity/scorecard
             text, source = call_gemini(prompt, model=GEMINI_MODEL_STRONG,
                                         max_tokens=max_tokens)
             grounding_status = "fallback_nongrounded"
@@ -3999,6 +4035,13 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
             text = fallback_post_market(packet)
         source = "rule_based"
 
+    # +++ continuity/scorecard ------------------------------------------------
+    # Split the machine-read CALLS block off the prose BEFORE we print, save, or
+    # return — readers must never see the JSON. Rule-based fallbacks contain no
+    # CALLS block, so _raw_calls is simply []. Persisted after a successful save.
+    text, _raw_calls = market_calls.parse_calls_block(text)
+    # +++ end -----------------------------------------------------------------
+
     print("\n" + "=" * 70)
     print(f"{mode.upper()} {slot} COMMENTARY  ({source})")
     print("=" * 70)
@@ -4008,6 +4051,8 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
         for i, s in enumerate(grounding_sources, 1):
             print(f"  [{i}] {s.get('title', '?')[:80]}")
             print(f"      {s.get('uri', '?')[:120]}")
+    if _raw_calls:                                                          # +++ continuity/scorecard
+        print(f"--- CALLS LOGGED: {len(_raw_calls)} ---")                  # +++ continuity/scorecard
     print("=" * 70 + "\n")
 
     if dry_run:
@@ -4017,11 +4062,16 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
             "slot": slot, "model": model,
             "grounding_sources": grounding_sources,
             "grounding_status": grounding_status,
+            "calls": _raw_calls,                                           # +++ continuity/scorecard
         }
 
     saved = save_commentary(mode, slot, text, source, packet,
                             grounding_sources=grounding_sources,
                             grounding_status=grounding_status)
+
+    if saved and _raw_calls:                                              # +++ continuity/scorecard
+        market_calls.insert_calls(supabase, _raw_calls,                   # +++ continuity/scorecard
+                                  _today_ist(), mode, f"{slot}:00")       # +++ continuity/scorecard
 
     # ─── v3.3.2: Video pipeline DECOUPLED from commentary cron (OOM fix) ───
     # v3.3 and v3.3.1 tried in-process import and same-container subprocess
@@ -4041,7 +4091,9 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
         "slot": slot, "model": model,
         "grounding_sources": grounding_sources,
         "grounding_status": grounding_status,
+        "calls": _raw_calls,                                              # +++ continuity/scorecard
     }
+
 
 
 # ─────────────────────────────────────────────────────────────────────────────
