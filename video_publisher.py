@@ -361,7 +361,7 @@ def _render_all_frames(script: dict, slot_label: str, date_label: str,
         paths.append(p)
 
     # Slide 6 — Outro with QR code → market-pulse.html
-    qr_target = f"{PUBLIC_SITE_URL.rstrip('/')}/market-pulse.html"
+    qr_target = f"{PUBLIC_SITE_URL.rstrip('/')}/"
     img = render_outro(
         slot_label=slot_label,
         tagline=script.get("tagline", "Read the full briefing on moneyveda.org"),
