@@ -2170,6 +2170,15 @@ def _format_derivatives(d: dict) -> str:
 import xml.etree.ElementTree as _ET
 from html import unescape as _html_unescape
 
+# v3.8: optional free full-article extraction for Pulse headline enrichment
+# (see _enrich_top_headlines below). Degrades gracefully — if trafilatura
+# isn't installed, headlines just stay as RSS snippets, same as before.
+try:
+    import trafilatura
+    TRAFILATURA_AVAILABLE = True
+except ImportError:
+    TRAFILATURA_AVAILABLE = False
+
 PULSE_FEED_URL = "http://pulse.zerodha.com/feed.php"
 PULSE_HEADERS = {
     "User-Agent": (
@@ -2383,6 +2392,7 @@ def get_pulse_headlines(max_age_hours: int = 12, limit: int = 12) -> list:
                 "summary":     summary[:280],
                 "source":      source,
                 "minutes_ago": minutes_ago,
+                "link":        link[:500],
             })
             if len(out) >= limit:
                 break
@@ -2392,6 +2402,57 @@ def get_pulse_headlines(max_age_hours: int = 12, limit: int = 12) -> list:
     except Exception as e:
         _log("⚠️", f"Pulse fetch failed: {e}")
         return []
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# v3.8: FREE headline enrichment (SUPPORTS grounding, does not replace it).
+#
+# Grounded search bills per query the model issues. Right now the model only
+# sees a 280-char RSS snippet per headline, so it often can't confirm a
+# catalyst from Pulse alone and has to spend a billed search on it. Pulling
+# the full article text for the top few headlines — via trafilatura, which
+# is free and needs no API key — gives the model enough to name the catalyst
+# from context it already has, so grounded search is reserved for genuine
+# gaps instead of things Pulse already covers. google_search stays wired in
+# as-is; this only reduces how often it needs to fire.
+#
+# Kill switch: ENABLE_HEADLINE_ENRICHMENT=0/false/no/off in Render disables
+# it without a redeploy — commentary generation is unaffected either way.
+# ─────────────────────────────────────────────────────────────────────────────
+ENABLE_HEADLINE_ENRICHMENT = os.getenv("ENABLE_HEADLINE_ENRICHMENT", "1") \
+    not in ("0", "false", "no", "off")
+_ENRICH_TOP_N       = 4     # only the N most relevant/recent headlines
+_ENRICH_MAX_CHARS   = 500   # a hint for the model, not the full article
+
+
+def _enrich_top_headlines(headlines: list, top_n: int = _ENRICH_TOP_N) -> list:
+    """Best-effort: adds a 'full_text' key to the top N headlines by fetching
+    the article via trafilatura. Never raises and never blocks the run for
+    long — one slow/failed fetch just leaves that headline as a snippet,
+    exactly as it was before this function existed."""
+    if not TRAFILATURA_AVAILABLE or not ENABLE_HEADLINE_ENRICHMENT:
+        return headlines
+    enriched = 0
+    for h in headlines:
+        if enriched >= top_n:
+            break
+        link = h.get("link")
+        if not link:
+            continue
+        try:
+            downloaded = trafilatura.fetch_url(link, no_ssl=True)
+            if not downloaded:
+                continue
+            text = trafilatura.extract(downloaded, favor_recall=False)
+            if text and len(text) > 100:
+                h["full_text"] = text.strip()[:_ENRICH_MAX_CHARS]
+                enriched += 1
+        except Exception as e:
+            _log("⚠️", f"Headline enrichment skipped for one article: {e}")
+            continue
+    if enriched:
+        _log("📰", f"Enriched {enriched} Pulse headline(s) with free full-article text")
+    return headlines
 
 
 def _format_pulse_headlines(headlines: list) -> str:
@@ -2406,6 +2467,9 @@ def _format_pulse_headlines(headlines: list) -> str:
         title = h.get("title", "").strip()
         src   = h.get("source", "Pulse")
         lines.append(f"  - [{src}, {age_str}] {title}")
+        full_text = h.get("full_text")  # v3.8: free enrichment, see _enrich_top_headlines
+        if full_text:
+            lines.append(f"    ↳ full text: {full_text}")
     return "\n".join(lines)
 
 
@@ -2463,7 +2527,7 @@ def build_pre_market_packet():
     packet["breadth"]    = get_market_breadth()      # prev session A/D context
     packet["global_macro"] = get_global_macro_telemetry()  # DXY/US10Y/Brent
     packet["sector_rotation"] = get_sector_rotation()      # 10d satellite view
-    packet["news"] = get_pulse_headlines(max_age_hours=36, limit=18)
+    packet["news"] = _enrich_top_headlines(get_pulse_headlines(max_age_hours=36, limit=18))
 
     for key in packet:
         if isinstance(packet[key], list):
@@ -2601,7 +2665,7 @@ def build_post_market_packet():
     packet["fii_dii"]   = get_fii_dii()              # today's provisional cash flow
     packet["global_macro"] = get_global_macro_telemetry()  # DXY/US10Y/Brent
     packet["sector_rotation"] = get_sector_rotation()      # 10d satellite view
-    packet["news"]      = get_pulse_headlines(max_age_hours=12, limit=15)
+    packet["news"]      = _enrich_top_headlines(get_pulse_headlines(max_age_hours=12, limit=15))
     packet["prior"]     = get_prior_intraday_context(packet["date"], "23:59")
     packet["filings"]   = get_todays_filings()
     packet["next_session"] = _next_session_info()   # v3.5: gap-aware reopen info
@@ -2694,6 +2758,7 @@ WHEN TO SEARCH:
 WHEN NOT TO SEARCH:
   - To pad commentary with "experts say" or "analysts believe" framing
   - To restate what the Pulse headlines already cover
+  - To find a catalyst already named in a headline's "↳ full text:" line below — that's free context you already have, searching it again wastes a query
   - To find generic background on a stock or sector
   - To paraphrase a Bloomberg/Reuters article — that's news-summary mode, not strategist mode
 
