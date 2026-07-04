@@ -466,7 +466,122 @@ GEMINI_MODEL_STRONG = "gemini-2.5-flash"        # grounded fallback tier (old-SD
 # Requires PAID API billing on the key's project. To go max-reasoning,
 # swap to "gemini-3.1-pro-preview" (preview; paid-only).
 GEMINI_MODEL_GROUNDED = "gemini-3.5-flash"
-GEMINI_THINKING_LEVEL = "high"   # low | medium | high — high = max reasoning
+# Lowered from "high" to "medium" to drop token consumption while keeping sharp analysis
+GEMINI_THINKING_LEVEL = "medium"   # low | medium | high — high = max reasoning
+
+# ─────────────────────────────────────────────────────────────────────────────
+# COST ESTIMATION (v3.8). Manually maintained USD/1M-token rates + grounding
+# rates, verified against ai.google.dev/gemini-api/docs/pricing as of July
+# 2026. This is an ESTIMATE for observability only — it will drift from the
+# actual Google Cloud invoice (which reflects INR conversion, GST, and any
+# tier Google applies) and must be refreshed whenever Google changes pricing
+# or a model constant above changes. Not a substitute for the billing console.
+# ─────────────────────────────────────────────────────────────────────────────
+PRICING_USD_PER_M = {
+    "gemini-2.5-flash-lite":  {"input": 0.10, "output": 0.40,
+                                "grounding_per_1k": 35.0},
+    "gemini-2.5-flash":       {"input": 0.30, "output": 2.50,
+                                "grounding_per_1k": 35.0},
+    "gemini-3.5-flash":       {"input": 1.50, "output": 9.00,
+                                "grounding_per_1k": 14.0},
+    "gemini-3-flash-preview": {"input": 0.50, "output": 3.00,
+                                "grounding_per_1k": 14.0},
+    "gemini-3.1-pro-preview": {"input": 2.00, "output": 12.00,
+                                "grounding_per_1k": 14.0},
+}
+
+
+def _lookup_pricing(model: str) -> dict:
+    """Exact match first, then substring fallback so a version-suffixed model
+    string (e.g. 'gemini-3.5-flash-002') still resolves."""
+    if model in PRICING_USD_PER_M:
+        return PRICING_USD_PER_M[model]
+    for key, val in PRICING_USD_PER_M.items():
+        if key in model or model in key:
+            return val
+    return {}
+
+
+def _extract_usage(response) -> dict:
+    """Pulls token counts from response.usage_metadata. Tries multiple
+    attribute names since the google-genai SDK's field names have shifted
+    across versions (mirrors the defensive style of _extract_grounding_sources
+    above)."""
+    usage = getattr(response, "usage_metadata", None)
+    if usage is None:
+        return {}
+
+    def g(*names):
+        for n in names:
+            v = getattr(usage, n, None)
+            if v is not None:
+                return v
+        return 0
+
+    return {
+        "input_tokens":    g("prompt_token_count", "input_token_count"),
+        "output_tokens":   g("candidates_token_count", "output_token_count"),
+        "thinking_tokens": g("thoughts_token_count", "thinking_token_count"),
+        "cached_tokens":   g("cached_content_token_count"),
+    }
+
+
+def _count_billed_searches(response) -> int:
+    """Best-effort count of billed Google Search queries for one call. Google
+    only bills grounding when the response actually returns web results, so
+    this only counts queries when grounding_chunks is non-empty."""
+    try:
+        cands = getattr(response, "candidates", None) or []
+        if not cands:
+            return 0
+        gm = getattr(cands[0], "grounding_metadata", None)
+        if not gm:
+            return 0
+        queries = getattr(gm, "web_search_queries", None) or []
+        chunks  = getattr(gm, "grounding_chunks", None) or []
+        return len(queries) if chunks else 0
+    except Exception:
+        return 0
+
+
+def _estimate_cost_usd(model: str, usage: dict, billed_searches: int = 0) -> float:
+    pricing = _lookup_pricing(model)
+    if not pricing:
+        return 0.0
+    input_tok  = usage.get("input_tokens", 0) or 0
+    output_tok = (usage.get("output_tokens", 0) or 0) + (usage.get("thinking_tokens", 0) or 0)
+    cost  = (input_tok  / 1_000_000) * pricing["input"]
+    cost += (output_tok / 1_000_000) * pricing["output"]
+    cost += (billed_searches / 1000) * pricing.get("grounding_per_1k", 0.0)
+    return cost
+
+
+# Reset at the top of every generate_commentary() run; accumulates one entry
+# per successful Gemini call so a run's total cost can be logged and
+# persisted alongside the commentary it produced.
+_run_cost_log = []
+
+
+def _log_call_cost(model: str, response, tag: str, billed_searches: int = 0):
+    """Estimates and logs the USD cost of one Gemini call. Wrapped so a
+    problem here can NEVER break commentary generation — cost tracking is
+    strictly observability, same principle as the video pipeline try/except."""
+    try:
+        usage = _extract_usage(response)
+        cost = _estimate_cost_usd(model, usage, billed_searches)
+        entry = {
+            "tag": tag, "model": model, "cost_usd": round(cost, 5),
+            "input_tokens":    usage.get("input_tokens", 0),
+            "output_tokens":   usage.get("output_tokens", 0),
+            "thinking_tokens": usage.get("thinking_tokens", 0),
+            "billed_searches": billed_searches,
+        }
+        _run_cost_log.append(entry)
+        _log("💰", f"{tag} ({model}): in={entry['input_tokens']} "
+                   f"out={entry['output_tokens']} think={entry['thinking_tokens']} "
+                   f"searches={billed_searches} ≈ ${entry['cost_usd']:.5f}")
+    except Exception as e:
+        _log("⚠️", f"Cost estimation failed (non-fatal, commentary unaffected): {e}")
 
 # v3.6: ICICI Breeze F&O depth (futures basis + option open interest). Kill
 # switch — set ENABLE_BREEZE_DERIVATIVES=0/false/no/off in Render to disable
@@ -488,7 +603,8 @@ POST_SLOT = "17:00"          # v3.0: was 16:00 — moved to 17:00 IST
 # exactly like pre/post. The close-of-session 15:30 read benefits most from
 # live event attribution, so it is grounded; all other intraday slots stay
 # on the cheap non-grounded path.
-GROUNDED_INTRADAY_SLOTS = {"12:00", "15:30"}
+# Reduced to only the market close slot to minimize expensive live web search hits
+GROUNDED_INTRADAY_SLOTS = {"15:30"}
 
 # v3.1: data-triggered grounding. A sharp idiosyncratic sector move (or a
 # heavyweight gapping vs a muted sector) is the signature of a policy /
@@ -3490,6 +3606,7 @@ def call_gemini(prompt: str, model: str = None, max_tokens: int = 900):
                     return None, "error"
                 _log("✅", f"Gemini returned {len(text)} characters ({model})")
                 source_tag = "gemini_pro" if "pro" in model else "gemini_flash"
+                _log_call_cost(model, response, source_tag)
                 return text, source_tag
             last_err = "empty response"
             _log("⚠️", "Gemini returned empty response")
@@ -3606,6 +3723,7 @@ def call_gemini_grounded(prompt: str, model: str = None, max_tokens: int = 8000)
         _log("✅", f"Gemini grounded returned {len(text)} chars with {len(sources)} source(s)")
 
         source_tag = "gemini_pro_grounded" if sources else "gemini_pro_grounded_nosrc"
+        _log_call_cost(model, response, source_tag, _count_billed_searches(response))
         return text, source_tag, sources
 
     except Exception as e:
@@ -3709,6 +3827,8 @@ def call_gemini_3_grounded(prompt: str, max_tokens: int = 8000,
         status = "grounded_ok" if sources else "grounded_no_sources"
         _log("✅", f"Gemini 3 grounded returned {len(text)} chars with "
                    f"{len(sources)} source(s) [{status}]")
+        _log_call_cost(model, response, "gemini_3.1_pro_grounded",
+                       _count_billed_searches(response))
         return text, "gemini_3.1_pro_grounded", sources, status
 
     except Exception as e:
@@ -3806,7 +3926,7 @@ def fallback_post_market(packet: dict) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 def save_commentary(commentary_type: str, slot: str, text: str, source: str,
                     packet: dict, grounding_sources: list = None,
-                    grounding_status: str = None) -> bool:
+                    grounding_status: str = None, run_cost: list = None) -> bool:
     if not supabase:
         _log("⚠️", "Supabase not configured — skipping save")
         return False
@@ -3822,6 +3942,12 @@ def save_commentary(commentary_type: str, slot: str, text: str, source: str,
             snapshot["_grounding_sources"] = grounding_sources
         if grounding_status:
             snapshot["_grounding_status"] = grounding_status
+        # v3.8: per-run cost estimate (see _log_call_cost) — queryable from
+        # Supabase so spend can be broken down by slot/model over time
+        # instead of only being visible on the monthly Google invoice.
+        if run_cost:
+            snapshot["_cost_estimate_usd"] = round(sum(c["cost_usd"] for c in run_cost), 5)
+            snapshot["_cost_breakdown"] = run_cost
         supabase.table("market_commentary").upsert(
             {
                 "commentary_type": commentary_type,
@@ -3834,9 +3960,10 @@ def save_commentary(commentary_type: str, slot: str, text: str, source: str,
             on_conflict="commentary_type,commentary_date,slot_time",
         ).execute()
         src_count = len(grounding_sources) if grounding_sources else 0
+        cost_note = f", cost≈${snapshot['_cost_estimate_usd']:.5f}" if run_cost else ""
         _log("💾", f"Saved {commentary_type} commentary for {date} {slot} "
                    f"(source={source}, grounded_sources={src_count}, "
-                   f"status={grounding_status or 'n/a'})")
+                   f"status={grounding_status or 'n/a'}{cost_note})")
         return True
     except Exception as e:
         _log("⚠️", f"Supabase save failed: {e}")
@@ -3850,6 +3977,7 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
                         use_grounding: bool = True):
     _log("🚀", f"Starting {mode.upper()} commentary generation (slot={slot}, grounding={use_grounding})")
     _log("📅", f"IST now: {_now_ist_str()}")
+    _run_cost_log.clear()  # v3.8: per-run cost tracking, see _log_call_cost
 
     # Grounding is used for pre/post and for the grounded intraday slots
     # (v3.0: the 15:30 close slot). All other intraday slots stay non-grounded.
@@ -4053,6 +4181,10 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
             print(f"      {s.get('uri', '?')[:120]}")
     if _raw_calls:                                                          # +++ continuity/scorecard
         print(f"--- CALLS LOGGED: {len(_raw_calls)} ---")                  # +++ continuity/scorecard
+    if _run_cost_log:                                                       # +++ v3.8 cost tracking
+        run_total_cost = round(sum(c["cost_usd"] for c in _run_cost_log), 5) # +++ v3.8 cost tracking
+        print(f"--- ESTIMATED COST: ${run_total_cost:.5f} "                 # +++ v3.8 cost tracking
+              f"across {len(_run_cost_log)} call(s) ---")                   # +++ v3.8 cost tracking
     print("=" * 70 + "\n")
 
     if dry_run:
@@ -4063,11 +4195,14 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
             "grounding_sources": grounding_sources,
             "grounding_status": grounding_status,
             "calls": _raw_calls,                                           # +++ continuity/scorecard
+            "cost_usd": round(sum(c["cost_usd"] for c in _run_cost_log), 5), # +++ v3.8 cost tracking
+            "cost_breakdown": list(_run_cost_log),                          # +++ v3.8 cost tracking
         }
 
     saved = save_commentary(mode, slot, text, source, packet,
                             grounding_sources=grounding_sources,
-                            grounding_status=grounding_status)
+                            grounding_status=grounding_status,
+                            run_cost=list(_run_cost_log))
 
     if saved and _raw_calls:                                              # +++ continuity/scorecard
         market_calls.insert_calls(supabase, _raw_calls,                   # +++ continuity/scorecard
@@ -4092,6 +4227,8 @@ def generate_commentary(mode: str, slot: str = None, dry_run: bool = False,
         "grounding_sources": grounding_sources,
         "grounding_status": grounding_status,
         "calls": _raw_calls,                                              # +++ continuity/scorecard
+        "cost_usd": round(sum(c["cost_usd"] for c in _run_cost_log), 5),   # +++ v3.8 cost tracking
+        "cost_breakdown": list(_run_cost_log),                            # +++ v3.8 cost tracking
     }
 
 
