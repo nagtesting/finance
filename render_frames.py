@@ -392,7 +392,7 @@ def _make_qr_code(url: str, size_px: int = 280) -> Image.Image:
 
 def render_outro(slot_label: str, tagline: str,
                  slide_idx: int, slide_total: int,
-                 qr_url: str = "https://www.moneyveda.org/market-pulse.html") -> Image.Image:
+                 qr_url: str = "https://www.moneyveda.org/") -> Image.Image:
     """Outro — centered Playfair italic tagline + QR code + CTA + URL + disclaimer."""
     img = background()
     d = ImageDraw.Draw(img)
