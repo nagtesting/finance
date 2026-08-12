@@ -1,0 +1,125 @@
+# ============================================================
+# MoneyVeda Telegram Publisher — GitHub Actions
+# ============================================================
+# Posts the day's Nifty commentary to the Telegram channel.
+#
+# SCHEDULE (IST → UTC is −5:30)
+#   08:45 IST  pre-market   → 03:15 UTC
+#   16:30 IST  post-market  → 11:00 UTC
+#
+# Why 16:30 and not 15:45?
+#   NSE closes 15:30. warm_cache.yml runs at 16:00 IST, by which point
+#   the post-market commentary and filings are settled. Running after it
+#   means we never post against a half-written row.
+#
+# Intraday slots are NOT scheduled by default. Three posts a day is the
+# most a channel will tolerate before people mute it. Add a cron line
+# below if you decide otherwise.
+#
+# ONE-TIME SETUP
+#   1. Message @BotFather → /newbot → copy the token
+#   2. Create a public channel, add the bot as admin with post rights
+#   3. Repo → Settings → Secrets and variables → Actions → New secret:
+#        TELEGRAM_BOT_TOKEN   the token from BotFather
+#        TELEGRAM_CHAT_ID     @yourchannel  (or -100... for private)
+#   4. Run once via "Run workflow" with dry_run = true to check formatting
+#
+# SECRETS REQUIRED
+#   SUPABASE_URL, SUPABASE_SECRET_KEY  (already set for other workflows)
+#   TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+# ============================================================
+
+name: Publish Commentary to Telegram
+
+on:
+  schedule:
+    - cron: "15 3 * * 1-5"     # 08:45 IST — pre-market
+    - cron: "0 11 * * 1-5"     # 16:30 IST — post-market
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Which slot to post"
+        required: true
+        default: "pre"
+        type: choice
+        options:
+          - pre
+          - intraday
+          - post
+      date:
+        description: "Date YYYY-MM-DD (blank = today IST)"
+        required: false
+        default: ""
+      dry_run:
+        description: "Print the message instead of posting"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      force:
+        description: "Post even if this slot was already sent"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+# Never let two runs post at the same time.
+concurrency:
+  group: telegram-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Scheduled runs carry no inputs, so derive the slot from the cron
+      # that triggered them. 03:15 UTC is pre, 11:00 UTC is post.
+      - name: Resolve slot
+        id: slot
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ github.event.inputs.mode }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.schedule }}" = "15 3 * * 1-5" ]; then
+            echo "mode=pre" >> $GITHUB_OUTPUT
+          else
+            echo "mode=post" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Post to Telegram
+        env:
+          SUPABASE_URL:        ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          TELEGRAM_BOT_TOKEN:  ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:    ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          ARGS="--mode ${{ steps.slot.outputs.mode }}"
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            ARGS="$ARGS --date ${{ github.event.inputs.date }}"
+          fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          python telegram_publisher.py $ARGS
