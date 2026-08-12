@@ -16,7 +16,7 @@ try:
 except Exception as _ce_err:
     analyze_stock = None
     print(f"⚠️  commentary_engine import failed — /api/commentary degraded: {_ce_err}")
-from nifty100 import NIFTY_100, SYMBOL_TO_NAME, ALL_YAHOO_SYMS
+from nifty100 import NIFTY_100, SYMBOL_TO_NAME, SYMBOL_TO_YAHOO, ALL_YAHOO_SYMS
 
 load_dotenv()
 
@@ -691,7 +691,12 @@ def get_commentary():
         import commentary_engine as ce
 
         # Quick existence check before running the pipeline
-        if symbol not in ce.STOCKS:
+        # nifty100.SYMBOL_TO_YAHOO is the canonical {NSE symbol: Yahoo ticker}
+        # map. commentary_engine defines no STOCKS attribute — the old
+        # `ce.STOCKS` reference raised AttributeError on EVERY request, which
+        # the handler turned into a 500 and the frontend showed as
+        # "Failed to reach the server."
+        if symbol not in SYMBOL_TO_YAHOO:
             return jsonify({
                 "status": "error",
                 "message": f"Symbol '{symbol}' is not in the Nifty 100 universe. Please pick from the search."
@@ -707,7 +712,7 @@ def get_commentary():
 
         # Fetch full price context so frontend can show all 6 metrics
         # (cache-hit path returns minimal price; this ensures consistency)
-        ns_symbol = ce.STOCKS.get(symbol)
+        ns_symbol = SYMBOL_TO_YAHOO.get(symbol)
         price_ctx = ce.get_price_context(ns_symbol) if ns_symbol else {}
 
         return jsonify({
