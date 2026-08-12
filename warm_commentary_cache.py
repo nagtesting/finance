@@ -1,21 +1,24 @@
 """
 warm_commentary_cache.py  ─  MoneyVeda Commentary Cache Warmer
 ================================================================
-Pre-generates Gemini commentary for all 19 tracked stocks.
-Runs daily at 4:00 PM IST via GitHub Actions (after NSE close).
+Pre-generates Gemini commentary for the full Nifty 100 universe
+(nifty100.SYMBOL_TO_YAHOO). Runs daily at 4:00 PM IST via GitHub
+Actions, after the NSE close.
 
 BEFORE THIS SCRIPT:
-  First user to click each stock pays 2-5 sec Gemini latency.
-  With 19 stocks × 1 user each = 19 slow experiences per day.
+  The first user to click each stock pays 2-5 sec of Gemini latency.
 
 AFTER THIS SCRIPT:
-  All 19 stocks cached by 4:05 PM IST.
-  Every user click = instant Supabase read.
+  Every user click is an instant Supabase read.
+
+RUNTIME: ~100 stocks x (4 s spacing + 2-5 s per Gemini call) is roughly
+12-15 minutes. warm_cache.yml MUST set timeout-minutes to at least 25 or
+the job is cancelled partway and most symbols stay uncached.
 
 IDEMPOTENT: Safe to run multiple times — skips stocks already cached today.
 
 USAGE:
-  python warm_commentary_cache.py              # warm all 19 stocks
+  python warm_commentary_cache.py              # warm every Nifty 100 symbol
   python warm_commentary_cache.py --force      # regenerate even if cached
   python warm_commentary_cache.py --symbols TCS,INFY  # specific subset
 """
@@ -28,6 +31,12 @@ from datetime import datetime, timezone, timedelta
 
 # Reuse the existing commentary engine — don't duplicate logic
 import commentary_engine as ce
+
+# Canonical stock universe. commentary_engine has no STOCKS attribute; the
+# old `ce.STOCKS` reference meant this warmer crashed on startup every run,
+# so nothing was ever cached and every user click fell through to a slow
+# live generation.
+from nifty100 import SYMBOL_TO_YAHOO
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -86,7 +95,7 @@ def warm_all(symbols=None, force=False):
     Loop through stocks and warm each one.
     Tracks summary stats and returns exit code (0 = success).
     """
-    stocks = symbols if symbols else list(ce.STOCKS.keys())
+    stocks = symbols if symbols else list(SYMBOL_TO_YAHOO.keys())
 
     _log("🚀", f"Cache warmer starting — {len(stocks)} stocks to process")
     _log("📅", f"Date: {datetime.now(IST).strftime('%Y-%m-%d %H:%M IST')}")
@@ -108,16 +117,16 @@ def warm_all(symbols=None, force=False):
     print("\n" + "═" * 60, flush=True)
     _log("📊", "CACHE WARMING SUMMARY")
     print("═" * 60, flush=True)
-    print(f"   ✅ Generated:     {stats['generated']}", flush=True)
-    print(f"   ⏭️  Skipped:       {stats['skipped']} (already cached)", flush=True)
-    print(f"   ⚠️  Fallback:      {stats['fallback']} (Gemini failed)", flush=True)
-    print(f"   ❌ Failed:        {stats['failed']}", flush=True)
+    print(f"   ✅ Generated:     {stats.get('generated', 0)}", flush=True)
+    print(f"   ⏭️  Skipped:       {stats.get('skipped', 0)} (already cached)", flush=True)
+    print(f"   ⚠️  Fallback:      {stats.get('fallback', 0)} (Gemini failed)", flush=True)
+    print(f"   ❌ Failed:        {stats.get('failed', 0)}", flush=True)
     print(f"   📍 Total stocks:  {len(stocks)}", flush=True)
     print("═" * 60, flush=True)
 
     # Exit code: 0 if everything worked, 1 if any stock outright failed
     # (fallback counts as success since rule-based commentary was saved)
-    exit_code = 1 if stats["failed"] > 0 else 0
+    exit_code = 1 if stats.get("failed", 0) > 0 else 0
     _log("🏁", f"Done (exit code {exit_code})")
     return exit_code
 
@@ -142,10 +151,10 @@ def main():
     if args.symbols:
         symbols = [s.strip().upper() for s in args.symbols.split(",") if s.strip()]
         # Validate all symbols exist
-        unknown = [s for s in symbols if s not in ce.STOCKS]
+        unknown = [s for s in symbols if s not in SYMBOL_TO_YAHOO]
         if unknown:
             print(f"❌ Unknown symbols: {', '.join(unknown)}", flush=True)
-            print(f"   Valid: {', '.join(ce.STOCKS.keys())}", flush=True)
+            print(f"   Valid: {', '.join(SYMBOL_TO_YAHOO.keys())}", flush=True)
             sys.exit(3)
 
     exit_code = warm_all(symbols=symbols, force=args.force)
