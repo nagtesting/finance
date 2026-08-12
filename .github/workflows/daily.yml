@@ -1,15 +1,14 @@
 # ============================================================
 # MoneyVeda Daily Signal Pipeline — GitHub Actions
 # ============================================================
-# The signal chain is six stages and each depends on the last.
+# The signal chain runs in strict order; each stage feeds the next.
 # The previous version ran only stages 1 and 3, which is why the
 # Signals tab was empty:
 #
 #   1. filing_scraper     NSE announcements  → filings
-#   2. sentiment_analyzer FinBERT            → filings.sentiment      ← was missing
+#   2. sentiment_analyzer FinBERT            → filings.sentiment   ← was missing
 #   3. signal_engine      scored filings     → signals
-#   4. publishing_gate    appends "| PUBLISHED"                       ← was missing
-#   5. temporal_checker   price correlation, confidence adjustment
+#   4. publishing_gate    appends "| PUBLISHED"                    ← was missing
 #
 # Stage 4 is not optional. /api/signals filters on
 # `message LIKE '%PUBLISHED%'`, and only publishing_gate.py writes
@@ -20,11 +19,41 @@
 # where sentiment IS NOT NULL, so without FinBERT it only ever sees
 # rows analysed by some earlier manual run.
 #
+# ── temporal_checker.py is DELIBERATELY NOT RUN ──────────────
+# It has two bugs that corrupt confidence scores on every run:
+#
+#   (a) No filter excluding signals it has already processed. It
+#       re-reads the same rows daily and re-applies its multiplier,
+#       so confidence decays 0.66 → 0.33 → 0.17 → 0.08 while the
+#       message accumulates "| NO_PRICE_CORRELATION" repeatedly.
+#
+#   (b) It matches against signals where source = 'yfinance', but
+#       nothing in the repo writes rows with that source. The list
+#       is always empty, so EVERY signal takes the "no correlation"
+#       branch and gets halved.
+#
+# Since it runs after the gate, "| PUBLISHED" survives and the API
+# keeps working — but the confidence numbers feeding the accuracy
+# dashboard become meaningless. Four correct stages beat five where
+# one silently corrupts the output.
+#
+# To re-enable later it needs: a filter skipping messages that
+# already contain PRICE_CORRELATED / NO_PRICE_CORRELATION /
+# TIME_GAP, and something that actually writes source='yfinance'
+# price-move rows for it to correlate against.
+#
+# Verify with:  select source, count(*) from signals group by source;
+# ── ───────────────────────────────────────────────────────────
+#
 # TIMING
 #   15:45 IST (10:15 UTC), Mon–Fri — after the 15:30 NSE close so
 #   the day's filings are in. /api/signals filters on created_at >=
 #   today in UTC, and 10:15 UTC is the same UTC day, so signals
-#   written here are visible for the rest of the session.
+#   written here stay visible for the rest of the session.
+#
+# NOTE: signals will not appear on the site until the Render web
+# service is restored. This workflow fills the database; the Flask
+# API serves it. Both are required.
 #
 # SECRETS REQUIRED
 #   SUPABASE_URL, SUPABASE_SECRET_KEY
@@ -118,16 +147,9 @@ jobs:
       - name: "4 · Publishing gate"
         run: python publishing_gate.py
 
-      # ── Stage 5 ──────────────────────────────────────────────
-      # Price correlation is an enhancement, not a gate. A yfinance
-      # hiccup here should not fail a run whose signals are already
-      # published and serving.
-      - name: "5 · Temporal correlation check"
-        continue-on-error: true
-        run: python temporal_checker.py
-
       - name: Pipeline summary
         if: always()
         run: |
           echo "Signal pipeline finished — status: ${{ job.status }}"
-          echo "Verify: curl -s https://moneyveda.org/api/backend/api/signals | head -c 400"
+          echo "Verify once Render is restored:"
+          echo "  curl -s https://moneyveda.org/api/backend/api/signals | head -c 400"
