@@ -51,9 +51,10 @@
 #   today in UTC, and 10:15 UTC is the same UTC day, so signals
 #   written here stay visible for the rest of the session.
 #
-# NOTE: signals will not appear on the site until the Render web
-# service is restored. This workflow fills the database; the Flask
-# API serves it. Both are required.
+# NOTE: this workflow fills the database; the Flask API on Render
+# serves it. Both are required. /api/signals returning
+# {"count":0,"signals":[]} with status success means the backend is
+# healthy and simply has no PUBLISHED rows dated today yet.
 #
 # SECRETS REQUIRED
 #   SUPABASE_URL, SUPABASE_SECRET_KEY
@@ -110,9 +111,14 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
-          else
-            pip install supabase python-dotenv yfinance requests beautifulsoup4 nse
           fi
+          # Installed IN ADDITION to requirements.txt, not instead of it.
+          # requirements.txt serves the Flask web service and does not list
+          # `nse`, which only filing_scraper.py needs — the earlier "else"
+          # form skipped these entirely and stage 1 died with
+          # ModuleNotFoundError: No module named 'nse'.
+          # pip no-ops on anything already satisfied, so the overlap is free.
+          pip install supabase python-dotenv yfinance requests beautifulsoup4 nse
           # CPU-only torch: ~200 MB instead of ~2 GB with CUDA.
           pip install --index-url https://download.pytorch.org/whl/cpu torch
           pip install transformers
@@ -151,5 +157,5 @@ jobs:
         if: always()
         run: |
           echo "Signal pipeline finished — status: ${{ job.status }}"
-          echo "Verify once Render is restored:"
+          echo "Verify:"
           echo "  curl -s https://moneyveda.org/api/backend/api/signals | head -c 400"
