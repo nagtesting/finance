@@ -1,36 +1,133 @@
+# ============================================================
+# MoneyVeda Daily Signal Pipeline — GitHub Actions
+# ============================================================
+# The signal chain is six stages and each depends on the last.
+# The previous version ran only stages 1 and 3, which is why the
+# Signals tab was empty:
+#
+#   1. filing_scraper     NSE announcements  → filings
+#   2. sentiment_analyzer FinBERT            → filings.sentiment      ← was missing
+#   3. signal_engine      scored filings     → signals
+#   4. publishing_gate    appends "| PUBLISHED"                       ← was missing
+#   5. temporal_checker   price correlation, confidence adjustment
+#
+# Stage 4 is not optional. /api/signals filters on
+# `message LIKE '%PUBLISHED%'`, and only publishing_gate.py writes
+# that suffix. Skip it and the endpoint returns zero rows even when
+# the signals table is full.
+#
+# Stage 2 is not optional either. signal_engine.py selects filings
+# where sentiment IS NOT NULL, so without FinBERT it only ever sees
+# rows analysed by some earlier manual run.
+#
+# TIMING
+#   15:45 IST (10:15 UTC), Mon–Fri — after the 15:30 NSE close so
+#   the day's filings are in. /api/signals filters on created_at >=
+#   today in UTC, and 10:15 UTC is the same UTC day, so signals
+#   written here are visible for the rest of the session.
+#
+# SECRETS REQUIRED
+#   SUPABASE_URL, SUPABASE_SECRET_KEY
+# ============================================================
+
 name: MoneyVeda Daily Signal Generator
 
 on:
   schedule:
-    # Runs at 10:15 UTC = 3:45 PM IST, Monday to Friday
-    - cron: '15 10 * * 1-5'
-  workflow_dispatch:  # Allow manual trigger from GitHub
+    - cron: "15 10 * * 1-5"     # 15:45 IST, weekdays
+  workflow_dispatch:
+    inputs:
+      skip_scraper:
+        description: "Skip the NSE scrape (reprocess existing filings only)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["true", "false"]
+
+concurrency:
+  group: daily-signals
+  cancel-in-progress: false
 
 jobs:
   run-daily:
     runs-on: ubuntu-latest
+    timeout-minutes: 25        # FinBERT inference on CPU is the long pole
+
+    env:
+      SUPABASE_URL:        ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
+          cache: "pip"
+
+      # ProsusAI/finbert is ~440 MB. Without this cache every run
+      # re-downloads it, which is slow and occasionally rate-limited
+      # by the HF CDN.
+      - name: Cache FinBERT model
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: finbert-${{ runner.os }}-v1
 
       - name: Install dependencies
         run: |
-          pip install flask flask-cors supabase python-dotenv yfinance requests beautifulsoup4 nse
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            pip install supabase python-dotenv yfinance requests beautifulsoup4 nse
+          fi
+          # CPU-only torch: ~200 MB instead of ~2 GB with CUDA.
+          pip install --index-url https://download.pytorch.org/whl/cpu torch
+          pip install transformers
 
-      - name: Run filing scraper
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      # ── Stage 1 ──────────────────────────────────────────────
+      - name: "1 · Scrape NSE filings"
+        if: ${{ github.event.inputs.skip_scraper != 'true' }}
         run: python filing_scraper.py
 
-      - name: Run signal engine
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      # ── Stage 2 ──────────────────────────────────────────────
+      # sentiment_analyzer.py processes 20 filings per invocation.
+      # Loop so a heavy filing day drains fully; it exits early with
+      # "No filings to analyze!" once the backlog is clear, so the
+      # extra passes cost only model load time (cached).
+      - name: "2 · FinBERT sentiment analysis"
+        run: |
+          for i in 1 2 3 4 5; do
+            echo "── sentiment pass $i ──"
+            python sentiment_analyzer.py 2>&1 | tee /tmp/sent.log
+            if grep -q "No filings to analyze" /tmp/sent.log; then
+              echo "Backlog clear after $i pass(es)."
+              break
+            fi
+          done
+
+      # ── Stage 3 ──────────────────────────────────────────────
+      - name: "3 · Generate signals"
         run: python signal_engine.py
+
+      # ── Stage 4 ──────────────────────────────────────────────
+      # Without this, /api/signals returns nothing. Ever.
+      - name: "4 · Publishing gate"
+        run: python publishing_gate.py
+
+      # ── Stage 5 ──────────────────────────────────────────────
+      # Price correlation is an enhancement, not a gate. A yfinance
+      # hiccup here should not fail a run whose signals are already
+      # published and serving.
+      - name: "5 · Temporal correlation check"
+        continue-on-error: true
+        run: python temporal_checker.py
+
+      - name: Pipeline summary
+        if: always()
+        run: |
+          echo "Signal pipeline finished — status: ${{ job.status }}"
+          echo "Verify: curl -s https://moneyveda.org/api/backend/api/signals | head -c 400"
