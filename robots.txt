@@ -1,27 +1,45 @@
 # MoneyVeda robots.txt
+# https://www.moneyveda.org
+
+# ---------------------------------------------------------------
+# Default: everything open except API endpoints, which are backend
+# routes with no indexable content and cost quota to hit.
+# ---------------------------------------------------------------
 User-agent: *
 Allow: /
+Disallow: /api/
 
-# Explicitly allow AI crawlers
-User-agent: GPTBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
+# ---------------------------------------------------------------
+# AI assistants and answer engines — explicitly welcome.
+# Consecutive User-agent lines share the rule block below them.
+#
+# Anthropic runs three bots since Feb 2026. Claude-Web and
+# anthropic-ai are deprecated but kept here for older crawlers
+# still using them.
+# ---------------------------------------------------------------
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
 User-agent: Claude-Web
-Allow: /
-
 User-agent: anthropic-ai
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Meta-ExternalAgent
+User-agent: CCBot
 Allow: /
+Disallow: /api/
 
+# ---------------------------------------------------------------
+# Search engines
+# ---------------------------------------------------------------
 User-agent: Googlebot
+User-agent: Bingbot
 Allow: /
+Disallow: /api/
 
-Sitemap: https://moneyveda.org/sitemap.xml
+Sitemap: https://www.moneyveda.org/sitemap.xml
