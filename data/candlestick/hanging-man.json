@@ -1,6 +1,6 @@
 {
   "session_date": "2026-08-18",
-  "generated_at": "2026-08-18T17:08:30.820351+05:30",
+  "generated_at": "2026-08-18T19:03:15.549757+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
@@ -22,11 +22,11 @@
       "direction": "bearish",
       "close": 1584.5,
       "change_pct": 0.81,
-      "volume_ratio": 1.22,
+      "volume_ratio": 1.21,
       "volume_confirmed": true,
       "turnover_cr": 99.9,
-      "rsi14": 59.2,
-      "atr14": 40.35,
+      "rsi14": 58.5,
+      "atr14": 40.61,
       "above_sma50": true,
       "strength": "confirmed",
       "bars": [
@@ -131,8 +131,8 @@
       "volume_ratio": 0.25,
       "volume_confirmed": false,
       "turnover_cr": 35.93,
-      "rsi14": 62.2,
-      "atr14": 58.32,
+      "rsi14": 62.3,
+      "atr14": 58.5,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [

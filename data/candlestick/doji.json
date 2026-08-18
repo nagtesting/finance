@@ -1,6 +1,6 @@
 {
   "session_date": "2026-08-18",
-  "generated_at": "2026-08-18T17:08:30.820351+05:30",
+  "generated_at": "2026-08-18T19:03:15.549757+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
@@ -11,7 +11,7 @@
   "pattern": "doji",
   "pattern_name": "Doji",
   "direction": "neutral",
-  "count": 78,
+  "count": 79,
   "truncated": true,
   "signals": [
     {
@@ -24,9 +24,9 @@
       "change_pct": 0.42,
       "volume_ratio": 1.2,
       "volume_confirmed": true,
-      "turnover_cr": 265.24,
-      "rsi14": 44.2,
-      "atr14": 4.08,
+      "turnover_cr": 265.78,
+      "rsi14": 44.5,
+      "atr14": 4.15,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
@@ -128,11 +128,11 @@
       "direction": "neutral",
       "close": 3308.0,
       "change_pct": -0.72,
-      "volume_ratio": 1.68,
+      "volume_ratio": 1.67,
       "volume_confirmed": true,
       "turnover_cr": 1116.23,
       "rsi14": 33.0,
-      "atr14": 105.72,
+      "atr14": 106.67,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
@@ -234,11 +234,11 @@
       "direction": "neutral",
       "close": 1404.0,
       "change_pct": 1.56,
-      "volume_ratio": 1.26,
+      "volume_ratio": 1.3,
       "volume_confirmed": true,
-      "turnover_cr": 242.5,
-      "rsi14": 62.3,
-      "atr14": 71.44,
+      "turnover_cr": 231.26,
+      "rsi14": 62.8,
+      "atr14": 71.4,
       "above_sma50": true,
       "strength": "confirmed",
       "bars": [
@@ -287,11 +287,11 @@
       "direction": "neutral",
       "close": 177.44,
       "change_pct": 0.16,
-      "volume_ratio": 3.99,
+      "volume_ratio": 4.0,
       "volume_confirmed": true,
       "turnover_cr": 141.14,
-      "rsi14": 57.8,
-      "atr14": 7.88,
+      "rsi14": 58.0,
+      "atr14": 7.9,
       "above_sma50": true,
       "strength": "confirmed",
       "bars": [
@@ -340,11 +340,11 @@
       "direction": "neutral",
       "close": 480.5,
       "change_pct": 1.23,
-      "volume_ratio": 1.49,
+      "volume_ratio": 1.35,
       "volume_confirmed": true,
       "turnover_cr": 130.5,
-      "rsi14": 65.1,
-      "atr14": 12.62,
+      "rsi14": 65.0,
+      "atr14": 12.78,
       "above_sma50": true,
       "strength": "confirmed",
       "bars": [
@@ -393,11 +393,11 @@
       "direction": "neutral",
       "close": 1882.1,
       "change_pct": -0.13,
-      "volume_ratio": 1.3,
+      "volume_ratio": 1.24,
       "volume_confirmed": true,
-      "turnover_cr": 31.69,
-      "rsi14": 62.4,
-      "atr14": 73.05,
+      "turnover_cr": 33.82,
+      "rsi14": 62.1,
+      "atr14": 73.48,
       "above_sma50": true,
       "strength": "confirmed",
       "bars": [
@@ -499,11 +499,11 @@
       "direction": "neutral",
       "close": 6725.5,
       "change_pct": -0.1,
-      "volume_ratio": 1.21,
+      "volume_ratio": 1.31,
       "volume_confirmed": true,
-      "turnover_cr": 15.65,
-      "rsi14": 41.1,
-      "atr14": 184.2,
+      "turnover_cr": 14.36,
+      "rsi14": 41.2,
+      "atr14": 188.88,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
@@ -605,11 +605,11 @@
       "direction": "neutral",
       "close": 1412.0,
       "change_pct": -0.23,
-      "volume_ratio": 0.73,
+      "volume_ratio": 0.68,
       "volume_confirmed": false,
-      "turnover_cr": 1559.35,
-      "rsi14": 46.7,
-      "atr14": 21.93,
+      "turnover_cr": 1582.96,
+      "rsi14": 47.1,
+      "atr14": 22.21,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -661,8 +661,8 @@
       "volume_ratio": 0.82,
       "volume_confirmed": false,
       "turnover_cr": 610.79,
-      "rsi14": 58.2,
-      "atr14": 59.81,
+      "rsi14": 57.7,
+      "atr14": 60.66,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -711,14 +711,21 @@
       "direction": "neutral",
       "close": 337.1,
       "change_pct": 0.03,
-      "volume_ratio": 1.09,
+      "volume_ratio": 1.05,
       "volume_confirmed": false,
-      "turnover_cr": 298.03,
-      "rsi14": 39.6,
-      "atr14": 5.98,
+      "turnover_cr": 299.57,
+      "rsi14": 39.8,
+      "atr14": 6.2,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
+        {
+          "d": "11 Aug",
+          "o": 339.6,
+          "h": 340.4,
+          "l": 336.05,
+          "c": 338.45
+        },
         {
           "d": "12 Aug",
           "o": 338.45,
@@ -732,13 +739,6 @@
           "h": 344.25,
           "l": 338.0,
           "c": 344.25
-        },
-        {
-          "d": "14 Aug",
-          "o": 343.65,
-          "h": 343.65,
-          "l": 337.5,
-          "c": 340.0
         },
         {
           "d": "17 Aug",
@@ -764,11 +764,11 @@
       "direction": "neutral",
       "close": 5220.0,
       "change_pct": -1.05,
-      "volume_ratio": 0.7,
+      "volume_ratio": 0.75,
       "volume_confirmed": false,
       "turnover_cr": 280.56,
-      "rsi14": 48.1,
-      "atr14": 116.46,
+      "rsi14": 48.3,
+      "atr14": 117.97,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -820,8 +820,8 @@
       "volume_ratio": 0.66,
       "volume_confirmed": false,
       "turnover_cr": 232.83,
-      "rsi14": 43.8,
-      "atr14": 69.85,
+      "rsi14": 44.0,
+      "atr14": 71.49,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -979,8 +979,8 @@
       "volume_ratio": 0.39,
       "volume_confirmed": false,
       "turnover_cr": 252.88,
-      "rsi14": 43.3,
-      "atr14": 81.06,
+      "rsi14": 43.2,
+      "atr14": 81.5,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -1032,8 +1032,8 @@
       "volume_ratio": 0.94,
       "volume_confirmed": false,
       "turnover_cr": 159.45,
-      "rsi14": 44.8,
-      "atr14": 55.7,
+      "rsi14": 44.9,
+      "atr14": 56.08,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -1082,11 +1082,11 @@
       "direction": "neutral",
       "close": 3593.2,
       "change_pct": -0.35,
-      "volume_ratio": 0.23,
+      "volume_ratio": 0.24,
       "volume_confirmed": false,
-      "turnover_cr": 117.22,
-      "rsi14": 59.4,
-      "atr14": 125.52,
+      "turnover_cr": 108.85,
+      "rsi14": 58.8,
+      "atr14": 127.13,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -1135,14 +1135,21 @@
       "direction": "neutral",
       "close": 5745.5,
       "change_pct": 0.01,
-      "volume_ratio": 0.57,
+      "volume_ratio": 0.6,
       "volume_confirmed": false,
-      "turnover_cr": 382.95,
-      "rsi14": 66.3,
-      "atr14": 123.87,
+      "turnover_cr": 349.85,
+      "rsi14": 66.8,
+      "atr14": 128.59,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
+        {
+          "d": "11 Aug",
+          "o": 5848.0,
+          "h": 5937.0,
+          "l": 5803.5,
+          "c": 5865.5
+        },
         {
           "d": "12 Aug",
           "o": 5875.0,
@@ -1156,13 +1163,6 @@
           "h": 5934.0,
           "l": 5802.0,
           "c": 5850.0
-        },
-        {
-          "d": "14 Aug",
-          "o": 5830.0,
-          "h": 5849.0,
-          "l": 5765.0,
-          "c": 5790.0
         },
         {
           "d": "17 Aug",
@@ -1188,11 +1188,11 @@
       "direction": "neutral",
       "close": 105.32,
       "change_pct": 0.43,
-      "volume_ratio": 0.73,
+      "volume_ratio": 0.76,
       "volume_confirmed": false,
-      "turnover_cr": 260.93,
-      "rsi14": 55.0,
-      "atr14": 5.39,
+      "turnover_cr": 246.02,
+      "rsi14": 55.4,
+      "atr14": 5.38,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -1234,6 +1234,59 @@
       ]
     },
     {
+      "symbol": "NATIONALUM",
+      "tier": "BROADER",
+      "pattern": "doji",
+      "pattern_name": "Doji",
+      "direction": "neutral",
+      "close": 388.0,
+      "change_pct": 0.12,
+      "volume_ratio": 0.33,
+      "volume_confirmed": false,
+      "turnover_cr": 211.1,
+      "rsi14": 57.6,
+      "atr14": 12.8,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Aug",
+          "o": 387.15,
+          "h": 393.7,
+          "l": 384.5,
+          "c": 388.0
+        },
+        {
+          "d": "12 Aug",
+          "o": 398.5,
+          "h": 422.2,
+          "l": 398.5,
+          "c": 420.0
+        },
+        {
+          "d": "13 Aug",
+          "o": 410.5,
+          "h": 413.65,
+          "l": 400.0,
+          "c": 400.5
+        },
+        {
+          "d": "17 Aug",
+          "o": 377.9,
+          "h": 391.5,
+          "l": 376.5,
+          "c": 387.55
+        },
+        {
+          "d": "18 Aug",
+          "o": 386.8,
+          "h": 390.85,
+          "l": 385.8,
+          "c": 388.0
+        }
+      ]
+    },
+    {
       "symbol": "LICI",
       "tier": "BROADER",
       "pattern": "doji",
@@ -1244,8 +1297,8 @@
       "volume_ratio": 0.32,
       "volume_confirmed": false,
       "turnover_cr": 203.69,
-      "rsi14": 46.8,
-      "atr14": 9.61,
+      "rsi14": 46.7,
+      "atr14": 9.68,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -1283,6 +1336,59 @@
           "h": 413.95,
           "l": 407.0,
           "c": 410.0
+        }
+      ]
+    },
+    {
+      "symbol": "PATANJALI",
+      "tier": "BROADER",
+      "pattern": "doji",
+      "pattern_name": "Doji",
+      "direction": "neutral",
+      "close": 351.65,
+      "change_pct": -0.64,
+      "volume_ratio": 0.69,
+      "volume_confirmed": false,
+      "turnover_cr": 173.76,
+      "rsi14": 36.6,
+      "atr14": 10.26,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 352.95,
+          "h": 353.6,
+          "l": 342.15,
+          "c": 352.6
+        },
+        {
+          "d": "13 Aug",
+          "o": 351.5,
+          "h": 354.0,
+          "l": 346.9,
+          "c": 353.85
+        },
+        {
+          "d": "14 Aug",
+          "o": 353.85,
+          "h": 353.85,
+          "l": 347.2,
+          "c": 352.0
+        },
+        {
+          "d": "17 Aug",
+          "o": 357.0,
+          "h": 358.6,
+          "l": 347.0,
+          "c": 353.9
+        },
+        {
+          "d": "18 Aug",
+          "o": 352.5,
+          "h": 353.9,
+          "l": 345.8,
+          "c": 351.65
         }
       ]
     },
@@ -1340,59 +1446,6 @@
       ]
     },
     {
-      "symbol": "PATANJALI",
-      "tier": "BROADER",
-      "pattern": "doji",
-      "pattern_name": "Doji",
-      "direction": "neutral",
-      "close": 351.65,
-      "change_pct": -0.64,
-      "volume_ratio": 0.74,
-      "volume_confirmed": false,
-      "turnover_cr": 154.23,
-      "rsi14": 38.1,
-      "atr14": 10.06,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 352.95,
-          "h": 353.6,
-          "l": 342.15,
-          "c": 352.6
-        },
-        {
-          "d": "13 Aug",
-          "o": 351.5,
-          "h": 354.0,
-          "l": 346.9,
-          "c": 353.85
-        },
-        {
-          "d": "14 Aug",
-          "o": 353.85,
-          "h": 353.85,
-          "l": 347.2,
-          "c": 352.0
-        },
-        {
-          "d": "17 Aug",
-          "o": 357.0,
-          "h": 358.6,
-          "l": 347.0,
-          "c": 353.9
-        },
-        {
-          "d": "18 Aug",
-          "o": 352.5,
-          "h": 353.9,
-          "l": 345.8,
-          "c": 351.65
-        }
-      ]
-    },
-    {
       "symbol": "DELHIVERY",
       "tier": "BROADER",
       "pattern": "doji",
@@ -1403,8 +1456,8 @@
       "volume_ratio": 0.36,
       "volume_confirmed": false,
       "turnover_cr": 142.04,
-      "rsi14": 37.8,
-      "atr14": 13.02,
+      "rsi14": 38.0,
+      "atr14": 13.23,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -1442,6 +1495,165 @@
           "h": 456.95,
           "l": 448.8,
           "c": 451.8
+        }
+      ]
+    },
+    {
+      "symbol": "HAVELLS",
+      "tier": "BROADER",
+      "pattern": "doji",
+      "pattern_name": "Doji",
+      "direction": "neutral",
+      "close": 1299.7,
+      "change_pct": 0.05,
+      "volume_ratio": 0.88,
+      "volume_confirmed": false,
+      "turnover_cr": 123.27,
+      "rsi14": 67.2,
+      "atr14": 25.1,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 1271.3,
+          "h": 1276.9,
+          "l": 1257.7,
+          "c": 1265.0
+        },
+        {
+          "d": "13 Aug",
+          "o": 1265.0,
+          "h": 1271.7,
+          "l": 1254.3,
+          "c": 1270.0
+        },
+        {
+          "d": "14 Aug",
+          "o": 1270.0,
+          "h": 1303.4,
+          "l": 1262.2,
+          "c": 1298.0
+        },
+        {
+          "d": "17 Aug",
+          "o": 1305.0,
+          "h": 1315.0,
+          "l": 1281.7,
+          "c": 1299.0
+        },
+        {
+          "d": "18 Aug",
+          "o": 1299.0,
+          "h": 1311.8,
+          "l": 1286.1,
+          "c": 1299.7
+        }
+      ]
+    },
+    {
+      "symbol": "INDIANB",
+      "tier": "BROADER",
+      "pattern": "doji",
+      "pattern_name": "Doji",
+      "direction": "neutral",
+      "close": 875.0,
+      "change_pct": -0.7,
+      "volume_ratio": 0.27,
+      "volume_confirmed": false,
+      "turnover_cr": 119.05,
+      "rsi14": 56.0,
+      "atr14": 20.85,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 875.6,
+          "h": 897.65,
+          "l": 873.1,
+          "c": 897.0
+        },
+        {
+          "d": "13 Aug",
+          "o": 897.0,
+          "h": 903.8,
+          "l": 883.15,
+          "c": 897.0
+        },
+        {
+          "d": "14 Aug",
+          "o": 890.0,
+          "h": 902.8,
+          "l": 885.3,
+          "c": 894.95
+        },
+        {
+          "d": "17 Aug",
+          "o": 891.8,
+          "h": 891.8,
+          "l": 870.3,
+          "c": 881.2
+        },
+        {
+          "d": "18 Aug",
+          "o": 874.0,
+          "h": 887.0,
+          "l": 874.0,
+          "c": 875.0
+        }
+      ]
+    },
+    {
+      "symbol": "LLOYDSME",
+      "tier": "BROADER",
+      "pattern": "doji",
+      "pattern_name": "Doji",
+      "direction": "neutral",
+      "close": 1938.6,
+      "change_pct": -0.18,
+      "volume_ratio": 0.5,
+      "volume_confirmed": false,
+      "turnover_cr": 118.99,
+      "rsi14": 49.5,
+      "atr14": 61.32,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 1976.5,
+          "h": 1983.1,
+          "l": 1877.5,
+          "c": 1893.6
+        },
+        {
+          "d": "13 Aug",
+          "o": 1900.0,
+          "h": 1944.8,
+          "l": 1889.0,
+          "c": 1898.4
+        },
+        {
+          "d": "14 Aug",
+          "o": 1900.0,
+          "h": 1933.0,
+          "l": 1884.6,
+          "c": 1918.6
+        },
+        {
+          "d": "17 Aug",
+          "o": 1920.0,
+          "h": 1947.0,
+          "l": 1908.4,
+          "c": 1942.0
+        },
+        {
+          "d": "18 Aug",
+          "o": 1938.2,
+          "h": 1943.9,
+          "l": 1909.0,
+          "c": 1938.6
         }
       ]
     },
@@ -1495,165 +1707,6 @@
           "h": 759.0,
           "l": 745.05,
           "c": 754.35
-        }
-      ]
-    },
-    {
-      "symbol": "INDIANB",
-      "tier": "BROADER",
-      "pattern": "doji",
-      "pattern_name": "Doji",
-      "direction": "neutral",
-      "close": 875.0,
-      "change_pct": -0.7,
-      "volume_ratio": 0.3,
-      "volume_confirmed": false,
-      "turnover_cr": 114.16,
-      "rsi14": 56.1,
-      "atr14": 20.33,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 875.6,
-          "h": 897.65,
-          "l": 873.1,
-          "c": 897.0
-        },
-        {
-          "d": "13 Aug",
-          "o": 897.0,
-          "h": 903.8,
-          "l": 883.15,
-          "c": 897.0
-        },
-        {
-          "d": "14 Aug",
-          "o": 890.0,
-          "h": 902.8,
-          "l": 885.3,
-          "c": 894.95
-        },
-        {
-          "d": "17 Aug",
-          "o": 891.8,
-          "h": 891.8,
-          "l": 870.3,
-          "c": 881.2
-        },
-        {
-          "d": "18 Aug",
-          "o": 874.0,
-          "h": 887.0,
-          "l": 874.0,
-          "c": 875.0
-        }
-      ]
-    },
-    {
-      "symbol": "HAVELLS",
-      "tier": "BROADER",
-      "pattern": "doji",
-      "pattern_name": "Doji",
-      "direction": "neutral",
-      "close": 1299.7,
-      "change_pct": 0.05,
-      "volume_ratio": 1.05,
-      "volume_confirmed": false,
-      "turnover_cr": 113.6,
-      "rsi14": 67.6,
-      "atr14": 24.73,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 1271.3,
-          "h": 1276.9,
-          "l": 1257.7,
-          "c": 1265.0
-        },
-        {
-          "d": "13 Aug",
-          "o": 1265.0,
-          "h": 1271.7,
-          "l": 1254.3,
-          "c": 1270.0
-        },
-        {
-          "d": "14 Aug",
-          "o": 1270.0,
-          "h": 1303.4,
-          "l": 1262.2,
-          "c": 1298.0
-        },
-        {
-          "d": "17 Aug",
-          "o": 1305.0,
-          "h": 1315.0,
-          "l": 1281.7,
-          "c": 1299.0
-        },
-        {
-          "d": "18 Aug",
-          "o": 1299.0,
-          "h": 1311.8,
-          "l": 1286.1,
-          "c": 1299.7
-        }
-      ]
-    },
-    {
-      "symbol": "LLOYDSME",
-      "tier": "BROADER",
-      "pattern": "doji",
-      "pattern_name": "Doji",
-      "direction": "neutral",
-      "close": 1938.6,
-      "change_pct": -0.18,
-      "volume_ratio": 0.51,
-      "volume_confirmed": false,
-      "turnover_cr": 109.94,
-      "rsi14": 49.3,
-      "atr14": 61.77,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 1976.5,
-          "h": 1983.1,
-          "l": 1877.5,
-          "c": 1893.6
-        },
-        {
-          "d": "13 Aug",
-          "o": 1900.0,
-          "h": 1944.8,
-          "l": 1889.0,
-          "c": 1898.4
-        },
-        {
-          "d": "14 Aug",
-          "o": 1900.0,
-          "h": 1933.0,
-          "l": 1884.6,
-          "c": 1918.6
-        },
-        {
-          "d": "17 Aug",
-          "o": 1920.0,
-          "h": 1947.0,
-          "l": 1908.4,
-          "c": 1942.0
-        },
-        {
-          "d": "18 Aug",
-          "o": 1938.2,
-          "h": 1943.9,
-          "l": 1909.0,
-          "c": 1938.6
         }
       ]
     },
@@ -1771,11 +1824,11 @@
       "direction": "neutral",
       "close": 1623.8,
       "change_pct": -0.15,
-      "volume_ratio": 0.71,
+      "volume_ratio": 0.59,
       "volume_confirmed": false,
       "turnover_cr": 100.72,
-      "rsi14": 41.3,
-      "atr14": 40.41,
+      "rsi14": 40.5,
+      "atr14": 41.41,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -1824,11 +1877,11 @@
       "direction": "neutral",
       "close": 1273.0,
       "change_pct": 0.24,
-      "volume_ratio": 0.51,
+      "volume_ratio": 0.52,
       "volume_confirmed": false,
-      "turnover_cr": 97.07,
-      "rsi14": 67.3,
-      "atr14": 30.3,
+      "turnover_cr": 95.34,
+      "rsi14": 66.9,
+      "atr14": 30.43,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -2039,8 +2092,8 @@
       "volume_ratio": 0.39,
       "volume_confirmed": false,
       "turnover_cr": 59.67,
-      "rsi14": 41.6,
-      "atr14": 1.5,
+      "rsi14": 42.0,
+      "atr14": 1.51,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -2092,8 +2145,8 @@
       "volume_ratio": 0.72,
       "volume_confirmed": false,
       "turnover_cr": 59.21,
-      "rsi14": 43.9,
-      "atr14": 8.64,
+      "rsi14": 44.1,
+      "atr14": 8.68,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -2198,8 +2251,8 @@
       "volume_ratio": 0.38,
       "volume_confirmed": false,
       "turnover_cr": 57.65,
-      "rsi14": 33.6,
-      "atr14": 8.16,
+      "rsi14": 33.4,
+      "atr14": 8.48,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -2357,8 +2410,8 @@
       "volume_ratio": 0.38,
       "volume_confirmed": false,
       "turnover_cr": 49.98,
-      "rsi14": 47.8,
-      "atr14": 17.47,
+      "rsi14": 47.3,
+      "atr14": 17.77,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -2453,59 +2506,6 @@
       ]
     },
     {
-      "symbol": "HUDCO",
-      "tier": "BROADER",
-      "pattern": "doji",
-      "pattern_name": "Doji",
-      "direction": "neutral",
-      "close": 188.01,
-      "change_pct": -0.53,
-      "volume_ratio": 0.49,
-      "volume_confirmed": false,
-      "turnover_cr": 41.94,
-      "rsi14": 33.3,
-      "atr14": 4.78,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 195.8,
-          "h": 196.8,
-          "l": 191.25,
-          "c": 192.73
-        },
-        {
-          "d": "13 Aug",
-          "o": 192.73,
-          "h": 194.56,
-          "l": 192.5,
-          "c": 193.91
-        },
-        {
-          "d": "14 Aug",
-          "o": 194.0,
-          "h": 194.1,
-          "l": 189.31,
-          "c": 189.99
-        },
-        {
-          "d": "17 Aug",
-          "o": 189.6,
-          "h": 191.87,
-          "l": 186.15,
-          "c": 189.01
-        },
-        {
-          "d": "18 Aug",
-          "o": 187.9,
-          "h": 189.4,
-          "l": 186.4,
-          "c": 188.01
-        }
-      ]
-    },
-    {
       "symbol": "PVRINOX",
       "tier": "BROADER",
       "pattern": "doji",
@@ -2569,8 +2569,8 @@
       "volume_ratio": 1.09,
       "volume_confirmed": false,
       "turnover_cr": 38.95,
-      "rsi14": 63.3,
-      "atr14": 5.16,
+      "rsi14": 63.1,
+      "atr14": 5.15,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -2619,11 +2619,11 @@
       "direction": "neutral",
       "close": 647.3,
       "change_pct": 0.06,
-      "volume_ratio": 0.42,
+      "volume_ratio": 0.45,
       "volume_confirmed": false,
       "turnover_cr": 38.11,
       "rsi14": 36.4,
-      "atr14": 15.83,
+      "atr14": 16.13,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -2665,6 +2665,59 @@
       ]
     },
     {
+      "symbol": "HUDCO",
+      "tier": "BROADER",
+      "pattern": "doji",
+      "pattern_name": "Doji",
+      "direction": "neutral",
+      "close": 188.01,
+      "change_pct": -0.53,
+      "volume_ratio": 0.54,
+      "volume_confirmed": false,
+      "turnover_cr": 37.76,
+      "rsi14": 32.7,
+      "atr14": 4.79,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 195.8,
+          "h": 196.8,
+          "l": 191.25,
+          "c": 192.73
+        },
+        {
+          "d": "13 Aug",
+          "o": 192.73,
+          "h": 194.56,
+          "l": 192.5,
+          "c": 193.91
+        },
+        {
+          "d": "14 Aug",
+          "o": 194.0,
+          "h": 194.1,
+          "l": 189.31,
+          "c": 189.99
+        },
+        {
+          "d": "17 Aug",
+          "o": 189.6,
+          "h": 191.87,
+          "l": 186.15,
+          "c": 189.01
+        },
+        {
+          "d": "18 Aug",
+          "o": 187.9,
+          "h": 189.4,
+          "l": 186.4,
+          "c": 188.01
+        }
+      ]
+    },
+    {
       "symbol": "CHOICEIN",
       "tier": "BROADER",
       "pattern": "doji",
@@ -2672,11 +2725,11 @@
       "direction": "neutral",
       "close": 803.6,
       "change_pct": -0.02,
-      "volume_ratio": 0.45,
+      "volume_ratio": 0.48,
       "volume_confirmed": false,
       "turnover_cr": 37.76,
-      "rsi14": 49.0,
-      "atr14": 15.73,
+      "rsi14": 50.1,
+      "atr14": 16.04,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -2781,8 +2834,8 @@
       "volume_ratio": 0.25,
       "volume_confirmed": false,
       "turnover_cr": 35.93,
-      "rsi14": 62.2,
-      "atr14": 58.32,
+      "rsi14": 62.3,
+      "atr14": 58.5,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -2834,8 +2887,8 @@
       "volume_ratio": 0.19,
       "volume_confirmed": false,
       "turnover_cr": 31.74,
-      "rsi14": 45.5,
-      "atr14": 11.29,
+      "rsi14": 45.4,
+      "atr14": 11.34,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -2990,11 +3043,11 @@
       "direction": "neutral",
       "close": 1563.3,
       "change_pct": -0.83,
-      "volume_ratio": 0.29,
+      "volume_ratio": 0.31,
       "volume_confirmed": false,
-      "turnover_cr": 29.66,
-      "rsi14": 47.0,
-      "atr14": 56.98,
+      "turnover_cr": 27.22,
+      "rsi14": 46.8,
+      "atr14": 58.11,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -3138,59 +3191,6 @@
           "h": 187.9,
           "l": 186.1,
           "c": 186.85
-        }
-      ]
-    },
-    {
-      "symbol": "EMCURE",
-      "tier": "BROADER",
-      "pattern": "doji",
-      "pattern_name": "Doji",
-      "direction": "neutral",
-      "close": 1874.5,
-      "change_pct": 0.03,
-      "volume_ratio": 0.85,
-      "volume_confirmed": false,
-      "turnover_cr": 25.57,
-      "rsi14": 44.2,
-      "atr14": 54.91,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 2008.6,
-          "h": 2023.0,
-          "l": 1983.3,
-          "c": 2009.6
-        },
-        {
-          "d": "13 Aug",
-          "o": 2009.1,
-          "h": 2020.0,
-          "l": 1985.7,
-          "c": 2009.6
-        },
-        {
-          "d": "14 Aug",
-          "o": 2009.6,
-          "h": 2012.0,
-          "l": 1925.0,
-          "c": 1932.3
-        },
-        {
-          "d": "17 Aug",
-          "o": 1920.0,
-          "h": 1936.9,
-          "l": 1869.0,
-          "c": 1873.9
-        },
-        {
-          "d": "18 Aug",
-          "o": 1879.0,
-          "h": 1889.0,
-          "l": 1861.1,
-          "c": 1874.5
         }
       ]
     }
