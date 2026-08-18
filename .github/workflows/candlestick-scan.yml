@@ -2,8 +2,16 @@ name: Candlestick Scan
 
 on:
   schedule:
-    # 11:15 UTC = 16:45 IST — 75 min after NSE close, so EOD data has settled.
-    - cron: "15 11 * * 1-5"
+    # Odd minutes on purpose: GitHub drops scheduled runs under load, which
+    # peaks at :00/:15/:30. Two fires per day — the second is a safety net.
+    # A duplicate run costs nothing: the scanner skips writing when the data
+    # is unchanged, and the commit step then finds no diff.
+    #
+    # 10:18 UTC = 15:48 IST — 18 min after the NSE close.
+    - cron: "18 10 * * 1-5"
+    # 12:52 UTC = 18:22 IST — backup, and the one that usually publishes.
+    - cron: "52 12 * * 1-5"
+
   workflow_dispatch:        # manual run button, useful for first deploy
     inputs:
       universe:
