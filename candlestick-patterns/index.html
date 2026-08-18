@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Candlestick Patterns on Nifty 50 Stocks Today | MoneyVeda</title>
-<meta name="description" content="Which candlestick patterns formed on Nifty 50 stocks in the latest NSE session — engulfing, hammer, morning star and more, with trend and volume confirmation. Free, no signup.">
-<link rel="canonical" href="https://moneyveda.org/candlestick-patterns">
+<title>Bullish Engulfing Pattern — Nifty 50 Stocks Showing It Today | MoneyVeda</title>
+<meta name="description" content="What a bullish engulfing candle means, when it fails, and which Nifty 50 stocks formed one in the latest NSE session. Updated after every market close.">
+<link rel="canonical" href="https://www.moneyveda.org/candlestick-patterns/bullish-engulfing">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -143,60 +143,131 @@ footer{padding:26px 0 48px;border-top:1px solid rgba(255,255,255,.06);margin-top
   .tape{font-size:12px}
   .tape th:nth-child(5),.tape td:nth-child(5){display:none}
 }
+
+/* --- pattern page --- */
+.hero .wrap{display:grid;grid-template-columns:1fr 310px;gap:44px;align-items:center}
+.hero h1{margin-bottom:14px}
+.thesis{color:var(--muted);font-size:15px;max-width:48ch;margin:0}
+.scope{background:var(--dark3);border:1px solid rgba(201,168,76,.1);border-radius:var(--radius-md);
+  box-shadow:var(--shadow-card);padding:16px;margin:0}
+.scope svg{display:block;width:100%;height:auto}
+.scope-cap{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:12px;
+  font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1.3px;text-transform:uppercase;
+  color:var(--muted-soft)}
+.scope-cap strong{color:var(--gold-light);font-weight:500}
+.scope-reset{font:inherit;background:none;border:none;padding:0;cursor:pointer;color:var(--muted);
+  text-decoration:underline;text-underline-offset:3px}
+.scope-reset:hover{color:var(--gold-light)}
+.scope-reset[hidden]{display:none}
+.tape caption{text-align:left;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted);
+  padding-bottom:14px;caption-side:top}
+.tape tbody tr{cursor:pointer;transition:background .2s ease}
+.tape tbody tr:hover,.tape tbody tr:focus-within{background:rgba(255,255,255,.03)}
+.tape tbody tr[aria-selected="true"]{background:rgba(201,168,76,.07);
+  box-shadow:inset 3px 0 0 var(--gold)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:44px}
+.cols h3{font-size:10px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;
+  color:var(--muted);margin:0 0 14px;display:flex;align-items:center;gap:10px}
+.cols h3::after{content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(255,255,255,.08),transparent)}
+.cols p{margin:0 0 14px;color:var(--cream-dim);font-size:15px}
+.cols p:last-child{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0}
+.chips a{display:inline-block;font-size:13px;text-decoration:none;color:var(--cream-dim);
+  padding:8px 15px;border:1px solid rgba(255,255,255,.08);border-radius:100px;
+  background:rgba(255,255,255,.03);transition:all .2s ease}
+.chips a:hover{border-color:rgba(201,168,76,.4);color:var(--gold-light)}
+.stamp{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.3px;
+  text-transform:uppercase;color:var(--muted-soft)}
+.band-head h2{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;
+  letter-spacing:-.5px;margin:0}
+@media(max-width:800px){
+  .hero .wrap{grid-template-columns:1fr;gap:26px}
+  .scope{max-width:330px}
+  .cols{grid-template-columns:1fr;gap:28px}
+}
+@media(prefers-reduced-motion:no-preference){
+  .candle rect,.candle line{transition:all .32s cubic-bezier(.4,0,.2,1)}
+}
 </style>
 </head>
 <body>
 
 <nav class="topnav">
-  <a href="/" class="back-btn">← Market</a>
+  <a href="/candlestick-patterns" class="back-btn">← Patterns</a>
   <a href="/" class="logo">MONEY<span>VEDA</span></a>
   <div class="live-badge"><span class="live-dot"></span>Daily</div>
 </nav>
 
-<header class="hero">
+<section class="hero">
   <div class="wrap">
-    <div class="eyebrow">NSE · NIFTY 50 · Candle Desk</div>
-    <h1>What the Nifty 50 <em>printed</em> today</h1>
-    <p class="hero-tagline">Every Nifty 50 stock scanned after the close for sixteen candlestick
-      formations. A pattern is listed only when the prior trend supports it and the day's volume is
-      measured against its twenty-day average — filtered, not raw detector output.</p>
-    <div class="hero-stats" id="readout">
-      <span class="stat-pill" id="sPat">⏳ Scanning…</span>
-      <span class="stat-pill" id="sSig" hidden></span>
-      <span class="stat-pill bull" id="sBull" hidden></span>
-      <span class="stat-pill bear" id="sBear" hidden></span>
-      <span class="stat-pill muted" id="sDate" hidden></span>
+    <div>
+      <div class="eyebrow" id="eyebrow">Bullish reversal · 2 candles</div>
+      <h1 id="title">Bullish Engulfing</h1>
+      <p class="thesis" id="thesis">A small down candle is swallowed whole by the next day's up candle.
+        Sellers set the range, then buyers took all of it back and more — which is why it only
+        counts as a signal if there was a downtrend to reverse.</p>
     </div>
-    <div class="gold-rule"></div>
-  </div>
-</header>
 
-<section class="band">
-  <div class="wrap">
-    <div class="band-head">
-      <p class="section-title" style="flex:1">The board</p>
-      <div class="switch" role="group" aria-label="Choose view">
-        <button type="button" id="byPattern" aria-pressed="true">By pattern</button>
-        <button type="button" id="byStock" aria-pressed="false">By stock</button>
-      </div>
-    </div>
-    <div id="viewPattern"><ul class="board" id="board"></ul></div>
-    <div id="viewStock" hidden></div>
+    <figure class="scope" id="scope">
+      <svg id="chart" viewBox="0 0 300 200" role="img" aria-labelledby="chartLabel"></svg>
+      <figcaption class="scope-cap">
+        <strong id="chartLabel">Textbook shape</strong>
+        <button type="button" class="scope-reset" id="reset" hidden>Show textbook</button>
+      </figcaption>
+    </figure>
   </div>
 </section>
 
 <section class="band">
-  <div class="wrap prose">
-    <h2>How to use this board</h2>
-    <p>A candlestick pattern describes who won a session, not what happens next. A hammer says
-      sellers pushed price down and lost it back before the bell. Whether that matters depends
-      entirely on what came before it — which is why this scan checks the twenty-day average first
-      and discards formations that appear mid-drift.</p>
-    <p>Treat it as a shortlist. Stocks marked <span class="tag">Confirmed</span> traded at least
-      1.2× their usual volume, meaning the move had real participation behind it rather than a thin
-      book. Those are worth opening a chart for. The rest are worth noting and nothing more.</p>
-    <p>Each pattern links to a page explaining how the formation works, when it commonly fails, and
-      every Nifty 50 stock currently showing it.</p>
+  <div class="wrap">
+    <div class="band-head">
+      <h2>On the tape</h2>
+      <span class="stamp" id="stamp">Loading…</span>
+    </div>
+    <div id="tape"></div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap cols">
+    <div>
+      <h3>How to read it</h3>
+      <p>Two sessions. The first closes lower than it opened. The second opens at or below that
+        close, then closes above the first candle's open — its real body covers the previous body
+        completely. The bigger the second body relative to the first, the more decisive the handover.</p>
+      <p>Context does the heavy lifting. The same two candles in the middle of a sideways drift
+        are noise. The scan below only lists a stock if it was trading below its 20-day average
+        before the pattern formed, so there was an actual decline for buyers to reverse.</p>
+      <p>Volume is the second filter. A day marked <span class="tag">Confirmed</span> traded at
+        least 1.2× its 20-day average volume — the reversal had participation behind it, not just
+        a thin book.</p>
+    </div>
+    <div>
+      <h3>When it fails</h3>
+      <p>Most often when the stock is already deeply oversold and the engulfing candle is simply a
+        short-covering bounce inside a continuing downtrend. Check RSI: a reading in the low teens
+        rising to 25 is relief, not a turn.</p>
+      <p>It also fails on gap opens driven by news, where the wide body reflects a repricing rather
+        than a shift in who is in control. And on illiquid counters, a single large order can
+        manufacture the shape.</p>
+      <p>A pattern is a prompt to look closer, never a trade on its own. Traders who use these
+        wait for the next session to hold above the engulfing candle's close before acting.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="band-head"><h2>Related patterns</h2></div>
+    <ul class="chips">
+      <li><a href="/candlestick-patterns/hammer">Hammer</a></li>
+      <li><a href="/candlestick-patterns/morning-star">Morning Star</a></li>
+      <li><a href="/candlestick-patterns/piercing-pattern">Piercing Pattern</a></li>
+      <li><a href="/candlestick-patterns/bullish-harami">Bullish Harami</a></li>
+      <li><a href="/candlestick-patterns/bearish-engulfing">Bearish Engulfing</a></li>
+      <li><a href="/candlestick-patterns">All 16 patterns</a></li>
+    </ul>
   </div>
 </section>
 
@@ -205,115 +276,141 @@ footer{padding:26px 0 48px;border-top:1px solid rgba(255,255,255,.06);margin-top
     <p class="disclaimer">MoneyVeda publishes this scan for education and research. It is not
       investment advice, and no stock listed here is a recommendation to buy or sell. Pattern
       detection is automated and does not account for corporate actions, news flow, or your
-      circumstances. Consult a SEBI-registered investment adviser before trading.</p>
+      circumstances. Consult a SEBI-registered investment adviser before trading. Data from the
+      most recent completed NSE session.</p>
   </div>
 </footer>
 
 <script>
-const CATALOGUE=[
- ["bullish-engulfing","Bullish Engulfing","bullish",[[104,105,99,100],[99,109,98,108]]],
- ["bearish-engulfing","Bearish Engulfing","bearish",[[100,105,99,104],[109,110,99,100]]],
- ["hammer","Hammer","bullish",[[104,105,98,103],[103,106,94,105]]],
- ["inverted-hammer","Inverted Hammer","bullish",[[104,105,98,99],[99,112,98,101]]],
- ["morning-star","Morning Star","bullish",[[110,111,101,102],[99,100,96,99.4],[101,110,100,109]]],
- ["piercing-pattern","Piercing Pattern","bullish",[[110,111,100,101],[98,108,97,107]]],
- ["three-white-soldiers","Three White Soldiers","bullish",[[98,103,97,102],[101,107,100,106],[105,112,104,111]]],
- ["bullish-harami","Bullish Harami","bullish",[[110,111,99,100],[102,105,101,104]]],
- ["shooting-star","Shooting Star","bearish",[[98,100,97,99],[100,113,99,102]]],
- ["hanging-man","Hanging Man","bearish",[[98,101,97,100],[103,104,94,105]]],
- ["evening-star","Evening Star","bearish",[[98,108,97,107],[110,113,109,110.4],[108,109,99,100]]],
- ["dark-cloud-cover","Dark Cloud Cover","bearish",[[99,110,98,109],[112,113,102,103]]],
- ["three-black-crows","Three Black Crows","bearish",[[112,113,106,107],[108,109,102,103],[104,105,98,99]]],
- ["bearish-harami","Bearish Harami","bearish",[[99,110,98,109],[106,108,105,107]]],
- ["doji","Doji","neutral",[[104,111,97,104.3]]],
- ["marubozu","Marubozu","neutral",[[98,108,98,108]]]
-];
-const BULL="#4ade80",BEAR="#f87171",NEUT="#C9A84C";
+/* ============================================================
+   Per-pattern config — this is the only block to edit when
+   copying this file to another pattern page.
+   ============================================================ */
+const PATTERN = {
+  slug: "bullish-engulfing",
+  feed: "/data/candlestick/bullish-engulfing.json",
+  direction: "bullish",
+  // Idealised shape: downtrend into a candle that engulfs the previous body.
+  textbook: [
+    {d:"", o:112, h:114, l:108, c:109},
+    {d:"", o:108, h:110, l:104, c:105},
+    {d:"", o:106, h:107, l:101, c:102},
+    {d:"", o:103, h:104.5, l:99, c:100},
+    {d:"", o:99,  h:108.5, l:98, c:107}
+  ]
+};
 
-function glyph(bars,dir){
-  const W=100,H=46,padY=4;
-  const hi=Math.max(...bars.map(b=>b[1])),lo=Math.min(...bars.map(b=>b[2]));
-  const span=(hi-lo)||1,y=v=>padY+(hi-v)/span*(H-padY*2);
-  const slot=W/bars.length,bw=Math.min(slot*0.5,15);
-  const stroke=dir==="bullish"?BULL:dir==="bearish"?BEAR:NEUT;
-  return `<svg viewBox="0 0 ${W} ${H}" aria-hidden="true">`+bars.map((b,i)=>{
-    const cx=slot*i+slot/2,up=b[3]>=b[0];
-    const top=y(Math.max(b[0],b[3])),hgt=Math.max(Math.abs(y(b[0])-y(b[3])),1.6);
-    return `<line x1="${cx}" x2="${cx}" y1="${y(b[1])}" y2="${y(b[2])}" stroke="${stroke}" stroke-width="1.3"/>`
-      +`<rect x="${cx-bw/2}" y="${top}" width="${bw}" height="${hgt}" fill="${up?stroke:"none"}" stroke="${stroke}" stroke-width="1.3"/>`;
-  }).join("")+`</svg>`;
+const BULL="#4ade80", BEAR="#f87171";
+const svg = document.getElementById("chart");
+const chartLabel = document.getElementById("chartLabel");
+const resetBtn = document.getElementById("reset");
+
+/* --- draw OHLC bars as real candles --- */
+function draw(bars){
+  const W=300,H=200,padX=18,padY=16;
+  const highs=bars.map(b=>b.h), lows=bars.map(b=>b.l);
+  const hi=Math.max(...highs), lo=Math.min(...lows);
+  const span=(hi-lo)||1, pad=span*0.08;
+  const y=v=>padY+(hi+pad-v)/(span+pad*2)*(H-padY*2);
+  const slot=(W-padX*2)/bars.length;
+  const bw=Math.min(slot*0.56,30);
+
+  svg.innerHTML = bars.map((b,i)=>{
+    const cx=padX+slot*i+slot/2;
+    const up=b.c>=b.o;
+    const col=up?BULL:BEAR;
+    const top=y(Math.max(b.o,b.c));
+    const bh=Math.max(Math.abs(y(b.o)-y(b.c)),1.5);
+    return `<g class="candle">
+      <line x1="${cx}" x2="${cx}" y1="${y(b.h)}" y2="${y(b.l)}" stroke="${col}" stroke-width="1.4"/>
+      <rect x="${cx-bw/2}" y="${top}" width="${bw}" height="${bh}"
+            fill="${up?col:'none'}" stroke="${col}" stroke-width="1.4"/>
+    </g>`;
+  }).join("");
 }
+
+function showTextbook(){
+  draw(PATTERN.textbook);
+  chartLabel.textContent="Textbook shape";
+  resetBtn.hidden=true;
+  document.querySelectorAll('.tape tbody tr[aria-selected="true"]')
+          .forEach(r=>r.setAttribute("aria-selected","false"));
+}
+showTextbook();
+resetBtn.addEventListener("click", showTextbook);
+
+/* --- render the live scan --- */
 const fmt=n=>n.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
-const pill=(id,txt)=>{const e=document.getElementById(id);e.textContent=txt;e.hidden=false;};
 
-function render(data){
-  const sigs=data.signals||[];
-  const by={};
-  sigs.forEach(s=>(by[s.pattern]=by[s.pattern]||[]).push(s));
+function renderTape(data){
+  const tape=document.getElementById("tape");
+  document.getElementById("stamp").textContent=
+    `NSE close · ${new Date(data.session_date+"T00:00:00").toLocaleDateString("en-IN",
+      {day:"numeric",month:"short",year:"numeric"})}`;
 
-  const nP=Object.keys(by).length;
-  pill("sPat",`${nP} ${nP===1?"pattern":"patterns"} formed`);
-  pill("sSig",`${sigs.length} ${sigs.length===1?"signal":"signals"}`);
-  pill("sBull",`▲ ${sigs.filter(s=>s.direction==="bullish").length} bullish`);
-  pill("sBear",`▼ ${sigs.filter(s=>s.direction==="bearish").length} bearish`);
-  pill("sDate",new Date(data.session_date+"T00:00:00").toLocaleDateString("en-IN",
-       {day:"numeric",month:"short",year:"numeric"})+" close");
-
-  const tile=([slug,name,dir,bars])=>{
-    const n=(by[slug]||[]).length;
-    return `<li><a class="tile ${n?"hit":"quiet"}" data-dir="${dir}" href="/candlestick-patterns/${slug}">
-      ${glyph(bars,dir)}<span class="tile-foot">
-      <span class="tile-name">${name}</span>
-      <span class="tile-meta">${n?`${n} ${n===1?"stock":"stocks"}`:"None today"}</span>
-      </span></a></li>`;
-  };
-  const hit=CATALOGUE.filter(p=>by[p[0]]).sort((a,b)=>by[b[0]].length-by[a[0]].length);
-  const quiet=CATALOGUE.filter(p=>!by[p[0]]);
-  const board=document.getElementById("board");
-  board.innerHTML=hit.map(tile).join("");
-  if(quiet.length){
-    board.insertAdjacentHTML("afterend",
-      `<p class="section-title" style="margin:26px 0 16px">Not formed today</p>
-       <ul class="board">${quiet.map(tile).join("")}</ul>`);
-  }
-
-  const sv=document.getElementById("viewStock");
-  if(!sigs.length){
-    sv.innerHTML=`<div class="note"><p>No stock in the Nifty 50 formed a tracked pattern in this
-      session.</p><p>Quiet tapes are normal. The scan runs again after the next close.</p></div>`;
+  if(!data.signals.length){
+    tape.innerHTML=`<div class="note">
+      <p>No Nifty 50 stock formed a ${data.pattern_name.toLowerCase()} in this session.</p>
+      <p>The scan runs after every close. Browse the other patterns above, or check back tomorrow evening.</p>
+    </div>`;
     return;
   }
-  const rows=[...sigs].sort((a,b)=>a.symbol.localeCompare(b.symbol)).map(s=>`
-    <tr><td>${s.symbol}</td>
-    <td><span class="dot ${s.direction}"></span><a href="/candlestick-patterns/${s.pattern}">${s.pattern_name}</a></td>
-    <td>${fmt(s.close)}</td>
-    <td class="${s.change_pct>=0?"up":"down"}">${s.change_pct>=0?"+":""}${s.change_pct.toFixed(2)}%</td>
-    <td>${s.rsi14??"—"}</td>
-    <td><span class="tag${s.volume_confirmed?"":" weak"}">${s.volume_confirmed?"Confirmed":"Thin"}</span></td>
+
+  const rows=data.signals.map((s,i)=>`
+    <tr tabindex="0" role="button" aria-selected="false" data-i="${i}">
+      <td>${s.symbol}</td>
+      <td>${fmt(s.close)}</td>
+      <td class="${s.change_pct>=0?"up":"down"}">${s.change_pct>=0?"+":""}${s.change_pct.toFixed(2)}%</td>
+      <td>${s.volume_ratio.toFixed(2)}×</td>
+      <td>${s.rsi14??"—"}</td>
+      <td><span class="tag${s.volume_confirmed?"":" weak"}">${s.volume_confirmed?"Confirmed":"Thin"}</span></td>
     </tr>`).join("");
-  sv.innerHTML=`<table class="tape"><thead><tr>
-    <th scope="col">Stock</th><th scope="col">Pattern</th><th scope="col">Close ₹</th>
-    <th scope="col">Change</th><th scope="col">RSI 14</th><th scope="col">Volume</th>
+
+  tape.innerHTML=`<table class="tape">
+    <caption>${data.count} ${data.count===1?"stock":"stocks"} in the Nifty 50 formed this pattern.
+      Select a row to see its actual candles.</caption>
+    <thead><tr>
+      <th scope="col">Stock</th><th scope="col">Close ₹</th><th scope="col">Change</th>
+      <th scope="col">Vol vs 20d</th><th scope="col">RSI 14</th><th scope="col">Volume</th>
     </tr></thead><tbody>${rows}</tbody></table>`;
+
+  const select=tr=>{
+    const s=data.signals[+tr.dataset.i];
+    tape.querySelectorAll('tr[aria-selected="true"]').forEach(r=>r.setAttribute("aria-selected","false"));
+    tr.setAttribute("aria-selected","true");
+    draw(s.bars);
+    chartLabel.textContent=`${s.symbol} · ${s.bars[0].d}–${s.bars[4].d}`;
+    resetBtn.hidden=false;
+  };
+  tape.querySelectorAll("tbody tr").forEach(tr=>{
+    tr.addEventListener("click",()=>select(tr));
+    tr.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();select(tr);}
+    });
+  });
 }
 
-const bp=document.getElementById("byPattern"),bs=document.getElementById("byStock");
-const vp=document.getElementById("viewPattern"),vs=document.getElementById("viewStock");
-function setView(p){bp.setAttribute("aria-pressed",p);bs.setAttribute("aria-pressed",!p);
-  vp.hidden=!p;vs.hidden=p;}
-bp.addEventListener("click",()=>setView(true));
-bs.addEventListener("click",()=>setView(false));
-
-fetch("/data/candlestick/latest.json",{cache:"no-cache"})
+fetch(PATTERN.feed,{cache:"no-cache"})
   .then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
-  .then(render)
+  .then(renderTape)
   .catch(()=>{
-    document.getElementById("sPat").textContent="Scan unavailable";
-    document.getElementById("viewPattern").innerHTML=`<div class="note">
+    document.getElementById("stamp").textContent="Scan unavailable";
+    document.getElementById("tape").innerHTML=`<div class="note">
       <p>Today's scan could not be loaded.</p>
-      <p>Reload in a few minutes, or read the
-      <a href="/candlestick-patterns/bullish-engulfing">pattern explainers</a>, which stay available.</p></div>`;
+      <p>The explainer above is unaffected. Reload in a few minutes, or view the
+      <a href="/candlestick-patterns">full pattern index</a>.</p></div>`;
   });
+</script>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Article",
+  "headline":"Bullish Engulfing Pattern — Nifty 50 Stocks Showing It Today",
+  "about":{"@type":"Thing","name":"Bullish engulfing candlestick pattern"},
+  "publisher":{"@type":"Organization","name":"MoneyVeda","url":"https://www.moneyveda.org/"},
+  "mainEntityOfPage":"https://www.moneyveda.org/candlestick-patterns/bullish-engulfing"
+}
 </script>
 </body>
 </html>
