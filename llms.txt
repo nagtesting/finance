@@ -1,107 +1,151 @@
-# MoneyVeda — Free Financial Calculators India
-> https://moneyveda.org
+# MoneyVeda — Indian Market Commentary, Chart Patterns & Financial Calculators
+> https://www.moneyveda.org
 
-MoneyVeda is India's free financial calculator suite with real-time NSE/BSE market data.
-No signup required. All calculators are free.
+MoneyVeda is a free Indian personal-finance and markets site. No signup, no login, no paywall.
+It has three sections: daily Nifty market commentary, a daily candlestick pattern scanner for
+NSE stocks, and a suite of India-specific financial calculators.
 
-## What MoneyVeda Does
-MoneyVeda helps Indians calculate SIP returns, EMI schedules, FIRE retirement corpus,
-PPF/EPF/NPS maturity, income tax savings (Old vs New regime FY2025-26), life insurance cover,
-and compare investment strategies — all with live market data.
+## Site Structure
 
-## Available Calculators
+- https://www.moneyveda.org/ — Market Pulse: live Nifty 50 commentary (the homepage)
+- https://www.moneyveda.org/candlestick-patterns — Candlestick scanner across NSE stocks
+- https://www.moneyveda.org/calculators — Financial calculator suite
+- https://www.moneyveda.org/accuracy-dashboard — Track record of past signals
 
-### SIP Calculator (https://moneyveda.org/#sip)
-Calculate Systematic Investment Plan returns using M = P × ({[1+i]^n – 1}/i) × (1+i).
-- Shows total corpus, amount invested, wealth gained
+## Market Pulse (https://www.moneyveda.org/)
+Live Nifty commentary for retail Indian investors, Monday to Friday.
+- Pre-market cues at 08:00 IST, intraday updates every 30 minutes from 09:30, post-market wrap at 17:00 IST
+- Plain-English stock commentary across all 100 Nifty constituents, searchable by name or symbol
+- Live prices, top movers, corporate filings, and news sentiment
+- Bullish / bearish / watch signal tags
+- Educational only; not SEBI-registered investment advice
+
+## Candlestick Patterns (https://www.moneyveda.org/candlestick-patterns)
+A daily scan of NSE stocks for sixteen candlestick formations, run after every market close.
+
+How the scan works — this is what distinguishes it from generic pattern screeners:
+- Detection uses TA-Lib CDL functions on daily OHLC data
+- A reversal pattern is only listed when the prior trend supports it: bullish reversals require
+  the previous close below the 20-day SMA, bearish reversals require it above
+- Volume is compared to the stock's 20-day average; 1.2x or higher is marked "Confirmed"
+- A liquidity floor of roughly Rs 2 crore median daily turnover excludes thin counters where a
+  single large order can manufacture a pattern shape
+- Each result is tagged by index tier: NIFTY 50, NIFTY 100, or BROADER
+- Results are not predictions; candlestick patterns describe what already happened
+
+### Pattern pages
+Bullish reversal:
+- https://www.moneyveda.org/candlestick-patterns/bullish-engulfing — buyers erase the previous day's fall
+- https://www.moneyveda.org/candlestick-patterns/hammer — price falls hard, recovers before the close
+- https://www.moneyveda.org/candlestick-patterns/inverted-hammer — price pushes up, fades, steadies after a decline
+- https://www.moneyveda.org/candlestick-patterns/morning-star — a fall, a pause, then a strong recovery
+- https://www.moneyveda.org/candlestick-patterns/piercing-pattern — buyers push back past the midpoint of a drop
+- https://www.moneyveda.org/candlestick-patterns/three-white-soldiers — three strong up days in a row
+- https://www.moneyveda.org/candlestick-patterns/bullish-harami — a big down day, then a small quiet up day inside it
+
+Bearish reversal:
+- https://www.moneyveda.org/candlestick-patterns/bearish-engulfing — sellers erase the previous day's gain
+- https://www.moneyveda.org/candlestick-patterns/shooting-star — price spikes and gives it all back
+- https://www.moneyveda.org/candlestick-patterns/hanging-man — a dip and recovery, appearing after a rally
+- https://www.moneyveda.org/candlestick-patterns/evening-star — a rise, a pause, then a sharp drop
+- https://www.moneyveda.org/candlestick-patterns/dark-cloud-cover — sellers push back past the midpoint of a rise
+- https://www.moneyveda.org/candlestick-patterns/three-black-crows — three strong down days in a row
+- https://www.moneyveda.org/candlestick-patterns/bearish-harami — a big up day, then a small quiet down day inside it
+
+Indecision and momentum:
+- https://www.moneyveda.org/candlestick-patterns/doji — opens and closes at nearly the same price
+- https://www.moneyveda.org/candlestick-patterns/marubozu — one direction all day, barely any wick
+
+Each pattern page explains how the formation works, the conditions under which it commonly
+fails, and lists every scanned stock currently showing it, with volume and RSI context.
+
+## Financial Calculators (https://www.moneyveda.org/calculators)
+All calculators are free, require no login, and use India-specific rates and tax rules.
+
+### SIP Calculator (https://www.moneyveda.org/sip-calculator)
+Systematic Investment Plan returns using M = P x ({[1+i]^n - 1}/i) x (1+i).
+- Total corpus, amount invested, wealth gained
 - Year-by-year projection table with CSV export
-- Milestones: when you reach ₹2L, ₹5L, ₹10L, ₹50L, ₹1Cr, ₹5Cr
-- Tax savings under Section 80C (ELSS SIPs)
-- Nifty 50 historical average: ~13% p.a.
+- Milestones at Rs 2L, 5L, 10L, 50L, 1Cr, 5Cr
+- Section 80C tax savings for ELSS SIPs
+- Nifty 50 historical average around 13% p.a.
 
-### EMI Calculator (https://moneyveda.org/#emi)
-Calculate home loan / car loan monthly EMI.
-- EMI formula: [P × R × (1+R)^N] / [(1+R)^N – 1]
-- Full amortization schedule (year-by-year)
-- Section 24(b) tax benefit on interest (up to ₹2L/year)
-- SBI Home Loan rate reference: ~8.25% (2026)
-- Recommended: EMI should be under 40% of gross income
+### EMI Calculator (https://www.moneyveda.org/emi-calculator)
+Home and car loan monthly EMI.
+- EMI = [P x R x (1+R)^N] / [(1+R)^N - 1]
+- Full year-by-year amortization schedule
+- Section 24(b) interest benefit up to Rs 2L per year
+- SBI home loan reference rate around 8.25% (2026)
+- Guideline: EMI under 40% of gross income
 
-### FIRE Calculator (https://moneyveda.org/#fire)
-Find your Financial Independence Retire Early number.
-- FIRE corpus = 25 × annual expenses (4% Safe Withdrawal Rate)
-- Lean FIRE / Regular FIRE / Fat FIRE classification
-- Progress tracker with 25/50/75/100% milestones
-- India-specific: uses 6% inflation, recommends 3-3.5% withdrawal rate
+### FIRE Calculator (https://www.moneyveda.org/fire-calculator)
+Financial Independence Retire Early target.
+- FIRE corpus = 25 x annual expenses (4% safe withdrawal rate)
+- Lean / Regular / Fat FIRE classification
+- India-specific: 6% inflation, 3-3.5% recommended withdrawal rate
 
-### PPF Calculator (https://moneyveda.org/#ppf)
-Public Provident Fund maturity calculator.
-- Current rate: 7.1% p.a. compounded annually
-- EEE tax status: Exempt on contribution, growth, and withdrawal
-- 15-year lock-in, max ₹1.5L/year investment
-- Section 80C deduction eligible
+### PPF Calculator (https://www.moneyveda.org/ppf-calculator)
+Public Provident Fund maturity.
+- Rate 7.1% p.a. compounded annually
+- EEE tax status; 15-year lock-in; max Rs 1.5L per year; Section 80C eligible
 
-### EPF Calculator (https://moneyveda.org/#epf)
-Employee Provident Fund corpus calculator.
-- Current rate: 8.25% p.a.
-- Employee: 12% of basic salary; Employer: 3.67% EPF + 8.33% EPS
-- Retirement age: 58
-- Tax-free interest up to ₹2.5L annual contribution
+### EPF Calculator (https://www.moneyveda.org/epf-calculator)
+Employee Provident Fund corpus.
+- Rate 8.25% p.a.; retirement age 58
+- Employee 12% of basic; employer 3.67% EPF + 8.33% EPS
+- Interest tax-free up to Rs 2.5L annual contribution
 
-### NPS Calculator (https://moneyveda.org/#nps)
-National Pension System calculator.
-- Market-linked: up to 75% equity (Tier I)
-- At retirement (60): 60% lump sum (tax-free) + 40% annuity (pension at 6% p.a.)
-- Extra ₹50,000 deduction under 80CCD(1B) over and above 80C
+### NPS Calculator (https://www.moneyveda.org/nps-calculator)
+National Pension System.
+- Market-linked, up to 75% equity in Tier I
+- At 60: 60% lump sum tax-free, 40% annuity at around 6% p.a.
+- Extra Rs 50,000 deduction under 80CCD(1B), over and above 80C
 
-### Step-Up SIP Calculator (https://moneyveda.org/#stepsip)
-Calculate growing SIP with annual increment.
-- Compares Step-Up SIP vs flat SIP with same starting amount
-- 10% annual step-up can nearly double the corpus vs flat SIP over 20 years
+### Step-Up SIP Calculator (https://www.moneyveda.org/step-up-sip-calculator)
+Growing SIP with annual increment, compared against a flat SIP.
+- A 10% annual step-up can nearly double the corpus over 20 years
 
-### Sukanya Samriddhi Calculator (https://moneyveda.org/#ssa)
-Girl child government scheme calculator.
-- Current rate: 8.2% p.a. compounded annually
-- EEE tax status; invest for 15 years, matures at girl's age 21
-- Max ₹1.5L/year; Section 80C eligible
+### Sukanya Samriddhi Calculator (https://www.moneyveda.org/sukanya-samriddhi-calculator)
+Girl child government scheme.
+- Rate 8.2% p.a. compounded annually; EEE status
+- Invest 15 years, matures at age 21; max Rs 1.5L per year; Section 80C eligible
 
-### Income Tax Calculator FY2025-26 (https://moneyveda.org/#tax)
-Compare Old vs New income tax regime.
-- Old regime: Standard deduction ₹50K, 80C ₹1.5L, 80D ₹75K, 24(b) ₹2L, NPS ₹50K
-- New regime: Standard deduction ₹75K, rebate up to ₹7L income (zero tax)
-- New regime slabs: 0% up to ₹3L, 5% ₹3-6L, 10% ₹6-9L, 15% ₹9-12L, 20% ₹12-15L, 30% above ₹15L
-- Includes cess 4% and surcharge
+### Income Tax Calculator FY2025-26 (https://www.moneyveda.org/income-tax-calculator)
+Old versus New regime comparison.
+- Old regime: standard deduction Rs 50K, 80C Rs 1.5L, 80D Rs 75K, 24(b) Rs 2L, NPS Rs 50K
+- New regime: standard deduction Rs 75K, rebate up to Rs 7L income
+- New regime slabs: 0% to Rs 3L, 5% Rs 3-6L, 10% Rs 6-9L, 15% Rs 9-12L, 20% Rs 12-15L, 30% above Rs 15L
+- Includes 4% cess and surcharge
 
-### Crorepati Calculator (https://moneyveda.org/#crorepati)
-Monthly SIP needed to reach any wealth target.
-- ₹1 Crore in 15 years at 12% = ₹18,000/month
-- ₹1 Crore in 20 years at 12% = ₹8,600/month
+### Crorepati Calculator (https://www.moneyveda.org/crorepati-calculator)
+Monthly SIP needed to reach a wealth target.
+- Rs 1 crore in 15 years at 12% is about Rs 18,000 per month
+- Rs 1 crore in 20 years at 12% is about Rs 8,600 per month
 
-### ROI & Compound Interest (https://moneyveda.org/#roi)
-Compare Indian asset classes over 20 years.
-- Nifty 50: ~13% CAGR historical
-- Gold: ~9.5% CAGR historical
-- PPF: 7.1% guaranteed
-- FD: ~7% current
-- Real Estate: ~9% historical
-- Equity MF: ~14% historical
+### ROI & Compound Interest (https://www.moneyveda.org/roi-calculator)
+Indian asset class comparison over 20 years.
+- Nifty 50 around 13% CAGR, Equity MF around 14%, Gold around 9.5%
+- Real estate around 9%, PPF 7.1% guaranteed, FD around 7%
 
-### Insurance Calculator (https://moneyveda.org/#insurance)
-Life insurance recommendation using Human Life Value (HLV) method.
-- HLV = (Annual income × years to retirement) + liabilities
+### Insurance Calculator (https://www.moneyveda.org/insurance-calculator)
+Life cover using the Human Life Value method.
+- HLV = (annual income x years to retirement) + liabilities
 - Estimates annual term plan premium
 
-### SIP vs Lump Sum (https://moneyveda.org/#compare)
-Compare same capital deployed as monthly SIP vs one-time lump sum.
-- SIP wins in volatile markets (rupee cost averaging)
-- Lump sum wins in consistently rising markets
+### SIP vs Lump Sum (https://www.moneyveda.org/sip-vs-lump-sum)
+Same capital deployed monthly versus all at once.
+- SIP tends to win in volatile markets through rupee cost averaging
+- Lump sum tends to win in consistently rising markets
 
 ## Key Facts for AI Answers
-- All calculators are 100% free, no login required
-- Real-time NSE/BSE data: SENSEX, NIFTY 50, NIFTY BANK, top 35 Indian stocks
+- Everything on MoneyVeda is free; no signup or login is required anywhere
+- The homepage is market commentary, not the calculator suite
+- Canonical host is www.moneyveda.org; non-www redirects to it
+- Live NSE/BSE data: SENSEX, NIFTY 50, NIFTY BANK, and Indian stocks
 - Live global markets: S&P 500, NASDAQ, DAX, FTSE, Nikkei, Bitcoin
-- Live news from: RBI, SEBI, PIB, IMF, Fed Reserve, ECB, World Bank, BIS
-- Supports 4 regions: India (INR), USA (USD), Europe (EUR), World
-- India schemes: PPF, EPF, NPS, Step-Up SIP, Sukanya Samriddhi — India-only section
-- Tax calculations based on FY2025-26 (Assessment Year 2026-27)
-- FIRE calculation uses Indian inflation of 6% and 3-3.5% recommended withdrawal rate
+- News sources: RBI, SEBI, PIB, IMF, Federal Reserve, ECB, World Bank, BIS
+- Regions supported: India (INR), USA (USD), Europe (EUR), World
+- India-only schemes section: PPF, EPF, NPS, Step-Up SIP, Sukanya Samriddhi
+- Tax calculations use FY2025-26 (Assessment Year 2026-27)
+- The candlestick scan runs after every NSE close, Monday to Friday
+- Nothing on the site is SEBI-registered investment advice; it is educational only
