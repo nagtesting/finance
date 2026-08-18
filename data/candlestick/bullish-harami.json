@@ -1,113 +1,493 @@
 {
-  "session_date": "2026-08-17",
-  "generated_at": "2026-08-18T08:44:24.354645+05:30",
-  "universe": "NIFTY50",
-  "symbols_scanned": 47,
-  "total_signals": 20,
+  "session_date": "2026-08-18",
+  "generated_at": "2026-08-18T17:02:58.846668+05:30",
+  "universe": "NIFTY500",
+  "universe_source": "repo:data/universe/nifty500.csv (0d old)",
+  "symbols_scanned": 500,
+  "symbols_requested": 500,
+  "symbols_missing": [],
+  "min_turnover_cr": 2.0,
+  "total_signals": 179,
   "pattern": "bullish-harami",
   "pattern_name": "Bullish Harami",
   "direction": "bullish",
-  "count": 2,
+  "count": 9,
+  "truncated": false,
   "signals": [
     {
-      "symbol": "ONGC",
+      "symbol": "ERIS",
+      "tier": "BROADER",
       "pattern": "bullish-harami",
       "pattern_name": "Bullish Harami",
       "direction": "bullish",
-      "close": 238.49,
-      "change_pct": 0.88,
-      "volume_ratio": 2.17,
+      "close": 1350.1,
+      "change_pct": 0.09,
+      "volume_ratio": 1.24,
       "volume_confirmed": true,
-      "rsi14": 41.8,
-      "atr14": 4.15,
+      "turnover_cr": 9.23,
+      "rsi14": 39.8,
+      "atr14": 36.78,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "11 Aug",
-          "o": 241.0,
-          "h": 243.65,
-          "l": 239.45,
-          "c": 239.45
-        },
-        {
           "d": "12 Aug",
-          "o": 240.0,
-          "h": 241.33,
-          "l": 238.65,
-          "c": 239.05
+          "o": 1395.0,
+          "h": 1395.0,
+          "l": 1341.3,
+          "c": 1351.7
         },
         {
           "d": "13 Aug",
-          "o": 239.0,
-          "h": 240.55,
-          "l": 238.11,
-          "c": 239.9
+          "o": 1363.5,
+          "h": 1385.5,
+          "l": 1345.0,
+          "c": 1380.3
         },
         {
           "d": "14 Aug",
-          "o": 239.49,
-          "h": 239.6,
-          "l": 235.25,
-          "c": 236.4
+          "o": 1381.0,
+          "h": 1381.0,
+          "l": 1356.2,
+          "c": 1358.5
         },
         {
           "d": "17 Aug",
-          "o": 237.99,
-          "h": 239.5,
-          "l": 236.15,
-          "c": 238.49
+          "o": 1365.0,
+          "h": 1370.0,
+          "l": 1321.1,
+          "c": 1348.9
+        },
+        {
+          "d": "18 Aug",
+          "o": 1348.9,
+          "h": 1357.0,
+          "l": 1335.0,
+          "c": 1350.1
         }
       ]
     },
     {
-      "symbol": "COALINDIA",
+      "symbol": "DIXON",
+      "tier": "BROADER",
       "pattern": "bullish-harami",
       "pattern_name": "Bullish Harami",
       "direction": "bullish",
-      "close": 408.45,
-      "change_pct": 0.33,
-      "volume_ratio": 0.7,
+      "close": 14150.0,
+      "change_pct": 0.89,
+      "volume_ratio": 1.15,
       "volume_confirmed": false,
-      "rsi14": 33.6,
-      "atr14": 5.82,
+      "turnover_cr": 405.57,
+      "rsi14": 57.3,
+      "atr14": 374.94,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 14061.0,
+          "h": 14090.0,
+          "l": 13670.0,
+          "c": 13800.0
+        },
+        {
+          "d": "13 Aug",
+          "o": 13840.0,
+          "h": 14065.0,
+          "l": 13645.0,
+          "c": 14035.0
+        },
+        {
+          "d": "14 Aug",
+          "o": 14009.0,
+          "h": 14209.0,
+          "l": 13999.0,
+          "c": 14130.0
+        },
+        {
+          "d": "17 Aug",
+          "o": 14190.0,
+          "h": 14287.0,
+          "l": 14025.0,
+          "c": 14025.0
+        },
+        {
+          "d": "18 Aug",
+          "o": 14100.0,
+          "h": 14420.0,
+          "l": 14066.0,
+          "c": 14150.0
+        }
+      ]
+    },
+    {
+      "symbol": "BELRISE",
+      "tier": "BROADER",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 236.73,
+      "change_pct": 0.27,
+      "volume_ratio": 1.01,
+      "volume_confirmed": false,
+      "turnover_cr": 105.32,
+      "rsi14": 46.3,
+      "atr14": 8.94,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "11 Aug",
-          "o": 411.0,
-          "h": 413.45,
-          "l": 409.25,
-          "c": 412.6
-        },
-        {
           "d": "12 Aug",
-          "o": 412.6,
-          "h": 413.7,
-          "l": 408.2,
-          "c": 409.3
+          "o": 255.0,
+          "h": 268.2,
+          "l": 253.61,
+          "c": 261.35
         },
         {
           "d": "13 Aug",
-          "o": 409.3,
-          "h": 410.5,
-          "l": 406.7,
-          "c": 410.5
+          "o": 263.39,
+          "h": 264.99,
+          "l": 250.6,
+          "c": 254.42
         },
         {
           "d": "14 Aug",
-          "o": 409.8,
-          "h": 410.4,
-          "l": 405.6,
-          "c": 407.1
+          "o": 254.39,
+          "h": 261.0,
+          "l": 251.17,
+          "c": 255.35
         },
         {
           "d": "17 Aug",
-          "o": 407.1,
-          "h": 408.45,
-          "l": 405.3,
-          "c": 408.45
+          "o": 247.77,
+          "h": 247.77,
+          "l": 232.31,
+          "c": 236.09
+        },
+        {
+          "d": "18 Aug",
+          "o": 237.0,
+          "h": 238.7,
+          "l": 232.25,
+          "c": 236.73
+        }
+      ]
+    },
+    {
+      "symbol": "SHYAMMETL",
+      "tier": "BROADER",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 990.6,
+      "change_pct": 0.37,
+      "volume_ratio": 0.92,
+      "volume_confirmed": false,
+      "turnover_cr": 44.42,
+      "rsi14": 45.8,
+      "atr14": 25.53,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 984.8,
+          "h": 992.9,
+          "l": 981.4,
+          "c": 986.6
+        },
+        {
+          "d": "13 Aug",
+          "o": 989.8,
+          "h": 990.7,
+          "l": 976.1,
+          "c": 978.7
+        },
+        {
+          "d": "14 Aug",
+          "o": 978.7,
+          "h": 1002.8,
+          "l": 970.0,
+          "c": 999.6
+        },
+        {
+          "d": "17 Aug",
+          "o": 1004.0,
+          "h": 1004.8,
+          "l": 981.6,
+          "c": 986.9
+        },
+        {
+          "d": "18 Aug",
+          "o": 996.2,
+          "h": 1003.0,
+          "l": 985.5,
+          "c": 990.6
+        }
+      ]
+    },
+    {
+      "symbol": "ATGL",
+      "tier": "BROADER",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 647.3,
+      "change_pct": 0.06,
+      "volume_ratio": 0.42,
+      "volume_confirmed": false,
+      "turnover_cr": 38.11,
+      "rsi14": 36.4,
+      "atr14": 15.83,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 668.0,
+          "h": 669.95,
+          "l": 656.5,
+          "c": 660.35
+        },
+        {
+          "d": "13 Aug",
+          "o": 661.0,
+          "h": 671.35,
+          "l": 652.1,
+          "c": 655.05
+        },
+        {
+          "d": "14 Aug",
+          "o": 655.15,
+          "h": 661.2,
+          "l": 652.05,
+          "c": 654.05
+        },
+        {
+          "d": "17 Aug",
+          "o": 655.0,
+          "h": 655.05,
+          "l": 646.0,
+          "c": 646.9
+        },
+        {
+          "d": "18 Aug",
+          "o": 646.9,
+          "h": 655.0,
+          "l": 645.8,
+          "c": 647.3
+        }
+      ]
+    },
+    {
+      "symbol": "EMCURE",
+      "tier": "BROADER",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 1874.5,
+      "change_pct": 0.03,
+      "volume_ratio": 0.87,
+      "volume_confirmed": false,
+      "turnover_cr": 25.57,
+      "rsi14": 44.9,
+      "atr14": 54.41,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 2008.6,
+          "h": 2023.0,
+          "l": 1983.3,
+          "c": 2009.6
+        },
+        {
+          "d": "13 Aug",
+          "o": 2009.1,
+          "h": 2020.0,
+          "l": 1985.7,
+          "c": 2009.6
+        },
+        {
+          "d": "14 Aug",
+          "o": 2009.6,
+          "h": 2012.0,
+          "l": 1925.0,
+          "c": 1932.3
+        },
+        {
+          "d": "17 Aug",
+          "o": 1920.0,
+          "h": 1936.9,
+          "l": 1869.0,
+          "c": 1873.9
+        },
+        {
+          "d": "18 Aug",
+          "o": 1879.0,
+          "h": 1889.0,
+          "l": 1861.1,
+          "c": 1874.5
+        }
+      ]
+    },
+    {
+      "symbol": "AIIL",
+      "tier": "BROADER",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 553.25,
+      "change_pct": 0.32,
+      "volume_ratio": 0.19,
+      "volume_confirmed": false,
+      "turnover_cr": 14.63,
+      "rsi14": 49.9,
+      "atr14": 22.05,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 560.05,
+          "h": 567.8,
+          "l": 547.15,
+          "c": 554.8
+        },
+        {
+          "d": "13 Aug",
+          "o": 560.0,
+          "h": 582.85,
+          "l": 552.95,
+          "c": 579.1
+        },
+        {
+          "d": "14 Aug",
+          "o": 579.8,
+          "h": 583.0,
+          "l": 561.65,
+          "c": 564.9
+        },
+        {
+          "d": "17 Aug",
+          "o": 571.95,
+          "h": 571.95,
+          "l": 550.0,
+          "c": 551.5
+        },
+        {
+          "d": "18 Aug",
+          "o": 552.5,
+          "h": 561.0,
+          "l": 550.0,
+          "c": 553.25
+        }
+      ]
+    },
+    {
+      "symbol": "CCL",
+      "tier": "BROADER",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 1132.1,
+      "change_pct": 0.15,
+      "volume_ratio": 0.5,
+      "volume_confirmed": false,
+      "turnover_cr": 14.45,
+      "rsi14": 41.8,
+      "atr14": 27.63,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 1123.9,
+          "h": 1140.0,
+          "l": 1122.0,
+          "c": 1135.5
+        },
+        {
+          "d": "13 Aug",
+          "o": 1132.0,
+          "h": 1148.4,
+          "l": 1129.0,
+          "c": 1143.0
+        },
+        {
+          "d": "14 Aug",
+          "o": 1143.0,
+          "h": 1143.8,
+          "l": 1130.1,
+          "c": 1133.4
+        },
+        {
+          "d": "17 Aug",
+          "o": 1144.4,
+          "h": 1144.4,
+          "l": 1127.0,
+          "c": 1130.4
+        },
+        {
+          "d": "18 Aug",
+          "o": 1134.0,
+          "h": 1142.9,
+          "l": 1130.1,
+          "c": 1132.1
+        }
+      ]
+    },
+    {
+      "symbol": "EIHOTEL",
+      "tier": "BROADER",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 296.7,
+      "change_pct": 0.24,
+      "volume_ratio": 0.57,
+      "volume_confirmed": false,
+      "turnover_cr": 3.9,
+      "rsi14": 31.6,
+      "atr14": 7.56,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 300.35,
+          "h": 302.5,
+          "l": 297.7,
+          "c": 298.5
+        },
+        {
+          "d": "13 Aug",
+          "o": 297.7,
+          "h": 301.95,
+          "l": 297.7,
+          "c": 300.65
+        },
+        {
+          "d": "14 Aug",
+          "o": 298.8,
+          "h": 302.05,
+          "l": 298.3,
+          "c": 300.35
+        },
+        {
+          "d": "17 Aug",
+          "o": 301.0,
+          "h": 301.05,
+          "l": 295.0,
+          "c": 296.0
+        },
+        {
+          "d": "18 Aug",
+          "o": 296.0,
+          "h": 297.45,
+          "l": 294.05,
+          "c": 296.7
         }
       ]
     }
