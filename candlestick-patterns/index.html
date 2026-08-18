@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Candlestick Patterns on Nifty 50 Stocks Today | MoneyVeda</title>
+<meta name="description" content="Which candlestick patterns formed on Nifty 50 stocks in the latest NSE session — engulfing, hammer, morning star and more, with trend and volume confirmation. Free, no signup.">
+<link rel="canonical" href="https://moneyveda.org/candlestick-patterns">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --gold:#C9A84C; --gold-light:#E8C97A; --gold-deep:#8A7028;
+  --cream:#F5F0E8; --cream-dim:#D8D2C5;
+  --dark:#0A0A0F; --dark2:#111118; --dark3:#18181F; --dark4:#22222C; --dark5:#2D2D38;
+  --muted:#9090A8; --muted-soft:#6E6E80;
+  --green:#22C55E; --green-soft:#4ade80;
+  --red:#EF4444; --red-soft:#f87171;
+  --max-width:1080px; --gutter:24px;
+  --radius-lg:16px; --radius-md:12px; --radius-sm:8px;
+  --shadow-card:0 1px 0 rgba(255,255,255,.02), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+@media(max-width:640px){:root{--gutter:16px}}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--dark);color:var(--cream);
+     font-family:'DM Sans',system-ui,sans-serif;font-size:16px;line-height:1.65;
+     -webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--max-width);margin:0 auto;padding:0 var(--gutter)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+
+/* --- topnav (matches site) --- */
+.topnav{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.85);
+  backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid rgba(201,168,76,.12);padding:0 var(--gutter);height:60px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{font-family:'Playfair Display',serif;font-size:19px;font-weight:900;
+  letter-spacing:-.6px;color:var(--cream);text-decoration:none}
+.logo span{color:var(--gold)}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--cream-dim);
+  text-decoration:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  padding:7px 14px;border-radius:100px;transition:all .2s ease;font-weight:500}
+.back-btn:hover{background:rgba(255,255,255,.08);color:var(--cream)}
+.live-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(34,197,94,.10);
+  border:1px solid rgba(34,197,94,.25);padding:5px 13px;border-radius:100px;
+  font-size:10px;font-weight:700;color:var(--green-soft);letter-spacing:1.2px;text-transform:uppercase}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green-soft);
+  box-shadow:0 0 6px rgba(34,197,94,.6);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@media(prefers-reduced-motion:reduce){.live-dot{animation:none}}
+
+/* --- hero --- */
+.hero{padding:38px 0 28px}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;display:inline-flex;align-items:center;gap:8px}
+.eyebrow::before{content:'';width:24px;height:1px;background:var(--gold);opacity:.6}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.2rem);
+  font-weight:900;line-height:1.05;margin:0 0 14px;letter-spacing:-1.5px}
+.hero h1 em{font-style:italic;color:var(--gold)}
+.hero-tagline{color:var(--muted);font-size:15px;max-width:62ch;margin:0 0 20px}
+.hero-stats{display:flex;flex-wrap:wrap;gap:8px}
+.stat-pill{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);
+  border-radius:100px;padding:8px 16px;font-size:12px;font-weight:600;color:var(--gold-light);
+  white-space:nowrap;font-feature-settings:"tnum"}
+.stat-pill.muted{background:transparent;border-color:rgba(255,255,255,.08);color:var(--muted)}
+.stat-pill.bull{background:rgba(34,197,94,.09);border-color:rgba(34,197,94,.25);color:var(--green-soft)}
+.stat-pill.bear{background:rgba(239,68,68,.09);border-color:rgba(239,68,68,.25);color:var(--red-soft)}
+.gold-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold) 50%,transparent);
+  opacity:.35;margin:8px 0 0}
+
+/* --- sections --- */
+.band{padding:30px 0}
+.section-title{font-size:10px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;
+  color:var(--muted);margin:0 0 16px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(255,255,255,.08),transparent)}
+.band-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.switch{display:flex;border:1px solid rgba(255,255,255,.08);border-radius:100px;
+  overflow:hidden;background:rgba(255,255,255,.03)}
+.switch button{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.2px;
+  text-transform:uppercase;padding:8px 15px;border:none;background:none;cursor:pointer;
+  color:var(--muted);transition:all .2s ease}
+.switch button[aria-pressed="true"]{background:rgba(201,168,76,.14);color:var(--gold-light)}
+
+/* --- SIGNATURE: glyph board --- */
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:12px;
+  list-style:none;padding:0;margin:0}
+.tile{background:var(--dark3);border:1px solid rgba(201,168,76,.1);border-radius:var(--radius-md);
+  box-shadow:var(--shadow-card);display:flex;flex-direction:column;text-decoration:none;
+  color:inherit;overflow:hidden;transition:all .25s ease}
+.tile:hover{border-color:rgba(201,168,76,.35);transform:translateY(-2px)}
+@media(prefers-reduced-motion:reduce){.tile:hover{transform:none}}
+.tile svg{display:block;width:100%;height:76px;padding:14px 14px 2px}
+.tile-foot{padding:8px 14px 14px;margin-top:auto}
+.tile-name{display:block;font-size:14px;font-weight:600;line-height:1.3;color:var(--cream)}
+.tile-meta{display:block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.1px;
+  text-transform:uppercase;margin-top:6px;color:var(--muted-soft)}
+.tile.hit[data-dir="bullish"] .tile-meta{color:var(--green-soft)}
+.tile.hit[data-dir="bearish"] .tile-meta{color:var(--red-soft)}
+.tile.hit[data-dir="neutral"] .tile-meta{color:var(--gold-light)}
+.tile.quiet{background:var(--dark2);border-color:rgba(255,255,255,.05);box-shadow:none}
+.tile.quiet svg{opacity:.3}
+.tile.quiet .tile-name{color:var(--muted);font-weight:500}
+
+/* --- table --- */
+.tape{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:13px;
+  font-feature-settings:"tnum"}
+.tape th{font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted-soft);
+  font-weight:500;text-align:right;padding:0 10px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.tape th:first-child,.tape th:nth-child(2){text-align:left}
+.tape td{text-align:right;padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.05)}
+.tape td:first-child,.tape td:nth-child(2){text-align:left}
+.tape td:first-child{font-weight:600;color:var(--cream)}
+.tape a{color:var(--cream-dim);text-decoration:none;border-bottom:1px solid rgba(201,168,76,.3)}
+.tape a:hover{color:var(--gold-light);border-color:var(--gold)}
+.up{color:var(--green-soft)} .down{color:var(--red-soft)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px;vertical-align:1px}
+.dot.bullish{background:var(--green-soft)} .dot.bearish{background:var(--red-soft)}
+.dot.neutral{background:var(--gold)}
+.tag{display:inline-block;font-size:9px;letter-spacing:1.1px;text-transform:uppercase;
+  padding:3px 9px;border-radius:100px;font-weight:700;
+  background:rgba(34,197,94,.10);border:1px solid rgba(34,197,94,.25);color:var(--green-soft)}
+.tag.weak{background:transparent;border-color:rgba(255,255,255,.08);color:var(--muted)}
+
+.note{background:var(--dark3);border:1px solid rgba(201,168,76,.1);border-radius:var(--radius-md);
+  padding:22px;box-shadow:var(--shadow-card);max-width:58ch}
+.note p{margin:0 0 8px;color:var(--cream)}
+.note p:last-child{margin:0;color:var(--muted);font-size:14px}
+.note a{color:var(--gold-light)}
+[hidden]{display:none !important}
+
+.prose{max-width:66ch}
+.prose h2{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;
+  letter-spacing:-.5px;margin:0 0 14px}
+.prose p{margin:0 0 14px;color:var(--cream-dim);font-size:15px}
+.prose p:last-child{margin:0}
+footer{padding:26px 0 48px;border-top:1px solid rgba(255,255,255,.06);margin-top:20px}
+.disclaimer{font-size:12px;line-height:1.6;color:var(--muted-soft);max-width:80ch;margin:0}
+
+@media(max-width:640px){
+  .board{grid-template-columns:repeat(auto-fill,minmax(144px,1fr));gap:10px}
+  .tape{font-size:12px}
+  .tape th:nth-child(5),.tape td:nth-child(5){display:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/" class="back-btn">← Market</a>
+  <a href="/" class="logo">MONEY<span>VEDA</span></a>
+  <div class="live-badge"><span class="live-dot"></span>Daily</div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">NSE · NIFTY 50 · Candle Desk</div>
+    <h1>What the Nifty 50 <em>printed</em> today</h1>
+    <p class="hero-tagline">Every Nifty 50 stock scanned after the close for sixteen candlestick
+      formations. A pattern is listed only when the prior trend supports it and the day's volume is
+      measured against its twenty-day average — filtered, not raw detector output.</p>
+    <div class="hero-stats" id="readout">
+      <span class="stat-pill" id="sPat">⏳ Scanning…</span>
+      <span class="stat-pill" id="sSig" hidden></span>
+      <span class="stat-pill bull" id="sBull" hidden></span>
+      <span class="stat-pill bear" id="sBear" hidden></span>
+      <span class="stat-pill muted" id="sDate" hidden></span>
+    </div>
+    <div class="gold-rule"></div>
+  </div>
+</header>
+
+<section class="band">
+  <div class="wrap">
+    <div class="band-head">
+      <p class="section-title" style="flex:1">The board</p>
+      <div class="switch" role="group" aria-label="Choose view">
+        <button type="button" id="byPattern" aria-pressed="true">By pattern</button>
+        <button type="button" id="byStock" aria-pressed="false">By stock</button>
+      </div>
+    </div>
+    <div id="viewPattern"><ul class="board" id="board"></ul></div>
+    <div id="viewStock" hidden></div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap prose">
+    <h2>How to use this board</h2>
+    <p>A candlestick pattern describes who won a session, not what happens next. A hammer says
+      sellers pushed price down and lost it back before the bell. Whether that matters depends
+      entirely on what came before it — which is why this scan checks the twenty-day average first
+      and discards formations that appear mid-drift.</p>
+    <p>Treat it as a shortlist. Stocks marked <span class="tag">Confirmed</span> traded at least
+      1.2× their usual volume, meaning the move had real participation behind it rather than a thin
+      book. Those are worth opening a chart for. The rest are worth noting and nothing more.</p>
+    <p>Each pattern links to a page explaining how the formation works, when it commonly fails, and
+      every Nifty 50 stock currently showing it.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disclaimer">MoneyVeda publishes this scan for education and research. It is not
+      investment advice, and no stock listed here is a recommendation to buy or sell. Pattern
+      detection is automated and does not account for corporate actions, news flow, or your
+      circumstances. Consult a SEBI-registered investment adviser before trading.</p>
+  </div>
+</footer>
+
+<script>
+const CATALOGUE=[
+ ["bullish-engulfing","Bullish Engulfing","bullish",[[104,105,99,100],[99,109,98,108]]],
+ ["bearish-engulfing","Bearish Engulfing","bearish",[[100,105,99,104],[109,110,99,100]]],
+ ["hammer","Hammer","bullish",[[104,105,98,103],[103,106,94,105]]],
+ ["inverted-hammer","Inverted Hammer","bullish",[[104,105,98,99],[99,112,98,101]]],
+ ["morning-star","Morning Star","bullish",[[110,111,101,102],[99,100,96,99.4],[101,110,100,109]]],
+ ["piercing-pattern","Piercing Pattern","bullish",[[110,111,100,101],[98,108,97,107]]],
+ ["three-white-soldiers","Three White Soldiers","bullish",[[98,103,97,102],[101,107,100,106],[105,112,104,111]]],
+ ["bullish-harami","Bullish Harami","bullish",[[110,111,99,100],[102,105,101,104]]],
+ ["shooting-star","Shooting Star","bearish",[[98,100,97,99],[100,113,99,102]]],
+ ["hanging-man","Hanging Man","bearish",[[98,101,97,100],[103,104,94,105]]],
+ ["evening-star","Evening Star","bearish",[[98,108,97,107],[110,113,109,110.4],[108,109,99,100]]],
+ ["dark-cloud-cover","Dark Cloud Cover","bearish",[[99,110,98,109],[112,113,102,103]]],
+ ["three-black-crows","Three Black Crows","bearish",[[112,113,106,107],[108,109,102,103],[104,105,98,99]]],
+ ["bearish-harami","Bearish Harami","bearish",[[99,110,98,109],[106,108,105,107]]],
+ ["doji","Doji","neutral",[[104,111,97,104.3]]],
+ ["marubozu","Marubozu","neutral",[[98,108,98,108]]]
+];
+const BULL="#4ade80",BEAR="#f87171",NEUT="#C9A84C";
+
+function glyph(bars,dir){
+  const W=100,H=46,padY=4;
+  const hi=Math.max(...bars.map(b=>b[1])),lo=Math.min(...bars.map(b=>b[2]));
+  const span=(hi-lo)||1,y=v=>padY+(hi-v)/span*(H-padY*2);
+  const slot=W/bars.length,bw=Math.min(slot*0.5,15);
+  const stroke=dir==="bullish"?BULL:dir==="bearish"?BEAR:NEUT;
+  return `<svg viewBox="0 0 ${W} ${H}" aria-hidden="true">`+bars.map((b,i)=>{
+    const cx=slot*i+slot/2,up=b[3]>=b[0];
+    const top=y(Math.max(b[0],b[3])),hgt=Math.max(Math.abs(y(b[0])-y(b[3])),1.6);
+    return `<line x1="${cx}" x2="${cx}" y1="${y(b[1])}" y2="${y(b[2])}" stroke="${stroke}" stroke-width="1.3"/>`
+      +`<rect x="${cx-bw/2}" y="${top}" width="${bw}" height="${hgt}" fill="${up?stroke:"none"}" stroke="${stroke}" stroke-width="1.3"/>`;
+  }).join("")+`</svg>`;
+}
+const fmt=n=>n.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+const pill=(id,txt)=>{const e=document.getElementById(id);e.textContent=txt;e.hidden=false;};
+
+function render(data){
+  const sigs=data.signals||[];
+  const by={};
+  sigs.forEach(s=>(by[s.pattern]=by[s.pattern]||[]).push(s));
+
+  const nP=Object.keys(by).length;
+  pill("sPat",`${nP} ${nP===1?"pattern":"patterns"} formed`);
+  pill("sSig",`${sigs.length} ${sigs.length===1?"signal":"signals"}`);
+  pill("sBull",`▲ ${sigs.filter(s=>s.direction==="bullish").length} bullish`);
+  pill("sBear",`▼ ${sigs.filter(s=>s.direction==="bearish").length} bearish`);
+  pill("sDate",new Date(data.session_date+"T00:00:00").toLocaleDateString("en-IN",
+       {day:"numeric",month:"short",year:"numeric"})+" close");
+
+  const tile=([slug,name,dir,bars])=>{
+    const n=(by[slug]||[]).length;
+    return `<li><a class="tile ${n?"hit":"quiet"}" data-dir="${dir}" href="/candlestick-patterns/${slug}">
+      ${glyph(bars,dir)}<span class="tile-foot">
+      <span class="tile-name">${name}</span>
+      <span class="tile-meta">${n?`${n} ${n===1?"stock":"stocks"}`:"None today"}</span>
+      </span></a></li>`;
+  };
+  const hit=CATALOGUE.filter(p=>by[p[0]]).sort((a,b)=>by[b[0]].length-by[a[0]].length);
+  const quiet=CATALOGUE.filter(p=>!by[p[0]]);
+  const board=document.getElementById("board");
+  board.innerHTML=hit.map(tile).join("");
+  if(quiet.length){
+    board.insertAdjacentHTML("afterend",
+      `<p class="section-title" style="margin:26px 0 16px">Not formed today</p>
+       <ul class="board">${quiet.map(tile).join("")}</ul>`);
+  }
+
+  const sv=document.getElementById("viewStock");
+  if(!sigs.length){
+    sv.innerHTML=`<div class="note"><p>No stock in the Nifty 50 formed a tracked pattern in this
+      session.</p><p>Quiet tapes are normal. The scan runs again after the next close.</p></div>`;
+    return;
+  }
+  const rows=[...sigs].sort((a,b)=>a.symbol.localeCompare(b.symbol)).map(s=>`
+    <tr><td>${s.symbol}</td>
+    <td><span class="dot ${s.direction}"></span><a href="/candlestick-patterns/${s.pattern}">${s.pattern_name}</a></td>
+    <td>${fmt(s.close)}</td>
+    <td class="${s.change_pct>=0?"up":"down"}">${s.change_pct>=0?"+":""}${s.change_pct.toFixed(2)}%</td>
+    <td>${s.rsi14??"—"}</td>
+    <td><span class="tag${s.volume_confirmed?"":" weak"}">${s.volume_confirmed?"Confirmed":"Thin"}</span></td>
+    </tr>`).join("");
+  sv.innerHTML=`<table class="tape"><thead><tr>
+    <th scope="col">Stock</th><th scope="col">Pattern</th><th scope="col">Close ₹</th>
+    <th scope="col">Change</th><th scope="col">RSI 14</th><th scope="col">Volume</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+const bp=document.getElementById("byPattern"),bs=document.getElementById("byStock");
+const vp=document.getElementById("viewPattern"),vs=document.getElementById("viewStock");
+function setView(p){bp.setAttribute("aria-pressed",p);bs.setAttribute("aria-pressed",!p);
+  vp.hidden=!p;vs.hidden=p;}
+bp.addEventListener("click",()=>setView(true));
+bs.addEventListener("click",()=>setView(false));
+
+fetch("/data/candlestick/latest.json",{cache:"no-cache"})
+  .then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
+  .then(render)
+  .catch(()=>{
+    document.getElementById("sPat").textContent="Scan unavailable";
+    document.getElementById("viewPattern").innerHTML=`<div class="note">
+      <p>Today's scan could not be loaded.</p>
+      <p>Reload in a few minutes, or read the
+      <a href="/candlestick-patterns/bullish-engulfing">pattern explainers</a>, which stay available.</p></div>`;
+  });
+</script>
+</body>
+</html>
