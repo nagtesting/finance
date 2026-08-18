@@ -451,6 +451,45 @@ body{
   .story-action-divider{display:none;}
 }
 
+/* ═══════ Candlestick cross-link inside commentary ═══════ */
+.cs-inline{margin-top:14px;}
+.cs-inline-link{
+  display:flex;align-items:center;gap:10px;text-decoration:none;
+  padding:11px 14px;border-radius:10px;font-size:12.5px;
+  background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.22);
+  transition:all .2s ease;
+}
+.cs-inline-link:hover{background:rgba(201,168,76,.12);border-color:var(--gold);}
+.cs-inline-link.bullish{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.25);}
+.cs-inline-link.bullish:hover{background:rgba(34,197,94,.13);border-color:var(--green-soft);}
+.cs-inline-link.bearish{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.25);}
+.cs-inline-link.bearish:hover{background:rgba(239,68,68,.13);border-color:var(--red-soft);}
+.cs-inline-link svg.cs-mini{flex:0 0 auto;width:34px;height:26px;}
+.cs-inline-body{flex:1;min-width:0;line-height:1.45;}
+.cs-inline-name{font-weight:700;color:var(--cream);}
+.cs-inline-sub{display:block;font-size:12px;color:var(--cream-dim);margin-top:2px;}
+.cs-inline-meta{display:block;font-size:10.5px;color:var(--muted);margin-top:3px;}
+.cs-inline-badge{
+  display:inline-block;margin-left:7px;padding:2px 8px;border-radius:100px;
+  font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+  background:rgba(255,255,255,.07);color:var(--muted);vertical-align:1px;
+}
+.cs-inline-link.bullish .cs-inline-badge{background:rgba(34,197,94,.16);color:var(--green-soft);}
+.cs-inline-link.bearish .cs-inline-badge{background:rgba(239,68,68,.16);color:var(--red-soft);}
+.cs-inline-link svg.cs-mini{align-self:flex-start;margin-top:2px;}
+.cs-inline-none{flex-direction:column;align-items:flex-start;text-align:left;}
+.cs-inline-none a{margin-top:6px;font-weight:600;}
+.cs-inline-link.bullish .cs-inline-name{color:var(--green-soft);}
+.cs-inline-link.bearish .cs-inline-name{color:var(--red-soft);}
+.cs-inline-arrow{flex:0 0 auto;color:var(--muted);font-size:15px;}
+.cs-inline-none{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 13px;border-radius:8px;font-size:11.5px;color:var(--muted);
+  background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);
+}
+.cs-inline-none a{color:var(--gold-light);text-decoration:none;white-space:nowrap;}
+.cs-inline-none a:hover{text-decoration:underline;}
+
 /* ═══════ Top movers strip ═══════ */
 .movers-wrap{margin-top:22px;}
 .movers-head{
@@ -1153,7 +1192,10 @@ body{
 <body>
 
 <nav class="topnav">
-  <a href="/calculators" class="back-btn">← Calculators</a>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <a href="/calculators" class="back-btn">← Calculators</a>
+    <a href="/candlestick-patterns" class="back-btn">🕯 Chart Patterns</a>
+  </div>
   <div class="logo">MONEY<span>VEDA</span></div>
   <div class="live-badge"><span class="live-dot"></span>Live</div>
 </nav>
@@ -1298,6 +1340,147 @@ body{
 
   <div class="gold-rule"></div>
 
+
+<section id="cs-teaser" aria-labelledby="cs-teaser-title">
+  <div class="card">
+    <div class="section-title" id="cs-teaser-title" style="margin-bottom:14px;">
+      Candlestick Scan · Nifty 50
+    </div>
+
+    <p class="cs-intro">
+      Each trading day draws a small bar on a stock's chart — where it opened, closed, and how far
+      it swung. Certain shapes repeat often enough that traders gave them names. Here's what the
+      market drew at the last close.
+    </p>
+
+    <div class="cs-strip" id="cs-strip" role="status" aria-live="polite">
+      <span class="cs-loading">⏳ Loading today's scan…</span>
+    </div>
+
+    <a class="cs-cta" href="/candlestick-patterns">
+      See every pattern from today's close
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</section>
+
+<style>
+#cs-teaser .cs-intro{
+  color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 16px;max-width:64ch;
+}
+#cs-teaser .cs-strip{
+  display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;min-height:76px;align-items:stretch;
+}
+#cs-teaser .cs-loading,#cs-teaser .cs-empty{
+  font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;
+  color:var(--muted-soft);align-self:center;
+}
+#cs-teaser .cs-item{
+  display:flex;flex-direction:column;gap:2px;text-decoration:none;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--radius-sm);padding:11px 14px 12px;
+  flex:1 1 210px;max-width:280px;transition:all .2s ease;
+}
+#cs-teaser .cs-mean{font-size:11px;color:var(--muted);line-height:1.45;margin:2px 0 4px;}
+#cs-teaser .cs-item:hover{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.05);}
+#cs-teaser .cs-item svg{display:block;height:26px;width:52px;margin-bottom:4px;}
+#cs-teaser .cs-name{font-size:12px;font-weight:600;color:var(--cream);line-height:1.25;}
+#cs-teaser .cs-count{
+  font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;
+}
+#cs-teaser .cs-item[data-dir="bullish"] .cs-count{color:var(--green-soft);}
+#cs-teaser .cs-item[data-dir="bearish"] .cs-count{color:var(--red-soft);}
+#cs-teaser .cs-item[data-dir="neutral"] .cs-count{color:var(--gold-light);}
+#cs-teaser .cs-more{
+  align-self:center;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;
+  color:var(--muted-soft);
+}
+#cs-teaser .cs-cta{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.25);
+  color:var(--gold-light);text-decoration:none;
+  padding:9px 18px;border-radius:100px;font-size:12px;font-weight:600;
+  transition:all .2s ease;
+}
+#cs-teaser .cs-cta:hover{background:rgba(201,168,76,.14);border-color:var(--gold);}
+@media(max-width:640px){
+  #cs-teaser .cs-strip{gap:8px;}
+  #cs-teaser .cs-item{flex:1 1 100%;max-width:none;padding:10px 12px 11px;}
+}
+</style>
+
+<script>
+/* Scoped in an IIFE so nothing leaks into the page's globals. */
+(function(){
+  var SHAPES={
+    "bullish-engulfing":[[104,105,99,100],[99,109,98,108]],
+    "bearish-engulfing":[[100,105,99,104],[109,110,99,100]],
+    "hammer":[[104,105,98,103],[103,106,94,105]],
+    "inverted-hammer":[[104,105,98,99],[99,112,98,101]],
+    "morning-star":[[110,111,101,102],[99,100,96,99.4],[101,110,100,109]],
+    "piercing-pattern":[[110,111,100,101],[98,108,97,107]],
+    "three-white-soldiers":[[98,103,97,102],[101,107,100,106],[105,112,104,111]],
+    "bullish-harami":[[110,111,99,100],[102,105,101,104]],
+    "shooting-star":[[98,100,97,99],[100,113,99,102]],
+    "hanging-man":[[98,101,97,100],[103,104,94,105]],
+    "evening-star":[[98,108,97,107],[110,113,109,110.4],[108,109,99,100]],
+    "dark-cloud-cover":[[99,110,98,109],[112,113,102,103]],
+    "three-black-crows":[[112,113,106,107],[108,109,102,103],[104,105,98,99]],
+    "bearish-harami":[[99,110,98,109],[106,108,105,107]],
+    "doji":[[104,111,97,104.3]],
+    "marubozu":[[98,108,98,108]]
+  };
+  var COL={bullish:"#4ade80",bearish:"#f87171",neutral:"#C9A84C"};
+
+  function glyph(bars,dir){
+    if(!bars) return "";
+    var W=100,H=46,padY=4,st=COL[dir]||COL.neutral;
+    var hi=Math.max.apply(null,bars.map(function(b){return b[1];}));
+    var lo=Math.min.apply(null,bars.map(function(b){return b[2];}));
+    var span=(hi-lo)||1, y=function(v){return padY+(hi-v)/span*(H-padY*2);};
+    var slot=W/bars.length, bw=Math.min(slot*0.5,15);
+    return '<svg viewBox="0 0 '+W+' '+H+'" aria-hidden="true">'+bars.map(function(b,i){
+      var cx=slot*i+slot/2, up=b[3]>=b[0];
+      var top=y(Math.max(b[0],b[3])), h=Math.max(Math.abs(y(b[0])-y(b[3])),1.6);
+      return '<line x1="'+cx+'" x2="'+cx+'" y1="'+y(b[1])+'" y2="'+y(b[2])+'" stroke="'+st+'" stroke-width="1.4"/>'
+           + '<rect x="'+(cx-bw/2)+'" y="'+top+'" width="'+bw+'" height="'+h+'" fill="'+(up?st:"none")+'" stroke="'+st+'" stroke-width="1.4"/>';
+    }).join("")+'</svg>';
+  }
+
+  var strip=document.getElementById("cs-strip");
+  if(!strip) return;
+
+  fetch("/data/candlestick/latest.json",{cache:"no-cache"})
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(data){
+      var sigs=(data && data.signals) || [];
+      if(!sigs.length){
+        strip.innerHTML='<span class="cs-empty">No tracked pattern formed in the last session.</span>';
+        return;
+      }
+      var by={};
+      sigs.forEach(function(s){ (by[s.pattern]=by[s.pattern]||[]).push(s); });
+      var ranked=Object.keys(by).sort(function(a,b){ return by[b].length-by[a].length; });
+      var top=ranked.slice(0,4);
+
+      strip.innerHTML=top.map(function(slug){
+        var g=by[slug], n=g.length, dir=g[0].direction;
+        var mean=(window.CS_PLAIN&&window.CS_PLAIN[slug])||'';
+        return '<a class="cs-item" data-dir="'+dir+'" href="/candlestick-patterns/'+slug+'">'
+             + glyph(SHAPES[slug],dir)
+             + '<span class="cs-name">'+g[0].pattern_name+'</span>'
+             + '<span class="cs-mean">'+mean+'</span>'
+             + '<span class="cs-count">'+n+' '+(n===1?"stock":"stocks")+'</span></a>';
+      }).join("") + (ranked.length>top.length
+        ? '<span class="cs-more">+'+(ranked.length-top.length)+' more</span>' : "");
+    })
+    .catch(function(){
+      strip.innerHTML='<span class="cs-empty">Scan unavailable — open the board to retry.</span>';
+    });
+})();
+</script>
+
   <!-- ═══════ TABS (Stock Commentary / Prices / Signals / Filings) ═══════ -->
   <section>
     <div class="tabs">
@@ -1344,6 +1527,7 @@ body{
           <div class="commentary-symbol" id="commentary-sym-label"></div>
           <div class="commentary-text" id="commentary-text"></div>
           <div class="commentary-metrics" id="commentary-metrics"></div>
+          <div id="commentary-candles"></div>
         </div>
 
         <div class="coverage-note">
@@ -1734,6 +1918,100 @@ function setPricesSort(mode) {
   renderPricesTable();
 }
 
+/* ═══════ Candlestick cross-link (scan data, cached per page load) ═══════ */
+var CS_PLAIN={
+ "bullish-engulfing":"Buyers erased the whole of the previous day's fall",
+ "bearish-engulfing":"Sellers erased the whole of the previous day's gain",
+ "hammer":"Price fell hard during the day, then recovered before the close",
+ "inverted-hammer":"Price pushed up, faded, but steadied after a decline",
+ "morning-star":"Three days: a fall, a quiet pause, then a strong recovery",
+ "piercing-pattern":"After a drop, buyers pushed back past the midpoint",
+ "three-white-soldiers":"Three strong up days in a row",
+ "bullish-harami":"A big down day, then a small quiet up day inside it",
+ "shooting-star":"Price spiked during the day and gave it all back",
+ "hanging-man":"A dip and recovery \u2014 but appearing after a rally",
+ "evening-star":"Three days: a rise, a quiet pause, then a sharp drop",
+ "dark-cloud-cover":"Sellers pushed back past the midpoint of a rise",
+ "three-black-crows":"Three strong down days in a row",
+ "bearish-harami":"A big up day, then a small quiet down day inside it",
+ "doji":"Opened and closed at nearly the same price \u2014 indecision",
+ "marubozu":"One direction the whole day, with barely any wick"
+};
+var csScan=null, csScanPromise=null;
+var CS_SHAPES={
+ "bullish-engulfing":[[104,105,99,100],[99,109,98,108]],
+ "bearish-engulfing":[[100,105,99,104],[109,110,99,100]],
+ "hammer":[[104,105,98,103],[103,106,94,105]],
+ "inverted-hammer":[[104,105,98,99],[99,112,98,101]],
+ "morning-star":[[110,111,101,102],[99,100,96,99.4],[101,110,100,109]],
+ "piercing-pattern":[[110,111,100,101],[98,108,97,107]],
+ "three-white-soldiers":[[98,103,97,102],[101,107,100,106],[105,112,104,111]],
+ "bullish-harami":[[110,111,99,100],[102,105,101,104]],
+ "shooting-star":[[98,100,97,99],[100,113,99,102]],
+ "hanging-man":[[98,101,97,100],[103,104,94,105]],
+ "evening-star":[[98,108,97,107],[110,113,109,110.4],[108,109,99,100]],
+ "dark-cloud-cover":[[99,110,98,109],[112,113,102,103]],
+ "three-black-crows":[[112,113,106,107],[108,109,102,103],[104,105,98,99]],
+ "bearish-harami":[[99,110,98,109],[106,108,105,107]],
+ "doji":[[104,111,97,104.3]], "marubozu":[[98,108,98,108]]
+};
+function csMiniGlyph(slug,dir){
+  var bars=CS_SHAPES[slug]; if(!bars) return '';
+  var col=dir==='bullish'?'#4ade80':dir==='bearish'?'#f87171':'#C9A84C';
+  var W=100,H=76,pad=6;
+  var hi=Math.max.apply(null,bars.map(function(b){return b[1];}));
+  var lo=Math.min.apply(null,bars.map(function(b){return b[2];}));
+  var sp=(hi-lo)||1, y=function(v){return pad+(hi-v)/sp*(H-pad*2);};
+  var slot=W/bars.length, bw=Math.min(slot*0.52,17);
+  return '<svg class="cs-mini" viewBox="0 0 '+W+' '+H+'" aria-hidden="true">'+bars.map(function(b,i){
+    var cx=slot*i+slot/2, up=b[3]>=b[0];
+    var top=y(Math.max(b[0],b[3])), h=Math.max(Math.abs(y(b[0])-y(b[3])),2);
+    return '<line x1="'+cx+'" x2="'+cx+'" y1="'+y(b[1])+'" y2="'+y(b[2])+'" stroke="'+col+'" stroke-width="2.4"/>'+
+           '<rect x="'+(cx-bw/2)+'" y="'+top+'" width="'+bw+'" height="'+h+'" fill="'+(up?col:'none')+'" stroke="'+col+'" stroke-width="2.4"/>';
+  }).join('')+'</svg>';
+}
+function csLoadScan(){
+  if(csScanPromise) return csScanPromise;
+  csScanPromise=fetch('/data/candlestick/latest.json',{cache:'no-cache'})
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(d){
+      var idx={}; (d.signals||[]).forEach(function(sig){
+        (idx[sig.symbol]=idx[sig.symbol]||[]).push(sig);
+      });
+      csScan={date:d.session_date,index:idx}; return csScan;
+    })
+    .catch(function(){ csScan={index:{},failed:true}; return csScan; });
+  return csScanPromise;
+}
+/* Renders the cross-link for one symbol into #commentary-candles. */
+function csForSymbol(symbol){
+  var el=document.getElementById('commentary-candles');
+  if(!el) return;
+  el.innerHTML='';
+  if(!symbol) return;
+  var clean=String(symbol).replace(/\.NS$/i,'').replace(/\.BO$/i,'').toUpperCase();
+  csLoadScan().then(function(scan){
+    if(scan.failed) return;                     // stay silent if scan is down
+    var hits=scan.index[clean];
+    if(!hits||!hits.length){
+      el.innerHTML='<div class="cs-inline"><div class="cs-inline-none">'+
+        '<span>📊 '+clean+' didn\'t form a recognised price pattern at the last close — but other stocks did. These are the chart shapes traders watch for turning points.</span>'+
+        '<a href="/candlestick-patterns">Show me →</a></div></div>';
+      return;
+    }
+    el.innerHTML='<div class="cs-inline">'+hits.map(function(h){
+      var conf=h.volume_confirmed?'Volume confirmed':'Thin volume';
+      return '<a class="cs-inline-link '+h.direction+'" href="/candlestick-patterns/'+h.pattern+'">'+
+        csMiniGlyph(h.pattern,h.direction)+
+        '<span class="cs-inline-body"><span class="cs-inline-name">'+h.pattern_name+
+        '<span class="cs-inline-badge">'+(h.direction==='bullish'?'buyers stepped in':h.direction==='bearish'?'sellers took over':'no clear winner')+'</span></span>'+
+        '<span class="cs-inline-sub">'+(CS_PLAIN[h.pattern]||'')+'</span>'+
+        '<span class="cs-inline-meta">On '+clean+' at the last close · '+conf+' · what this means →</span></span>'+
+        '<span class="cs-inline-arrow">→</span></a>';
+    }).join('')+'</div>';
+  });
+}
+
 async function loadCommentary() {
   const symbol = document.getElementById('commentary-symbol').value;
   const btn = document.getElementById('commentary-btn');
@@ -1744,6 +2022,7 @@ async function loadCommentary() {
     document.getElementById('commentary-text').innerHTML =
       '<div style="padding:14px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:8px;color:#f59e0b;font-size:13px;">⚠️ Please pick a stock from the search above first.</div>';
     document.getElementById('commentary-metrics').innerHTML = '';
+    csForSymbol(null);
     result.style.display = 'block';
     return;
   }
@@ -1764,6 +2043,7 @@ async function loadCommentary() {
         (d.message || 'An unknown error occurred. Please try a different stock or come back during market hours.') +
         '</div></div>';
       document.getElementById('commentary-metrics').innerHTML = '';
+    csForSymbol(null);
       result.style.display = 'block';
       btn.disabled = false;
       btn.textContent = '🧠 Get Commentary';
@@ -1789,6 +2069,7 @@ async function loadCommentary() {
       <div class="metric-box"><div class="metric-label">From High</div><div class="metric-value down">${fmt(d.pct_from_high, 1, '', '%')}</div></div>
       <div class="metric-box"><div class="metric-label">5D Trend</div><div class="metric-value ${trendClass}">${trendSign}${fmt(d.trend_5d_pct, 2, '', '%')}</div></div>
     `;
+    csForSymbol(d.symbol);
     result.style.display = 'block';
   } catch(e) {
     console.error('Commentary load error:', e);
@@ -1796,6 +2077,7 @@ async function loadCommentary() {
     document.getElementById('commentary-text').innerHTML =
       '<div style="padding:14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:8px;color:var(--red-soft);font-size:13px;">⚠️ Failed to reach the server. Please check your connection and try again.</div>';
     document.getElementById('commentary-metrics').innerHTML = '';
+    csForSymbol(null);
     result.style.display = 'block';
   }
   btn.disabled = false;
