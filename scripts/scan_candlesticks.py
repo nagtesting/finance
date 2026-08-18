@@ -48,6 +48,11 @@ MAX_ROWS_PER_PATTERN = 60    # cap page feeds so tables stay usable
 # large order can manufacture a textbook shape that means nothing.
 MIN_TURNOVER = float(os.environ.get("MIN_TURNOVER", 2.0e7))   # Rs 2 crore
 
+# On a weekday, refuse to publish unless the newest bar is actually today's.
+# Runs soon after the close can catch Yahoo before it has posted the daily
+# bar; writing then would publish yesterday's session as if it were fresh.
+REQUIRE_FRESH = os.environ.get("REQUIRE_FRESH", "1") not in ("0", "false", "False")
+
 # Constituent lists. niftyindices.com is the primary host; nsearchives is a
 # mirror. Both block datacenter IPs, so these are best-effort — the committed
 # CSV in data/universe/ is the real source.
@@ -327,6 +332,16 @@ def main():
         return 1
 
     session_date = max(df.index[-1] for df in data.values()).strftime("%Y-%m-%d")
+
+    now_ist = datetime.now(IST)
+    today_ist = now_ist.strftime("%Y-%m-%d")
+    if REQUIRE_FRESH and now_ist.weekday() < 5 and session_date != today_ist:
+        print(f"Newest bar is {session_date}, today is {today_ist}. "
+              f"Yahoo has not posted today's close yet — exiting without "
+              f"overwriting. A later run will pick it up.", file=sys.stderr)
+        print(f"::notice::Skipped: latest data is {session_date}, not {today_ist}.",
+              file=sys.stderr)
+        return 0
     all_signals = []
     for sym, df in data.items():
         try:
