@@ -1,8 +1,10 @@
 {
   "version": 2,
+  "trailingSlash": false,
   "redirects": [
     { "source": "/market-pulse.html", "destination": "/", "permanent": true },
-    { "source": "/market-pulse", "destination": "/", "permanent": true }
+    { "source": "/market-pulse", "destination": "/", "permanent": true },
+    { "source": "/candlestick-patterns/index", "destination": "/candlestick-patterns", "permanent": true }
   ],
   "rewrites": [
     { "source": "/api/backend/:path*", "destination": "/api/proxy?_path=:path*" },
@@ -26,5 +28,13 @@
     { "source": "/finance-glossary", "destination": "/calculators.html" },
     { "source": "/contact", "destination": "/calculators.html" },
     { "source": "/accuracy-dashboard", "destination": "/accuracy-dashboard.html" }
+  ],
+  "headers": [
+    {
+      "source": "/data/candlestick/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, s-maxage=1800, stale-while-revalidate=86400" }
+      ]
+    }
   ]
 }
