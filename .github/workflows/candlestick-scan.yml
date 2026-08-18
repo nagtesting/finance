@@ -1,0 +1,49 @@
+name: Candlestick Scan
+
+on:
+  schedule:
+    # 11:15 UTC = 16:45 IST — 75 min after NSE close, so EOD data has settled.
+    - cron: "15 11 * * 1-5"
+  workflow_dispatch:        # manual run button, useful for first deploy
+
+permissions:
+  contents: write
+
+concurrency:
+  group: candlestick-scan
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # TA-Lib >=0.6.5 ships manylinux wheels with the C library bundled,
+          # so no apt-get / autotools build step is needed.
+          pip install "TA-Lib>=0.6.5" yfinance pandas numpy
+
+      - name: Run scanner
+        run: python scripts/scan_candlesticks.py
+
+      - name: Commit results
+        run: |
+          git config user.name  "moneyveda-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/candlestick/
+          if git diff --staged --quiet; then
+            echo "No change (market holiday or identical signals) — skipping commit."
+          else
+            git commit -m "chore(scan): candlestick signals $(date -u +%Y-%m-%d)"
+            git push
+          fi
