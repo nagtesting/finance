@@ -2,38 +2,124 @@
   "version": 2,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/market-pulse.html", "destination": "/", "permanent": true },
-    { "source": "/market-pulse", "destination": "/", "permanent": true },
-    { "source": "/candlestick-patterns/index", "destination": "/candlestick-patterns", "permanent": true }
+    {
+      "source": "/market-pulse.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/market-pulse",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/candlestick-patterns/index",
+      "destination": "/candlestick-patterns",
+      "permanent": true
+    }
   ],
   "rewrites": [
-    { "source": "/api/backend/:path*", "destination": "/api/proxy?_path=:path*" },
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/calculators", "destination": "/calculators.html" },
-    { "source": "/sip-calculator", "destination": "/calculators.html" },
-    { "source": "/emi-calculator", "destination": "/calculators.html" },
-    { "source": "/fire-calculator", "destination": "/calculators.html" },
-    { "source": "/ppf-calculator", "destination": "/calculators.html" },
-    { "source": "/epf-calculator", "destination": "/calculators.html" },
-    { "source": "/nps-calculator", "destination": "/calculators.html" },
-    { "source": "/step-up-sip-calculator", "destination": "/calculators.html" },
-    { "source": "/sukanya-samriddhi-calculator", "destination": "/calculators.html" },
-    { "source": "/income-tax-calculator", "destination": "/calculators.html" },
-    { "source": "/insurance-calculator", "destination": "/calculators.html" },
-    { "source": "/roi-calculator", "destination": "/calculators.html" },
-    { "source": "/crorepati-calculator", "destination": "/calculators.html" },
-    { "source": "/habit-cost-calculator", "destination": "/calculators.html" },
-    { "source": "/sip-vs-lump-sum", "destination": "/calculators.html" },
-    { "source": "/financial-academy", "destination": "/calculators.html" },
-    { "source": "/finance-glossary", "destination": "/calculators.html" },
-    { "source": "/contact", "destination": "/calculators.html" },
-    { "source": "/accuracy-dashboard", "destination": "/accuracy-dashboard.html" }
+    {
+      "source": "/api/backend/:path*",
+      "destination": "/api/proxy?_path=:path*"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/candlestick-patterns",
+      "destination": "/candlestick-patterns/index.html"
+    },
+    {
+      "source": "/candlestick-patterns/:slug",
+      "destination": "/candlestick-patterns/:slug.html"
+    },
+    {
+      "source": "/calculators",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/sip-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/emi-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/fire-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/ppf-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/epf-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/nps-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/step-up-sip-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/sukanya-samriddhi-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/income-tax-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/insurance-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/roi-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/crorepati-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/habit-cost-calculator",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/sip-vs-lump-sum",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/financial-academy",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/finance-glossary",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/calculators.html"
+    },
+    {
+      "source": "/accuracy-dashboard",
+      "destination": "/accuracy-dashboard.html"
+    }
   ],
   "headers": [
     {
       "source": "/data/candlestick/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, s-maxage=1800, stale-while-revalidate=86400" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=1800, stale-while-revalidate=86400"
+        }
       ]
     }
   ]
