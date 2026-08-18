@@ -1,6 +1,6 @@
 {
   "session_date": "2026-08-18",
-  "generated_at": "2026-08-18T17:02:58.846668+05:30",
+  "generated_at": "2026-08-18T17:08:30.820351+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
@@ -22,11 +22,11 @@
       "direction": "bullish",
       "close": 1274.4,
       "change_pct": 5.13,
-      "volume_ratio": 3.3,
+      "volume_ratio": 3.06,
       "volume_confirmed": true,
       "turnover_cr": 30.28,
-      "rsi14": 43.4,
-      "atr14": 68.79,
+      "rsi14": 43.3,
+      "atr14": 68.45,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
@@ -79,7 +79,7 @@
       "volume_confirmed": true,
       "turnover_cr": 27.18,
       "rsi14": 52.2,
-      "atr14": 16.12,
+      "atr14": 16.18,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
@@ -128,11 +128,11 @@
       "direction": "bullish",
       "close": 4073.3,
       "change_pct": 1.1,
-      "volume_ratio": 1.77,
+      "volume_ratio": 1.59,
       "volume_confirmed": true,
-      "turnover_cr": 25.67,
-      "rsi14": 47.7,
-      "atr14": 99.81,
+      "turnover_cr": 26.81,
+      "rsi14": 47.8,
+      "atr14": 98.88,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
@@ -174,6 +174,59 @@
       ]
     },
     {
+      "symbol": "TITAGARH",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 841.4,
+      "change_pct": 2.49,
+      "volume_ratio": 1.2,
+      "volume_confirmed": true,
+      "turnover_cr": 23.55,
+      "rsi14": 49.7,
+      "atr14": 24.49,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 847.1,
+          "h": 848.95,
+          "l": 826.0,
+          "c": 833.55
+        },
+        {
+          "d": "13 Aug",
+          "o": 841.95,
+          "h": 869.9,
+          "l": 841.95,
+          "c": 850.75
+        },
+        {
+          "d": "14 Aug",
+          "o": 850.75,
+          "h": 853.95,
+          "l": 830.0,
+          "c": 831.35
+        },
+        {
+          "d": "17 Aug",
+          "o": 831.05,
+          "h": 836.6,
+          "l": 812.7,
+          "c": 820.95
+        },
+        {
+          "d": "18 Aug",
+          "o": 820.45,
+          "h": 848.0,
+          "l": 813.5,
+          "c": 841.4
+        }
+      ]
+    },
+    {
       "symbol": "PFOCUS",
       "tier": "BROADER",
       "pattern": "bullish-engulfing",
@@ -181,11 +234,11 @@
       "direction": "bullish",
       "close": 286.25,
       "change_pct": 7.45,
-      "volume_ratio": 3.98,
+      "volume_ratio": 3.87,
       "volume_confirmed": true,
       "turnover_cr": 15.81,
-      "rsi14": 54.9,
-      "atr14": 14.19,
+      "rsi14": 54.6,
+      "atr14": 14.23,
       "above_sma50": true,
       "strength": "confirmed",
       "bars": [
@@ -340,11 +393,11 @@
       "direction": "bullish",
       "close": 1302.9,
       "change_pct": 2.2,
-      "volume_ratio": 0.99,
+      "volume_ratio": 1.01,
       "volume_confirmed": false,
       "turnover_cr": 71.59,
-      "rsi14": 39.9,
-      "atr14": 49.67,
+      "rsi14": 40.5,
+      "atr14": 49.63,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -382,6 +435,59 @@
           "h": 1326.0,
           "l": 1269.1,
           "c": 1302.9
+        }
+      ]
+    },
+    {
+      "symbol": "ALKEM",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 5475.0,
+      "change_pct": 1.88,
+      "volume_ratio": 1.03,
+      "volume_confirmed": false,
+      "turnover_cr": 60.9,
+      "rsi14": 44.6,
+      "atr14": 133.23,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 5518.0,
+          "h": 5534.5,
+          "l": 5411.5,
+          "c": 5480.0
+        },
+        {
+          "d": "13 Aug",
+          "o": 5459.0,
+          "h": 5483.0,
+          "l": 5406.0,
+          "c": 5449.5
+        },
+        {
+          "d": "14 Aug",
+          "o": 5432.0,
+          "h": 5448.0,
+          "l": 5175.0,
+          "c": 5368.0
+        },
+        {
+          "d": "17 Aug",
+          "o": 5379.5,
+          "h": 5483.0,
+          "l": 5312.0,
+          "c": 5374.0
+        },
+        {
+          "d": "18 Aug",
+          "o": 5374.0,
+          "h": 5510.0,
+          "l": 5374.0,
+          "c": 5475.0
         }
       ]
     },
@@ -492,112 +598,6 @@
       ]
     },
     {
-      "symbol": "ALKEM",
-      "tier": "BROADER",
-      "pattern": "bullish-engulfing",
-      "pattern_name": "Bullish Engulfing",
-      "direction": "bullish",
-      "close": 5475.0,
-      "change_pct": 1.88,
-      "volume_ratio": 1.04,
-      "volume_confirmed": false,
-      "turnover_cr": 55.51,
-      "rsi14": 45.1,
-      "atr14": 135.16,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 5518.0,
-          "h": 5534.5,
-          "l": 5411.5,
-          "c": 5480.0
-        },
-        {
-          "d": "13 Aug",
-          "o": 5459.0,
-          "h": 5483.0,
-          "l": 5406.0,
-          "c": 5449.5
-        },
-        {
-          "d": "14 Aug",
-          "o": 5432.0,
-          "h": 5448.0,
-          "l": 5175.0,
-          "c": 5368.0
-        },
-        {
-          "d": "17 Aug",
-          "o": 5379.5,
-          "h": 5483.0,
-          "l": 5312.0,
-          "c": 5374.0
-        },
-        {
-          "d": "18 Aug",
-          "o": 5374.0,
-          "h": 5510.0,
-          "l": 5374.0,
-          "c": 5475.0
-        }
-      ]
-    },
-    {
-      "symbol": "TITAGARH",
-      "tier": "BROADER",
-      "pattern": "bullish-engulfing",
-      "pattern_name": "Bullish Engulfing",
-      "direction": "bullish",
-      "close": 841.4,
-      "change_pct": 2.49,
-      "volume_ratio": 1.17,
-      "volume_confirmed": false,
-      "turnover_cr": 24.19,
-      "rsi14": 49.5,
-      "atr14": 24.88,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 847.1,
-          "h": 848.95,
-          "l": 826.0,
-          "c": 833.55
-        },
-        {
-          "d": "13 Aug",
-          "o": 841.95,
-          "h": 869.9,
-          "l": 841.95,
-          "c": 850.75
-        },
-        {
-          "d": "14 Aug",
-          "o": 850.75,
-          "h": 853.95,
-          "l": 830.0,
-          "c": 831.35
-        },
-        {
-          "d": "17 Aug",
-          "o": 831.05,
-          "h": 836.6,
-          "l": 812.7,
-          "c": 820.95
-        },
-        {
-          "d": "18 Aug",
-          "o": 820.45,
-          "h": 848.0,
-          "l": 813.5,
-          "c": 841.4
-        }
-      ]
-    },
-    {
       "symbol": "JKTYRE",
       "tier": "BROADER",
       "pattern": "bullish-engulfing",
@@ -605,11 +605,11 @@
       "direction": "bullish",
       "close": 383.15,
       "change_pct": 0.3,
-      "volume_ratio": 0.29,
+      "volume_ratio": 0.28,
       "volume_confirmed": false,
       "turnover_cr": 22.95,
-      "rsi14": 41.0,
-      "atr14": 9.95,
+      "rsi14": 41.3,
+      "atr14": 10.25,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -658,11 +658,11 @@
       "direction": "bullish",
       "close": 4447.6,
       "change_pct": 1.46,
-      "volume_ratio": 0.92,
+      "volume_ratio": 0.84,
       "volume_confirmed": false,
-      "turnover_cr": 22.09,
-      "rsi14": 40.8,
-      "atr14": 155.88,
+      "turnover_cr": 22.35,
+      "rsi14": 40.7,
+      "atr14": 156.21,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [

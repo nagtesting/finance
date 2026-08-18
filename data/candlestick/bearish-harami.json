@@ -1,6 +1,6 @@
 {
   "session_date": "2026-08-18",
-  "generated_at": "2026-08-18T17:02:58.846668+05:30",
+  "generated_at": "2026-08-18T17:08:30.820351+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
@@ -22,11 +22,11 @@
       "direction": "bearish",
       "close": 566.35,
       "change_pct": -1.1,
-      "volume_ratio": 1.58,
+      "volume_ratio": 1.59,
       "volume_confirmed": true,
       "turnover_cr": 328.31,
-      "rsi14": 65.9,
-      "atr14": 21.87,
+      "rsi14": 65.8,
+      "atr14": 21.88,
       "above_sma50": true,
       "strength": "confirmed",
       "bars": [
@@ -75,11 +75,11 @@
       "direction": "bearish",
       "close": 1882.1,
       "change_pct": -0.13,
-      "volume_ratio": 1.28,
+      "volume_ratio": 1.3,
       "volume_confirmed": true,
-      "turnover_cr": 36.13,
-      "rsi14": 62.2,
-      "atr14": 73.55,
+      "turnover_cr": 31.69,
+      "rsi14": 62.4,
+      "atr14": 73.05,
       "above_sma50": true,
       "strength": "confirmed",
       "bars": [
@@ -181,11 +181,11 @@
       "direction": "bearish",
       "close": 1041.6,
       "change_pct": -0.79,
-      "volume_ratio": 0.5,
+      "volume_ratio": 0.49,
       "volume_confirmed": false,
-      "turnover_cr": 461.86,
-      "rsi14": 57.4,
-      "atr14": 24.73,
+      "turnover_cr": 479.1,
+      "rsi14": 57.5,
+      "atr14": 24.54,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -287,11 +287,11 @@
       "direction": "bearish",
       "close": 4356.8,
       "change_pct": -0.66,
-      "volume_ratio": 0.33,
+      "volume_ratio": 0.3,
       "volume_confirmed": false,
       "turnover_cr": 487.58,
-      "rsi14": 65.4,
-      "atr14": 89.26,
+      "rsi14": 64.8,
+      "atr14": 87.64,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -340,11 +340,11 @@
       "direction": "bearish",
       "close": 3593.2,
       "change_pct": -0.35,
-      "volume_ratio": 0.24,
+      "volume_ratio": 0.23,
       "volume_confirmed": false,
-      "turnover_cr": 108.85,
-      "rsi14": 58.8,
-      "atr14": 127.13,
+      "turnover_cr": 117.22,
+      "rsi14": 59.4,
+      "atr14": 125.52,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -446,11 +446,11 @@
       "direction": "bearish",
       "close": 80.49,
       "change_pct": -0.75,
-      "volume_ratio": 0.74,
+      "volume_ratio": 0.76,
       "volume_confirmed": false,
-      "turnover_cr": 77.46,
-      "rsi14": 48.8,
-      "atr14": 2.08,
+      "turnover_cr": 76.46,
+      "rsi14": 49.0,
+      "atr14": 2.05,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -503,7 +503,7 @@
       "volume_confirmed": false,
       "turnover_cr": 38.95,
       "rsi14": 59.3,
-      "atr14": 55.35,
+      "atr14": 55.92,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -554,9 +554,9 @@
       "change_pct": -0.53,
       "volume_ratio": 0.47,
       "volume_confirmed": false,
-      "turnover_cr": 36.0,
-      "rsi14": 58.3,
-      "atr14": 54.46,
+      "turnover_cr": 35.62,
+      "rsi14": 58.6,
+      "atr14": 53.46,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -598,59 +598,6 @@
       ]
     },
     {
-      "symbol": "KPRMILL",
-      "tier": "BROADER",
-      "pattern": "bearish-harami",
-      "pattern_name": "Bearish Harami",
-      "direction": "bearish",
-      "close": 1123.5,
-      "change_pct": -1.07,
-      "volume_ratio": 0.33,
-      "volume_confirmed": false,
-      "turnover_cr": 18.86,
-      "rsi14": 57.0,
-      "atr14": 35.59,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 1103.0,
-          "h": 1104.0,
-          "l": 1085.0,
-          "c": 1088.7
-        },
-        {
-          "d": "13 Aug",
-          "o": 1088.6,
-          "h": 1090.4,
-          "l": 1077.1,
-          "c": 1084.7
-        },
-        {
-          "d": "14 Aug",
-          "o": 1087.3,
-          "h": 1113.7,
-          "l": 1081.1,
-          "c": 1110.0
-        },
-        {
-          "d": "17 Aug",
-          "o": 1109.8,
-          "h": 1140.0,
-          "l": 1098.0,
-          "c": 1135.6
-        },
-        {
-          "d": "18 Aug",
-          "o": 1135.6,
-          "h": 1140.0,
-          "l": 1118.3,
-          "c": 1123.5
-        }
-      ]
-    },
-    {
       "symbol": "VIJAYA",
       "tier": "BROADER",
       "pattern": "bearish-harami",
@@ -660,9 +607,9 @@
       "change_pct": -0.62,
       "volume_ratio": 0.4,
       "volume_confirmed": false,
-      "turnover_cr": 17.09,
+      "turnover_cr": 19.43,
       "rsi14": 65.4,
-      "atr14": 56.1,
+      "atr14": 55.71,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -704,6 +651,59 @@
       ]
     },
     {
+      "symbol": "KPRMILL",
+      "tier": "BROADER",
+      "pattern": "bearish-harami",
+      "pattern_name": "Bearish Harami",
+      "direction": "bearish",
+      "close": 1123.5,
+      "change_pct": -1.07,
+      "volume_ratio": 0.33,
+      "volume_confirmed": false,
+      "turnover_cr": 18.86,
+      "rsi14": 56.8,
+      "atr14": 35.83,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Aug",
+          "o": 1103.0,
+          "h": 1104.0,
+          "l": 1085.0,
+          "c": 1088.7
+        },
+        {
+          "d": "13 Aug",
+          "o": 1088.6,
+          "h": 1090.4,
+          "l": 1077.1,
+          "c": 1084.7
+        },
+        {
+          "d": "14 Aug",
+          "o": 1087.3,
+          "h": 1113.7,
+          "l": 1081.1,
+          "c": 1110.0
+        },
+        {
+          "d": "17 Aug",
+          "o": 1109.8,
+          "h": 1140.0,
+          "l": 1098.0,
+          "c": 1135.6
+        },
+        {
+          "d": "18 Aug",
+          "o": 1135.6,
+          "h": 1140.0,
+          "l": 1118.3,
+          "c": 1123.5
+        }
+      ]
+    },
+    {
       "symbol": "KPIL",
       "tier": "BROADER",
       "pattern": "bearish-harami",
@@ -713,9 +713,9 @@
       "change_pct": -0.05,
       "volume_ratio": 0.4,
       "volume_confirmed": false,
-      "turnover_cr": 16.87,
-      "rsi14": 63.2,
-      "atr14": 42.93,
+      "turnover_cr": 17.8,
+      "rsi14": 63.5,
+      "atr14": 42.82,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -764,11 +764,11 @@
       "direction": "bearish",
       "close": 1733.9,
       "change_pct": -0.58,
-      "volume_ratio": 0.37,
+      "volume_ratio": 0.36,
       "volume_confirmed": false,
-      "turnover_cr": 14.41,
-      "rsi14": 64.4,
-      "atr14": 59.82,
+      "turnover_cr": 15.51,
+      "rsi14": 65.4,
+      "atr14": 58.94,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -820,8 +820,8 @@
       "volume_ratio": 0.99,
       "volume_confirmed": false,
       "turnover_cr": 10.3,
-      "rsi14": 60.7,
-      "atr14": 17.58,
+      "rsi14": 61.1,
+      "atr14": 17.35,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
