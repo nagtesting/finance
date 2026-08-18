@@ -36,6 +36,10 @@
       "destination": "/candlestick-patterns/:slug.html"
     },
     {
+      "source": "/about",
+      "destination": "/about.html"
+    },
+    {
       "source": "/calculators",
       "destination": "/calculators.html"
     },
