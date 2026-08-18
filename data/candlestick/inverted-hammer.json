@@ -1,0 +1,64 @@
+{
+  "session_date": "2026-08-17",
+  "generated_at": "2026-08-18T08:44:24.354645+05:30",
+  "universe": "NIFTY50",
+  "symbols_scanned": 47,
+  "total_signals": 20,
+  "pattern": "inverted-hammer",
+  "pattern_name": "Inverted Hammer",
+  "direction": "bullish",
+  "count": 1,
+  "signals": [
+    {
+      "symbol": "ASIANPAINT",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 2687.5,
+      "change_pct": -0.33,
+      "volume_ratio": 0.3,
+      "volume_confirmed": false,
+      "rsi14": 44.1,
+      "atr14": 52.45,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Aug",
+          "o": 2742.1,
+          "h": 2747.6,
+          "l": 2720.0,
+          "c": 2735.5
+        },
+        {
+          "d": "12 Aug",
+          "o": 2733.2,
+          "h": 2748.4,
+          "l": 2698.2,
+          "c": 2740.0
+        },
+        {
+          "d": "13 Aug",
+          "o": 2725.0,
+          "h": 2755.5,
+          "l": 2720.0,
+          "c": 2755.5
+        },
+        {
+          "d": "14 Aug",
+          "o": 2751.0,
+          "h": 2751.0,
+          "l": 2690.3,
+          "c": 2696.3
+        },
+        {
+          "d": "17 Aug",
+          "o": 2694.5,
+          "h": 2714.6,
+          "l": 2687.5,
+          "c": 2687.5
+        }
+      ]
+    }
+  ]
+}

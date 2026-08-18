@@ -1,0 +1,166 @@
+{
+  "session_date": "2026-08-17",
+  "generated_at": "2026-08-18T08:44:24.354645+05:30",
+  "universe": "NIFTY50",
+  "symbols_scanned": 47,
+  "total_signals": 20,
+  "pattern": "bullish-engulfing",
+  "pattern_name": "Bullish Engulfing",
+  "direction": "bullish",
+  "count": 3,
+  "signals": [
+    {
+      "symbol": "BPCL",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 319.45,
+      "change_pct": 1.41,
+      "volume_ratio": 1.35,
+      "volume_confirmed": true,
+      "rsi14": 53.5,
+      "atr14": 6.72,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "10 Aug",
+          "o": 320.2,
+          "h": 320.95,
+          "l": 316.25,
+          "c": 318.5
+        },
+        {
+          "d": "11 Aug",
+          "o": 316.95,
+          "h": 318.95,
+          "l": 314.9,
+          "c": 317.8
+        },
+        {
+          "d": "12 Aug",
+          "o": 317.0,
+          "h": 318.5,
+          "l": 311.5,
+          "c": 317.0
+        },
+        {
+          "d": "13 Aug",
+          "o": 316.65,
+          "h": 316.65,
+          "l": 310.65,
+          "c": 315.0
+        },
+        {
+          "d": "14 Aug",
+          "o": 314.85,
+          "h": 319.45,
+          "l": 314.05,
+          "c": 319.45
+        }
+      ]
+    },
+    {
+      "symbol": "ADANIPORTS",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 1700.0,
+      "change_pct": 2.53,
+      "volume_ratio": 0.89,
+      "volume_confirmed": false,
+      "rsi14": 42.5,
+      "atr14": 35.53,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "10 Aug",
+          "o": 1690.0,
+          "h": 1690.0,
+          "l": 1673.1,
+          "c": 1681.0
+        },
+        {
+          "d": "11 Aug",
+          "o": 1700.0,
+          "h": 1703.4,
+          "l": 1661.8,
+          "c": 1668.2
+        },
+        {
+          "d": "12 Aug",
+          "o": 1669.8,
+          "h": 1672.7,
+          "l": 1640.4,
+          "c": 1665.0
+        },
+        {
+          "d": "13 Aug",
+          "o": 1665.0,
+          "h": 1669.9,
+          "l": 1641.1,
+          "c": 1658.0
+        },
+        {
+          "d": "14 Aug",
+          "o": 1658.0,
+          "h": 1700.0,
+          "l": 1657.2,
+          "c": 1700.0
+        }
+      ]
+    },
+    {
+      "symbol": "TATASTEEL",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 186.0,
+      "change_pct": 1.36,
+      "volume_ratio": 0.78,
+      "volume_confirmed": false,
+      "rsi14": 45.5,
+      "atr14": 3.94,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Aug",
+          "o": 190.24,
+          "h": 190.56,
+          "l": 186.78,
+          "c": 188.25
+        },
+        {
+          "d": "12 Aug",
+          "o": 188.35,
+          "h": 188.88,
+          "l": 183.6,
+          "c": 186.2
+        },
+        {
+          "d": "13 Aug",
+          "o": 186.2,
+          "h": 186.66,
+          "l": 183.46,
+          "c": 184.85
+        },
+        {
+          "d": "14 Aug",
+          "o": 184.0,
+          "h": 184.19,
+          "l": 180.0,
+          "c": 183.5
+        },
+        {
+          "d": "17 Aug",
+          "o": 183.5,
+          "h": 186.35,
+          "l": 182.06,
+          "c": 186.0
+        }
+      ]
+    }
+  ]
+}

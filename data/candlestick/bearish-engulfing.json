@@ -1,0 +1,64 @@
+{
+  "session_date": "2026-08-17",
+  "generated_at": "2026-08-18T08:44:24.354645+05:30",
+  "universe": "NIFTY50",
+  "symbols_scanned": 47,
+  "total_signals": 20,
+  "pattern": "bearish-engulfing",
+  "pattern_name": "Bearish Engulfing",
+  "direction": "bearish",
+  "count": 1,
+  "signals": [
+    {
+      "symbol": "HCLTECH",
+      "pattern": "bearish-engulfing",
+      "pattern_name": "Bearish Engulfing",
+      "direction": "bearish",
+      "close": 1360.0,
+      "change_pct": -0.73,
+      "volume_ratio": 0.35,
+      "volume_confirmed": false,
+      "rsi14": 66.6,
+      "atr14": 32.1,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "10 Aug",
+          "o": 1356.6,
+          "h": 1367.5,
+          "l": 1351.6,
+          "c": 1357.2
+        },
+        {
+          "d": "11 Aug",
+          "o": 1360.1,
+          "h": 1379.8,
+          "l": 1358.0,
+          "c": 1365.4
+        },
+        {
+          "d": "12 Aug",
+          "o": 1370.0,
+          "h": 1370.0,
+          "l": 1340.4,
+          "c": 1365.4
+        },
+        {
+          "d": "13 Aug",
+          "o": 1362.9,
+          "h": 1372.9,
+          "l": 1354.0,
+          "c": 1370.0
+        },
+        {
+          "d": "14 Aug",
+          "o": 1372.8,
+          "h": 1374.9,
+          "l": 1346.5,
+          "c": 1360.0
+        }
+      ]
+    }
+  ]
+}

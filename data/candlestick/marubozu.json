@@ -1,0 +1,166 @@
+{
+  "session_date": "2026-08-17",
+  "generated_at": "2026-08-18T08:44:24.354645+05:30",
+  "universe": "NIFTY50",
+  "symbols_scanned": 47,
+  "total_signals": 20,
+  "pattern": "marubozu",
+  "pattern_name": "Marubozu",
+  "direction": "neutral",
+  "count": 3,
+  "signals": [
+    {
+      "symbol": "ADANIPORTS",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 1700.0,
+      "change_pct": 2.53,
+      "volume_ratio": 0.89,
+      "volume_confirmed": false,
+      "rsi14": 42.5,
+      "atr14": 35.53,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "10 Aug",
+          "o": 1690.0,
+          "h": 1690.0,
+          "l": 1673.1,
+          "c": 1681.0
+        },
+        {
+          "d": "11 Aug",
+          "o": 1700.0,
+          "h": 1703.4,
+          "l": 1661.8,
+          "c": 1668.2
+        },
+        {
+          "d": "12 Aug",
+          "o": 1669.8,
+          "h": 1672.7,
+          "l": 1640.4,
+          "c": 1665.0
+        },
+        {
+          "d": "13 Aug",
+          "o": 1665.0,
+          "h": 1669.9,
+          "l": 1641.1,
+          "c": 1658.0
+        },
+        {
+          "d": "14 Aug",
+          "o": 1658.0,
+          "h": 1700.0,
+          "l": 1657.2,
+          "c": 1700.0
+        }
+      ]
+    },
+    {
+      "symbol": "ITC",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 273.05,
+      "change_pct": -1.85,
+      "volume_ratio": 0.83,
+      "volume_confirmed": false,
+      "rsi14": 34.4,
+      "atr14": 4.32,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Aug",
+          "o": 282.0,
+          "h": 282.6,
+          "l": 278.0,
+          "c": 279.0
+        },
+        {
+          "d": "12 Aug",
+          "o": 279.0,
+          "h": 279.55,
+          "l": 275.4,
+          "c": 276.15
+        },
+        {
+          "d": "13 Aug",
+          "o": 276.2,
+          "h": 278.5,
+          "l": 276.05,
+          "c": 278.5
+        },
+        {
+          "d": "14 Aug",
+          "o": 278.35,
+          "h": 278.35,
+          "l": 275.95,
+          "c": 278.2
+        },
+        {
+          "d": "17 Aug",
+          "o": 278.2,
+          "h": 278.2,
+          "l": 273.0,
+          "c": 273.05
+        }
+      ]
+    },
+    {
+      "symbol": "TRENT",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 2946.0,
+      "change_pct": -1.07,
+      "volume_ratio": 0.61,
+      "volume_confirmed": false,
+      "rsi14": 44.2,
+      "atr14": 71.51,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Aug",
+          "o": 3024.5,
+          "h": 3029.8,
+          "l": 2990.3,
+          "c": 3000.0
+        },
+        {
+          "d": "12 Aug",
+          "o": 3000.0,
+          "h": 3019.0,
+          "l": 2972.9,
+          "c": 2987.0
+        },
+        {
+          "d": "13 Aug",
+          "o": 2987.0,
+          "h": 3011.9,
+          "l": 2957.0,
+          "c": 2990.0
+        },
+        {
+          "d": "14 Aug",
+          "o": 2947.7,
+          "h": 3020.6,
+          "l": 2945.0,
+          "c": 2978.0
+        },
+        {
+          "d": "17 Aug",
+          "o": 2989.9,
+          "h": 2989.9,
+          "l": 2945.0,
+          "c": 2946.0
+        }
+      ]
+    }
+  ]
+}

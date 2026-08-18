@@ -1,0 +1,115 @@
+{
+  "session_date": "2026-08-17",
+  "generated_at": "2026-08-18T08:44:24.354645+05:30",
+  "universe": "NIFTY50",
+  "symbols_scanned": 47,
+  "total_signals": 20,
+  "pattern": "bullish-harami",
+  "pattern_name": "Bullish Harami",
+  "direction": "bullish",
+  "count": 2,
+  "signals": [
+    {
+      "symbol": "ONGC",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 238.49,
+      "change_pct": 0.88,
+      "volume_ratio": 2.17,
+      "volume_confirmed": true,
+      "rsi14": 41.8,
+      "atr14": 4.15,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "11 Aug",
+          "o": 241.0,
+          "h": 243.65,
+          "l": 239.45,
+          "c": 239.45
+        },
+        {
+          "d": "12 Aug",
+          "o": 240.0,
+          "h": 241.33,
+          "l": 238.65,
+          "c": 239.05
+        },
+        {
+          "d": "13 Aug",
+          "o": 239.0,
+          "h": 240.55,
+          "l": 238.11,
+          "c": 239.9
+        },
+        {
+          "d": "14 Aug",
+          "o": 239.49,
+          "h": 239.6,
+          "l": 235.25,
+          "c": 236.4
+        },
+        {
+          "d": "17 Aug",
+          "o": 237.99,
+          "h": 239.5,
+          "l": 236.15,
+          "c": 238.49
+        }
+      ]
+    },
+    {
+      "symbol": "COALINDIA",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 408.45,
+      "change_pct": 0.33,
+      "volume_ratio": 0.7,
+      "volume_confirmed": false,
+      "rsi14": 33.6,
+      "atr14": 5.82,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Aug",
+          "o": 411.0,
+          "h": 413.45,
+          "l": 409.25,
+          "c": 412.6
+        },
+        {
+          "d": "12 Aug",
+          "o": 412.6,
+          "h": 413.7,
+          "l": 408.2,
+          "c": 409.3
+        },
+        {
+          "d": "13 Aug",
+          "o": 409.3,
+          "h": 410.5,
+          "l": 406.7,
+          "c": 410.5
+        },
+        {
+          "d": "14 Aug",
+          "o": 409.8,
+          "h": 410.4,
+          "l": 405.6,
+          "c": 407.1
+        },
+        {
+          "d": "17 Aug",
+          "o": 407.1,
+          "h": 408.45,
+          "l": 405.3,
+          "c": 408.45
+        }
+      ]
+    }
+  ]
+}
