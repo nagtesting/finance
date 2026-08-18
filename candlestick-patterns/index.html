@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Candlestick Patterns on Nifty 50 Stocks Today | MoneyVeda</title>
-<meta name="description" content="Which candlestick patterns formed on Nifty 50 stocks in the latest NSE session — engulfing, hammer, morning star and more, with trend and volume confirmation. Free, no signup.">
+<title>Candlestick Patterns on Nifty Stocks Today | MoneyVeda</title>
+<meta name="description" content="Which candlestick patterns formed on NSE stocks in the latest NSE session — engulfing, hammer, morning star and more, with trend and volume confirmation. Free, no signup.">
 <link rel="canonical" href="https://www.moneyveda.org/candlestick-patterns">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -170,11 +170,12 @@ footer{padding:26px 0 48px;border-top:1px solid rgba(255,255,255,.06);margin-top
 
 <header class="hero">
   <div class="wrap">
-    <div class="eyebrow">NSE · NIFTY 50 · Candle Desk</div>
+    <div class="eyebrow">NSE · NIFTY · Candle Desk</div>
     <h1>What the charts <em>drew</em> today</h1>
-    <p class="hero-tagline">Every Nifty 50 stock scanned after the close for sixteen candlestick
-      formations. A pattern is listed only when the prior trend supports it and the day's volume is
-      measured against its twenty-day average — filtered, not raw detector output.</p>
+    <p class="hero-tagline">Each day a stock draws one bar on its chart. Sixteen of those shapes have
+      names, and traders watch them for signs a move is turning. Every stock in the scan universe is
+      checked after the close — and only listed when the prior trend supports the shape and volume
+      backs it up.</p>
     <div class="hero-stats" id="readout">
       <span class="stat-pill" id="sPat">⏳ Scanning…</span>
       <span class="stat-pill" id="sSig" hidden></span>
@@ -224,7 +225,7 @@ footer{padding:26px 0 48px;border-top:1px solid rgba(255,255,255,.06);margin-top
       1.2× their usual volume, meaning the move had real participation behind it rather than a thin
       book. Those are worth opening a chart for. The rest are worth noting and nothing more.</p>
     <p>Each pattern links to a page explaining how the formation works, when it commonly fails, and
-      every Nifty 50 stock currently showing it.</p>
+      every stock in the scan universe currently showing it.</p>
   </div>
 </section>
 
@@ -308,7 +309,7 @@ function render(data){
 
   const sv=document.getElementById("viewStock");
   if(!sigs.length){
-    sv.innerHTML=`<div class="note"><p>No stock in the Nifty 50 formed a tracked pattern in this
+    sv.innerHTML=`<div class="note"><p>No stock in the scan universe formed a tracked pattern in this
       session.</p><p>Quiet tapes are normal. The scan runs again after the next close.</p></div>`;
     return;
   }
@@ -344,5 +345,131 @@ fetch("/data/candlestick/latest.json",{cache:"no-cache"})
       <a href="/candlestick-patterns/bullish-engulfing">pattern explainers</a>, which stay available.</p></div>`;
   });
 </script>
+<footer class="mv-footer">
+  <div class="mv-footer-inner">
+
+    <div class="mv-footer-brand">
+      <div class="mv-footer-logo">MONEY<span>VEDA</span></div>
+      <p class="mv-footer-blurb">
+        Indian markets made clear. Daily Nifty commentary, a candlestick pattern
+        scan across NSE stocks, and financial calculators built for Indian tax and
+        investment rules. Free, no signup, no ads.
+      </p>
+      <div class="mv-footer-badges">
+        <span class="mv-badge">🇮🇳 Built for India</span>
+        <span class="mv-badge">Free · No login</span>
+        <span class="mv-badge">No ads</span>
+      </div>
+    </div>
+
+    <nav class="mv-footer-cols" aria-label="Footer">
+      <div class="mv-col">
+        <h3>Markets</h3>
+        <a href="/">Market Pulse — daily commentary</a>
+        <a href="/candlestick-patterns">Chart Patterns — daily scan</a>
+        <a href="/accuracy-dashboard">Accuracy Dashboard</a>
+      </div>
+
+      <div class="mv-col">
+        <h3>Chart Patterns</h3>
+        <a href="/candlestick-patterns/bullish-engulfing">Bullish Engulfing</a>
+        <a href="/candlestick-patterns/hammer">Hammer</a>
+        <a href="/candlestick-patterns/doji">Doji</a>
+        <a href="/candlestick-patterns/shooting-star">Shooting Star</a>
+        <a href="/candlestick-patterns">All 16 patterns →</a>
+      </div>
+
+      <div class="mv-col">
+        <h3>Calculators</h3>
+        <a href="/sip-calculator">SIP Calculator</a>
+        <a href="/emi-calculator">EMI Calculator</a>
+        <a href="/fire-calculator">FIRE Calculator</a>
+        <a href="/income-tax-calculator">Income Tax FY2025-26</a>
+        <a href="/calculators">All calculators →</a>
+      </div>
+
+      <div class="mv-col">
+        <h3>About</h3>
+        <a href="/about">How MoneyVeda works</a>
+        <a href="/about#method">Scan methodology</a>
+        <a href="/about#data">Data sources</a>
+        <a href="/about#limits">What this is not</a>
+      </div>
+    </nav>
+
+  </div>
+
+  <div class="mv-footer-legal">
+    <div class="mv-footer-inner">
+      <p class="mv-disclaimer">
+        <strong>Not investment advice.</strong> MoneyVeda publishes market commentary,
+        automated chart-pattern scans, and calculators for education and research only.
+        Nothing here is a recommendation to buy or sell any security, and no content is
+        provided by a SEBI-registered investment adviser. Pattern detection is automated
+        and does not account for corporate actions, news flow, or your personal
+        circumstances. Market data may be delayed or contain errors. Consult a
+        SEBI-registered adviser before making investment decisions.
+      </p>
+      <p class="mv-copyright">© <span id="mv-year">2026</span> MoneyVeda · moneyveda.org</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+.mv-footer{
+  margin-top:56px;border-top:1px solid rgba(201,168,76,.16);
+  background:linear-gradient(180deg, rgba(201,168,76,.03), transparent 40%);
+  font-family:'DM Sans',system-ui,sans-serif;
+}
+.mv-footer-inner{max-width:1080px;margin:0 auto;padding:0 24px;}
+.mv-footer > .mv-footer-inner{
+  display:grid;grid-template-columns:1.15fr 2fr;gap:48px;padding-top:44px;padding-bottom:36px;
+}
+.mv-footer-logo{
+  font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:900;
+  letter-spacing:-.6px;color:#F5F0E8;margin-bottom:12px;
+}
+.mv-footer-logo span{color:#C9A84C;}
+.mv-footer-blurb{
+  margin:0 0 16px;font-size:13.5px;line-height:1.65;color:#9090A8;max-width:44ch;
+}
+.mv-footer-badges{display:flex;flex-wrap:wrap;gap:7px;}
+.mv-badge{
+  font-size:10.5px;font-weight:600;letter-spacing:.4px;color:#9090A8;
+  border:1px solid rgba(255,255,255,.09);border-radius:100px;padding:5px 11px;
+}
+.mv-footer-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;}
+.mv-col h3{
+  font-family:'DM Mono',ui-monospace,monospace;
+  font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;
+  color:#C9A84C;margin:0 0 14px;
+}
+.mv-col a{
+  display:block;font-size:13px;line-height:1.5;color:#D8D2C5;
+  text-decoration:none;margin-bottom:9px;transition:color .18s ease;
+}
+.mv-col a:hover{color:#E8C97A;}
+.mv-footer-legal{border-top:1px solid rgba(255,255,255,.06);padding:22px 0 40px;}
+.mv-disclaimer{
+  margin:0 0 12px;font-size:11.5px;line-height:1.65;color:#6E6E80;max-width:88ch;
+}
+.mv-disclaimer strong{color:#9090A8;}
+.mv-copyright{margin:0;font-size:11.5px;color:#6E6E80;}
+@media(max-width:860px){
+  .mv-footer > .mv-footer-inner{grid-template-columns:1fr;gap:34px;}
+  .mv-footer-cols{grid-template-columns:repeat(2,1fr);gap:26px;}
+}
+@media(max-width:480px){
+  .mv-footer-inner{padding:0 16px;}
+  .mv-footer-cols{grid-template-columns:1fr 1fr;gap:22px;}
+}
+</style>
+<script>
+(function(){
+  var y=document.getElementById('mv-year');
+  if(y) y.textContent=new Date().getFullYear();
+})();
+</script>
+
 </body>
 </html>
