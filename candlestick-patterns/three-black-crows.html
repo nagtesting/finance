@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three Black Crows Pattern — Nifty Stocks Showing It Today | MoneyVeda</title>
+<meta name="description" content="What three black crows means, when it fails, and which Nifty stocks formed the pattern in the latest NSE session. Updated after every market close.">
+<link rel="canonical" href="https://www.moneyveda.org/candlestick-patterns/three-black-crows">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --gold:#C9A84C; --gold-light:#E8C97A; --gold-deep:#8A7028;
+  --cream:#F5F0E8; --cream-dim:#D8D2C5;
+  --dark:#0A0A0F; --dark2:#111118; --dark3:#18181F; --dark4:#22222C; --dark5:#2D2D38;
+  --muted:#9090A8; --muted-soft:#6E6E80;
+  --green:#22C55E; --green-soft:#4ade80;
+  --red:#EF4444; --red-soft:#f87171;
+  --max-width:1080px; --gutter:24px;
+  --radius-lg:16px; --radius-md:12px; --radius-sm:8px;
+  --shadow-card:0 1px 0 rgba(255,255,255,.02), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+@media(max-width:640px){:root{--gutter:16px}}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--dark);color:var(--cream);
+     font-family:'DM Sans',system-ui,sans-serif;font-size:16px;line-height:1.65;
+     -webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--max-width);margin:0 auto;padding:0 var(--gutter)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+
+/* --- topnav (matches site) --- */
+.topnav{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.85);
+  backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid rgba(201,168,76,.12);padding:0 var(--gutter);height:60px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{font-family:'Playfair Display',serif;font-size:19px;font-weight:900;
+  letter-spacing:-.6px;color:var(--cream);text-decoration:none}
+.logo span{color:var(--gold)}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--cream-dim);
+  text-decoration:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  padding:7px 14px;border-radius:100px;transition:all .2s ease;font-weight:500}
+.back-btn:hover{background:rgba(255,255,255,.08);color:var(--cream)}
+.live-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(34,197,94,.10);
+  border:1px solid rgba(34,197,94,.25);padding:5px 13px;border-radius:100px;
+  font-size:10px;font-weight:700;color:var(--green-soft);letter-spacing:1.2px;text-transform:uppercase}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green-soft);
+  box-shadow:0 0 6px rgba(34,197,94,.6);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@media(prefers-reduced-motion:reduce){.live-dot{animation:none}}
+
+/* --- hero --- */
+.hero{padding:38px 0 28px}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;display:inline-flex;align-items:center;gap:8px}
+.eyebrow::before{content:'';width:24px;height:1px;background:var(--gold);opacity:.6}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.2rem);
+  font-weight:900;line-height:1.05;margin:0 0 14px;letter-spacing:-1.5px}
+.hero h1 em{font-style:italic;color:var(--gold)}
+.hero-tagline{color:var(--muted);font-size:15px;max-width:62ch;margin:0 0 20px}
+.hero-stats{display:flex;flex-wrap:wrap;gap:8px}
+.stat-pill{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);
+  border-radius:100px;padding:8px 16px;font-size:12px;font-weight:600;color:var(--gold-light);
+  white-space:nowrap;font-feature-settings:"tnum"}
+.stat-pill.muted{background:transparent;border-color:rgba(255,255,255,.08);color:var(--muted)}
+.stat-pill.bull{background:rgba(34,197,94,.09);border-color:rgba(34,197,94,.25);color:var(--green-soft)}
+.stat-pill.bear{background:rgba(239,68,68,.09);border-color:rgba(239,68,68,.25);color:var(--red-soft)}
+.gold-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold) 50%,transparent);
+  opacity:.35;margin:8px 0 0}
+
+/* --- sections --- */
+.band{padding:30px 0}
+.section-title{font-size:10px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;
+  color:var(--muted);margin:0 0 16px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(255,255,255,.08),transparent)}
+.band-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.switch{display:flex;border:1px solid rgba(255,255,255,.08);border-radius:100px;
+  overflow:hidden;background:rgba(255,255,255,.03)}
+.switch button{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.2px;
+  text-transform:uppercase;padding:8px 15px;border:none;background:none;cursor:pointer;
+  color:var(--muted);transition:all .2s ease}
+.switch button[aria-pressed="true"]{background:rgba(201,168,76,.14);color:var(--gold-light)}
+
+/* --- SIGNATURE: glyph board --- */
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:12px;
+  list-style:none;padding:0;margin:0}
+.tile{background:var(--dark3);border:1px solid rgba(201,168,76,.1);border-radius:var(--radius-md);
+  box-shadow:var(--shadow-card);display:flex;flex-direction:column;text-decoration:none;
+  color:inherit;overflow:hidden;transition:all .25s ease}
+.tile:hover{border-color:rgba(201,168,76,.35);transform:translateY(-2px)}
+@media(prefers-reduced-motion:reduce){.tile:hover{transform:none}}
+.tile svg{display:block;width:100%;height:76px;padding:14px 14px 2px}
+.tile-foot{padding:8px 14px 14px;margin-top:auto}
+.tile-name{display:block;font-size:14px;font-weight:600;line-height:1.3;color:var(--cream)}
+.tile-meta{display:block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.1px;
+  text-transform:uppercase;margin-top:6px;color:var(--muted-soft)}
+.tile.hit[data-dir="bullish"] .tile-meta{color:var(--green-soft)}
+.tile.hit[data-dir="bearish"] .tile-meta{color:var(--red-soft)}
+.tile.hit[data-dir="neutral"] .tile-meta{color:var(--gold-light)}
+.tile.quiet{background:var(--dark2);border-color:rgba(255,255,255,.05);box-shadow:none}
+.tile.quiet svg{opacity:.3}
+.tile.quiet .tile-name{color:var(--muted);font-weight:500}
+
+/* --- table --- */
+.tape{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:13px;
+  font-feature-settings:"tnum"}
+.tape th{font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted-soft);
+  font-weight:500;text-align:right;padding:0 10px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.tape th:first-child,.tape th:nth-child(2){text-align:left}
+.tape td{text-align:right;padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.05)}
+.tape td:first-child,.tape td:nth-child(2){text-align:left}
+.tape td:first-child{font-weight:600;color:var(--cream)}
+.tape a{color:var(--cream-dim);text-decoration:none;border-bottom:1px solid rgba(201,168,76,.3)}
+.tape a:hover{color:var(--gold-light);border-color:var(--gold)}
+.up{color:var(--green-soft)} .down{color:var(--red-soft)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px;vertical-align:1px}
+.dot.bullish{background:var(--green-soft)} .dot.bearish{background:var(--red-soft)}
+.dot.neutral{background:var(--gold)}
+.tag{display:inline-block;font-size:9px;letter-spacing:1.1px;text-transform:uppercase;
+  padding:3px 9px;border-radius:100px;font-weight:700;
+  background:rgba(34,197,94,.10);border:1px solid rgba(34,197,94,.25);color:var(--green-soft)}
+.tag.weak{background:transparent;border-color:rgba(255,255,255,.08);color:var(--muted)}
+
+.note{background:var(--dark3);border:1px solid rgba(201,168,76,.1);border-radius:var(--radius-md);
+  padding:22px;box-shadow:var(--shadow-card);max-width:58ch}
+.note p{margin:0 0 8px;color:var(--cream)}
+.note p:last-child{margin:0;color:var(--muted);font-size:14px}
+.note a{color:var(--gold-light)}
+[hidden]{display:none !important}
+
+.prose{max-width:66ch}
+.prose h2{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;
+  letter-spacing:-.5px;margin:0 0 14px}
+.prose p{margin:0 0 14px;color:var(--cream-dim);font-size:15px}
+.prose p:last-child{margin:0}
+footer{padding:26px 0 48px;border-top:1px solid rgba(255,255,255,.06);margin-top:20px}
+.disclaimer{font-size:12px;line-height:1.6;color:var(--muted-soft);max-width:80ch;margin:0}
+
+@media(max-width:640px){
+  .board{grid-template-columns:repeat(auto-fill,minmax(144px,1fr));gap:10px}
+  .tape{font-size:12px}
+  .tape th:nth-child(5),.tape td:nth-child(5){display:none}
+}
+
+/* --- pattern page --- */
+.hero .wrap{display:grid;grid-template-columns:1fr 310px;gap:44px;align-items:center}
+.hero h1{margin-bottom:14px}
+.thesis{color:var(--muted);font-size:15px;max-width:48ch;margin:0}
+.scope{background:var(--dark3);border:1px solid rgba(201,168,76,.1);border-radius:var(--radius-md);
+  box-shadow:var(--shadow-card);padding:16px;margin:0}
+.scope svg{display:block;width:100%;height:auto}
+.scope-cap{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:12px;
+  font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1.3px;text-transform:uppercase;
+  color:var(--muted-soft)}
+.scope-cap strong{color:var(--gold-light);font-weight:500}
+.scope-reset{font:inherit;background:none;border:none;padding:0;cursor:pointer;color:var(--muted);
+  text-decoration:underline;text-underline-offset:3px}
+.scope-reset:hover{color:var(--gold-light)}
+.scope-reset[hidden]{display:none}
+.tape caption{text-align:left;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted);
+  padding-bottom:14px;caption-side:top}
+.tape tbody tr{cursor:pointer;transition:background .2s ease}
+.tape tbody tr:hover,.tape tbody tr:focus-within{background:rgba(255,255,255,.03)}
+.tape tbody tr[aria-selected="true"]{background:rgba(201,168,76,.07);
+  box-shadow:inset 3px 0 0 var(--gold)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:44px}
+.cols h3{font-size:10px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;
+  color:var(--muted);margin:0 0 14px;display:flex;align-items:center;gap:10px}
+.cols h3::after{content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(255,255,255,.08),transparent)}
+.cols p{margin:0 0 14px;color:var(--cream-dim);font-size:15px}
+.cols p:last-child{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0}
+.chips a{display:inline-block;font-size:13px;text-decoration:none;color:var(--cream-dim);
+  padding:8px 15px;border:1px solid rgba(255,255,255,.08);border-radius:100px;
+  background:rgba(255,255,255,.03);transition:all .2s ease}
+.chips a:hover{border-color:rgba(201,168,76,.4);color:var(--gold-light)}
+.stamp{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.3px;
+  text-transform:uppercase;color:var(--muted-soft)}
+.band-head h2{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;
+  letter-spacing:-.5px;margin:0}
+@media(max-width:800px){
+  .hero .wrap{grid-template-columns:1fr;gap:26px}
+  .scope{max-width:330px}
+  .cols{grid-template-columns:1fr;gap:28px}
+}
+@media(prefers-reduced-motion:no-preference){
+  .candle rect,.candle line{transition:all .32s cubic-bezier(.4,0,.2,1)}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/candlestick-patterns" class="back-btn">← Patterns</a>
+  <a href="/" class="logo">MONEY<span>VEDA</span></a>
+  <div class="live-badge"><span class="live-dot"></span>Daily</div>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow" id="eyebrow">Bearish reversal · 3 candles</div>
+      <h1 id="title">Three Black Crows</h1>
+      <p class="thesis" id="thesis">Three consecutive strong down days, each opening within the previous body and closing near its low. Sustained selling across three sessions rather than one bad day.</p>
+    </div>
+
+    <figure class="scope" id="scope">
+      <svg id="chart" viewBox="0 0 300 200" role="img" aria-labelledby="chartLabel"></svg>
+      <figcaption class="scope-cap">
+        <strong id="chartLabel">Textbook shape</strong>
+        <button type="button" class="scope-reset" id="reset" hidden>Show textbook</button>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="band-head">
+      <h2>On the tape</h2>
+      <span class="stamp" id="stamp">Loading…</span>
+    </div>
+    <div id="tape"></div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap cols">
+    <div>
+      <h3>How to read it</h3>
+      <p>Each candle should have a substantial real body and a short lower wick, showing sellers held their ground into every close. Each open should sit inside the previous body — a series of gaps down is a different and usually more panicked thing.</p>
+      <p>After an advance or an extended flat stretch, it is among the more convincing bearish formations, because three days of consistent supply is difficult to produce by accident.</p>
+      <p>Compare the bodies. Roughly equal sizes suggest steady distribution; each one shrinking suggests the selling is already exhausting itself.</p>
+    </div>
+    <div>
+      <h3>When it fails</h3>
+      <p>The main risk is arriving late. After three heavy days a stock is frequently oversold, and the pattern often marks a short-term bounce point rather than the start of a decline.</p>
+      <p>During market-wide corrections it appears across most of the index at once and says nothing about any individual company.</p>
+      <p>Shrinking bodies with lengthening lower wicks across the three days signal exhaustion rather than continuation — often the last leg of a fall rather than the first.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="band-head"><h2>Related patterns</h2></div>
+    <ul class="chips">
+      <li><a href="/candlestick-patterns/three-white-soldiers">Three White Soldiers</a></li>
+      <li><a href="/candlestick-patterns/bearish-engulfing">Bearish Engulfing</a></li>
+      <li><a href="/candlestick-patterns/evening-star">Evening Star</a></li>
+      <li><a href="/candlestick-patterns/marubozu">Marubozu</a></li>
+      <li><a href="/candlestick-patterns/shooting-star">Shooting Star</a></li>
+      <li><a href="/candlestick-patterns">All 16 patterns</a></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="disclaimer">MoneyVeda publishes this scan for education and research. It is not
+      investment advice, and no stock listed here is a recommendation to buy or sell. Pattern
+      detection is automated and does not account for corporate actions, news flow, or your
+      circumstances. Consult a SEBI-registered investment adviser before trading. Data from the
+      most recent completed NSE session.</p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   Per-pattern config — this is the only block to edit when
+   copying this file to another pattern page.
+   ============================================================ */
+const PATTERN = {
+  slug: "three-black-crows",
+  feed: "/data/candlestick/three-black-crows.json",
+  direction: "bearish",
+  // Idealised shape for Three Black Crows.
+  textbook: [
+    {d:"", o:90, h:96, l:89, c:95},
+    {d:"", o:96, h:102, l:95, c:101},
+    {d:"", o:101, h:102, l:95, c:96},
+    {d:"", o:97, h:98, l:91, c:92},
+    {d:"", o:93, h:94, l:87, c:88}
+  ]
+};
+
+const BULL="#4ade80", BEAR="#f87171";
+const svg = document.getElementById("chart");
+const chartLabel = document.getElementById("chartLabel");
+const resetBtn = document.getElementById("reset");
+
+/* --- draw OHLC bars as real candles --- */
+function draw(bars){
+  const W=300,H=200,padX=18,padY=16;
+  const highs=bars.map(b=>b.h), lows=bars.map(b=>b.l);
+  const hi=Math.max(...highs), lo=Math.min(...lows);
+  const span=(hi-lo)||1, pad=span*0.08;
+  const y=v=>padY+(hi+pad-v)/(span+pad*2)*(H-padY*2);
+  const slot=(W-padX*2)/bars.length;
+  const bw=Math.min(slot*0.56,30);
+
+  svg.innerHTML = bars.map((b,i)=>{
+    const cx=padX+slot*i+slot/2;
+    const up=b.c>=b.o;
+    const col=up?BULL:BEAR;
+    const top=y(Math.max(b.o,b.c));
+    const bh=Math.max(Math.abs(y(b.o)-y(b.c)),1.5);
+    return `<g class="candle">
+      <line x1="${cx}" x2="${cx}" y1="${y(b.h)}" y2="${y(b.l)}" stroke="${col}" stroke-width="1.4"/>
+      <rect x="${cx-bw/2}" y="${top}" width="${bw}" height="${bh}"
+            fill="${up?col:'none'}" stroke="${col}" stroke-width="1.4"/>
+    </g>`;
+  }).join("");
+}
+
+function showTextbook(){
+  draw(PATTERN.textbook);
+  chartLabel.textContent="Textbook shape";
+  resetBtn.hidden=true;
+  document.querySelectorAll('.tape tbody tr[aria-selected="true"]')
+          .forEach(r=>r.setAttribute("aria-selected","false"));
+}
+showTextbook();
+resetBtn.addEventListener("click", showTextbook);
+
+/* --- render the live scan --- */
+const fmt=n=>n.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function renderTape(data){
+  const tape=document.getElementById("tape");
+  document.getElementById("stamp").textContent=
+    `NSE close · ${new Date(data.session_date+"T00:00:00").toLocaleDateString("en-IN",
+      {day:"numeric",month:"short",year:"numeric"})}`;
+
+  if(!data.signals.length){
+    tape.innerHTML=`<div class="note">
+      <p>No Nifty 50 stock formed a ${data.pattern_name.toLowerCase()} in this session.</p>
+      <p>The scan runs after every close. Browse the other patterns above, or check back tomorrow evening.</p>
+    </div>`;
+    return;
+  }
+
+  const rows=data.signals.map((s,i)=>`
+    <tr tabindex="0" role="button" aria-selected="false" data-i="${i}">
+      <td>${s.symbol}</td>
+      <td>${fmt(s.close)}</td>
+      <td class="${s.change_pct>=0?"up":"down"}">${s.change_pct>=0?"+":""}${s.change_pct.toFixed(2)}%</td>
+      <td>${s.volume_ratio.toFixed(2)}×</td>
+      <td>${s.rsi14??"—"}</td>
+      <td><span class="tag${s.volume_confirmed?"":" weak"}">${s.volume_confirmed?"Confirmed":"Thin"}</span></td>
+    </tr>`).join("");
+
+  tape.innerHTML=`<table class="tape">
+    <caption>${data.count} ${data.count===1?"stock":"stocks"} in the Nifty 50 formed this pattern.
+      Select a row to see its actual candles.</caption>
+    <thead><tr>
+      <th scope="col">Stock</th><th scope="col">Close ₹</th><th scope="col">Change</th>
+      <th scope="col">Vol vs 20d</th><th scope="col">RSI 14</th><th scope="col">Volume</th>
+    </tr></thead><tbody>${rows}</tbody></table>`;
+
+  const select=tr=>{
+    const s=data.signals[+tr.dataset.i];
+    tape.querySelectorAll('tr[aria-selected="true"]').forEach(r=>r.setAttribute("aria-selected","false"));
+    tr.setAttribute("aria-selected","true");
+    draw(s.bars);
+    chartLabel.textContent=`${s.symbol} · ${s.bars[0].d}–${s.bars[4].d}`;
+    resetBtn.hidden=false;
+  };
+  tape.querySelectorAll("tbody tr").forEach(tr=>{
+    tr.addEventListener("click",()=>select(tr));
+    tr.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();select(tr);}
+    });
+  });
+}
+
+fetch(PATTERN.feed,{cache:"no-cache"})
+  .then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
+  .then(renderTape)
+  .catch(()=>{
+    document.getElementById("stamp").textContent="Scan unavailable";
+    document.getElementById("tape").innerHTML=`<div class="note">
+      <p>Today's scan could not be loaded.</p>
+      <p>The explainer above is unaffected. Reload in a few minutes, or view the
+      <a href="/candlestick-patterns">full pattern index</a>.</p></div>`;
+  });
+</script>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Article",
+  "headline":"Three Black Crows Pattern — Nifty Stocks Showing It Today",
+  "about":{"@type":"Thing","name":"Three Black Crows candlestick pattern"},
+  "publisher":{"@type":"Organization","name":"MoneyVeda","url":"https://www.moneyveda.org/"},
+  "mainEntityOfPage":"https://www.moneyveda.org/candlestick-patterns/three-black-crows"
+}
+</script>
+</body>
+</html>
