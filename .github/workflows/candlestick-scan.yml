@@ -5,6 +5,13 @@ on:
     # 11:15 UTC = 16:45 IST — 75 min after NSE close, so EOD data has settled.
     - cron: "15 11 * * 1-5"
   workflow_dispatch:        # manual run button, useful for first deploy
+    inputs:
+      universe:
+        description: "Universe to scan"
+        required: false
+        default: "nifty500"
+        type: choice
+        options: [nifty50, nifty100, nifty200, nifty500]
 
 permissions:
   contents: write
@@ -16,7 +23,7 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -31,19 +38,37 @@ jobs:
           python -m pip install --upgrade pip
           # TA-Lib >=0.6.5 ships manylinux wheels with the C library bundled,
           # so no apt-get / autotools build step is needed.
-          pip install "TA-Lib>=0.6.5" yfinance pandas numpy
+          pip install "TA-Lib>=0.6.5" yfinance pandas numpy requests
 
       - name: Run scanner
+        env:
+          # Widen or narrow here. The symbol list itself comes from
+          # data/universe/<name>.csv — NSE blocks datacenter IPs, so the
+          # committed CSV is the primary source, not the live fetch.
+          UNIVERSE: ${{ inputs.universe || 'nifty500' }}
+          MIN_TURNOVER: "20000000"      # Rs 2 crore median daily turnover
         run: python scripts/scan_candlesticks.py
 
       - name: Commit results
         run: |
           git config user.name  "moneyveda-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/candlestick/
+          git add data/candlestick/ data/universe/
           if git diff --staged --quiet; then
             echo "No change (market holiday or identical signals) — skipping commit."
-          else
-            git commit -m "chore(scan): candlestick signals $(date -u +%Y-%m-%d)"
-            git push
+            exit 0
           fi
+          git commit -m "chore(scan): candlestick signals $(date -u +%Y-%m-%d)"
+          # Other scheduled workflows (sitemap, commentary) also push to main.
+          # Rebase and retry so a concurrent push doesn't silently fail the run.
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              echo "Pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "Push rejected — rebasing and retrying ($attempt/5)."
+            git pull --rebase --autostash origin main || exit 1
+            sleep $((attempt * 5))
+          done
+          echo "::error::Could not push after 5 attempts."
+          exit 1
