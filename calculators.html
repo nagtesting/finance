@@ -5398,5 +5398,131 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </div>
 
+<footer class="mv-footer">
+  <div class="mv-footer-inner">
+
+    <div class="mv-footer-brand">
+      <div class="mv-footer-logo">MONEY<span>VEDA</span></div>
+      <p class="mv-footer-blurb">
+        Indian markets in plain English. Daily Nifty commentary, a candlestick pattern
+        scan across NSE stocks, and financial calculators built for Indian tax and
+        investment rules. Free, no signup, no ads.
+      </p>
+      <div class="mv-footer-badges">
+        <span class="mv-badge">🇮🇳 Built for India</span>
+        <span class="mv-badge">Free · No login</span>
+        <span class="mv-badge">No ads</span>
+      </div>
+    </div>
+
+    <nav class="mv-footer-cols" aria-label="Footer">
+      <div class="mv-col">
+        <h3>Markets</h3>
+        <a href="/">Market Pulse — daily commentary</a>
+        <a href="/candlestick-patterns">Chart Patterns — daily scan</a>
+        <a href="/accuracy-dashboard">Accuracy Dashboard</a>
+      </div>
+
+      <div class="mv-col">
+        <h3>Chart Patterns</h3>
+        <a href="/candlestick-patterns/bullish-engulfing">Bullish Engulfing</a>
+        <a href="/candlestick-patterns/hammer">Hammer</a>
+        <a href="/candlestick-patterns/doji">Doji</a>
+        <a href="/candlestick-patterns/shooting-star">Shooting Star</a>
+        <a href="/candlestick-patterns">All 16 patterns →</a>
+      </div>
+
+      <div class="mv-col">
+        <h3>Calculators</h3>
+        <a href="/sip-calculator">SIP Calculator</a>
+        <a href="/emi-calculator">EMI Calculator</a>
+        <a href="/fire-calculator">FIRE Calculator</a>
+        <a href="/income-tax-calculator">Income Tax FY2025-26</a>
+        <a href="/calculators">All calculators →</a>
+      </div>
+
+      <div class="mv-col">
+        <h3>About</h3>
+        <a href="/about">How MoneyVeda works</a>
+        <a href="/about#method">Scan methodology</a>
+        <a href="/about#data">Data sources</a>
+        <a href="/about#limits">What this is not</a>
+      </div>
+    </nav>
+
+  </div>
+
+  <div class="mv-footer-legal">
+    <div class="mv-footer-inner">
+      <p class="mv-disclaimer">
+        <strong>Not investment advice.</strong> MoneyVeda publishes market commentary,
+        automated chart-pattern scans, and calculators for education and research only.
+        Nothing here is a recommendation to buy or sell any security, and no content is
+        provided by a SEBI-registered investment adviser. Pattern detection is automated
+        and does not account for corporate actions, news flow, or your personal
+        circumstances. Market data may be delayed or contain errors. Consult a
+        SEBI-registered adviser before making investment decisions.
+      </p>
+      <p class="mv-copyright">© <span id="mv-year">2026</span> MoneyVeda · moneyveda.org</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+.mv-footer{
+  margin-top:56px;border-top:1px solid rgba(201,168,76,.16);
+  background:linear-gradient(180deg, rgba(201,168,76,.03), transparent 40%);
+  font-family:'DM Sans',system-ui,sans-serif;
+}
+.mv-footer-inner{max-width:1080px;margin:0 auto;padding:0 24px;}
+.mv-footer > .mv-footer-inner{
+  display:grid;grid-template-columns:1.15fr 2fr;gap:48px;padding-top:44px;padding-bottom:36px;
+}
+.mv-footer-logo{
+  font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:900;
+  letter-spacing:-.6px;color:#F5F0E8;margin-bottom:12px;
+}
+.mv-footer-logo span{color:#C9A84C;}
+.mv-footer-blurb{
+  margin:0 0 16px;font-size:13.5px;line-height:1.65;color:#9090A8;max-width:44ch;
+}
+.mv-footer-badges{display:flex;flex-wrap:wrap;gap:7px;}
+.mv-badge{
+  font-size:10.5px;font-weight:600;letter-spacing:.4px;color:#9090A8;
+  border:1px solid rgba(255,255,255,.09);border-radius:100px;padding:5px 11px;
+}
+.mv-footer-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;}
+.mv-col h3{
+  font-family:'DM Mono',ui-monospace,monospace;
+  font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;
+  color:#C9A84C;margin:0 0 14px;
+}
+.mv-col a{
+  display:block;font-size:13px;line-height:1.5;color:#D8D2C5;
+  text-decoration:none;margin-bottom:9px;transition:color .18s ease;
+}
+.mv-col a:hover{color:#E8C97A;}
+.mv-footer-legal{border-top:1px solid rgba(255,255,255,.06);padding:22px 0 40px;}
+.mv-disclaimer{
+  margin:0 0 12px;font-size:11.5px;line-height:1.65;color:#6E6E80;max-width:88ch;
+}
+.mv-disclaimer strong{color:#9090A8;}
+.mv-copyright{margin:0;font-size:11.5px;color:#6E6E80;}
+@media(max-width:860px){
+  .mv-footer > .mv-footer-inner{grid-template-columns:1fr;gap:34px;}
+  .mv-footer-cols{grid-template-columns:repeat(2,1fr);gap:26px;}
+}
+@media(max-width:480px){
+  .mv-footer-inner{padding:0 16px;}
+  .mv-footer-cols{grid-template-columns:1fr 1fr;gap:22px;}
+}
+</style>
+<script>
+(function(){
+  var y=document.getElementById('mv-year');
+  if(y) y.textContent=new Date().getFullYear();
+})();
+</script>
+
 </body>
 </html>
