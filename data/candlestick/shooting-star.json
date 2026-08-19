@@ -1,71 +1,17 @@
 {
-  "session_date": "2026-08-18",
-  "generated_at": "2026-08-18T19:03:15.549757+05:30",
+  "session_date": "2026-08-19",
+  "generated_at": "2026-08-19T16:19:26.419315+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 179,
+  "total_signals": 137,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "SYRMA",
-      "tier": "BROADER",
-      "pattern": "shooting-star",
-      "pattern_name": "Shooting Star",
-      "direction": "bearish",
-      "close": 1500.1,
-      "change_pct": 2.19,
-      "volume_ratio": 1.42,
-      "volume_confirmed": true,
-      "turnover_cr": 151.9,
-      "rsi14": 63.4,
-      "atr14": 55.25,
-      "above_sma50": true,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 1494.8,
-          "h": 1514.0,
-          "l": 1465.1,
-          "c": 1473.3
-        },
-        {
-          "d": "13 Aug",
-          "o": 1481.9,
-          "h": 1500.5,
-          "l": 1451.0,
-          "c": 1467.7
-        },
-        {
-          "d": "14 Aug",
-          "o": 1480.0,
-          "h": 1506.7,
-          "l": 1452.0,
-          "c": 1465.2
-        },
-        {
-          "d": "17 Aug",
-          "o": 1477.3,
-          "h": 1503.6,
-          "l": 1458.5,
-          "c": 1467.9
-        },
-        {
-          "d": "18 Aug",
-          "o": 1489.9,
-          "h": 1521.0,
-          "l": 1488.9,
-          "c": 1500.1
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

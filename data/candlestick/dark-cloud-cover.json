@@ -1,228 +1,175 @@
 {
-  "session_date": "2026-08-18",
-  "generated_at": "2026-08-18T19:03:15.549757+05:30",
+  "session_date": "2026-08-19",
+  "generated_at": "2026-08-19T16:19:26.419315+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 179,
+  "total_signals": 137,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
-  "count": 4,
+  "count": 3,
   "truncated": false,
   "signals": [
     {
-      "symbol": "OBEROIRLTY",
+      "symbol": "MCX",
       "tier": "BROADER",
       "pattern": "dark-cloud-cover",
       "pattern_name": "Dark Cloud Cover",
       "direction": "bearish",
-      "close": 1858.0,
-      "change_pct": -3.78,
-      "volume_ratio": 4.25,
+      "close": 2973.0,
+      "change_pct": -2.2,
+      "volume_ratio": 1.42,
       "volume_confirmed": true,
-      "turnover_cr": 43.84,
-      "rsi14": 54.0,
-      "atr14": 53.74,
+      "turnover_cr": 423.36,
+      "rsi14": 60.1,
+      "atr14": 95.75,
       "above_sma50": true,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "12 Aug",
-          "o": 1790.0,
-          "h": 1799.9,
-          "l": 1764.5,
-          "c": 1799.9
-        },
-        {
           "d": "13 Aug",
-          "o": 1797.9,
-          "h": 1852.1,
-          "l": 1776.3,
-          "c": 1846.0
+          "o": 2980.5,
+          "h": 3023.7,
+          "l": 2929.0,
+          "c": 2970.0
         },
         {
           "d": "14 Aug",
-          "o": 1855.0,
-          "h": 1863.0,
-          "l": 1835.1,
-          "c": 1846.0
+          "o": 2970.0,
+          "h": 2977.4,
+          "l": 2911.5,
+          "c": 2911.5
         },
         {
           "d": "17 Aug",
-          "o": 1849.0,
-          "h": 1946.0,
-          "l": 1832.9,
-          "c": 1931.0
+          "o": 2913.1,
+          "h": 2981.0,
+          "l": 2892.1,
+          "c": 2933.1
         },
         {
           "d": "18 Aug",
-          "o": 1950.4,
-          "h": 1960.7,
-          "l": 1858.0,
-          "c": 1858.0
+          "o": 2949.9,
+          "h": 3058.0,
+          "l": 2916.0,
+          "c": 3040.0
+        },
+        {
+          "d": "19 Aug",
+          "o": 3060.0,
+          "h": 3068.0,
+          "l": 2960.1,
+          "c": 2973.0
         }
       ]
     },
     {
-      "symbol": "EIDPARRY",
+      "symbol": "LTF",
       "tier": "BROADER",
       "pattern": "dark-cloud-cover",
       "pattern_name": "Dark Cloud Cover",
       "direction": "bearish",
-      "close": 780.6,
+      "close": 315.4,
+      "change_pct": -2.98,
+      "volume_ratio": 2.9,
+      "volume_confirmed": true,
+      "turnover_cr": 130.53,
+      "rsi14": 52.3,
+      "atr14": 9.83,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "13 Aug",
+          "o": 317.2,
+          "h": 317.3,
+          "l": 313.0,
+          "c": 315.35
+        },
+        {
+          "d": "14 Aug",
+          "o": 314.9,
+          "h": 315.3,
+          "l": 306.0,
+          "c": 306.3
+        },
+        {
+          "d": "17 Aug",
+          "o": 307.0,
+          "h": 315.0,
+          "l": 304.5,
+          "c": 315.0
+        },
+        {
+          "d": "18 Aug",
+          "o": 314.0,
+          "h": 325.8,
+          "l": 307.55,
+          "c": 325.1
+        },
+        {
+          "d": "19 Aug",
+          "o": 327.0,
+          "h": 327.0,
+          "l": 312.75,
+          "c": 315.4
+        }
+      ]
+    },
+    {
+      "symbol": "GRSE",
+      "tier": "BROADER",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 2638.3,
       "change_pct": -1.45,
-      "volume_ratio": 1.99,
-      "volume_confirmed": true,
-      "turnover_cr": 18.35,
-      "rsi14": 51.4,
-      "atr14": 22.81,
-      "above_sma50": true,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "11 Aug",
-          "o": 801.05,
-          "h": 807.9,
-          "l": 783.0,
-          "c": 788.5
-        },
-        {
-          "d": "12 Aug",
-          "o": 788.0,
-          "h": 791.85,
-          "l": 759.0,
-          "c": 772.5
-        },
-        {
-          "d": "13 Aug",
-          "o": 763.0,
-          "h": 785.0,
-          "l": 763.0,
-          "c": 780.3
-        },
-        {
-          "d": "17 Aug",
-          "o": 775.45,
-          "h": 794.05,
-          "l": 774.25,
-          "c": 792.05
-        },
-        {
-          "d": "18 Aug",
-          "o": 794.45,
-          "h": 795.0,
-          "l": 772.2,
-          "c": 780.6
-        }
-      ]
-    },
-    {
-      "symbol": "JINDALSTEL",
-      "tier": "NIFTY 100",
-      "pattern": "dark-cloud-cover",
-      "pattern_name": "Dark Cloud Cover",
-      "direction": "bearish",
-      "close": 1101.5,
-      "change_pct": -1.31,
-      "volume_ratio": 0.62,
+      "volume_ratio": 0.93,
       "volume_confirmed": false,
-      "turnover_cr": 79.95,
-      "rsi14": 52.8,
-      "atr14": 24.52,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 1096.0,
-          "h": 1112.0,
-          "l": 1093.2,
-          "c": 1112.0
-        },
-        {
-          "d": "13 Aug",
-          "o": 1105.6,
-          "h": 1106.6,
-          "l": 1090.6,
-          "c": 1099.9
-        },
-        {
-          "d": "14 Aug",
-          "o": 1098.9,
-          "h": 1105.6,
-          "l": 1086.0,
-          "c": 1091.5
-        },
-        {
-          "d": "17 Aug",
-          "o": 1090.1,
-          "h": 1118.7,
-          "l": 1090.0,
-          "c": 1116.1
-        },
-        {
-          "d": "18 Aug",
-          "o": 1119.0,
-          "h": 1119.7,
-          "l": 1100.0,
-          "c": 1101.5
-        }
-      ]
-    },
-    {
-      "symbol": "ICICIAMC",
-      "tier": "BROADER",
-      "pattern": "dark-cloud-cover",
-      "pattern_name": "Dark Cloud Cover",
-      "direction": "bearish",
-      "close": 3106.0,
-      "change_pct": -0.96,
-      "volume_ratio": 0.95,
-      "volume_confirmed": false,
-      "turnover_cr": 67.3,
-      "rsi14": 47.8,
-      "atr14": 67.03,
+      "turnover_cr": 110.38,
+      "rsi14": 52.4,
+      "atr14": 68.22,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "12 Aug",
-          "o": 3028.5,
-          "h": 3083.2,
-          "l": 3020.5,
-          "c": 3074.6
-        },
-        {
           "d": "13 Aug",
-          "o": 3080.0,
-          "h": 3152.6,
-          "l": 3062.1,
-          "c": 3147.0
+          "o": 2576.4,
+          "h": 2669.9,
+          "l": 2576.4,
+          "c": 2632.3
         },
         {
           "d": "14 Aug",
-          "o": 3160.0,
-          "h": 3160.0,
-          "l": 3080.0,
-          "c": 3097.9
+          "o": 2636.0,
+          "h": 2665.7,
+          "l": 2603.7,
+          "c": 2618.6
         },
         {
           "d": "17 Aug",
-          "o": 3099.9,
-          "h": 3142.5,
-          "l": 3080.0,
-          "c": 3136.0
+          "o": 2622.0,
+          "h": 2650.0,
+          "l": 2590.0,
+          "c": 2600.1
         },
         {
           "d": "18 Aug",
-          "o": 3148.9,
-          "h": 3148.9,
-          "l": 3088.0,
-          "c": 3106.0
+          "o": 2600.0,
+          "h": 2688.0,
+          "l": 2592.9,
+          "c": 2677.0
+        },
+        {
+          "d": "19 Aug",
+          "o": 2689.0,
+          "h": 2706.0,
+          "l": 2630.0,
+          "c": 2638.3
         }
       ]
     }
