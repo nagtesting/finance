@@ -1,6 +1,6 @@
 {
   "session_date": "2026-08-19",
-  "generated_at": "2026-08-19T16:19:26.419315+05:30",
+  "generated_at": "2026-08-19T19:04:21.467654+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
@@ -78,8 +78,8 @@
       "volume_ratio": 1.26,
       "volume_confirmed": true,
       "turnover_cr": 357.96,
-      "rsi14": 61.1,
-      "atr14": 139.42,
+      "rsi14": 61.3,
+      "atr14": 139.19,
       "above_sma50": true,
       "strength": "confirmed",
       "bars": [
@@ -290,8 +290,8 @@
       "volume_ratio": 1.21,
       "volume_confirmed": true,
       "turnover_cr": 28.72,
-      "rsi14": 44.0,
-      "atr14": 16.49,
+      "rsi14": 43.8,
+      "atr14": 16.43,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
@@ -340,27 +340,27 @@
       "direction": "neutral",
       "close": 427.35,
       "change_pct": -1.98,
-      "volume_ratio": 3.15,
+      "volume_ratio": 2.94,
       "volume_confirmed": true,
-      "turnover_cr": 21.39,
-      "rsi14": 43.6,
-      "atr14": 9.73,
+      "turnover_cr": 22.71,
+      "rsi14": 42.5,
+      "atr14": 9.23,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
-        {
-          "d": "12 Aug",
-          "o": 443.0,
-          "h": 448.25,
-          "l": 441.35,
-          "c": 445.15
-        },
         {
           "d": "13 Aug",
           "o": 446.0,
           "h": 446.45,
           "l": 440.5,
           "c": 443.05
+        },
+        {
+          "d": "14 Aug",
+          "o": 444.75,
+          "h": 446.65,
+          "l": 440.9,
+          "c": 444.1
         },
         {
           "d": "17 Aug",
@@ -396,8 +396,8 @@
       "volume_ratio": 0.65,
       "volume_confirmed": false,
       "turnover_cr": 382.92,
-      "rsi14": 42.5,
-      "atr14": 32.6,
+      "rsi14": 42.1,
+      "atr14": 32.46,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -450,7 +450,7 @@
       "volume_confirmed": false,
       "turnover_cr": 319.46,
       "rsi14": 68.3,
-      "atr14": 109.61,
+      "atr14": 109.06,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
@@ -608,8 +608,8 @@
       "volume_ratio": 0.71,
       "volume_confirmed": false,
       "turnover_cr": 106.35,
-      "rsi14": 47.3,
-      "atr14": 141.12,
+      "rsi14": 47.1,
+      "atr14": 139.79,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
@@ -817,27 +817,27 @@
       "direction": "neutral",
       "close": 17.03,
       "change_pct": -1.67,
-      "volume_ratio": 0.45,
+      "volume_ratio": 0.52,
       "volume_confirmed": false,
       "turnover_cr": 59.89,
-      "rsi14": 40.0,
+      "rsi14": 39.5,
       "atr14": 0.51,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
-        {
-          "d": "12 Aug",
-          "o": 17.72,
-          "h": 17.84,
-          "l": 17.55,
-          "c": 17.73
-        },
         {
           "d": "13 Aug",
           "o": 17.8,
           "h": 17.98,
           "l": 17.45,
           "c": 17.54
+        },
+        {
+          "d": "14 Aug",
+          "o": 17.55,
+          "h": 17.9,
+          "l": 17.3,
+          "c": 17.39
         },
         {
           "d": "17 Aug",
@@ -873,8 +873,8 @@
       "volume_ratio": 0.63,
       "volume_confirmed": false,
       "turnover_cr": 39.97,
-      "rsi14": 49.5,
-      "atr14": 9.22,
+      "rsi14": 49.9,
+      "atr14": 9.17,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
