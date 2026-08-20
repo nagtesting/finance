@@ -162,6 +162,9 @@ footer{padding:26px 0 48px;border-top:1px solid rgba(255,255,255,.06);margin-top
 .tape caption{text-align:left;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted);
   padding-bottom:14px;caption-side:top}
 .tape tbody tr{cursor:pointer;transition:background .2s ease}
+.mvc-open{font:inherit;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:5px;padding:1px 6px;margin-left:6px;cursor:pointer;font-size:11px;opacity:.6}
+.mvc-open:hover{opacity:1;border-color:var(--gold)}
 .tape tbody tr:hover,.tape tbody tr:focus-within{background:rgba(255,255,255,.03)}
 .tape tbody tr[aria-selected="true"]{background:rgba(201,168,76,.07);
   box-shadow:inset 3px 0 0 var(--gold)}
@@ -345,7 +348,7 @@ function renderTape(data){
 
   const rows=data.signals.map((s,i)=>`
     <tr tabindex="0" role="button" aria-selected="false" data-i="${i}">
-      <td>${s.symbol}</td>
+      <td>${s.symbol} <button type="button" class="mvc-open" data-sym="${s.symbol}" data-pat="${PATTERN.slug}" title="Open full chart">📈</button></td>
       <td>${fmt(s.close)}</td>
       <td class="${s.change_pct>=0?"up":"down"}">${s.change_pct>=0?"+":""}${s.change_pct.toFixed(2)}%</td>
       <td>${s.volume_ratio.toFixed(2)}×</td>
@@ -369,6 +372,10 @@ function renderTape(data){
     chartLabel.textContent=`${s.symbol} · ${s.bars[0].d}–${s.bars[4].d}`;
     resetBtn.hidden=false;
   };
+  tape.querySelectorAll(".mvc-open").forEach(b=>b.addEventListener("click",ev=>{
+    ev.stopPropagation();
+    if(window.mvChart) window.mvChart(b.dataset.sym,b.dataset.pat);
+  }));
   tape.querySelectorAll("tbody tr").forEach(tr=>{
     tr.addEventListener("click",()=>select(tr));
     tr.addEventListener("keydown",e=>{
@@ -399,5 +406,277 @@ fetch(PATTERN.feed,{cache:"no-cache"})
   "mainEntityOfPage":"https://www.moneyveda.org/candlestick-patterns/morning-star"
 }
 </script>
+<div class="mvc-backdrop" id="mvc" hidden>
+  <div class="mvc-modal" role="dialog" aria-modal="true" aria-labelledby="mvc-title">
+    <header class="mvc-head">
+      <div>
+        <h2 class="mvc-sym" id="mvc-title">—</h2>
+        <p class="mvc-meta" id="mvc-meta"></p>
+      </div>
+      <button class="mvc-x" id="mvc-close" aria-label="Close chart">✕</button>
+    </header>
+
+    <div class="mvc-body">
+      <div class="mvc-stats" id="mvc-stats"></div>
+      <div class="mvc-chart">
+        <svg id="mvc-svg" viewBox="0 0 760 380" preserveAspectRatio="xMidYMid meet" role="img"
+             aria-label="Daily candlestick chart"></svg>
+        <div class="mvc-tip" id="mvc-tip" hidden></div>
+      </div>
+      <div class="mvc-legend">
+        <span><i class="mvc-k mvc-up"></i>Up day</span>
+        <span><i class="mvc-k mvc-dn"></i>Down day</span>
+        <span><i class="mvc-k mvc-sma"></i>20-day average</span>
+        <span><i class="mvc-k mvc-hl"></i>Pattern candles</span>
+      </div>
+      <p class="mvc-foot" id="mvc-foot"></p>
+    </div>
+  </div>
+</div>
+
+<style>
+.mvc-backdrop{position:fixed;inset:0;z-index:9000;background:rgba(5,5,9,.82);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+.mvc-backdrop[hidden]{display:none;}
+.mvc-modal{background:#111118;border:1px solid rgba(201,168,76,.22);border-radius:16px;
+  width:min(820px,100%);max-height:92vh;overflow:auto;
+  box-shadow:0 24px 70px -20px rgba(0,0,0,.85);
+  font-family:'DM Sans',system-ui,sans-serif;color:#F5F0E8;}
+.mvc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;
+  padding:20px 22px 14px;border-bottom:1px solid rgba(255,255,255,.07);
+  position:sticky;top:0;background:#111118;z-index:2;}
+.mvc-sym{font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:900;
+  letter-spacing:-.5px;margin:0;}
+.mvc-meta{margin:5px 0 0;font-size:12px;color:#9090A8;}
+.mvc-x{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  color:#D8D2C5;width:32px;height:32px;border-radius:50%;cursor:pointer;
+  font-size:13px;line-height:1;flex:0 0 auto;transition:all .18s ease;}
+.mvc-x:hover{background:rgba(255,255,255,.11);color:#fff;}
+.mvc-body{padding:16px 22px 22px;}
+.mvc-stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.mvc-stat{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);
+  border-radius:100px;padding:6px 13px;font-family:'DM Mono',ui-monospace,monospace;
+  font-size:11.5px;color:#D8D2C5;font-feature-settings:"tnum";}
+.mvc-stat b{color:#F5F0E8;font-weight:600;}
+.mvc-stat.up b{color:#4ade80;} .mvc-stat.dn b{color:#f87171;}
+.mvc-stat.tag{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.28);color:#E8C97A;}
+.mvc-chart{position:relative;background:#0A0A0F;border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;padding:8px;}
+.mvc-chart svg{display:block;width:100%;height:auto;}
+.mvc-tip{position:absolute;pointer-events:none;background:#18181F;
+  border:1px solid rgba(201,168,76,.3);border-radius:8px;padding:9px 11px;
+  font-family:'DM Mono',ui-monospace,monospace;font-size:11px;line-height:1.65;
+  color:#F5F0E8;white-space:nowrap;z-index:5;box-shadow:0 8px 22px -8px rgba(0,0,0,.9);}
+.mvc-tip[hidden]{display:none;}
+.mvc-tip b{color:#E8C97A;}
+.mvc-legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;
+  font-size:11px;color:#6E6E80;}
+.mvc-legend span{display:inline-flex;align-items:center;gap:6px;}
+.mvc-k{width:11px;height:11px;border-radius:2px;display:inline-block;}
+.mvc-up{background:#4ade80;} .mvc-dn{background:#f87171;}
+.mvc-sma{background:#C9A84C;height:3px;border-radius:2px;}
+.mvc-hl{background:rgba(201,168,76,.22);border:1px solid #C9A84C;}
+.mvc-foot{margin:14px 0 0;font-size:11px;line-height:1.6;color:#6E6E80;}
+.mvc-loading,.mvc-error{padding:48px 0;text-align:center;
+  font-family:'DM Mono',ui-monospace,monospace;font-size:12px;color:#6E6E80;}
+@media(max-width:640px){
+  .mvc-backdrop{padding:0;align-items:flex-end;}
+  .mvc-modal{border-radius:16px 16px 0 0;max-height:94vh;}
+  .mvc-body{padding:14px 15px 20px;}
+  .mvc-head{padding:16px 16px 12px;}
+  .mvc-sym{font-size:20px;}
+}
+</style>
+
+<script>
+(function(){
+  "use strict";
+  var UP="#4ade80", DN="#f87171", GOLD="#C9A84C", GRID="rgba(255,255,255,.055)";
+  var cache={}, lastFocus=null;
+
+  var box   = document.getElementById('mvc');
+  var svg   = document.getElementById('mvc-svg');
+  var tip   = document.getElementById('mvc-tip');
+  var elSym = document.getElementById('mvc-title');
+  var elMeta= document.getElementById('mvc-meta');
+  var elStat= document.getElementById('mvc-stats');
+  var elFoot= document.getElementById('mvc-foot');
+  if(!box) return;
+
+  var fmt = function(n){ return n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); };
+  var vol = function(n){
+    if(n>=1e7) return (n/1e7).toFixed(2)+' Cr';
+    if(n>=1e5) return (n/1e5).toFixed(2)+' L';
+    if(n>=1e3) return (n/1e3).toFixed(1)+'k';
+    return String(n);
+  };
+  var nice = function(iso){
+    var d=new Date(iso+'T00:00:00');
+    return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  };
+
+  /* ── how many trailing candles the pattern occupies ── */
+  var SPAN={ "morning-star":3,"evening-star":3,"three-white-soldiers":3,"three-black-crows":3,
+             "bullish-engulfing":2,"bearish-engulfing":2,"bullish-harami":2,"bearish-harami":2,
+             "piercing-pattern":2,"dark-cloud-cover":2,
+             "hammer":1,"inverted-hammer":1,"shooting-star":1,"hanging-man":1,
+             "doji":1,"marubozu":1 };
+
+  function draw(bars, hlCount){
+    var W=760,H=380, L=8,R=62,T=12,B=26;
+    var priceH=H*0.72, volTop=priceH+16, volH=H-volTop-B;
+
+    var hi=-Infinity, lo=Infinity;
+    bars.forEach(function(b){ if(b.h>hi)hi=b.h; if(b.l<lo)lo=b.l;
+      if(b.s!==null&&b.s!==undefined){ if(b.s>hi)hi=b.s; if(b.s<lo)lo=b.s; } });
+    var pad=(hi-lo)*0.06||1; hi+=pad; lo-=pad;
+    var maxV=Math.max.apply(null,bars.map(function(b){return b.v;}))||1;
+
+    var plotW=W-L-R, slot=plotW/bars.length, bw=Math.max(Math.min(slot*0.62,11),1.6);
+    var y  = function(v){ return T+(hi-v)/(hi-lo)*(priceH-T); };
+    var yv = function(v){ return volTop+volH-(v/maxV)*volH; };
+    var cx = function(i){ return L+slot*i+slot/2; };
+
+    var out=[];
+
+    /* price gridlines + right-hand scale */
+    for(var g=0; g<=4; g++){
+      var p=hi-(hi-lo)*g/4, yy=y(p);
+      out.push('<line x1="'+L+'" x2="'+(W-R)+'" y1="'+yy+'" y2="'+yy+'" stroke="'+GRID+'" stroke-width="1"/>');
+      out.push('<text x="'+(W-R+7)+'" y="'+(yy+3.5)+'" fill="#6E6E80" font-size="10" '+
+               'font-family="DM Mono, monospace">'+fmt(p)+'</text>');
+    }
+
+    /* highlight band behind the signal candles */
+    if(hlCount>0){
+      var s0=bars.length-hlCount;
+      out.push('<rect x="'+(cx(s0)-slot/2)+'" y="'+T+'" width="'+(slot*hlCount)+'" height="'+(priceH-T)+
+               '" fill="rgba(201,168,76,.10)" stroke="'+GOLD+'" stroke-width="1" stroke-dasharray="3 3" rx="3"/>');
+    }
+
+    /* volume */
+    bars.forEach(function(b,i){
+      out.push('<rect x="'+(cx(i)-bw/2)+'" y="'+yv(b.v)+'" width="'+bw+'" height="'+(volTop+volH-yv(b.v))+
+               '" fill="'+(b.c>=b.o?UP:DN)+'" opacity=".26"/>');
+    });
+
+    /* SMA20 */
+    var seg=bars.map(function(b,i){ return (b.s===null||b.s===undefined)?null:[cx(i),y(b.s)]; })
+                .filter(Boolean);
+    if(seg.length>1){
+      out.push('<polyline points="'+seg.map(function(p){return p[0]+','+p[1];}).join(' ')+
+               '" fill="none" stroke="'+GOLD+'" stroke-width="1.5" opacity=".8"/>');
+    }
+
+    /* candles */
+    bars.forEach(function(b,i){
+      var up=b.c>=b.o, col=up?UP:DN, X=cx(i);
+      var top=y(Math.max(b.o,b.c)), h=Math.max(Math.abs(y(b.o)-y(b.c)),1.2);
+      out.push('<line x1="'+X+'" x2="'+X+'" y1="'+y(b.h)+'" y2="'+y(b.l)+'" stroke="'+col+'" stroke-width="1.1"/>');
+      out.push('<rect x="'+(X-bw/2)+'" y="'+top+'" width="'+bw+'" height="'+h+'" fill="'+
+               (up?col:'none')+'" stroke="'+col+'" stroke-width="1.1"/>');
+    });
+
+    /* date ticks */
+    [0, Math.floor(bars.length/2), bars.length-1].forEach(function(i){
+      var d=new Date(bars[i].d+'T00:00:00');
+      out.push('<text x="'+cx(i)+'" y="'+(H-8)+'" fill="#6E6E80" font-size="10" text-anchor="middle" '+
+               'font-family="DM Mono, monospace">'+
+               d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</text>');
+    });
+
+    /* invisible hover targets */
+    bars.forEach(function(b,i){
+      out.push('<rect class="mvc-hit" data-i="'+i+'" x="'+(cx(i)-slot/2)+'" y="'+T+'" width="'+slot+
+               '" height="'+(H-T-B)+'" fill="transparent"/>');
+    });
+
+    svg.innerHTML=out.join('');
+
+    svg.querySelectorAll('.mvc-hit').forEach(function(r){
+      var show=function(ev){
+        var b=bars[+r.dataset.i], host=svg.parentNode.getBoundingClientRect();
+        var pt=(ev.touches?ev.touches[0]:ev);
+        tip.innerHTML='<b>'+nice(b.d)+'</b><br>O '+fmt(b.o)+'  H '+fmt(b.h)+
+                      '<br>L '+fmt(b.l)+'  C '+fmt(b.c)+'<br>Vol '+vol(b.v);
+        tip.hidden=false;
+        var x=pt.clientX-host.left+12, y0=pt.clientY-host.top+12;
+        if(x+tip.offsetWidth>host.width) x=pt.clientX-host.left-tip.offsetWidth-12;
+        if(y0+tip.offsetHeight>host.height) y0=host.height-tip.offsetHeight-6;
+        tip.style.left=Math.max(4,x)+'px'; tip.style.top=Math.max(4,y0)+'px';
+      };
+      r.addEventListener('mousemove',show);
+      r.addEventListener('touchstart',show,{passive:true});
+      r.addEventListener('mouseleave',function(){ tip.hidden=true; });
+    });
+  }
+
+  function render(data, focusPattern){
+    var bars=data.bars, last=bars[bars.length-1], prev=bars[bars.length-2];
+    var chg=((last.c/prev.c-1)*100);
+    var pats=data.patterns||[];
+    var main=pats.filter(function(p){return p.pattern===focusPattern;})[0]||pats[0];
+
+    elSym.textContent=data.symbol;
+    elMeta.textContent='NSE · daily · last '+bars.length+' sessions · close '+nice(last.d);
+
+    var stats=[
+      '<span class="mvc-stat">Close <b>₹'+fmt(last.c)+'</b></span>',
+      '<span class="mvc-stat '+(chg>=0?'up':'dn')+'">Change <b>'+(chg>=0?'+':'')+chg.toFixed(2)+'%</b></span>',
+      '<span class="mvc-stat">Day range <b>'+fmt(last.l)+'–'+fmt(last.h)+'</b></span>',
+      '<span class="mvc-stat">Volume <b>'+vol(last.v)+'</b></span>'
+    ];
+    pats.forEach(function(p){
+      stats.push('<span class="mvc-stat tag">'+(p.dir==='bullish'?'▲':p.dir==='bearish'?'▼':'•')+
+                 ' '+p.name+'</span>');
+    });
+    elStat.innerHTML=stats.join('');
+
+    draw(bars, main?(SPAN[main.pattern]||1):0);
+
+    elFoot.innerHTML = main
+      ? 'The dashed gold box marks the '+main.name.toLowerCase()+' the scan detected at the last close. '+
+        'Unadjusted prices — a stock trading ex-dividend or ex-split can show a gap that is not a real move. '+
+        'Educational only, not investment advice.'
+      : 'Unadjusted daily prices. Educational only, not investment advice.';
+  }
+
+  function open(symbol, pattern){
+    lastFocus=document.activeElement;
+    box.hidden=false;
+    document.body.style.overflow='hidden';
+    document.getElementById('mvc-close').focus();
+    elSym.textContent=symbol; elMeta.textContent=''; elStat.innerHTML=''; elFoot.textContent='';
+    tip.hidden=true;
+    svg.innerHTML='<text x="380" y="190" fill="#6E6E80" font-size="13" text-anchor="middle" '+
+                  'font-family="DM Mono, monospace">Loading chart…</text>';
+
+    if(cache[symbol]){ render(cache[symbol],pattern); return; }
+    fetch('/data/candlestick/charts/'+encodeURIComponent(symbol)+'.json',{cache:'no-cache'})
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(d){ cache[symbol]=d; render(d,pattern); })
+      .catch(function(){
+        svg.innerHTML='<text x="380" y="180" fill="#6E6E80" font-size="13" text-anchor="middle" '+
+          'font-family="DM Mono, monospace">Chart data unavailable for '+symbol+'.</text>'+
+          '<text x="380" y="204" fill="#6E6E80" font-size="11" text-anchor="middle" '+
+          'font-family="DM Mono, monospace">It may not have been in the latest scan.</text>';
+      });
+  }
+
+  function close(){
+    box.hidden=true; tip.hidden=true;
+    document.body.style.overflow='';
+    if(lastFocus&&lastFocus.focus) lastFocus.focus();
+  }
+
+  document.getElementById('mvc-close').addEventListener('click',close);
+  box.addEventListener('click',function(e){ if(e.target===box) close(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!box.hidden) close(); });
+
+  window.mvChart=open;
+})();
+</script>
+
 </body>
 </html>
