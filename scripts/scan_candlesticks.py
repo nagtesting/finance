@@ -42,6 +42,7 @@ MIN_BARS = 60                # skip symbols with insufficient history
 VOLUME_CONFIRM_MULT = 1.2    # day's volume vs its 20-day average
 CHUNK_SIZE = 60              # symbols per yfinance batch
 MAX_ROWS_PER_PATTERN = 60    # cap page feeds so tables stay usable
+CHART_BARS = 70              # daily bars kept per signalled symbol for the chart modal
 
 # Liquidity floor: median daily turnover (close x volume), in rupees.
 # This matters enormously past the Nifty 100 — on a thin counter a single
@@ -377,6 +378,44 @@ def main():
     (OUT_DIR / "latest.json").write_text(
         json.dumps({**meta, "signals": slim}, indent=2)
     )
+
+    # ── per-symbol chart history, for the in-page chart modal ──────────
+    # Only symbols that actually produced a signal, so the payload stays small
+    # and the browser fetches one small file on demand rather than a bundle.
+    chart_dir = OUT_DIR / "charts"
+    chart_dir.mkdir(parents=True, exist_ok=True)
+    signalled = {s["symbol"] for s in all_signals}
+    by_symbol = {}
+    for s in all_signals:
+        by_symbol.setdefault(s["symbol"], []).append(
+            {"pattern": s["pattern"], "name": s["pattern_name"], "dir": s["direction"]})
+
+    for sym in signalled:
+        df = data[sym].tail(CHART_BARS)
+        c = df["Close"].to_numpy(dtype=float)
+        sma20 = talib.SMA(data[sym]["Close"].to_numpy(dtype=float), timeperiod=20)[-len(df):]
+        (chart_dir / f"{sym}.json").write_text(json.dumps({
+            "symbol": sym,
+            "session_date": session_date,
+            "patterns": by_symbol[sym],
+            "bars": [
+                {"d": df.index[i].strftime("%Y-%m-%d"),
+                 "o": round(float(df["Open"].iloc[i]), 2),
+                 "h": round(float(df["High"].iloc[i]), 2),
+                 "l": round(float(df["Low"].iloc[i]), 2),
+                 "c": round(float(c[i]), 2),
+                 "v": int(df["Volume"].iloc[i]),
+                 "s": (round(float(sma20[i]), 2)
+                       if not np.isnan(sma20[i]) else None)}
+                for i in range(len(df))
+            ],
+        }, separators=(",", ":")))
+    print(f"  wrote {len(signalled)} chart files", file=sys.stderr)
+
+    # ── remove chart files for symbols no longer signalling ────────────
+    for old_file in chart_dir.glob("*.json"):
+        if old_file.stem not in signalled:
+            old_file.unlink()
 
     for _, slug, label, direction, _ in PATTERNS:
         hits = [s for s in all_signals if s["pattern"] == slug]
