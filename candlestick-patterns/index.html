@@ -6,6 +6,16 @@
 <title>Candlestick Patterns on Nifty Stocks Today | MoneyVeda</title>
 <meta name="description" content="Which candlestick patterns formed on NSE stocks in the latest NSE session — engulfing, hammer, morning star and more, with trend and volume confirmation. Free, no signup.">
 <link rel="canonical" href="https://www.moneyveda.org/candlestick-patterns">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MoneyVeda">
+<meta property="og:title" content="Candlestick Patterns on NSE Stocks Today">
+<meta property="og:description" content="Which candlestick patterns formed on NSE stocks in the latest session — filtered by trend, volume and liquidity. Free, no signup.">
+<meta property="og:url" content="https://www.moneyveda.org/candlestick-patterns">
+<meta property="og:image" content="https://www.moneyveda.org/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Candlestick Patterns on NSE Stocks Today">
+<meta name="twitter:description" content="Which candlestick patterns formed on NSE stocks in the latest session. Free, no signup.">
+<meta name="twitter:image" content="https://www.moneyveda.org/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -256,6 +266,111 @@ footer{padding:26px 0 48px;border-top:1px solid rgba(255,255,255,.06);margin-top
     </details>
     <div id="viewPattern"><ul class="board" id="board"></ul></div>
     <div id="viewStock" hidden></div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+<div class="mv-share" id="mv-share"></div>
+
+<style>
+.mv-share{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:22px 0 0;}
+.mv-share-label{font-family:'DM Mono',ui-monospace,monospace;font-size:10px;
+  letter-spacing:1.6px;text-transform:uppercase;color:#6E6E80;margin-right:2px;}
+.mv-sh{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  height:34px;padding:0 13px;border-radius:100px;cursor:pointer;text-decoration:none;
+  font-family:'DM Sans',system-ui,sans-serif;font-size:12px;font-weight:600;
+  border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);
+  color:#D8D2C5;transition:all .18s ease;white-space:nowrap;}
+.mv-sh:hover{background:rgba(255,255,255,.09);color:#F5F0E8;border-color:rgba(255,255,255,.2);}
+.mv-sh svg{width:14px;height:14px;flex:0 0 auto;}
+.mv-sh.wa:hover{background:rgba(37,211,102,.14);border-color:rgba(37,211,102,.45);color:#5ee68f;}
+.mv-sh.x:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.4);color:#fff;}
+.mv-sh.tg:hover{background:rgba(42,171,238,.14);border-color:rgba(42,171,238,.45);color:#6ec9f5;}
+.mv-sh.li:hover{background:rgba(10,102,194,.16);border-color:rgba(10,102,194,.5);color:#6ab0f3;}
+.mv-sh.cp{min-width:104px;}
+.mv-sh.cp.done{background:rgba(34,197,94,.14);border-color:rgba(34,197,94,.4);color:#4ade80;}
+.mv-sh.native{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.3);color:#E8C97A;}
+.mv-sh.native:hover{background:rgba(201,168,76,.18);border-color:#C9A84C;}
+@media(max-width:520px){
+  .mv-share-label{width:100%;margin-bottom:2px;}
+  .mv-sh{flex:1 1 auto;min-width:0;}
+}
+</style>
+
+<script>
+(function(){
+  "use strict";
+  var box=document.getElementById('mv-share');
+  if(!box) return;
+
+  var url  = (document.querySelector('link[rel=canonical]')||{}).href || location.href;
+  var text = box.dataset.text || document.title.replace(/\s*\|\s*MoneyVeda\s*$/,'');
+
+  var I={
+    wa:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.7.1s-.7 1-.9 1.2c-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.6-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5s-.7-1.6-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.3 5.2 4.6 1.9.8 2.7.9 3.6.8.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3z"/><path d="M12 2A10 10 0 0 0 3.5 17.2L2 22l4.9-1.5A10 10 0 1 0 12 2zm0 18.3c-1.6 0-3.2-.4-4.5-1.3l-.3-.2-3 .9.9-2.9-.2-.3A8.3 8.3 0 1 1 12 20.3z"/></svg>',
+    x :'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7 8 8.2 12h-6.4l-5-7.3L5.9 22H2.8l7.5-8.6L2.4 2h6.6l4.5 6.6L18.9 2zm-1.1 18.2h1.7L7.3 3.7H5.5l12.3 16.5z"/></svg>',
+    tg:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 3.2 2.7 10.6c-.9.3-.9 1.6 0 1.9l4.7 1.5 1.8 5.6c.2.7 1.1.9 1.6.3l2.5-2.6 4.8 3.5c.6.4 1.4.1 1.6-.6L23.4 4.4c.2-.9-.6-1.6-1.4-1.2zM9.6 14.2l-.3 3.7-1.3-4.2 9.4-6-7.8 6.5z"/></svg>',
+    li:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.5 4.7 5.8V21h-4v-5.7c0-1.4 0-3.1-1.9-3.1s-2.2 1.5-2.2 3V21H9z"/></svg>',
+    cp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+    sh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>'
+  };
+
+  var u=encodeURIComponent(url), t=encodeURIComponent(text);
+  var links=[
+    {c:'wa', i:I.wa, n:'WhatsApp', h:'https://wa.me/?text='+encodeURIComponent(text+' '+url)},
+    {c:'x',  i:I.x,  n:'X',        h:'https://twitter.com/intent/tweet?text='+t+'&url='+u},
+    {c:'tg', i:I.tg, n:'Telegram', h:'https://t.me/share/url?url='+u+'&text='+t},
+    {c:'li', i:I.li, n:'LinkedIn', h:'https://www.linkedin.com/sharing/share-offsite/?url='+u}
+  ];
+
+  var html='<span class="mv-share-label">Share</span>';
+
+  // Native sheet first on devices that have one — it lists the user's own apps.
+  if(navigator.share){
+    html+='<button type="button" class="mv-sh native" id="mv-sh-native">'+I.sh+'Share</button>';
+  }
+  html+=links.map(function(l){
+    return '<a class="mv-sh '+l.c+'" href="'+l.h+'" target="_blank" rel="noopener noreferrer" '+
+           'aria-label="Share on '+l.n+'">'+l.i+l.n+'</a>';
+  }).join('');
+  html+='<button type="button" class="mv-sh cp" id="mv-sh-copy">'+I.cp+'Copy link</button>';
+  box.innerHTML=html;
+
+  var nat=document.getElementById('mv-sh-native');
+  if(nat){
+    nat.addEventListener('click',function(){
+      navigator.share({title:document.title,text:text,url:url}).catch(function(){});
+    });
+  }
+
+  var cp=document.getElementById('mv-sh-copy');
+  cp.addEventListener('click',function(){
+    var done=function(){
+      cp.classList.add('done'); cp.innerHTML=I.cp+'Copied';
+      setTimeout(function(){ cp.classList.remove('done'); cp.innerHTML=I.cp+'Copy link'; },1800);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done).catch(fallback);
+    } else fallback();
+    function fallback(){
+      var ta=document.createElement('textarea');
+      ta.value=url; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); done(); }catch(e){}
+      document.body.removeChild(ta);
+    }
+  });
+
+  // Let pages update the share text once live data has loaded.
+  window.mvShareText=function(newText){
+    text=newText; t=encodeURIComponent(text);
+    var a=box.querySelector('.wa'); if(a) a.href='https://wa.me/?text='+encodeURIComponent(text+' '+url);
+    a=box.querySelector('.x');  if(a) a.href='https://twitter.com/intent/tweet?text='+t+'&url='+u;
+    a=box.querySelector('.tg'); if(a) a.href='https://t.me/share/url?url='+u+'&text='+t;
+  };
+})();
+</script>
   </div>
 </section>
 
