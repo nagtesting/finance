@@ -118,6 +118,46 @@ body{margin:0;background:var(--dark);color:var(--cream);
 .tile.quiet svg{opacity:.3}
 .tile.quiet .tile-name{color:var(--muted);font-weight:500}
 
+/* --- filter + sort controls --- */
+.cs-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.cs-search{flex:1 1 190px;min-width:150px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:8px 15px;
+  color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
+.cs-search::placeholder{color:var(--muted-soft)}
+.cs-search:focus{border-color:rgba(201,168,76,.5)}
+.cs-chips{display:flex;border:1px solid rgba(255,255,255,.09);border-radius:100px;
+  overflow:hidden;background:rgba(255,255,255,.03)}
+.cs-chips button{font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:.6px;
+  padding:8px 12px;border:none;background:none;cursor:pointer;color:var(--muted);
+  white-space:nowrap;transition:all .18s ease}
+.cs-chips button[aria-pressed="true"]{background:rgba(201,168,76,.15);color:var(--gold-light)}
+.cs-chips button:hover:not([aria-pressed="true"]){color:var(--cream-dim)}
+.cs-toggle{font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:.6px;
+  padding:8px 14px;border-radius:100px;cursor:pointer;white-space:nowrap;
+  border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);
+  color:var(--muted);transition:all .18s ease}
+.cs-toggle[aria-pressed="true"]{background:rgba(34,197,94,.12);
+  border-color:rgba(34,197,94,.3);color:var(--green-soft)}
+.cs-count{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted-soft);
+  margin-left:auto;white-space:nowrap}
+.cs-hint{font-size:11.5px;line-height:1.6;color:var(--muted-soft);margin:0 0 14px;max-width:76ch}
+.cs-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cs-empty{text-align:center!important;padding:34px 10px!important;color:var(--muted)}
+.cs-linkbtn{background:none;border:none;color:var(--gold-light);cursor:pointer;
+  font:inherit;text-decoration:underline;text-underline-offset:3px}
+.volcell{font-feature-settings:"tnum";cursor:help;border-bottom:1px dotted rgba(255,255,255,.2)}
+.vol-high{color:var(--green-soft);font-weight:600}
+.vol-low{color:var(--muted)}
+.tierchip{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.5px;
+  padding:1px 5px;border-radius:3px;margin-left:6px;vertical-align:1px;
+  border:1px solid rgba(255,255,255,.12);color:var(--muted-soft)}
+.tierchip.t50{border-color:rgba(201,168,76,.35);color:var(--gold-light)}
+.tierchip.t100{border-color:rgba(255,255,255,.2);color:var(--cream-dim)}
+#cs-table th[data-key]{cursor:pointer;user-select:none;white-space:nowrap}
+#cs-table th[data-key]:hover{color:var(--cream-dim)}
+#cs-table th[aria-sort]:not([aria-sort="none"]){color:var(--gold-light)}
+.sortarrow{margin-left:5px;font-size:8px}
+
 /* --- table --- */
 .tape{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:13px;
   font-feature-settings:"tnum"}
@@ -314,22 +354,140 @@ function render(data){
 
   const sv=document.getElementById("viewStock");
   if(!sigs.length){
-    sv.innerHTML=`<div class="note"><p>No stock in the scan universe formed a tracked pattern in this
-      session.</p><p>Quiet tapes are normal. The scan runs again after the next close.</p></div>`;
+    sv.innerHTML=`<div class="note"><p>No stock in the scan universe formed a tracked pattern
+      in this session.</p><p>Quiet tapes are normal. The scan runs again after the next close.</p></div>`;
     return;
   }
-  const rows=[...sigs].sort((a,b)=>a.symbol.localeCompare(b.symbol)).map(s=>`
-    <tr><td><button type="button" class="mvc-open" data-sym="${s.symbol}" data-pat="${s.pattern}">${s.symbol} <span class="mvc-ico">📈</span></button></td>
-    <td><span class="dot ${s.direction}"></span><a href="/candlestick-patterns/${s.pattern}">${s.pattern_name}</a></td>
-    <td>${fmt(s.close)}</td>
-    <td class="${s.change_pct>=0?"up":"down"}">${s.change_pct>=0?"+":""}${s.change_pct.toFixed(2)}%</td>
-    <td>${s.rsi14??"—"}</td>
-    <td><span class="tag${s.volume_confirmed?"":" weak"}">${s.volume_confirmed?"Confirmed":"Thin"}</span></td>
-    </tr>`).join("");
-  sv.innerHTML=`<table class="tape"><thead><tr>
-    <th scope="col">Stock</th><th scope="col">Pattern</th><th scope="col">Close ₹</th>
-    <th scope="col">Change</th><th scope="col">RSI 14</th><th scope="col">Volume</th>
-    </tr></thead><tbody>${rows}</tbody></table>`;
+
+  /* ── filter + sort state ─────────────────────────────────── */
+  let q="", dir="all", tier="all", confirmedOnly=false;
+  let sortKey="symbol", sortAsc=true;
+
+  const COLS=[
+    {key:"symbol",     label:"Stock",        align:"left"},
+    {key:"pattern_name",label:"Pattern",     align:"left"},
+    {key:"close",      label:"Close ₹",      align:"right"},
+    {key:"change_pct", label:"Change",       align:"right"},
+    {key:"rsi14",      label:"RSI 14",       align:"right"},
+    {key:"volume_ratio",label:"Volume vs avg",align:"right"}
+  ];
+
+  const tiers=[...new Set(sigs.map(s=>s.tier).filter(Boolean))]
+              .sort((a,b)=>["NIFTY 50","NIFTY 100","BROADER"].indexOf(a)-["NIFTY 50","NIFTY 100","BROADER"].indexOf(b));
+
+  function match(s){
+    if(q && !(s.symbol.toLowerCase().includes(q) || s.pattern_name.toLowerCase().includes(q))) return false;
+    if(dir!=="all" && s.direction!==dir) return false;
+    if(tier!=="all" && s.tier!==tier) return false;
+    if(confirmedOnly && !s.volume_confirmed) return false;
+    return true;
+  }
+
+  function sorted(list){
+    const dirMul=sortAsc?1:-1;
+    return [...list].sort((a,b)=>{
+      let x=a[sortKey], y=b[sortKey];
+      if(x===null||x===undefined) x=-Infinity;
+      if(y===null||y===undefined) y=-Infinity;
+      if(typeof x==="string") return x.localeCompare(y)*dirMul;
+      return (x-y)*dirMul;
+    });
+  }
+
+  function volCell(s){
+    const r=s.volume_ratio;
+    const cls=s.volume_confirmed?"vol-high":"vol-low";
+    const note=s.volume_confirmed?"above its usual volume":"below its usual volume";
+    return `<span class="volcell ${cls}" title="Traded ${r.toFixed(2)}× its 20-day average volume — ${note}">`+
+           `${r.toFixed(2)}×</span>`;
+  }
+
+  function paint(){
+    const list=sorted(sigs.filter(match));
+    document.getElementById("cs-count").textContent =
+      list.length===sigs.length ? `${sigs.length} signals`
+                                : `${list.length} of ${sigs.length} signals`;
+
+    const body=document.getElementById("cs-tbody");
+    if(!list.length){
+      body.innerHTML=`<tr><td colspan="6" class="cs-empty">Nothing matches these filters.
+        <button type="button" id="cs-clear" class="cs-linkbtn">Clear all</button></td></tr>`;
+      const cb=document.getElementById("cs-clear");
+      if(cb) cb.onclick=()=>{q="";dir="all";tier="all";confirmedOnly=false;
+        document.getElementById("cs-search").value="";syncChips();paint();};
+      return;
+    }
+    body.innerHTML=list.map(s=>`
+      <tr>
+        <td><button type="button" class="mvc-open" data-sym="${s.symbol}" data-pat="${s.pattern}">${s.symbol} <span class="mvc-ico">📈</span></button>
+            ${s.tier?`<span class="tierchip t${s.tier.replace(/\D/g,"")||"0"}">${s.tier.replace("NIFTY ","N")}</span>`:""}</td>
+        <td><span class="dot ${s.direction}"></span><a href="/candlestick-patterns/${s.pattern}">${s.pattern_name}</a></td>
+        <td>${fmt(s.close)}</td>
+        <td class="${s.change_pct>=0?"up":"down"}">${s.change_pct>=0?"+":""}${s.change_pct.toFixed(2)}%</td>
+        <td>${s.rsi14??"—"}</td>
+        <td>${volCell(s)}</td>
+      </tr>`).join("");
+
+    document.querySelectorAll("#cs-table th[data-key]").forEach(th=>{
+      const on=th.dataset.key===sortKey;
+      th.setAttribute("aria-sort", on?(sortAsc?"ascending":"descending"):"none");
+      th.querySelector(".sortarrow").textContent = on ? (sortAsc?"▲":"▼") : "";
+    });
+  }
+
+  function syncChips(){
+    sv.querySelectorAll("[data-fdir]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.fdir===dir));
+    sv.querySelectorAll("[data-tier]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.tier===tier));
+    const c=sv.querySelector("#cs-conf");
+    if(c) c.setAttribute("aria-pressed",confirmedOnly);
+  }
+
+  sv.innerHTML=`
+    <div class="cs-controls">
+      <input id="cs-search" class="cs-search" type="search" placeholder="Search stock or pattern…"
+             aria-label="Search stock or pattern" autocomplete="off">
+      <div class="cs-chips" role="group" aria-label="Filter by direction">
+        <button type="button" data-fdir="all" aria-pressed="true">All</button>
+        <button type="button" data-fdir="bullish" aria-pressed="false">▲ Bullish</button>
+        <button type="button" data-fdir="bearish" aria-pressed="false">▼ Bearish</button>
+      </div>
+      <div class="cs-chips" role="group" aria-label="Filter by index">
+        <button type="button" data-tier="all" aria-pressed="true">All caps</button>
+        ${tiers.map(t=>`<button type="button" data-tier="${t}" aria-pressed="false">${t.replace("NIFTY ","Nifty ")}</button>`).join("")}
+      </div>
+      <button type="button" id="cs-conf" class="cs-toggle" aria-pressed="false">
+        Volume-backed only</button>
+      <span class="cs-count" id="cs-count"></span>
+    </div>
+    <p class="cs-hint">Volume vs avg compares the day's volume with the stock's own 20-day average.
+      Above 1.20× means the move had real participation behind it; below that, fewer people were trading
+      than usual, so the pattern carries less weight.</p>
+    <div class="cs-scroll">
+    <table class="tape" id="cs-table"><thead><tr>
+      ${COLS.map(c=>`<th scope="col" data-key="${c.key}" tabindex="0" role="button"
+         aria-sort="none">${c.label}<span class="sortarrow"></span></th>`).join("")}
+    </tr></thead><tbody id="cs-tbody"></tbody></table></div>`;
+
+  const search=document.getElementById("cs-search");
+  let deb;
+  search.addEventListener("input",()=>{clearTimeout(deb);
+    deb=setTimeout(()=>{q=search.value.trim().toLowerCase();paint();},120);});
+  sv.querySelectorAll("[data-fdir]").forEach(b=>b.addEventListener("click",()=>{
+    dir=b.dataset.fdir;syncChips();paint();}));
+  sv.querySelectorAll("[data-tier]").forEach(b=>b.addEventListener("click",()=>{
+    tier=b.dataset.tier;syncChips();paint();}));
+  document.getElementById("cs-conf").addEventListener("click",()=>{
+    confirmedOnly=!confirmedOnly;syncChips();paint();});
+  sv.querySelectorAll("#cs-table th[data-key]").forEach(th=>{
+    const go=()=>{const k=th.dataset.key;
+      if(k===sortKey) sortAsc=!sortAsc;
+      else {sortKey=k; sortAsc=(k==="symbol"||k==="pattern_name");}
+      paint();};
+    th.addEventListener("click",go);
+    th.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});
+  });
+
+  paint();
 }
 
 document.addEventListener('click',e=>{
