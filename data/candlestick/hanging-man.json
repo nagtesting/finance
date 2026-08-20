@@ -1,17 +1,71 @@
 {
   "session_date": "2026-08-20",
-  "generated_at": "2026-08-20T17:44:42.645668+05:30",
+  "generated_at": "2026-08-20T19:06:34.892424+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 165,
+  "total_signals": 166,
   "pattern": "hanging-man",
   "pattern_name": "Hanging Man",
   "direction": "bearish",
-  "count": 0,
+  "count": 1,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "POLYCAB",
+      "tier": "BROADER",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 9125.0,
+      "change_pct": -0.16,
+      "volume_ratio": 1.05,
+      "volume_confirmed": false,
+      "turnover_cr": 217.44,
+      "rsi14": 46.5,
+      "atr14": 191.68,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "14 Aug",
+          "o": 9297.0,
+          "h": 9329.0,
+          "l": 9225.0,
+          "c": 9240.0
+        },
+        {
+          "d": "17 Aug",
+          "o": 9250.0,
+          "h": 9395.0,
+          "l": 9231.0,
+          "c": 9370.0
+        },
+        {
+          "d": "18 Aug",
+          "o": 9349.5,
+          "h": 9349.5,
+          "l": 9049.0,
+          "c": 9139.0
+        },
+        {
+          "d": "19 Aug",
+          "o": 9105.0,
+          "h": 9150.0,
+          "l": 8963.5,
+          "c": 9140.0
+        },
+        {
+          "d": "20 Aug",
+          "o": 9169.0,
+          "h": 9180.0,
+          "l": 9076.5,
+          "c": 9125.0
+        }
+      ]
+    }
+  ]
 }
