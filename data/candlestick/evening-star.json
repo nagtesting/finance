@@ -1,13 +1,13 @@
 {
-  "session_date": "2026-08-19",
-  "generated_at": "2026-08-19T19:04:21.467654+05:30",
+  "session_date": "2026-08-20",
+  "generated_at": "2026-08-20T16:20:42.691819+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 137,
+  "total_signals": 165,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
@@ -15,108 +15,108 @@
   "truncated": false,
   "signals": [
     {
-      "symbol": "GPIL",
+      "symbol": "PCBL",
       "tier": "BROADER",
       "pattern": "evening-star",
       "pattern_name": "Evening Star",
       "direction": "bearish",
-      "close": 246.1,
-      "change_pct": -3.57,
-      "volume_ratio": 0.63,
+      "close": 319.85,
+      "change_pct": -2.1,
+      "volume_ratio": 0.21,
       "volume_confirmed": false,
-      "turnover_cr": 39.97,
-      "rsi14": 49.9,
-      "atr14": 9.17,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 229.98,
-          "h": 246.93,
-          "l": 229.98,
-          "c": 243.31
-        },
-        {
-          "d": "14 Aug",
-          "o": 241.63,
-          "h": 242.07,
-          "l": 233.5,
-          "c": 235.43
-        },
-        {
-          "d": "17 Aug",
-          "o": 235.43,
-          "h": 253.0,
-          "l": 232.9,
-          "c": 250.82
-        },
-        {
-          "d": "18 Aug",
-          "o": 251.01,
-          "h": 256.0,
-          "l": 248.07,
-          "c": 255.22
-        },
-        {
-          "d": "19 Aug",
-          "o": 254.0,
-          "h": 254.44,
-          "l": 245.54,
-          "c": 246.1
-        }
-      ]
-    },
-    {
-      "symbol": "TBOTEK",
-      "tier": "BROADER",
-      "pattern": "evening-star",
-      "pattern_name": "Evening Star",
-      "direction": "bearish",
-      "close": 1661.4,
-      "change_pct": -2.74,
-      "volume_ratio": 0.52,
-      "volume_confirmed": false,
-      "turnover_cr": 24.03,
-      "rsi14": 61.2,
-      "atr14": 62.25,
+      "turnover_cr": 31.86,
+      "rsi14": 49.6,
+      "atr14": 11.96,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "13 Aug",
-          "o": 1593.9,
-          "h": 1628.6,
-          "l": 1589.0,
-          "c": 1604.9
-        },
-        {
           "d": "14 Aug",
-          "o": 1606.4,
-          "h": 1662.8,
-          "l": 1600.0,
-          "c": 1633.3
+          "o": 314.8,
+          "h": 317.2,
+          "l": 308.75,
+          "c": 309.8
         },
         {
           "d": "17 Aug",
-          "o": 1645.6,
-          "h": 1707.0,
-          "l": 1613.7,
-          "c": 1700.0
+          "o": 309.9,
+          "h": 316.75,
+          "l": 308.15,
+          "c": 315.45
         },
         {
           "d": "18 Aug",
-          "o": 1720.0,
-          "h": 1725.5,
-          "l": 1671.5,
-          "c": 1708.2
+          "o": 321.0,
+          "h": 329.9,
+          "l": 317.35,
+          "c": 326.55
         },
         {
           "d": "19 Aug",
-          "o": 1715.0,
-          "h": 1732.5,
-          "l": 1647.2,
-          "c": 1661.4
+          "o": 330.0,
+          "h": 333.85,
+          "l": 324.1,
+          "c": 326.7
+        },
+        {
+          "d": "20 Aug",
+          "o": 328.0,
+          "h": 328.0,
+          "l": 318.55,
+          "c": 319.85
+        }
+      ]
+    },
+    {
+      "symbol": "SCHAEFFLER",
+      "tier": "BROADER",
+      "pattern": "evening-star",
+      "pattern_name": "Evening Star",
+      "direction": "bearish",
+      "close": 4049.3,
+      "change_pct": -1.35,
+      "volume_ratio": 0.79,
+      "volume_confirmed": false,
+      "turnover_cr": 22.81,
+      "rsi14": 45.7,
+      "atr14": 102.18,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "14 Aug",
+          "o": 4117.0,
+          "h": 4126.0,
+          "l": 4026.1,
+          "c": 4043.2
+        },
+        {
+          "d": "17 Aug",
+          "o": 4040.0,
+          "h": 4070.9,
+          "l": 4019.0,
+          "c": 4028.9
+        },
+        {
+          "d": "18 Aug",
+          "o": 4013.2,
+          "h": 4099.9,
+          "l": 4012.6,
+          "c": 4073.3
+        },
+        {
+          "d": "19 Aug",
+          "o": 4080.0,
+          "h": 4138.1,
+          "l": 4069.1,
+          "c": 4104.9
+        },
+        {
+          "d": "20 Aug",
+          "o": 4152.4,
+          "h": 4202.6,
+          "l": 4041.0,
+          "c": 4049.3
         }
       ]
     }

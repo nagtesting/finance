@@ -1,599 +1,122 @@
 {
-  "session_date": "2026-08-19",
-  "generated_at": "2026-08-19T19:04:21.467654+05:30",
+  "session_date": "2026-08-20",
+  "generated_at": "2026-08-20T16:20:42.691819+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 137,
+  "total_signals": 165,
   "pattern": "hammer",
   "pattern_name": "Hammer",
   "direction": "bullish",
-  "count": 11,
+  "count": 2,
   "truncated": false,
   "signals": [
     {
-      "symbol": "MARUTI",
+      "symbol": "APOLLOHOSP",
       "tier": "NIFTY 50",
       "pattern": "hammer",
       "pattern_name": "Hammer",
       "direction": "bullish",
-      "close": 13690.0,
-      "change_pct": -0.01,
-      "volume_ratio": 0.47,
-      "volume_confirmed": false,
-      "turnover_cr": 456.4,
-      "rsi14": 44.0,
-      "atr14": 234.69,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 13884.0,
-          "h": 13938.0,
-          "l": 13825.0,
-          "c": 13905.0
-        },
-        {
-          "d": "14 Aug",
-          "o": 13905.0,
-          "h": 13943.0,
-          "l": 13760.0,
-          "c": 13834.0
-        },
-        {
-          "d": "17 Aug",
-          "o": 13834.0,
-          "h": 13920.0,
-          "l": 13760.0,
-          "c": 13760.0
-        },
-        {
-          "d": "18 Aug",
-          "o": 13762.0,
-          "h": 13890.0,
-          "l": 13691.0,
-          "c": 13691.0
-        },
-        {
-          "d": "19 Aug",
-          "o": 13744.0,
-          "h": 13745.0,
-          "l": 13628.0,
-          "c": 13690.0
-        }
-      ]
-    },
-    {
-      "symbol": "ULTRACEMCO",
-      "tier": "NIFTY 50",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 11450.0,
-      "change_pct": -0.43,
-      "volume_ratio": 0.93,
-      "volume_confirmed": false,
-      "turnover_cr": 266.84,
-      "rsi14": 39.3,
-      "atr14": 207.31,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 11875.0,
-          "h": 11905.0,
-          "l": 11570.0,
-          "c": 11706.0
-        },
-        {
-          "d": "14 Aug",
-          "o": 11657.0,
-          "h": 11698.0,
-          "l": 11587.0,
-          "c": 11619.0
-        },
-        {
-          "d": "17 Aug",
-          "o": 11610.0,
-          "h": 11709.0,
-          "l": 11541.0,
-          "c": 11681.0
-        },
-        {
-          "d": "18 Aug",
-          "o": 11626.0,
-          "h": 11674.0,
-          "l": 11499.0,
-          "c": 11499.0
-        },
-        {
-          "d": "19 Aug",
-          "o": 11499.0,
-          "h": 11499.0,
-          "l": 11396.0,
-          "c": 11450.0
-        }
-      ]
-    },
-    {
-      "symbol": "LODHA",
-      "tier": "NIFTY 100",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 1210.0,
-      "change_pct": -0.09,
-      "volume_ratio": 0.44,
-      "volume_confirmed": false,
-      "turnover_cr": 160.38,
-      "rsi14": 53.5,
-      "atr14": 40.32,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 1209.0,
-          "h": 1244.7,
-          "l": 1200.4,
-          "c": 1232.3
-        },
-        {
-          "d": "14 Aug",
-          "o": 1237.9,
-          "h": 1254.6,
-          "l": 1227.0,
-          "c": 1243.9
-        },
-        {
-          "d": "17 Aug",
-          "o": 1243.4,
-          "h": 1254.0,
-          "l": 1220.6,
-          "c": 1254.0
-        },
-        {
-          "d": "18 Aug",
-          "o": 1254.0,
-          "h": 1260.0,
-          "l": 1211.1,
-          "c": 1211.1
-        },
-        {
-          "d": "19 Aug",
-          "o": 1217.0,
-          "h": 1220.0,
-          "l": 1195.2,
-          "c": 1210.0
-        }
-      ]
-    },
-    {
-      "symbol": "GVT&D",
-      "tier": "BROADER",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 4100.0,
-      "change_pct": -2.26,
-      "volume_ratio": 1.06,
-      "volume_confirmed": false,
-      "turnover_cr": 461.46,
-      "rsi14": 36.9,
-      "atr14": 171.05,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 4408.0,
-          "h": 4424.9,
-          "l": 4278.0,
-          "c": 4304.7
-        },
-        {
-          "d": "14 Aug",
-          "o": 4325.3,
-          "h": 4367.7,
-          "l": 4272.0,
-          "c": 4350.0
-        },
-        {
-          "d": "17 Aug",
-          "o": 4371.6,
-          "h": 4375.0,
-          "l": 4278.0,
-          "c": 4290.0
-        },
-        {
-          "d": "18 Aug",
-          "o": 4290.0,
-          "h": 4306.0,
-          "l": 4190.0,
-          "c": 4195.0
-        },
-        {
-          "d": "19 Aug",
-          "o": 4152.6,
-          "h": 4160.7,
-          "l": 4041.3,
-          "c": 4100.0
-        }
-      ]
-    },
-    {
-      "symbol": "LUPIN",
-      "tier": "BROADER",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 2225.0,
-      "change_pct": -0.31,
-      "volume_ratio": 0.68,
-      "volume_confirmed": false,
-      "turnover_cr": 227.85,
-      "rsi14": 31.4,
-      "atr14": 52.33,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Aug",
-          "o": 2286.6,
-          "h": 2287.8,
-          "l": 2249.5,
-          "c": 2281.0
-        },
-        {
-          "d": "13 Aug",
-          "o": 2268.0,
-          "h": 2278.0,
-          "l": 2250.3,
-          "c": 2250.3
-        },
-        {
-          "d": "17 Aug",
-          "o": 2231.5,
-          "h": 2266.0,
-          "l": 2220.3,
-          "c": 2259.0
-        },
-        {
-          "d": "18 Aug",
-          "o": 2255.0,
-          "h": 2255.0,
-          "l": 2220.5,
-          "c": 2232.0
-        },
-        {
-          "d": "19 Aug",
-          "o": 2230.0,
-          "h": 2230.0,
-          "l": 2202.5,
-          "c": 2225.0
-        }
-      ]
-    },
-    {
-      "symbol": "INDUSTOWER",
-      "tier": "BROADER",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 372.4,
-      "change_pct": 0.0,
-      "volume_ratio": 0.66,
-      "volume_confirmed": false,
-      "turnover_cr": 160.63,
-      "rsi14": 38.4,
-      "atr14": 9.66,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 383.4,
-          "h": 385.45,
-          "l": 380.4,
-          "c": 383.2
-        },
-        {
-          "d": "14 Aug",
-          "o": 383.15,
-          "h": 388.55,
-          "l": 379.45,
-          "c": 384.35
-        },
-        {
-          "d": "17 Aug",
-          "o": 383.8,
-          "h": 385.0,
-          "l": 378.85,
-          "c": 380.0
-        },
-        {
-          "d": "18 Aug",
-          "o": 378.8,
-          "h": 379.8,
-          "l": 371.5,
-          "c": 372.4
-        },
-        {
-          "d": "19 Aug",
-          "o": 372.4,
-          "h": 373.05,
-          "l": 368.7,
-          "c": 372.4
-        }
-      ]
-    },
-    {
-      "symbol": "GODREJPROP",
-      "tier": "BROADER",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 2007.3,
-      "change_pct": 0.5,
-      "volume_ratio": 0.62,
-      "volume_confirmed": false,
-      "turnover_cr": 115.75,
-      "rsi14": 47.3,
-      "atr14": 62.96,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 2014.6,
-          "h": 2029.1,
-          "l": 1990.0,
-          "c": 2028.0
-        },
-        {
-          "d": "14 Aug",
-          "o": 2019.0,
-          "h": 2032.2,
-          "l": 1988.2,
-          "c": 1990.0
-        },
-        {
-          "d": "17 Aug",
-          "o": 1990.0,
-          "h": 2057.0,
-          "l": 1970.9,
-          "c": 2054.0
-        },
-        {
-          "d": "18 Aug",
-          "o": 2045.1,
-          "h": 2055.2,
-          "l": 1990.1,
-          "c": 1997.4
-        },
-        {
-          "d": "19 Aug",
-          "o": 1997.4,
-          "h": 2009.8,
-          "l": 1970.0,
-          "c": 2007.3
-        }
-      ]
-    },
-    {
-      "symbol": "LLOYDSME",
-      "tier": "BROADER",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 1919.0,
-      "change_pct": -1.01,
-      "volume_ratio": 0.38,
-      "volume_confirmed": false,
-      "turnover_cr": 109.94,
-      "rsi14": 47.1,
-      "atr14": 60.24,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 1900.0,
-          "h": 1944.8,
-          "l": 1889.0,
-          "c": 1898.4
-        },
-        {
-          "d": "14 Aug",
-          "o": 1900.0,
-          "h": 1933.0,
-          "l": 1884.6,
-          "c": 1918.6
-        },
-        {
-          "d": "17 Aug",
-          "o": 1920.0,
-          "h": 1947.0,
-          "l": 1908.4,
-          "c": 1942.0
-        },
-        {
-          "d": "18 Aug",
-          "o": 1938.2,
-          "h": 1943.9,
-          "l": 1909.0,
-          "c": 1938.6
-        },
-        {
-          "d": "19 Aug",
-          "o": 1942.0,
-          "h": 1942.0,
-          "l": 1895.8,
-          "c": 1919.0
-        }
-      ]
-    },
-    {
-      "symbol": "BLUESTARCO",
-      "tier": "BROADER",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 1493.2,
-      "change_pct": 0.01,
-      "volume_ratio": 0.49,
-      "volume_confirmed": false,
-      "turnover_cr": 55.93,
-      "rsi14": 33.3,
-      "atr14": 47.85,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 1496.0,
-          "h": 1515.0,
-          "l": 1486.1,
-          "c": 1514.0
-        },
-        {
-          "d": "14 Aug",
-          "o": 1514.0,
-          "h": 1527.5,
-          "l": 1497.1,
-          "c": 1508.0
-        },
-        {
-          "d": "17 Aug",
-          "o": 1502.0,
-          "h": 1517.7,
-          "l": 1476.2,
-          "c": 1508.1
-        },
-        {
-          "d": "18 Aug",
-          "o": 1520.5,
-          "h": 1535.4,
-          "l": 1490.0,
-          "c": 1493.0
-        },
-        {
-          "d": "19 Aug",
-          "o": 1498.8,
-          "h": 1501.1,
-          "l": 1478.0,
-          "c": 1493.2
-        }
-      ]
-    },
-    {
-      "symbol": "JBMA",
-      "tier": "BROADER",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 618.65,
-      "change_pct": -0.19,
-      "volume_ratio": 0.58,
-      "volume_confirmed": false,
-      "turnover_cr": 11.58,
-      "rsi14": 33.0,
-      "atr14": 15.2,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 629.0,
-          "h": 638.75,
-          "l": 627.35,
-          "c": 632.9
-        },
-        {
-          "d": "14 Aug",
-          "o": 630.6,
-          "h": 632.9,
-          "l": 621.05,
-          "c": 622.95
-        },
-        {
-          "d": "17 Aug",
-          "o": 622.0,
-          "h": 629.75,
-          "l": 618.4,
-          "c": 621.35
-        },
-        {
-          "d": "18 Aug",
-          "o": 621.45,
-          "h": 626.55,
-          "l": 617.0,
-          "c": 619.85
-        },
-        {
-          "d": "19 Aug",
-          "o": 619.8,
-          "h": 621.15,
-          "l": 614.1,
-          "c": 618.65
-        }
-      ]
-    },
-    {
-      "symbol": "GILLETTE",
-      "tier": "BROADER",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 7505.0,
+      "close": 8735.0,
       "change_pct": -0.17,
-      "volume_ratio": 0.76,
+      "volume_ratio": 0.72,
       "volume_confirmed": false,
-      "turnover_cr": 8.9,
-      "rsi14": 35.9,
-      "atr14": 115.31,
+      "turnover_cr": 251.21,
+      "rsi14": 46.9,
+      "atr14": 168.94,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "13 Aug",
-          "o": 7585.0,
-          "h": 7639.5,
-          "l": 7577.0,
-          "c": 7595.5
-        },
-        {
           "d": "14 Aug",
-          "o": 7600.0,
-          "h": 7669.5,
-          "l": 7585.0,
-          "c": 7600.0
+          "o": 8615.0,
+          "h": 8925.0,
+          "l": 8588.5,
+          "c": 8920.5
         },
         {
           "d": "17 Aug",
-          "o": 7639.0,
-          "h": 7639.0,
-          "l": 7562.0,
-          "c": 7569.5
+          "o": 8917.5,
+          "h": 8984.0,
+          "l": 8825.5,
+          "c": 8825.5
         },
         {
           "d": "18 Aug",
-          "o": 7569.5,
-          "h": 7583.5,
-          "l": 7506.0,
-          "c": 7517.5
+          "o": 8825.5,
+          "h": 8907.0,
+          "l": 8786.5,
+          "c": 8817.0
         },
         {
           "d": "19 Aug",
-          "o": 7530.0,
-          "h": 7530.0,
-          "l": 7475.5,
-          "c": 7505.0
+          "o": 8817.0,
+          "h": 8862.5,
+          "l": 8695.5,
+          "c": 8750.0
+        },
+        {
+          "d": "20 Aug",
+          "o": 8788.0,
+          "h": 8788.0,
+          "l": 8679.5,
+          "c": 8735.0
+        }
+      ]
+    },
+    {
+      "symbol": "INDUSINDBK",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 1008.0,
+      "change_pct": -0.86,
+      "volume_ratio": 0.52,
+      "volume_confirmed": false,
+      "turnover_cr": 109.53,
+      "rsi14": 49.6,
+      "atr14": 19.31,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "14 Aug",
+          "o": 1022.5,
+          "h": 1026.6,
+          "l": 1014.2,
+          "c": 1020.8
+        },
+        {
+          "d": "17 Aug",
+          "o": 1020.0,
+          "h": 1020.0,
+          "l": 1002.5,
+          "c": 1010.6
+        },
+        {
+          "d": "18 Aug",
+          "o": 1007.0,
+          "h": 1019.5,
+          "l": 1007.0,
+          "c": 1015.0
+        },
+        {
+          "d": "19 Aug",
+          "o": 1011.9,
+          "h": 1016.7,
+          "l": 1007.6,
+          "c": 1016.7
+        },
+        {
+          "d": "20 Aug",
+          "o": 1013.0,
+          "h": 1014.5,
+          "l": 1002.0,
+          "c": 1008.0
         }
       ]
     }

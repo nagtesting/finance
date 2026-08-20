@@ -1,124 +1,17 @@
 {
-  "session_date": "2026-08-19",
-  "generated_at": "2026-08-19T19:04:21.467654+05:30",
+  "session_date": "2026-08-20",
+  "generated_at": "2026-08-20T16:20:42.691819+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 137,
+  "total_signals": 165,
   "pattern": "piercing-pattern",
   "pattern_name": "Piercing Pattern",
   "direction": "bullish",
-  "count": 2,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "UPL",
-      "tier": "BROADER",
-      "pattern": "piercing-pattern",
-      "pattern_name": "Piercing Pattern",
-      "direction": "bullish",
-      "close": 568.0,
-      "change_pct": 1.42,
-      "volume_ratio": 1.54,
-      "volume_confirmed": true,
-      "turnover_cr": 85.73,
-      "rsi14": 41.4,
-      "atr14": 12.48,
-      "above_sma50": false,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 569.9,
-          "h": 569.9,
-          "l": 563.3,
-          "c": 568.15
-        },
-        {
-          "d": "14 Aug",
-          "o": 568.2,
-          "h": 568.2,
-          "l": 558.05,
-          "c": 563.0
-        },
-        {
-          "d": "17 Aug",
-          "o": 566.0,
-          "h": 568.7,
-          "l": 561.5,
-          "c": 567.1
-        },
-        {
-          "d": "18 Aug",
-          "o": 570.0,
-          "h": 570.05,
-          "l": 560.0,
-          "c": 560.05
-        },
-        {
-          "d": "19 Aug",
-          "o": 559.2,
-          "h": 571.4,
-          "l": 557.95,
-          "c": 568.0
-        }
-      ]
-    },
-    {
-      "symbol": "KOTAKBANK",
-      "tier": "NIFTY 50",
-      "pattern": "piercing-pattern",
-      "pattern_name": "Piercing Pattern",
-      "direction": "bullish",
-      "close": 390.25,
-      "change_pct": 0.67,
-      "volume_ratio": 0.57,
-      "volume_confirmed": false,
-      "turnover_cr": 414.02,
-      "rsi14": 49.9,
-      "atr14": 6.67,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Aug",
-          "o": 390.4,
-          "h": 392.4,
-          "l": 388.55,
-          "c": 392.4
-        },
-        {
-          "d": "14 Aug",
-          "o": 393.1,
-          "h": 394.35,
-          "l": 389.85,
-          "c": 391.15
-        },
-        {
-          "d": "17 Aug",
-          "o": 389.0,
-          "h": 396.35,
-          "l": 389.0,
-          "c": 392.7
-        },
-        {
-          "d": "18 Aug",
-          "o": 391.0,
-          "h": 392.9,
-          "l": 387.65,
-          "c": 387.65
-        },
-        {
-          "d": "19 Aug",
-          "o": 387.0,
-          "h": 393.1,
-          "l": 386.75,
-          "c": 390.25
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

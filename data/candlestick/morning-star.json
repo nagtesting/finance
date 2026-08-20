@@ -1,17 +1,124 @@
 {
-  "session_date": "2026-08-19",
-  "generated_at": "2026-08-19T19:04:21.467654+05:30",
+  "session_date": "2026-08-20",
+  "generated_at": "2026-08-20T16:20:42.691819+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 137,
+  "total_signals": 165,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 0,
+  "count": 2,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "CREDITACC",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 1534.5,
+      "change_pct": 0.99,
+      "volume_ratio": 0.14,
+      "volume_confirmed": false,
+      "turnover_cr": 35.16,
+      "rsi14": 51.7,
+      "atr14": 39.71,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "14 Aug",
+          "o": 1540.0,
+          "h": 1566.9,
+          "l": 1537.0,
+          "c": 1549.4
+        },
+        {
+          "d": "17 Aug",
+          "o": 1560.0,
+          "h": 1560.0,
+          "l": 1526.4,
+          "c": 1538.6
+        },
+        {
+          "d": "18 Aug",
+          "o": 1543.3,
+          "h": 1545.0,
+          "l": 1513.9,
+          "c": 1524.6
+        },
+        {
+          "d": "19 Aug",
+          "o": 1520.0,
+          "h": 1532.5,
+          "l": 1504.0,
+          "c": 1519.4
+        },
+        {
+          "d": "20 Aug",
+          "o": 1520.0,
+          "h": 1543.0,
+          "l": 1520.0,
+          "c": 1534.5
+        }
+      ]
+    },
+    {
+      "symbol": "IDBI",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 81.74,
+      "change_pct": 1.26,
+      "volume_ratio": 0.63,
+      "volume_confirmed": false,
+      "turnover_cr": 25.38,
+      "rsi14": 43.2,
+      "atr14": 1.72,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "14 Aug",
+          "o": 82.6,
+          "h": 83.14,
+          "l": 82.1,
+          "c": 82.45
+        },
+        {
+          "d": "17 Aug",
+          "o": 82.2,
+          "h": 82.33,
+          "l": 81.41,
+          "c": 82.18
+        },
+        {
+          "d": "18 Aug",
+          "o": 82.0,
+          "h": 82.54,
+          "l": 81.0,
+          "c": 81.11
+        },
+        {
+          "d": "19 Aug",
+          "o": 81.09,
+          "h": 81.69,
+          "l": 80.5,
+          "c": 80.72
+        },
+        {
+          "d": "20 Aug",
+          "o": 81.3,
+          "h": 82.25,
+          "l": 81.16,
+          "c": 81.74
+        }
+      ]
+    }
+  ]
 }
