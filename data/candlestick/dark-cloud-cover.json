@@ -1,71 +1,17 @@
 {
-  "session_date": "2026-08-20",
-  "generated_at": "2026-08-20T19:06:34.892424+05:30",
+  "session_date": "2026-08-21",
+  "generated_at": "2026-08-21T16:21:43.595776+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 166,
+  "total_signals": 158,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "NAUKRI",
-      "tier": "BROADER",
-      "pattern": "dark-cloud-cover",
-      "pattern_name": "Dark Cloud Cover",
-      "direction": "bearish",
-      "close": 1360.9,
-      "change_pct": -1.27,
-      "volume_ratio": 0.56,
-      "volume_confirmed": false,
-      "turnover_cr": 159.28,
-      "rsi14": 68.9,
-      "atr14": 38.91,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "14 Aug",
-          "o": 1365.0,
-          "h": 1367.1,
-          "l": 1337.0,
-          "c": 1343.0
-        },
-        {
-          "d": "17 Aug",
-          "o": 1341.0,
-          "h": 1374.0,
-          "l": 1340.7,
-          "c": 1355.8
-        },
-        {
-          "d": "18 Aug",
-          "o": 1345.0,
-          "h": 1368.8,
-          "l": 1331.1,
-          "c": 1354.9
-        },
-        {
-          "d": "19 Aug",
-          "o": 1355.0,
-          "h": 1378.4,
-          "l": 1351.5,
-          "c": 1378.4
-        },
-        {
-          "d": "20 Aug",
-          "o": 1385.3,
-          "h": 1390.1,
-          "l": 1355.3,
-          "c": 1360.9
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

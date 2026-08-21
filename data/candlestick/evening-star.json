@@ -1,124 +1,17 @@
 {
-  "session_date": "2026-08-20",
-  "generated_at": "2026-08-20T19:06:34.892424+05:30",
+  "session_date": "2026-08-21",
+  "generated_at": "2026-08-21T16:21:43.595776+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 166,
+  "total_signals": 158,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
-  "count": 2,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "PCBL",
-      "tier": "BROADER",
-      "pattern": "evening-star",
-      "pattern_name": "Evening Star",
-      "direction": "bearish",
-      "close": 319.85,
-      "change_pct": -2.1,
-      "volume_ratio": 0.21,
-      "volume_confirmed": false,
-      "turnover_cr": 31.86,
-      "rsi14": 49.6,
-      "atr14": 11.98,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "14 Aug",
-          "o": 314.8,
-          "h": 317.2,
-          "l": 308.75,
-          "c": 309.8
-        },
-        {
-          "d": "17 Aug",
-          "o": 309.9,
-          "h": 316.75,
-          "l": 308.15,
-          "c": 315.45
-        },
-        {
-          "d": "18 Aug",
-          "o": 321.0,
-          "h": 329.9,
-          "l": 317.35,
-          "c": 326.55
-        },
-        {
-          "d": "19 Aug",
-          "o": 330.0,
-          "h": 333.85,
-          "l": 324.1,
-          "c": 326.7
-        },
-        {
-          "d": "20 Aug",
-          "o": 328.0,
-          "h": 328.0,
-          "l": 318.55,
-          "c": 319.85
-        }
-      ]
-    },
-    {
-      "symbol": "SCHAEFFLER",
-      "tier": "BROADER",
-      "pattern": "evening-star",
-      "pattern_name": "Evening Star",
-      "direction": "bearish",
-      "close": 4049.3,
-      "change_pct": -1.35,
-      "volume_ratio": 0.79,
-      "volume_confirmed": false,
-      "turnover_cr": 22.81,
-      "rsi14": 45.8,
-      "atr14": 102.17,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "14 Aug",
-          "o": 4117.0,
-          "h": 4126.0,
-          "l": 4026.1,
-          "c": 4043.2
-        },
-        {
-          "d": "17 Aug",
-          "o": 4040.0,
-          "h": 4070.9,
-          "l": 4019.0,
-          "c": 4028.9
-        },
-        {
-          "d": "18 Aug",
-          "o": 4013.2,
-          "h": 4099.9,
-          "l": 4012.6,
-          "c": 4073.3
-        },
-        {
-          "d": "19 Aug",
-          "o": 4080.0,
-          "h": 4138.1,
-          "l": 4069.1,
-          "c": 4104.9
-        },
-        {
-          "d": "20 Aug",
-          "o": 4152.4,
-          "h": 4202.6,
-          "l": 4041.0,
-          "c": 4049.3
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

@@ -1,69 +1,281 @@
 {
-  "session_date": "2026-08-20",
-  "generated_at": "2026-08-20T19:06:34.892424+05:30",
+  "session_date": "2026-08-21",
+  "generated_at": "2026-08-21T16:21:43.595776+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 166,
+  "total_signals": 158,
   "pattern": "hanging-man",
   "pattern_name": "Hanging Man",
   "direction": "bearish",
-  "count": 1,
+  "count": 5,
   "truncated": false,
   "signals": [
     {
-      "symbol": "POLYCAB",
+      "symbol": "RELIANCE",
+      "tier": "NIFTY 50",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 1316.0,
+      "change_pct": 0.21,
+      "volume_ratio": 0.51,
+      "volume_confirmed": false,
+      "turnover_cr": 1221.57,
+      "rsi14": 52.2,
+      "atr14": 19.53,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "17 Aug",
+          "o": 1314.0,
+          "h": 1320.8,
+          "l": 1298.1,
+          "c": 1316.0
+        },
+        {
+          "d": "18 Aug",
+          "o": 1314.0,
+          "h": 1328.6,
+          "l": 1311.2,
+          "c": 1322.0
+        },
+        {
+          "d": "19 Aug",
+          "o": 1320.3,
+          "h": 1321.6,
+          "l": 1303.5,
+          "c": 1311.0
+        },
+        {
+          "d": "20 Aug",
+          "o": 1315.5,
+          "h": 1316.5,
+          "l": 1307.0,
+          "c": 1313.2
+        },
+        {
+          "d": "21 Aug",
+          "o": 1314.0,
+          "h": 1316.0,
+          "l": 1308.0,
+          "c": 1316.0
+        }
+      ]
+    },
+    {
+      "symbol": "DIVISLAB",
+      "tier": "NIFTY 100",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 8597.0,
+      "change_pct": 0.32,
+      "volume_ratio": 0.33,
+      "volume_confirmed": false,
+      "turnover_cr": 310.04,
+      "rsi14": 73.4,
+      "atr14": 160.22,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "17 Aug",
+          "o": 8532.0,
+          "h": 8550.0,
+          "l": 8463.5,
+          "c": 8481.5
+        },
+        {
+          "d": "18 Aug",
+          "o": 8510.0,
+          "h": 8630.0,
+          "l": 8504.0,
+          "c": 8588.0
+        },
+        {
+          "d": "19 Aug",
+          "o": 8600.0,
+          "h": 8600.0,
+          "l": 8508.0,
+          "c": 8560.0
+        },
+        {
+          "d": "20 Aug",
+          "o": 8590.0,
+          "h": 8597.5,
+          "l": 8532.0,
+          "c": 8570.0
+        },
+        {
+          "d": "21 Aug",
+          "o": 8600.0,
+          "h": 8610.0,
+          "l": 8505.5,
+          "c": 8597.0
+        }
+      ]
+    },
+    {
+      "symbol": "COFORGE",
       "tier": "BROADER",
       "pattern": "hanging-man",
       "pattern_name": "Hanging Man",
       "direction": "bearish",
-      "close": 9125.0,
-      "change_pct": -0.16,
-      "volume_ratio": 1.05,
+      "close": 1891.7,
+      "change_pct": 0.52,
+      "volume_ratio": 0.58,
       "volume_confirmed": false,
-      "turnover_cr": 217.44,
-      "rsi14": 46.5,
-      "atr14": 191.68,
-      "above_sma50": false,
+      "turnover_cr": 414.17,
+      "rsi14": 72.6,
+      "atr14": 48.92,
+      "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "14 Aug",
-          "o": 9297.0,
-          "h": 9329.0,
-          "l": 9225.0,
-          "c": 9240.0
-        },
-        {
           "d": "17 Aug",
-          "o": 9250.0,
-          "h": 9395.0,
-          "l": 9231.0,
-          "c": 9370.0
+          "o": 1811.5,
+          "h": 1821.0,
+          "l": 1799.6,
+          "c": 1806.0
         },
         {
           "d": "18 Aug",
-          "o": 9349.5,
-          "h": 9349.5,
-          "l": 9049.0,
-          "c": 9139.0
+          "o": 1795.0,
+          "h": 1795.0,
+          "l": 1762.2,
+          "c": 1773.0
         },
         {
           "d": "19 Aug",
-          "o": 9105.0,
-          "h": 9150.0,
-          "l": 8963.5,
-          "c": 9140.0
+          "o": 1790.0,
+          "h": 1818.0,
+          "l": 1785.4,
+          "c": 1813.1
         },
         {
           "d": "20 Aug",
-          "o": 9169.0,
-          "h": 9180.0,
-          "l": 9076.5,
-          "c": 9125.0
+          "o": 1835.0,
+          "h": 1888.5,
+          "l": 1826.5,
+          "c": 1882.0
+        },
+        {
+          "d": "21 Aug",
+          "o": 1890.0,
+          "h": 1891.7,
+          "l": 1851.0,
+          "c": 1891.7
+        }
+      ]
+    },
+    {
+      "symbol": "HEROMOTOCO",
+      "tier": "BROADER",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 5735.0,
+      "change_pct": -0.1,
+      "volume_ratio": 0.62,
+      "volume_confirmed": false,
+      "turnover_cr": 327.94,
+      "rsi14": 64.6,
+      "atr14": 117.24,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "17 Aug",
+          "o": 5765.0,
+          "h": 5811.5,
+          "l": 5740.0,
+          "c": 5745.0
+        },
+        {
+          "d": "18 Aug",
+          "o": 5745.0,
+          "h": 5778.0,
+          "l": 5694.5,
+          "c": 5745.5
+        },
+        {
+          "d": "19 Aug",
+          "o": 5699.5,
+          "h": 5767.5,
+          "l": 5664.5,
+          "c": 5709.5
+        },
+        {
+          "d": "20 Aug",
+          "o": 5740.0,
+          "h": 5740.5,
+          "l": 5670.0,
+          "c": 5740.5
+        },
+        {
+          "d": "21 Aug",
+          "o": 5724.5,
+          "h": 5735.0,
+          "l": 5642.0,
+          "c": 5735.0
+        }
+      ]
+    },
+    {
+      "symbol": "VIJAYA",
+      "tier": "BROADER",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 1504.4,
+      "change_pct": 0.4,
+      "volume_ratio": 0.43,
+      "volume_confirmed": false,
+      "turnover_cr": 17.09,
+      "rsi14": 65.6,
+      "atr14": 50.44,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "17 Aug",
+          "o": 1469.9,
+          "h": 1515.0,
+          "l": 1466.8,
+          "c": 1506.6
+        },
+        {
+          "d": "18 Aug",
+          "o": 1505.0,
+          "h": 1521.3,
+          "l": 1491.0,
+          "c": 1497.3
+        },
+        {
+          "d": "19 Aug",
+          "o": 1490.0,
+          "h": 1505.9,
+          "l": 1482.4,
+          "c": 1490.0
+        },
+        {
+          "d": "20 Aug",
+          "o": 1495.0,
+          "h": 1509.9,
+          "l": 1486.2,
+          "c": 1498.4
+        },
+        {
+          "d": "21 Aug",
+          "o": 1505.0,
+          "h": 1510.0,
+          "l": 1470.6,
+          "c": 1504.4
         }
       ]
     }
