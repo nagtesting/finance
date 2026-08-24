@@ -1,17 +1,124 @@
 {
-  "session_date": "2026-08-21",
-  "generated_at": "2026-08-21T19:05:18.359121+05:30",
+  "session_date": "2026-08-24",
+  "generated_at": "2026-08-24T16:26:56.162207+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 158,
+  "total_signals": 164,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
-  "count": 0,
+  "count": 2,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "GODFRYPHLP",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 2100.5,
+      "change_pct": -0.78,
+      "volume_ratio": 0.23,
+      "volume_confirmed": false,
+      "turnover_cr": 68.37,
+      "rsi14": 42.4,
+      "atr14": 59.41,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "18 Aug",
+          "o": 2130.0,
+          "h": 2141.7,
+          "l": 2102.3,
+          "c": 2102.3
+        },
+        {
+          "d": "19 Aug",
+          "o": 2106.0,
+          "h": 2167.7,
+          "l": 2093.7,
+          "c": 2117.6
+        },
+        {
+          "d": "20 Aug",
+          "o": 2127.4,
+          "h": 2163.8,
+          "l": 2095.0,
+          "c": 2103.1
+        },
+        {
+          "d": "21 Aug",
+          "o": 2113.6,
+          "h": 2120.8,
+          "l": 2099.8,
+          "c": 2117.0
+        },
+        {
+          "d": "24 Aug",
+          "o": 2111.0,
+          "h": 2125.6,
+          "l": 2095.9,
+          "c": 2100.5
+        }
+      ]
+    },
+    {
+      "symbol": "SOBHA",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 1289.1,
+      "change_pct": -0.42,
+      "volume_ratio": 0.74,
+      "volume_confirmed": false,
+      "turnover_cr": 10.19,
+      "rsi14": 34.8,
+      "atr14": 35.83,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "18 Aug",
+          "o": 1328.6,
+          "h": 1329.9,
+          "l": 1301.5,
+          "c": 1308.3
+        },
+        {
+          "d": "19 Aug",
+          "o": 1319.9,
+          "h": 1319.9,
+          "l": 1268.0,
+          "c": 1274.1
+        },
+        {
+          "d": "20 Aug",
+          "o": 1289.0,
+          "h": 1308.9,
+          "l": 1275.9,
+          "c": 1303.6
+        },
+        {
+          "d": "21 Aug",
+          "o": 1314.3,
+          "h": 1314.3,
+          "l": 1288.0,
+          "c": 1294.6
+        },
+        {
+          "d": "24 Aug",
+          "o": 1286.9,
+          "h": 1313.0,
+          "l": 1285.0,
+          "c": 1289.1
+        }
+      ]
+    }
+  ]
 }

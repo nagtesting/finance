@@ -1,17 +1,71 @@
 {
-  "session_date": "2026-08-21",
-  "generated_at": "2026-08-21T19:05:18.359121+05:30",
+  "session_date": "2026-08-24",
+  "generated_at": "2026-08-24T16:26:56.162207+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 158,
+  "total_signals": 164,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 0,
+  "count": 1,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "PVRINOX",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 1231.8,
+      "change_pct": 1.23,
+      "volume_ratio": 2.12,
+      "volume_confirmed": true,
+      "turnover_cr": 37.43,
+      "rsi14": 74.2,
+      "atr14": 36.33,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "18 Aug",
+          "o": 1194.2,
+          "h": 1228.8,
+          "l": 1188.5,
+          "c": 1198.1
+        },
+        {
+          "d": "19 Aug",
+          "o": 1198.1,
+          "h": 1221.9,
+          "l": 1190.1,
+          "c": 1200.9
+        },
+        {
+          "d": "20 Aug",
+          "o": 1205.7,
+          "h": 1224.4,
+          "l": 1185.0,
+          "c": 1219.5
+        },
+        {
+          "d": "21 Aug",
+          "o": 1219.6,
+          "h": 1238.7,
+          "l": 1207.3,
+          "c": 1216.8
+        },
+        {
+          "d": "24 Aug",
+          "o": 1220.0,
+          "h": 1248.2,
+          "l": 1216.2,
+          "c": 1231.8
+        }
+      ]
+    }
+  ]
 }
