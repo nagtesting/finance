@@ -1,122 +1,69 @@
 {
-  "session_date": "2026-08-24",
-  "generated_at": "2026-08-24T16:26:56.162207+05:30",
+  "session_date": "2026-08-25",
+  "generated_at": "2026-08-25T16:23:13.363735+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 164,
+  "total_signals": 199,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
-  "count": 2,
+  "count": 1,
   "truncated": false,
   "signals": [
     {
-      "symbol": "PREMIERENE",
+      "symbol": "DCMSHRIRAM",
       "tier": "BROADER",
       "pattern": "evening-star",
       "pattern_name": "Evening Star",
       "direction": "bearish",
-      "close": 1030.0,
-      "change_pct": -2.18,
-      "volume_ratio": 0.65,
+      "close": 1052.9,
+      "change_pct": -2.7,
+      "volume_ratio": 0.32,
       "volume_confirmed": false,
-      "turnover_cr": 62.24,
-      "rsi14": 48.6,
-      "atr14": 29.17,
-      "above_sma50": false,
+      "turnover_cr": 9.76,
+      "rsi14": 55.5,
+      "atr14": 30.99,
+      "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
           "d": "18 Aug",
-          "o": 1020.0,
-          "h": 1029.9,
-          "l": 1010.6,
-          "c": 1014.7
+          "o": 1039.9,
+          "h": 1049.8,
+          "l": 1013.2,
+          "c": 1026.4
         },
         {
           "d": "19 Aug",
-          "o": 1019.5,
-          "h": 1023.3,
-          "l": 1002.0,
-          "c": 1002.0
+          "o": 1035.0,
+          "h": 1063.2,
+          "l": 1022.0,
+          "c": 1049.4
         },
         {
           "d": "20 Aug",
-          "o": 1012.9,
-          "h": 1049.6,
-          "l": 1007.5,
-          "c": 1040.0
+          "o": 1050.7,
+          "h": 1083.9,
+          "l": 1048.0,
+          "c": 1079.7
         },
         {
           "d": "21 Aug",
-          "o": 1050.0,
-          "h": 1072.4,
-          "l": 1045.7,
-          "c": 1053.0
+          "o": 1085.0,
+          "h": 1099.9,
+          "l": 1074.7,
+          "c": 1082.1
         },
         {
-          "d": "24 Aug",
-          "o": 1052.9,
-          "h": 1060.9,
-          "l": 1023.5,
-          "c": 1030.0
-        }
-      ]
-    },
-    {
-      "symbol": "TENNIND",
-      "tier": "BROADER",
-      "pattern": "evening-star",
-      "pattern_name": "Evening Star",
-      "direction": "bearish",
-      "close": 553.5,
-      "change_pct": -3.93,
-      "volume_ratio": 0.21,
-      "volume_confirmed": false,
-      "turnover_cr": 60.55,
-      "rsi14": 48.5,
-      "atr14": 17.63,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "18 Aug",
-          "o": 548.7,
-          "h": 560.0,
-          "l": 548.0,
-          "c": 550.3
-        },
-        {
-          "d": "19 Aug",
-          "o": 553.8,
-          "h": 559.7,
-          "l": 548.15,
-          "c": 556.85
-        },
-        {
-          "d": "20 Aug",
-          "o": 559.0,
-          "h": 575.0,
-          "l": 555.25,
-          "c": 568.6
-        },
-        {
-          "d": "21 Aug",
-          "o": 571.1,
-          "h": 578.9,
-          "l": 563.2,
-          "c": 576.15
-        },
-        {
-          "d": "24 Aug",
-          "o": 575.95,
-          "h": 575.95,
-          "l": 552.1,
-          "c": 553.5
+          "d": "25 Aug",
+          "o": 1070.0,
+          "h": 1075.1,
+          "l": 1050.0,
+          "c": 1052.9
         }
       ]
     }
