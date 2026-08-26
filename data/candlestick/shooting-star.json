@@ -1,69 +1,283 @@
 {
-  "session_date": "2026-08-25",
-  "generated_at": "2026-08-25T19:08:03.125268+05:30",
+  "session_date": "2026-08-26",
+  "generated_at": "2026-08-26T16:24:09.410070+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "ARE&M"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 199,
+  "total_signals": 154,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 1,
+  "count": 5,
   "truncated": false,
   "signals": [
     {
-      "symbol": "IFCI",
-      "tier": "BROADER",
+      "symbol": "UNIONBANK",
+      "tier": "NIFTY 100",
       "pattern": "shooting-star",
       "pattern_name": "Shooting Star",
       "direction": "bearish",
-      "close": 83.25,
-      "change_pct": 0.93,
-      "volume_ratio": 2.1,
+      "close": 187.52,
+      "change_pct": 0.29,
+      "volume_ratio": 1.22,
       "volume_confirmed": true,
-      "turnover_cr": 149.37,
-      "rsi14": 67.0,
-      "atr14": 2.73,
+      "turnover_cr": 169.92,
+      "rsi14": 63.3,
+      "atr14": 4.58,
       "above_sma50": true,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "19 Aug",
-          "o": 81.87,
-          "h": 84.19,
-          "l": 81.0,
-          "c": 81.68
-        },
-        {
           "d": "20 Aug",
-          "o": 82.0,
-          "h": 82.53,
-          "l": 80.37,
-          "c": 81.76
+          "o": 187.93,
+          "h": 189.46,
+          "l": 184.39,
+          "c": 184.68
         },
         {
           "d": "21 Aug",
-          "o": 81.7,
-          "h": 82.31,
-          "l": 80.57,
-          "c": 80.91
+          "o": 185.3,
+          "h": 185.3,
+          "l": 182.5,
+          "c": 183.45
         },
         {
           "d": "24 Aug",
-          "o": 81.12,
-          "h": 83.38,
-          "l": 80.7,
-          "c": 82.48
+          "o": 183.45,
+          "h": 184.7,
+          "l": 182.02,
+          "c": 183.6
         },
         {
           "d": "25 Aug",
-          "o": 82.65,
-          "h": 85.24,
-          "l": 82.41,
-          "c": 83.25
+          "o": 182.35,
+          "h": 187.33,
+          "l": 181.4,
+          "c": 186.98
+        },
+        {
+          "d": "26 Aug",
+          "o": 187.98,
+          "h": 192.33,
+          "l": 187.12,
+          "c": 187.52
+        }
+      ]
+    },
+    {
+      "symbol": "PINELABS",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 166.88,
+      "change_pct": 1.95,
+      "volume_ratio": 0.54,
+      "volume_confirmed": false,
+      "turnover_cr": 243.22,
+      "rsi14": 60.2,
+      "atr14": 6.55,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "20 Aug",
+          "o": 158.53,
+          "h": 163.7,
+          "l": 158.53,
+          "c": 159.73
+        },
+        {
+          "d": "21 Aug",
+          "o": 161.0,
+          "h": 162.39,
+          "l": 156.22,
+          "c": 156.91
+        },
+        {
+          "d": "24 Aug",
+          "o": 157.78,
+          "h": 160.19,
+          "l": 157.11,
+          "c": 157.54
+        },
+        {
+          "d": "25 Aug",
+          "o": 157.85,
+          "h": 165.95,
+          "l": 156.51,
+          "c": 163.69
+        },
+        {
+          "d": "26 Aug",
+          "o": 164.85,
+          "h": 169.39,
+          "l": 164.6,
+          "c": 166.88
+        }
+      ]
+    },
+    {
+      "symbol": "LTF",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 322.2,
+      "change_pct": 0.85,
+      "volume_ratio": 0.68,
+      "volume_confirmed": false,
+      "turnover_cr": 113.66,
+      "rsi14": 57.4,
+      "atr14": 8.76,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "20 Aug",
+          "o": 317.05,
+          "h": 320.0,
+          "l": 313.7,
+          "c": 314.75
+        },
+        {
+          "d": "21 Aug",
+          "o": 315.0,
+          "h": 319.95,
+          "l": 314.15,
+          "c": 317.15
+        },
+        {
+          "d": "24 Aug",
+          "o": 317.4,
+          "h": 324.45,
+          "l": 315.85,
+          "c": 315.85
+        },
+        {
+          "d": "25 Aug",
+          "o": 315.9,
+          "h": 320.8,
+          "l": 315.15,
+          "c": 319.5
+        },
+        {
+          "d": "26 Aug",
+          "o": 320.7,
+          "h": 327.3,
+          "l": 320.7,
+          "c": 322.2
+        }
+      ]
+    },
+    {
+      "symbol": "DEEPAKNTR",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 1776.7,
+      "change_pct": 1.47,
+      "volume_ratio": 0.77,
+      "volume_confirmed": false,
+      "turnover_cr": 62.07,
+      "rsi14": 58.5,
+      "atr14": 51.66,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "20 Aug",
+          "o": 1769.9,
+          "h": 1778.9,
+          "l": 1745.0,
+          "c": 1750.4
+        },
+        {
+          "d": "21 Aug",
+          "o": 1760.0,
+          "h": 1760.0,
+          "l": 1725.1,
+          "c": 1747.1
+        },
+        {
+          "d": "24 Aug",
+          "o": 1749.9,
+          "h": 1774.0,
+          "l": 1707.2,
+          "c": 1730.3
+        },
+        {
+          "d": "25 Aug",
+          "o": 1737.0,
+          "h": 1782.0,
+          "l": 1737.0,
+          "c": 1751.0
+        },
+        {
+          "d": "26 Aug",
+          "o": 1755.6,
+          "h": 1800.9,
+          "l": 1755.6,
+          "c": 1776.7
+        }
+      ]
+    },
+    {
+      "symbol": "IPCALAB",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 1952.4,
+      "change_pct": 1.24,
+      "volume_ratio": 0.66,
+      "volume_confirmed": false,
+      "turnover_cr": 42.86,
+      "rsi14": 68.1,
+      "atr14": 65.07,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "20 Aug",
+          "o": 1922.0,
+          "h": 1928.4,
+          "l": 1880.4,
+          "c": 1900.1
+        },
+        {
+          "d": "21 Aug",
+          "o": 1900.1,
+          "h": 1922.0,
+          "l": 1889.1,
+          "c": 1911.2
+        },
+        {
+          "d": "24 Aug",
+          "o": 1920.6,
+          "h": 1938.0,
+          "l": 1898.0,
+          "c": 1920.4
+        },
+        {
+          "d": "25 Aug",
+          "o": 1916.0,
+          "h": 1958.6,
+          "l": 1911.6,
+          "c": 1928.5
+        },
+        {
+          "d": "26 Aug",
+          "o": 1935.2,
+          "h": 1992.0,
+          "l": 1935.1,
+          "c": 1952.4
         }
       ]
     }

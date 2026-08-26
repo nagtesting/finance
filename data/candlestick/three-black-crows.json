@@ -1,13 +1,15 @@
 {
-  "session_date": "2026-08-25",
-  "generated_at": "2026-08-25T19:08:03.125268+05:30",
+  "session_date": "2026-08-26",
+  "generated_at": "2026-08-26T16:24:09.410070+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "ARE&M"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 199,
+  "total_signals": 154,
   "pattern": "three-black-crows",
   "pattern_name": "Three Black Crows",
   "direction": "bearish",

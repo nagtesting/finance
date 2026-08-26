@@ -1,17 +1,179 @@
 {
-  "session_date": "2026-08-25",
-  "generated_at": "2026-08-25T19:08:03.125268+05:30",
+  "session_date": "2026-08-26",
+  "generated_at": "2026-08-26T16:24:09.410070+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "ARE&M"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 199,
+  "total_signals": 154,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
-  "count": 0,
+  "count": 3,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "KEI",
+      "tier": "BROADER",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 5540.0,
+      "change_pct": -0.86,
+      "volume_ratio": 0.36,
+      "volume_confirmed": false,
+      "turnover_cr": 191.2,
+      "rsi14": 53.5,
+      "atr14": 150.82,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "20 Aug",
+          "o": 5720.0,
+          "h": 5779.0,
+          "l": 5643.5,
+          "c": 5675.0
+        },
+        {
+          "d": "21 Aug",
+          "o": 5700.0,
+          "h": 5744.0,
+          "l": 5492.6,
+          "c": 5527.6
+        },
+        {
+          "d": "24 Aug",
+          "o": 5549.0,
+          "h": 5550.5,
+          "l": 5450.0,
+          "c": 5494.0
+        },
+        {
+          "d": "25 Aug",
+          "o": 5496.0,
+          "h": 5590.2,
+          "l": 5482.9,
+          "c": 5588.0
+        },
+        {
+          "d": "26 Aug",
+          "o": 5600.0,
+          "h": 5615.0,
+          "l": 5465.1,
+          "c": 5540.0
+        }
+      ]
+    },
+    {
+      "symbol": "INDUSTOWER",
+      "tier": "BROADER",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 377.7,
+      "change_pct": -2.47,
+      "volume_ratio": 0.94,
+      "volume_confirmed": false,
+      "turnover_cr": 176.27,
+      "rsi14": 45.9,
+      "atr14": 9.63,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "20 Aug",
+          "o": 373.75,
+          "h": 373.85,
+          "l": 367.35,
+          "c": 368.8
+        },
+        {
+          "d": "21 Aug",
+          "o": 369.7,
+          "h": 377.75,
+          "l": 369.55,
+          "c": 375.75
+        },
+        {
+          "d": "24 Aug",
+          "o": 377.45,
+          "h": 378.05,
+          "l": 372.9,
+          "c": 374.25
+        },
+        {
+          "d": "25 Aug",
+          "o": 374.25,
+          "h": 388.6,
+          "l": 374.25,
+          "c": 387.25
+        },
+        {
+          "d": "26 Aug",
+          "o": 389.4,
+          "h": 389.4,
+          "l": 377.7,
+          "c": 377.7
+        }
+      ]
+    },
+    {
+      "symbol": "360ONE",
+      "tier": "BROADER",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 1197.2,
+      "change_pct": -1.06,
+      "volume_ratio": 0.36,
+      "volume_confirmed": false,
+      "turnover_cr": 82.18,
+      "rsi14": 58.7,
+      "atr14": 30.07,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "20 Aug",
+          "o": 1187.5,
+          "h": 1222.9,
+          "l": 1186.0,
+          "c": 1203.0
+        },
+        {
+          "d": "21 Aug",
+          "o": 1208.0,
+          "h": 1214.0,
+          "l": 1190.1,
+          "c": 1199.0
+        },
+        {
+          "d": "24 Aug",
+          "o": 1202.0,
+          "h": 1215.2,
+          "l": 1189.8,
+          "c": 1189.8
+        },
+        {
+          "d": "25 Aug",
+          "o": 1191.2,
+          "h": 1210.0,
+          "l": 1186.4,
+          "c": 1210.0
+        },
+        {
+          "d": "26 Aug",
+          "o": 1213.2,
+          "h": 1219.8,
+          "l": 1195.0,
+          "c": 1197.2
+        }
+      ]
+    }
+  ]
 }

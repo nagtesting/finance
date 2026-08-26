@@ -1,13 +1,15 @@
 {
-  "session_date": "2026-08-25",
-  "generated_at": "2026-08-25T19:08:03.125268+05:30",
+  "session_date": "2026-08-26",
+  "generated_at": "2026-08-26T16:24:09.410070+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "ARE&M"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 199,
+  "total_signals": 154,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
@@ -15,108 +17,108 @@
   "truncated": false,
   "signals": [
     {
-      "symbol": "M&MFIN",
+      "symbol": "POLYMED",
       "tier": "BROADER",
       "pattern": "inverted-hammer",
       "pattern_name": "Inverted Hammer",
       "direction": "bullish",
-      "close": 381.45,
-      "change_pct": -0.04,
-      "volume_ratio": 0.58,
+      "close": 1711.2,
+      "change_pct": -1.18,
+      "volume_ratio": 0.48,
       "volume_confirmed": false,
-      "turnover_cr": 100.37,
-      "rsi14": 52.3,
-      "atr14": 13.7,
+      "turnover_cr": 17.37,
+      "rsi14": 47.7,
+      "atr14": 60.18,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "18 Aug",
-          "o": 390.0,
-          "h": 391.0,
-          "l": 382.25,
-          "c": 386.2
-        },
-        {
-          "d": "19 Aug",
-          "o": 386.2,
-          "h": 394.45,
-          "l": 381.5,
-          "c": 389.6
-        },
-        {
           "d": "20 Aug",
-          "o": 392.0,
-          "h": 397.5,
-          "l": 379.55,
-          "c": 382.45
+          "o": 1775.0,
+          "h": 1784.8,
+          "l": 1756.0,
+          "c": 1769.6
         },
         {
           "d": "21 Aug",
-          "o": 384.9,
-          "h": 386.85,
-          "l": 379.4,
-          "c": 381.6
+          "o": 1771.0,
+          "h": 1783.8,
+          "l": 1710.0,
+          "c": 1719.4
+        },
+        {
+          "d": "24 Aug",
+          "o": 1705.0,
+          "h": 1769.9,
+          "l": 1705.0,
+          "c": 1737.2
         },
         {
           "d": "25 Aug",
-          "o": 378.7,
-          "h": 385.95,
-          "l": 377.8,
-          "c": 381.45
+          "o": 1737.1,
+          "h": 1753.0,
+          "l": 1713.0,
+          "c": 1731.7
+        },
+        {
+          "d": "26 Aug",
+          "o": 1727.4,
+          "h": 1756.9,
+          "l": 1706.4,
+          "c": 1711.2
         }
       ]
     },
     {
-      "symbol": "JUBLINGREA",
+      "symbol": "HEXT",
       "tier": "BROADER",
       "pattern": "inverted-hammer",
       "pattern_name": "Inverted Hammer",
       "direction": "bullish",
-      "close": 706.8,
-      "change_pct": -1.61,
-      "volume_ratio": 0.47,
+      "close": 554.95,
+      "change_pct": -0.35,
+      "volume_ratio": 0.14,
       "volume_confirmed": false,
-      "turnover_cr": 17.72,
-      "rsi14": 43.9,
-      "atr14": 23.68,
+      "turnover_cr": 16.27,
+      "rsi14": 49.5,
+      "atr14": 21.32,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "18 Aug",
-          "o": 733.7,
-          "h": 737.85,
-          "l": 722.75,
-          "c": 726.7
-        },
-        {
-          "d": "19 Aug",
-          "o": 732.45,
-          "h": 737.0,
-          "l": 702.0,
-          "c": 708.4
-        },
-        {
           "d": "20 Aug",
-          "o": 710.0,
-          "h": 729.5,
-          "l": 704.8,
-          "c": 720.4
+          "o": 553.05,
+          "h": 560.95,
+          "l": 541.2,
+          "c": 544.2
         },
         {
           "d": "21 Aug",
-          "o": 724.6,
-          "h": 724.6,
-          "l": 705.4,
-          "c": 718.35
+          "o": 545.0,
+          "h": 549.85,
+          "l": 530.2,
+          "c": 532.45
+        },
+        {
+          "d": "24 Aug",
+          "o": 535.85,
+          "h": 574.85,
+          "l": 535.85,
+          "c": 562.5
         },
         {
           "d": "25 Aug",
-          "o": 711.25,
-          "h": 720.8,
-          "l": 705.0,
-          "c": 706.8
+          "o": 559.4,
+          "h": 561.5,
+          "l": 548.85,
+          "c": 556.9
+        },
+        {
+          "d": "26 Aug",
+          "o": 554.1,
+          "h": 561.2,
+          "l": 552.5,
+          "c": 554.95
         }
       ]
     }
