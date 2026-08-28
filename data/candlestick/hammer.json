@@ -1,17 +1,177 @@
 {
-  "session_date": "2026-08-26",
-  "generated_at": "2026-08-26T19:12:50.839642+05:30",
+  "session_date": "2026-08-27",
+  "generated_at": "2026-08-29T02:41:59.780193+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 154,
+  "total_signals": 162,
   "pattern": "hammer",
   "pattern_name": "Hammer",
   "direction": "bullish",
-  "count": 0,
+  "count": 3,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "GODREJCP",
+      "tier": "NIFTY 100",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 923.0,
+      "change_pct": 0.02,
+      "volume_ratio": 0.51,
+      "volume_confirmed": false,
+      "turnover_cr": 128.01,
+      "rsi14": 31.5,
+      "atr14": 22.99,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "21 Aug",
+          "o": 944.4,
+          "h": 945.8,
+          "l": 928.0,
+          "c": 933.0
+        },
+        {
+          "d": "24 Aug",
+          "o": 932.5,
+          "h": 934.3,
+          "l": 918.4,
+          "c": 928.9
+        },
+        {
+          "d": "25 Aug",
+          "o": 928.9,
+          "h": 930.9,
+          "l": 918.2,
+          "c": 929.2
+        },
+        {
+          "d": "26 Aug",
+          "o": 929.2,
+          "h": 933.9,
+          "l": 922.8,
+          "c": 922.8
+        },
+        {
+          "d": "27 Aug",
+          "o": 930.0,
+          "h": 930.0,
+          "l": 912.0,
+          "c": 923.0
+        }
+      ]
+    },
+    {
+      "symbol": "BLS",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 238.07,
+      "change_pct": 0.13,
+      "volume_ratio": 0.32,
+      "volume_confirmed": false,
+      "turnover_cr": 41.94,
+      "rsi14": 38.2,
+      "atr14": 10.47,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "21 Aug",
+          "o": 275.0,
+          "h": 275.92,
+          "l": 270.0,
+          "c": 271.29
+        },
+        {
+          "d": "24 Aug",
+          "o": 272.0,
+          "h": 280.14,
+          "l": 233.47,
+          "c": 241.51
+        },
+        {
+          "d": "25 Aug",
+          "o": 243.99,
+          "h": 246.96,
+          "l": 234.51,
+          "c": 243.32
+        },
+        {
+          "d": "26 Aug",
+          "o": 244.41,
+          "h": 245.9,
+          "l": 236.2,
+          "c": 237.76
+        },
+        {
+          "d": "27 Aug",
+          "o": 239.0,
+          "h": 239.99,
+          "l": 236.95,
+          "c": 238.07
+        }
+      ]
+    },
+    {
+      "symbol": "ABREL",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 1393.4,
+      "change_pct": 0.08,
+      "volume_ratio": 0.5,
+      "volume_confirmed": false,
+      "turnover_cr": 16.09,
+      "rsi14": 48.5,
+      "atr14": 47.01,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "21 Aug",
+          "o": 1459.9,
+          "h": 1465.0,
+          "l": 1386.5,
+          "c": 1406.3
+        },
+        {
+          "d": "24 Aug",
+          "o": 1417.9,
+          "h": 1486.0,
+          "l": 1411.2,
+          "c": 1429.8
+        },
+        {
+          "d": "25 Aug",
+          "o": 1425.0,
+          "h": 1434.4,
+          "l": 1401.1,
+          "c": 1408.0
+        },
+        {
+          "d": "26 Aug",
+          "o": 1413.8,
+          "h": 1431.5,
+          "l": 1385.6,
+          "c": 1392.3
+        },
+        {
+          "d": "27 Aug",
+          "o": 1400.0,
+          "h": 1404.9,
+          "l": 1380.0,
+          "c": 1393.4
+        }
+      ]
+    }
+  ]
 }

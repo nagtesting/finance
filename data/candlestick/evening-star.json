@@ -1,17 +1,177 @@
 {
-  "session_date": "2026-08-26",
-  "generated_at": "2026-08-26T19:12:50.839642+05:30",
+  "session_date": "2026-08-27",
+  "generated_at": "2026-08-29T02:41:59.780193+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 154,
+  "total_signals": 162,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
-  "count": 0,
+  "count": 3,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "CANBK",
+      "tier": "NIFTY 100",
+      "pattern": "evening-star",
+      "pattern_name": "Evening Star",
+      "direction": "bearish",
+      "close": 128.14,
+      "change_pct": -1.01,
+      "volume_ratio": 0.73,
+      "volume_confirmed": false,
+      "turnover_cr": 169.98,
+      "rsi14": 47.7,
+      "atr14": 2.68,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "21 Aug",
+          "o": 129.6,
+          "h": 129.96,
+          "l": 128.5,
+          "c": 129.96
+        },
+        {
+          "d": "24 Aug",
+          "o": 129.62,
+          "h": 129.87,
+          "l": 126.8,
+          "c": 127.3
+        },
+        {
+          "d": "25 Aug",
+          "o": 127.23,
+          "h": 128.81,
+          "l": 126.25,
+          "c": 128.81
+        },
+        {
+          "d": "26 Aug",
+          "o": 128.95,
+          "h": 130.9,
+          "l": 128.5,
+          "c": 129.45
+        },
+        {
+          "d": "27 Aug",
+          "o": 131.43,
+          "h": 131.43,
+          "l": 127.7,
+          "c": 128.14
+        }
+      ]
+    },
+    {
+      "symbol": "UNIONBANK",
+      "tier": "NIFTY 100",
+      "pattern": "evening-star",
+      "pattern_name": "Evening Star",
+      "direction": "bearish",
+      "close": 184.5,
+      "change_pct": -1.61,
+      "volume_ratio": 0.61,
+      "volume_confirmed": false,
+      "turnover_cr": 169.92,
+      "rsi14": 56.7,
+      "atr14": 4.65,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "21 Aug",
+          "o": 185.3,
+          "h": 185.3,
+          "l": 182.5,
+          "c": 183.45
+        },
+        {
+          "d": "24 Aug",
+          "o": 183.45,
+          "h": 184.7,
+          "l": 182.02,
+          "c": 183.6
+        },
+        {
+          "d": "25 Aug",
+          "o": 182.35,
+          "h": 187.33,
+          "l": 181.4,
+          "c": 186.98
+        },
+        {
+          "d": "26 Aug",
+          "o": 187.98,
+          "h": 192.33,
+          "l": 187.12,
+          "c": 187.52
+        },
+        {
+          "d": "27 Aug",
+          "o": 189.0,
+          "h": 189.64,
+          "l": 184.08,
+          "c": 184.5
+        }
+      ]
+    },
+    {
+      "symbol": "JSWINFRA",
+      "tier": "BROADER",
+      "pattern": "evening-star",
+      "pattern_name": "Evening Star",
+      "direction": "bearish",
+      "close": 337.95,
+      "change_pct": -2.03,
+      "volume_ratio": 0.98,
+      "volume_confirmed": false,
+      "turnover_cr": 79.65,
+      "rsi14": 53.7,
+      "atr14": 9.37,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "21 Aug",
+          "o": 331.15,
+          "h": 337.7,
+          "l": 331.0,
+          "c": 335.7
+        },
+        {
+          "d": "24 Aug",
+          "o": 335.7,
+          "h": 342.85,
+          "l": 334.15,
+          "c": 340.2
+        },
+        {
+          "d": "25 Aug",
+          "o": 340.2,
+          "h": 345.5,
+          "l": 337.85,
+          "c": 343.95
+        },
+        {
+          "d": "26 Aug",
+          "o": 345.0,
+          "h": 345.9,
+          "l": 341.55,
+          "c": 344.95
+        },
+        {
+          "d": "27 Aug",
+          "o": 345.05,
+          "h": 348.0,
+          "l": 334.3,
+          "c": 337.95
+        }
+      ]
+    }
+  ]
 }

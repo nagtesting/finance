@@ -1,281 +1,175 @@
 {
-  "session_date": "2026-08-26",
-  "generated_at": "2026-08-26T19:12:50.839642+05:30",
+  "session_date": "2026-08-27",
+  "generated_at": "2026-08-29T02:41:59.780193+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 154,
+  "total_signals": 162,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 5,
+  "count": 3,
   "truncated": false,
   "signals": [
     {
-      "symbol": "UNIONBANK",
+      "symbol": "DIVISLAB",
       "tier": "NIFTY 100",
       "pattern": "shooting-star",
       "pattern_name": "Shooting Star",
       "direction": "bearish",
-      "close": 187.52,
-      "change_pct": 0.29,
-      "volume_ratio": 1.22,
-      "volume_confirmed": true,
-      "turnover_cr": 169.92,
-      "rsi14": 63.3,
-      "atr14": 4.58,
-      "above_sma50": true,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "20 Aug",
-          "o": 187.93,
-          "h": 189.46,
-          "l": 184.39,
-          "c": 184.68
-        },
-        {
-          "d": "21 Aug",
-          "o": 185.3,
-          "h": 185.3,
-          "l": 182.5,
-          "c": 183.45
-        },
-        {
-          "d": "24 Aug",
-          "o": 183.45,
-          "h": 184.7,
-          "l": 182.02,
-          "c": 183.6
-        },
-        {
-          "d": "25 Aug",
-          "o": 182.35,
-          "h": 187.33,
-          "l": 181.4,
-          "c": 186.98
-        },
-        {
-          "d": "26 Aug",
-          "o": 187.98,
-          "h": 192.33,
-          "l": 187.12,
-          "c": 187.52
-        }
-      ]
-    },
-    {
-      "symbol": "PINELABS",
-      "tier": "BROADER",
-      "pattern": "shooting-star",
-      "pattern_name": "Shooting Star",
-      "direction": "bearish",
-      "close": 166.88,
-      "change_pct": 1.95,
-      "volume_ratio": 0.54,
+      "close": 9060.0,
+      "change_pct": 0.39,
+      "volume_ratio": 1.05,
       "volume_confirmed": false,
-      "turnover_cr": 243.22,
-      "rsi14": 60.2,
-      "atr14": 6.55,
+      "turnover_cr": 303.94,
+      "rsi14": 78.6,
+      "atr14": 174.01,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "20 Aug",
-          "o": 158.53,
-          "h": 163.7,
-          "l": 158.53,
-          "c": 159.73
-        },
-        {
           "d": "21 Aug",
-          "o": 161.0,
-          "h": 162.39,
-          "l": 156.22,
-          "c": 156.91
+          "o": 8600.0,
+          "h": 8610.0,
+          "l": 8505.5,
+          "c": 8597.0
         },
         {
           "d": "24 Aug",
-          "o": 157.78,
-          "h": 160.19,
-          "l": 157.11,
-          "c": 157.54
+          "o": 8558.5,
+          "h": 8563.5,
+          "l": 8457.5,
+          "c": 8496.0
         },
         {
           "d": "25 Aug",
-          "o": 157.85,
-          "h": 165.95,
-          "l": 156.51,
-          "c": 163.69
+          "o": 8500.0,
+          "h": 8744.5,
+          "l": 8497.0,
+          "c": 8744.5
         },
         {
           "d": "26 Aug",
-          "o": 164.85,
-          "h": 169.39,
-          "l": 164.6,
-          "c": 166.88
+          "o": 8739.5,
+          "h": 9043.0,
+          "l": 8701.0,
+          "c": 9025.0
+        },
+        {
+          "d": "27 Aug",
+          "o": 9045.0,
+          "h": 9150.0,
+          "l": 9035.0,
+          "c": 9060.0
         }
       ]
     },
     {
-      "symbol": "LTF",
+      "symbol": "REDINGTON",
       "tier": "BROADER",
       "pattern": "shooting-star",
       "pattern_name": "Shooting Star",
       "direction": "bearish",
-      "close": 322.2,
-      "change_pct": 0.85,
-      "volume_ratio": 0.68,
+      "close": 358.4,
+      "change_pct": 1.19,
+      "volume_ratio": 0.28,
       "volume_confirmed": false,
-      "turnover_cr": 113.66,
-      "rsi14": 57.4,
-      "atr14": 8.76,
+      "turnover_cr": 134.24,
+      "rsi14": 65.0,
+      "atr14": 14.44,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "20 Aug",
-          "o": 317.05,
-          "h": 320.0,
-          "l": 313.7,
-          "c": 314.75
-        },
-        {
           "d": "21 Aug",
-          "o": 315.0,
-          "h": 319.95,
-          "l": 314.15,
-          "c": 317.15
+          "o": 348.45,
+          "h": 357.75,
+          "l": 340.5,
+          "c": 350.55
         },
         {
           "d": "24 Aug",
-          "o": 317.4,
-          "h": 324.45,
-          "l": 315.85,
-          "c": 315.85
+          "o": 353.05,
+          "h": 370.8,
+          "l": 352.25,
+          "c": 365.1
         },
         {
           "d": "25 Aug",
-          "o": 315.9,
-          "h": 320.8,
-          "l": 315.15,
-          "c": 319.5
+          "o": 365.9,
+          "h": 366.5,
+          "l": 350.15,
+          "c": 352.65
         },
         {
           "d": "26 Aug",
-          "o": 320.7,
-          "h": 327.3,
-          "l": 320.7,
-          "c": 322.2
+          "o": 353.55,
+          "h": 356.0,
+          "l": 349.25,
+          "c": 354.2
+        },
+        {
+          "d": "27 Aug",
+          "o": 355.0,
+          "h": 365.2,
+          "l": 354.2,
+          "c": 358.4
         }
       ]
     },
     {
-      "symbol": "DEEPAKNTR",
+      "symbol": "GRSE",
       "tier": "BROADER",
       "pattern": "shooting-star",
       "pattern_name": "Shooting Star",
       "direction": "bearish",
-      "close": 1776.7,
-      "change_pct": 1.47,
-      "volume_ratio": 0.77,
+      "close": 2643.0,
+      "change_pct": 0.48,
+      "volume_ratio": 0.74,
       "volume_confirmed": false,
-      "turnover_cr": 62.07,
-      "rsi14": 58.5,
-      "atr14": 51.66,
-      "above_sma50": true,
+      "turnover_cr": 107.66,
+      "rsi14": 53.8,
+      "atr14": 63.77,
+      "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "20 Aug",
-          "o": 1769.9,
-          "h": 1778.9,
-          "l": 1745.0,
-          "c": 1750.4
-        },
-        {
           "d": "21 Aug",
-          "o": 1760.0,
-          "h": 1760.0,
-          "l": 1725.1,
-          "c": 1747.1
+          "o": 2614.0,
+          "h": 2659.9,
+          "l": 2592.9,
+          "c": 2601.5
         },
         {
           "d": "24 Aug",
-          "o": 1749.9,
-          "h": 1774.0,
-          "l": 1707.2,
-          "c": 1730.3
+          "o": 2614.0,
+          "h": 2662.6,
+          "l": 2589.0,
+          "c": 2596.1
         },
         {
           "d": "25 Aug",
-          "o": 1737.0,
-          "h": 1782.0,
-          "l": 1737.0,
-          "c": 1751.0
+          "o": 2592.3,
+          "h": 2622.0,
+          "l": 2577.0,
+          "c": 2607.5
         },
         {
           "d": "26 Aug",
-          "o": 1755.6,
-          "h": 1800.9,
-          "l": 1755.6,
-          "c": 1776.7
-        }
-      ]
-    },
-    {
-      "symbol": "IPCALAB",
-      "tier": "BROADER",
-      "pattern": "shooting-star",
-      "pattern_name": "Shooting Star",
-      "direction": "bearish",
-      "close": 1952.4,
-      "change_pct": 1.24,
-      "volume_ratio": 0.66,
-      "volume_confirmed": false,
-      "turnover_cr": 42.86,
-      "rsi14": 68.1,
-      "atr14": 65.07,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "20 Aug",
-          "o": 1922.0,
-          "h": 1928.4,
-          "l": 1880.4,
-          "c": 1900.1
+          "o": 2617.9,
+          "h": 2677.1,
+          "l": 2601.0,
+          "c": 2630.3
         },
         {
-          "d": "21 Aug",
-          "o": 1900.1,
-          "h": 1922.0,
-          "l": 1889.1,
-          "c": 1911.2
-        },
-        {
-          "d": "24 Aug",
-          "o": 1920.6,
-          "h": 1938.0,
-          "l": 1898.0,
-          "c": 1920.4
-        },
-        {
-          "d": "25 Aug",
-          "o": 1916.0,
-          "h": 1958.6,
-          "l": 1911.6,
-          "c": 1928.5
-        },
-        {
-          "d": "26 Aug",
-          "o": 1935.2,
-          "h": 1992.0,
-          "l": 1935.1,
-          "c": 1952.4
+          "d": "27 Aug",
+          "o": 2639.0,
+          "h": 2665.9,
+          "l": 2632.5,
+          "c": 2643.0
         }
       ]
     }
