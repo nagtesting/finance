@@ -1,11 +1,13 @@
 {
   "session_date": "2026-08-27",
-  "generated_at": "2026-08-29T02:41:59.780193+05:30",
+  "generated_at": "2026-08-29T04:15:23.079989+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "AARTIIND"
+  ],
   "min_turnover_cr": 2.0,
   "total_signals": 162,
   "pattern": "three-white-soldiers",
