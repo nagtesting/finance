@@ -1,13 +1,15 @@
 {
   "session_date": "2026-09-01",
-  "generated_at": "2026-09-01T20:27:36.278570+05:30",
+  "generated_at": "2026-09-01T22:29:36.571536+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "ASAHIINDIA"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 193,
+  "total_signals": 192,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
