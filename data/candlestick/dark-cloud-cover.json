@@ -1,13 +1,13 @@
 {
-  "session_date": "2026-08-31",
-  "generated_at": "2026-08-31T23:09:09.614789+05:30",
+  "session_date": "2026-09-01",
+  "generated_at": "2026-09-01T20:27:36.278570+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 162,
+  "total_signals": 193,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
@@ -15,55 +15,55 @@
   "truncated": false,
   "signals": [
     {
-      "symbol": "DELHIVERY",
+      "symbol": "BRIGADE",
       "tier": "BROADER",
       "pattern": "dark-cloud-cover",
       "pattern_name": "Dark Cloud Cover",
       "direction": "bearish",
-      "close": 456.2,
-      "change_pct": -2.1,
-      "volume_ratio": 0.68,
+      "close": 645.1,
+      "change_pct": -1.64,
+      "volume_ratio": 0.5,
       "volume_confirmed": false,
-      "turnover_cr": 85.65,
-      "rsi14": 45.5,
-      "atr14": 11.91,
-      "above_sma50": false,
+      "turnover_cr": 24.4,
+      "rsi14": 63.3,
+      "atr14": 21.55,
+      "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "24 Aug",
-          "o": 452.0,
-          "h": 452.6,
-          "l": 441.2,
-          "c": 444.75
-        },
-        {
-          "d": "25 Aug",
-          "o": 441.65,
-          "h": 447.95,
-          "l": 439.1,
-          "c": 447.95
-        },
-        {
           "d": "26 Aug",
-          "o": 447.75,
-          "h": 452.15,
-          "l": 445.05,
-          "c": 449.0
+          "o": 663.5,
+          "h": 665.05,
+          "l": 646.75,
+          "c": 655.1
         },
         {
           "d": "27 Aug",
-          "o": 450.0,
-          "h": 466.65,
-          "l": 449.15,
-          "c": 466.0
+          "o": 655.15,
+          "h": 660.25,
+          "l": 648.0,
+          "c": 656.75
+        },
+        {
+          "d": "28 Aug",
+          "o": 657.1,
+          "h": 657.75,
+          "l": 640.4,
+          "c": 642.25
         },
         {
           "d": "31 Aug",
-          "o": 471.95,
-          "h": 471.95,
-          "l": 456.2,
-          "c": 456.2
+          "o": 640.0,
+          "h": 658.75,
+          "l": 632.05,
+          "c": 655.85
+        },
+        {
+          "d": "01 Sep",
+          "o": 659.9,
+          "h": 663.1,
+          "l": 634.7,
+          "c": 645.1
         }
       ]
     }

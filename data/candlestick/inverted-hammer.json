@@ -1,71 +1,17 @@
 {
-  "session_date": "2026-08-31",
-  "generated_at": "2026-08-31T23:09:09.614789+05:30",
+  "session_date": "2026-09-01",
+  "generated_at": "2026-09-01T20:27:36.278570+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 162,
+  "total_signals": 193,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "PFIZER",
-      "tier": "BROADER",
-      "pattern": "inverted-hammer",
-      "pattern_name": "Inverted Hammer",
-      "direction": "bullish",
-      "close": 4684.4,
-      "change_pct": -1.18,
-      "volume_ratio": 0.18,
-      "volume_confirmed": false,
-      "turnover_cr": 13.61,
-      "rsi14": 41.8,
-      "atr14": 110.0,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "24 Aug",
-          "o": 5020.0,
-          "h": 5020.0,
-          "l": 4865.0,
-          "c": 4881.5
-        },
-        {
-          "d": "25 Aug",
-          "o": 4868.0,
-          "h": 4880.9,
-          "l": 4750.0,
-          "c": 4758.0
-        },
-        {
-          "d": "26 Aug",
-          "o": 4761.0,
-          "h": 4835.3,
-          "l": 4737.0,
-          "c": 4802.5
-        },
-        {
-          "d": "27 Aug",
-          "o": 4816.9,
-          "h": 4819.1,
-          "l": 4730.0,
-          "c": 4740.4
-        },
-        {
-          "d": "31 Aug",
-          "o": 4705.0,
-          "h": 4732.1,
-          "l": 4673.0,
-          "c": 4684.4
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
