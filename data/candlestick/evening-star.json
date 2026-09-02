@@ -1,124 +1,69 @@
 {
-  "session_date": "2026-09-01",
-  "generated_at": "2026-09-01T22:29:36.571536+05:30",
+  "session_date": "2026-09-02",
+  "generated_at": "2026-09-02T20:03:10.228885+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 499,
+  "symbols_scanned": 500,
   "symbols_requested": 500,
-  "symbols_missing": [
-    "ASAHIINDIA"
-  ],
+  "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 192,
+  "total_signals": 191,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
-  "count": 2,
+  "count": 1,
   "truncated": false,
   "signals": [
     {
-      "symbol": "PIRAMALFIN",
+      "symbol": "TATACOMM",
       "tier": "BROADER",
       "pattern": "evening-star",
       "pattern_name": "Evening Star",
       "direction": "bearish",
-      "close": 2226.1,
-      "change_pct": -3.23,
-      "volume_ratio": 4.24,
+      "close": 1710.0,
+      "change_pct": -1.37,
+      "volume_ratio": 1.97,
       "volume_confirmed": true,
-      "turnover_cr": 47.76,
-      "rsi14": 60.3,
-      "atr14": 65.04,
-      "above_sma50": true,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "26 Aug",
-          "o": 2185.0,
-          "h": 2252.2,
-          "l": 2150.2,
-          "c": 2221.4
-        },
-        {
-          "d": "27 Aug",
-          "o": 2228.0,
-          "h": 2241.2,
-          "l": 2201.5,
-          "c": 2228.7
-        },
-        {
-          "d": "28 Aug",
-          "o": 2211.3,
-          "h": 2299.9,
-          "l": 2211.3,
-          "c": 2278.4
-        },
-        {
-          "d": "31 Aug",
-          "o": 2298.4,
-          "h": 2324.0,
-          "l": 2259.1,
-          "c": 2300.4
-        },
-        {
-          "d": "01 Sep",
-          "o": 2295.1,
-          "h": 2299.9,
-          "l": 2210.0,
-          "c": 2226.1
-        }
-      ]
-    },
-    {
-      "symbol": "BIKAJI",
-      "tier": "BROADER",
-      "pattern": "evening-star",
-      "pattern_name": "Evening Star",
-      "direction": "bearish",
-      "close": 598.3,
-      "change_pct": -4.38,
-      "volume_ratio": 4.05,
-      "volume_confirmed": true,
-      "turnover_cr": 7.59,
-      "rsi14": 37.2,
-      "atr14": 14.52,
+      "turnover_cr": 39.2,
+      "rsi14": 46.6,
+      "atr14": 46.69,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "26 Aug",
-          "o": 605.15,
-          "h": 620.7,
-          "l": 601.7,
-          "c": 612.1
-        },
-        {
           "d": "27 Aug",
-          "o": 615.15,
-          "h": 635.9,
-          "l": 607.6,
-          "c": 611.9
+          "o": 1649.3,
+          "h": 1705.7,
+          "l": 1641.5,
+          "c": 1689.6
         },
         {
           "d": "28 Aug",
-          "o": 614.95,
-          "h": 624.2,
-          "l": 612.0,
-          "c": 618.8
+          "o": 1685.4,
+          "h": 1704.0,
+          "l": 1678.1,
+          "c": 1694.7
         },
         {
           "d": "31 Aug",
-          "o": 624.0,
-          "h": 628.0,
-          "l": 616.0,
-          "c": 625.7
+          "o": 1695.0,
+          "h": 1733.0,
+          "l": 1690.0,
+          "c": 1723.4
         },
         {
           "d": "01 Sep",
-          "o": 610.3,
-          "h": 619.5,
-          "l": 592.0,
-          "c": 598.3
+          "o": 1735.1,
+          "h": 1744.9,
+          "l": 1707.9,
+          "c": 1733.8
+        },
+        {
+          "d": "02 Sep",
+          "o": 1733.0,
+          "h": 1733.0,
+          "l": 1692.2,
+          "c": 1710.0
         }
       ]
     }

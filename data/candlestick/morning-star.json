@@ -1,19 +1,124 @@
 {
-  "session_date": "2026-09-01",
-  "generated_at": "2026-09-01T22:29:36.571536+05:30",
+  "session_date": "2026-09-02",
+  "generated_at": "2026-09-02T20:03:10.228885+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 499,
+  "symbols_scanned": 500,
   "symbols_requested": 500,
-  "symbols_missing": [
-    "ASAHIINDIA"
-  ],
+  "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 192,
+  "total_signals": 191,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 0,
+  "count": 2,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "BANKBARODA",
+      "tier": "NIFTY 100",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 241.2,
+      "change_pct": 1.47,
+      "volume_ratio": 1.21,
+      "volume_confirmed": true,
+      "turnover_cr": 190.72,
+      "rsi14": 44.1,
+      "atr14": 4.54,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "27 Aug",
+          "o": 244.33,
+          "h": 244.62,
+          "l": 240.0,
+          "c": 241.0
+        },
+        {
+          "d": "28 Aug",
+          "o": 241.15,
+          "h": 241.9,
+          "l": 239.5,
+          "c": 241.9
+        },
+        {
+          "d": "31 Aug",
+          "o": 241.2,
+          "h": 241.27,
+          "l": 236.3,
+          "c": 238.6
+        },
+        {
+          "d": "01 Sep",
+          "o": 238.0,
+          "h": 240.2,
+          "l": 236.68,
+          "c": 237.7
+        },
+        {
+          "d": "02 Sep",
+          "o": 237.5,
+          "h": 241.25,
+          "l": 235.84,
+          "c": 241.2
+        }
+      ]
+    },
+    {
+      "symbol": "PHOENIXLTD",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 1920.1,
+      "change_pct": 1.45,
+      "volume_ratio": 0.53,
+      "volume_confirmed": false,
+      "turnover_cr": 53.83,
+      "rsi14": 47.9,
+      "atr14": 41.45,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "27 Aug",
+          "o": 1926.0,
+          "h": 1944.8,
+          "l": 1897.2,
+          "c": 1901.7
+        },
+        {
+          "d": "28 Aug",
+          "o": 1902.9,
+          "h": 1923.9,
+          "l": 1896.0,
+          "c": 1917.0
+        },
+        {
+          "d": "31 Aug",
+          "o": 1917.0,
+          "h": 1920.4,
+          "l": 1875.5,
+          "c": 1900.0
+        },
+        {
+          "d": "01 Sep",
+          "o": 1880.1,
+          "h": 1896.5,
+          "l": 1867.7,
+          "c": 1892.6
+        },
+        {
+          "d": "02 Sep",
+          "o": 1890.1,
+          "h": 1920.1,
+          "l": 1870.6,
+          "c": 1920.1
+        }
+      ]
+    }
+  ]
 }

@@ -1,15 +1,13 @@
 {
-  "session_date": "2026-09-01",
-  "generated_at": "2026-09-01T22:29:36.571536+05:30",
+  "session_date": "2026-09-02",
+  "generated_at": "2026-09-02T20:03:10.228885+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 499,
+  "symbols_scanned": 500,
   "symbols_requested": 500,
-  "symbols_missing": [
-    "ASAHIINDIA"
-  ],
+  "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 192,
+  "total_signals": 191,
   "pattern": "three-white-soldiers",
   "pattern_name": "Three White Soldiers",
   "direction": "bullish",
