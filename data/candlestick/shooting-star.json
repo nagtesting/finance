@@ -1,17 +1,177 @@
 {
-  "session_date": "2026-09-02",
-  "generated_at": "2026-09-02T22:24:02.960216+05:30",
+  "session_date": "2026-09-03",
+  "generated_at": "2026-09-03T20:07:34.647516+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 191,
+  "total_signals": 161,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 0,
+  "count": 3,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "ICICIBANK",
+      "tier": "NIFTY 50",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 1430.0,
+      "change_pct": 0.25,
+      "volume_ratio": 1.11,
+      "volume_confirmed": false,
+      "turnover_cr": 1221.03,
+      "rsi14": 51.5,
+      "atr14": 22.28,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "28 Aug",
+          "o": 1435.0,
+          "h": 1439.8,
+          "l": 1418.9,
+          "c": 1422.8
+        },
+        {
+          "d": "31 Aug",
+          "o": 1422.8,
+          "h": 1454.0,
+          "l": 1419.0,
+          "c": 1454.0
+        },
+        {
+          "d": "01 Sep",
+          "o": 1442.9,
+          "h": 1446.7,
+          "l": 1422.8,
+          "c": 1438.0
+        },
+        {
+          "d": "02 Sep",
+          "o": 1425.1,
+          "h": 1436.0,
+          "l": 1420.7,
+          "c": 1426.5
+        },
+        {
+          "d": "03 Sep",
+          "o": 1438.3,
+          "h": 1452.0,
+          "l": 1430.0,
+          "c": 1430.0
+        }
+      ]
+    },
+    {
+      "symbol": "SAGILITY",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 46.8,
+      "change_pct": 0.21,
+      "volume_ratio": 0.53,
+      "volume_confirmed": false,
+      "turnover_cr": 64.9,
+      "rsi14": 68.9,
+      "atr14": 1.32,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "28 Aug",
+          "o": 44.39,
+          "h": 46.4,
+          "l": 44.3,
+          "c": 46.34
+        },
+        {
+          "d": "31 Aug",
+          "o": 46.5,
+          "h": 47.49,
+          "l": 45.85,
+          "c": 47.05
+        },
+        {
+          "d": "01 Sep",
+          "o": 47.05,
+          "h": 47.12,
+          "l": 45.9,
+          "c": 46.45
+        },
+        {
+          "d": "02 Sep",
+          "o": 46.0,
+          "h": 46.98,
+          "l": 45.82,
+          "c": 46.7
+        },
+        {
+          "d": "03 Sep",
+          "o": 46.95,
+          "h": 47.3,
+          "l": 46.67,
+          "c": 46.8
+        }
+      ]
+    },
+    {
+      "symbol": "IDBI",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 91.97,
+      "change_pct": 0.46,
+      "volume_ratio": 0.47,
+      "volume_confirmed": false,
+      "turnover_cr": 31.21,
+      "rsi14": 64.4,
+      "atr14": 2.83,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "28 Aug",
+          "o": 92.29,
+          "h": 93.8,
+          "l": 91.55,
+          "c": 92.66
+        },
+        {
+          "d": "31 Aug",
+          "o": 93.0,
+          "h": 93.33,
+          "l": 90.63,
+          "c": 90.88
+        },
+        {
+          "d": "01 Sep",
+          "o": 91.3,
+          "h": 94.15,
+          "l": 89.25,
+          "c": 92.06
+        },
+        {
+          "d": "02 Sep",
+          "o": 91.65,
+          "h": 93.25,
+          "l": 90.61,
+          "c": 91.55
+        },
+        {
+          "d": "03 Sep",
+          "o": 92.25,
+          "h": 93.45,
+          "l": 91.6,
+          "c": 91.97
+        }
+      ]
+    }
+  ]
 }

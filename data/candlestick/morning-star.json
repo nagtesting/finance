@@ -1,122 +1,440 @@
 {
-  "session_date": "2026-09-02",
-  "generated_at": "2026-09-02T22:24:02.960216+05:30",
+  "session_date": "2026-09-03",
+  "generated_at": "2026-09-03T20:07:34.647516+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 191,
+  "total_signals": 161,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 2,
+  "count": 8,
   "truncated": false,
   "signals": [
     {
-      "symbol": "BANKBARODA",
+      "symbol": "UNITDSPR",
       "tier": "NIFTY 100",
       "pattern": "morning-star",
       "pattern_name": "Morning Star",
       "direction": "bullish",
-      "close": 241.2,
-      "change_pct": 1.47,
-      "volume_ratio": 1.21,
+      "close": 1488.9,
+      "change_pct": 1.32,
+      "volume_ratio": 1.22,
       "volume_confirmed": true,
-      "turnover_cr": 190.72,
-      "rsi14": 44.1,
-      "atr14": 4.54,
-      "above_sma50": false,
+      "turnover_cr": 87.03,
+      "rsi14": 46.9,
+      "atr14": 30.41,
+      "above_sma50": true,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "27 Aug",
-          "o": 244.33,
-          "h": 244.62,
-          "l": 240.0,
-          "c": 241.0
-        },
-        {
           "d": "28 Aug",
-          "o": 241.15,
-          "h": 241.9,
-          "l": 239.5,
-          "c": 241.9
+          "o": 1526.0,
+          "h": 1540.0,
+          "l": 1497.7,
+          "c": 1510.0
         },
         {
           "d": "31 Aug",
-          "o": 241.2,
-          "h": 241.27,
-          "l": 236.3,
-          "c": 238.6
+          "o": 1510.0,
+          "h": 1510.9,
+          "l": 1479.7,
+          "c": 1490.0
         },
         {
           "d": "01 Sep",
-          "o": 238.0,
-          "h": 240.2,
-          "l": 236.68,
-          "c": 237.7
+          "o": 1490.1,
+          "h": 1498.9,
+          "l": 1459.0,
+          "c": 1470.0
         },
         {
           "d": "02 Sep",
-          "o": 237.5,
-          "h": 241.25,
-          "l": 235.84,
-          "c": 241.2
+          "o": 1459.0,
+          "h": 1470.0,
+          "l": 1446.3,
+          "c": 1469.5
+        },
+        {
+          "d": "03 Sep",
+          "o": 1474.2,
+          "h": 1488.9,
+          "l": 1448.0,
+          "c": 1488.9
         }
       ]
     },
     {
-      "symbol": "PHOENIXLTD",
+      "symbol": "INDUSINDBK",
       "tier": "BROADER",
       "pattern": "morning-star",
       "pattern_name": "Morning Star",
       "direction": "bullish",
-      "close": 1920.1,
-      "change_pct": 1.45,
-      "volume_ratio": 0.53,
+      "close": 1004.8,
+      "change_pct": 2.74,
+      "volume_ratio": 1.69,
+      "volume_confirmed": true,
+      "turnover_cr": 108.69,
+      "rsi14": 49.8,
+      "atr14": 21.49,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "28 Aug",
+          "o": 997.0,
+          "h": 1000.6,
+          "l": 987.3,
+          "c": 994.0
+        },
+        {
+          "d": "31 Aug",
+          "o": 992.0,
+          "h": 1016.6,
+          "l": 980.3,
+          "c": 1016.6
+        },
+        {
+          "d": "01 Sep",
+          "o": 1004.0,
+          "h": 1004.0,
+          "l": 985.0,
+          "c": 992.6
+        },
+        {
+          "d": "02 Sep",
+          "o": 985.0,
+          "h": 987.6,
+          "l": 963.3,
+          "c": 978.0
+        },
+        {
+          "d": "03 Sep",
+          "o": 980.0,
+          "h": 1004.8,
+          "l": 977.6,
+          "c": 1004.8
+        }
+      ]
+    },
+    {
+      "symbol": "GODREJPROP",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 2001.5,
+      "change_pct": 1.56,
+      "volume_ratio": 2.65,
+      "volume_confirmed": true,
+      "turnover_cr": 91.54,
+      "rsi14": 46.5,
+      "atr14": 60.15,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "28 Aug",
+          "o": 2075.4,
+          "h": 2083.3,
+          "l": 2024.5,
+          "c": 2029.1
+        },
+        {
+          "d": "31 Aug",
+          "o": 2025.0,
+          "h": 2025.0,
+          "l": 1962.6,
+          "c": 2014.7
+        },
+        {
+          "d": "01 Sep",
+          "o": 2023.2,
+          "h": 2023.2,
+          "l": 1965.0,
+          "c": 1978.0
+        },
+        {
+          "d": "02 Sep",
+          "o": 1950.0,
+          "h": 1970.7,
+          "l": 1908.9,
+          "c": 1970.7
+        },
+        {
+          "d": "03 Sep",
+          "o": 1964.0,
+          "h": 2056.7,
+          "l": 1960.0,
+          "c": 2001.5
+        }
+      ]
+    },
+    {
+      "symbol": "CGPOWER",
+      "tier": "NIFTY 100",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 895.0,
+      "change_pct": 1.97,
+      "volume_ratio": 1.11,
       "volume_confirmed": false,
-      "turnover_cr": 53.83,
-      "rsi14": 47.9,
-      "atr14": 41.45,
+      "turnover_cr": 149.07,
+      "rsi14": 52.4,
+      "atr14": 23.27,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "28 Aug",
+          "o": 896.45,
+          "h": 896.45,
+          "l": 878.2,
+          "c": 889.0
+        },
+        {
+          "d": "31 Aug",
+          "o": 884.15,
+          "h": 916.0,
+          "l": 875.0,
+          "c": 916.0
+        },
+        {
+          "d": "01 Sep",
+          "o": 901.95,
+          "h": 903.55,
+          "l": 881.6,
+          "c": 885.5
+        },
+        {
+          "d": "02 Sep",
+          "o": 878.05,
+          "h": 881.4,
+          "l": 870.0,
+          "c": 877.75
+        },
+        {
+          "d": "03 Sep",
+          "o": 879.0,
+          "h": 900.65,
+          "l": 875.4,
+          "c": 895.0
+        }
+      ]
+    },
+    {
+      "symbol": "GVT&D",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 4362.0,
+      "change_pct": 2.88,
+      "volume_ratio": 0.59,
+      "volume_confirmed": false,
+      "turnover_cr": 376.57,
+      "rsi14": 51.6,
+      "atr14": 159.63,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "27 Aug",
-          "o": 1926.0,
-          "h": 1944.8,
-          "l": 1897.2,
-          "c": 1901.7
-        },
-        {
           "d": "28 Aug",
-          "o": 1902.9,
-          "h": 1923.9,
-          "l": 1896.0,
-          "c": 1917.0
+          "o": 4404.0,
+          "h": 4416.4,
+          "l": 4331.0,
+          "c": 4339.2
         },
         {
           "d": "31 Aug",
-          "o": 1917.0,
-          "h": 1920.4,
-          "l": 1875.5,
-          "c": 1900.0
+          "o": 4313.0,
+          "h": 4445.2,
+          "l": 4264.8,
+          "c": 4445.2
         },
         {
           "d": "01 Sep",
-          "o": 1880.1,
-          "h": 1896.5,
-          "l": 1867.7,
-          "c": 1892.6
+          "o": 4400.0,
+          "h": 4400.0,
+          "l": 4268.8,
+          "c": 4324.0
         },
         {
           "d": "02 Sep",
-          "o": 1890.1,
-          "h": 1920.1,
-          "l": 1870.6,
-          "c": 1920.1
+          "o": 4280.0,
+          "h": 4282.5,
+          "l": 4183.2,
+          "c": 4240.0
+        },
+        {
+          "d": "03 Sep",
+          "o": 4276.0,
+          "h": 4367.0,
+          "l": 4242.0,
+          "c": 4362.0
+        }
+      ]
+    },
+    {
+      "symbol": "ANGELONE",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 286.0,
+      "change_pct": 2.42,
+      "volume_ratio": 0.92,
+      "volume_confirmed": false,
+      "turnover_cr": 120.06,
+      "rsi14": 41.4,
+      "atr14": 8.82,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "28 Aug",
+          "o": 295.9,
+          "h": 297.7,
+          "l": 291.65,
+          "c": 294.0
+        },
+        {
+          "d": "31 Aug",
+          "o": 292.65,
+          "h": 293.75,
+          "l": 278.25,
+          "c": 286.9
+        },
+        {
+          "d": "01 Sep",
+          "o": 286.9,
+          "h": 288.25,
+          "l": 280.5,
+          "c": 281.55
+        },
+        {
+          "d": "02 Sep",
+          "o": 280.25,
+          "h": 280.85,
+          "l": 275.25,
+          "c": 279.25
+        },
+        {
+          "d": "03 Sep",
+          "o": 280.35,
+          "h": 288.0,
+          "l": 280.35,
+          "c": 286.0
+        }
+      ]
+    },
+    {
+      "symbol": "COCHINSHIP",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 1486.7,
+      "change_pct": 1.62,
+      "volume_ratio": 0.44,
+      "volume_confirmed": false,
+      "turnover_cr": 111.02,
+      "rsi14": 50.5,
+      "atr14": 34.83,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "28 Aug",
+          "o": 1543.0,
+          "h": 1543.9,
+          "l": 1528.0,
+          "c": 1535.0
+        },
+        {
+          "d": "31 Aug",
+          "o": 1527.0,
+          "h": 1530.0,
+          "l": 1492.0,
+          "c": 1510.0
+        },
+        {
+          "d": "01 Sep",
+          "o": 1509.9,
+          "h": 1513.4,
+          "l": 1465.5,
+          "c": 1475.9
+        },
+        {
+          "d": "02 Sep",
+          "o": 1473.9,
+          "h": 1473.9,
+          "l": 1452.1,
+          "c": 1463.0
+        },
+        {
+          "d": "03 Sep",
+          "o": 1466.0,
+          "h": 1497.1,
+          "l": 1465.0,
+          "c": 1486.7
+        }
+      ]
+    },
+    {
+      "symbol": "TATAINVEST",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 637.95,
+      "change_pct": 1.57,
+      "volume_ratio": 0.44,
+      "volume_confirmed": false,
+      "turnover_cr": 11.11,
+      "rsi14": 40.3,
+      "atr14": 13.51,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "28 Aug",
+          "o": 644.0,
+          "h": 656.4,
+          "l": 637.6,
+          "c": 638.75
+        },
+        {
+          "d": "31 Aug",
+          "o": 639.0,
+          "h": 651.7,
+          "l": 635.05,
+          "c": 642.2
+        },
+        {
+          "d": "01 Sep",
+          "o": 642.0,
+          "h": 643.3,
+          "l": 631.5,
+          "c": 633.65
+        },
+        {
+          "d": "02 Sep",
+          "o": 631.1,
+          "h": 633.45,
+          "l": 624.9,
+          "c": 628.1
+        },
+        {
+          "d": "03 Sep",
+          "o": 628.2,
+          "h": 640.9,
+          "l": 628.2,
+          "c": 637.95
         }
       ]
     }

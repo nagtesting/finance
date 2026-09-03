@@ -1,13 +1,13 @@
 {
-  "session_date": "2026-09-02",
-  "generated_at": "2026-09-02T22:24:02.960216+05:30",
+  "session_date": "2026-09-03",
+  "generated_at": "2026-09-03T20:07:34.647516+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 191,
+  "total_signals": 161,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
@@ -15,55 +15,55 @@
   "truncated": false,
   "signals": [
     {
-      "symbol": "HDFCBANK",
-      "tier": "NIFTY 50",
+      "symbol": "TATATECH",
+      "tier": "BROADER",
       "pattern": "inverted-hammer",
       "pattern_name": "Inverted Hammer",
       "direction": "bullish",
-      "close": 700.8,
-      "change_pct": -1.56,
-      "volume_ratio": 1.27,
-      "volume_confirmed": true,
-      "turnover_cr": 1571.46,
-      "rsi14": 30.9,
-      "atr14": 12.5,
-      "above_sma50": false,
-      "strength": "confirmed",
+      "close": 805.1,
+      "change_pct": -1.0,
+      "volume_ratio": 0.32,
+      "volume_confirmed": false,
+      "turnover_cr": 98.56,
+      "rsi14": 50.2,
+      "atr14": 28.69,
+      "above_sma50": true,
+      "strength": "unconfirmed",
       "bars": [
         {
-          "d": "27 Aug",
-          "o": 728.15,
-          "h": 728.15,
-          "l": 710.0,
-          "c": 711.0
-        },
-        {
           "d": "28 Aug",
-          "o": 710.85,
-          "h": 720.3,
-          "l": 707.0,
-          "c": 720.3
+          "o": 800.0,
+          "h": 839.7,
+          "l": 796.7,
+          "c": 834.35
         },
         {
           "d": "31 Aug",
-          "o": 723.05,
-          "h": 739.75,
-          "l": 704.15,
-          "c": 709.0
+          "o": 833.0,
+          "h": 840.0,
+          "l": 813.0,
+          "c": 831.05
         },
         {
           "d": "01 Sep",
-          "o": 705.05,
-          "h": 715.45,
-          "l": 698.5,
-          "c": 711.9
+          "o": 835.0,
+          "h": 850.0,
+          "l": 808.05,
+          "c": 814.95
         },
         {
           "d": "02 Sep",
-          "o": 702.3,
-          "h": 705.65,
-          "l": 700.0,
-          "c": 700.8
+          "o": 814.95,
+          "h": 818.7,
+          "l": 795.0,
+          "c": 813.25
+        },
+        {
+          "d": "03 Sep",
+          "o": 810.05,
+          "h": 824.0,
+          "l": 802.85,
+          "c": 805.1
         }
       ]
     }
