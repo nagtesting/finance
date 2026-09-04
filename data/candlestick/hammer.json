@@ -1,175 +1,440 @@
 {
-  "session_date": "2026-09-03",
-  "generated_at": "2026-09-03T22:13:29.227196+05:30",
+  "session_date": "2026-09-04",
+  "generated_at": "2026-09-04T19:54:43.658957+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 161,
+  "total_signals": 170,
   "pattern": "hammer",
   "pattern_name": "Hammer",
   "direction": "bullish",
-  "count": 3,
+  "count": 8,
   "truncated": false,
   "signals": [
     {
-      "symbol": "NESTLEIND",
+      "symbol": "JSWENERGY",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 539.85,
+      "change_pct": 0.06,
+      "volume_ratio": 1.33,
+      "volume_confirmed": true,
+      "turnover_cr": 88.16,
+      "rsi14": 46.1,
+      "atr14": 12.28,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "31 Aug",
+          "o": 533.65,
+          "h": 537.0,
+          "l": 520.4,
+          "c": 520.4
+        },
+        {
+          "d": "01 Sep",
+          "o": 524.0,
+          "h": 526.6,
+          "l": 514.45,
+          "c": 518.0
+        },
+        {
+          "d": "02 Sep",
+          "o": 515.0,
+          "h": 540.75,
+          "l": 511.4,
+          "c": 539.8
+        },
+        {
+          "d": "03 Sep",
+          "o": 542.05,
+          "h": 545.8,
+          "l": 534.3,
+          "c": 539.5
+        },
+        {
+          "d": "04 Sep",
+          "o": 537.55,
+          "h": 540.25,
+          "l": 534.25,
+          "c": 539.85
+        }
+      ]
+    },
+    {
+      "symbol": "ONGC",
       "tier": "NIFTY 50",
       "pattern": "hammer",
       "pattern_name": "Hammer",
       "direction": "bullish",
-      "close": 1416.0,
-      "change_pct": -0.63,
-      "volume_ratio": 0.41,
+      "close": 234.65,
+      "change_pct": -0.57,
+      "volume_ratio": 0.45,
       "volume_confirmed": false,
-      "turnover_cr": 247.36,
-      "rsi14": 38.4,
-      "atr14": 33.81,
+      "turnover_cr": 277.68,
+      "rsi14": 42.4,
+      "atr14": 3.61,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "28 Aug",
-          "o": 1454.4,
-          "h": 1456.5,
-          "l": 1438.0,
-          "c": 1454.6
-        },
-        {
           "d": "31 Aug",
-          "o": 1445.1,
-          "h": 1496.5,
-          "l": 1427.6,
-          "c": 1496.5
+          "o": 233.8,
+          "h": 234.95,
+          "l": 231.7,
+          "c": 231.8
         },
         {
           "d": "01 Sep",
-          "o": 1514.8,
-          "h": 1514.8,
-          "l": 1436.0,
-          "c": 1438.2
+          "o": 233.8,
+          "h": 236.6,
+          "l": 232.5,
+          "c": 236.45
         },
         {
           "d": "02 Sep",
-          "o": 1425.0,
-          "h": 1428.0,
-          "l": 1411.0,
-          "c": 1425.0
+          "o": 237.6,
+          "h": 239.21,
+          "l": 235.64,
+          "c": 237.5
         },
         {
           "d": "03 Sep",
-          "o": 1424.1,
-          "h": 1424.1,
-          "l": 1407.0,
-          "c": 1416.0
+          "o": 237.5,
+          "h": 237.8,
+          "l": 235.0,
+          "c": 236.0
+        },
+        {
+          "d": "04 Sep",
+          "o": 235.44,
+          "h": 235.44,
+          "l": 233.6,
+          "c": 234.65
         }
       ]
     },
     {
-      "symbol": "EMAMILTD",
-      "tier": "BROADER",
+      "symbol": "EICHERMOT",
+      "tier": "NIFTY 50",
       "pattern": "hammer",
       "pattern_name": "Hammer",
       "direction": "bullish",
-      "close": 368.2,
-      "change_pct": 0.04,
-      "volume_ratio": 1.01,
+      "close": 7630.5,
+      "change_pct": -0.77,
+      "volume_ratio": 1.2,
       "volume_confirmed": false,
-      "turnover_cr": 35.39,
-      "rsi14": 34.4,
-      "atr14": 11.63,
+      "turnover_cr": 273.24,
+      "rsi14": 34.7,
+      "atr14": 149.28,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "28 Aug",
-          "o": 388.0,
-          "h": 388.55,
-          "l": 378.3,
-          "c": 379.4
-        },
-        {
           "d": "31 Aug",
-          "o": 379.4,
-          "h": 380.95,
-          "l": 362.0,
-          "c": 364.0
+          "o": 8000.0,
+          "h": 8030.0,
+          "l": 7941.5,
+          "c": 7953.5
         },
         {
           "d": "01 Sep",
-          "o": 366.0,
-          "h": 379.35,
-          "l": 361.15,
-          "c": 376.65
+          "o": 7975.0,
+          "h": 8052.0,
+          "l": 7860.0,
+          "c": 7970.0
         },
         {
           "d": "02 Sep",
-          "o": 375.95,
-          "h": 375.95,
-          "l": 366.1,
-          "c": 368.05
+          "o": 7860.0,
+          "h": 7893.0,
+          "l": 7507.5,
+          "c": 7711.5
         },
         {
           "d": "03 Sep",
-          "o": 373.0,
-          "h": 373.0,
-          "l": 362.3,
-          "c": 368.2
+          "o": 7715.0,
+          "h": 7738.5,
+          "l": 7597.0,
+          "c": 7690.0
+        },
+        {
+          "d": "04 Sep",
+          "o": 7665.0,
+          "h": 7665.5,
+          "l": 7590.0,
+          "c": 7630.5
         }
       ]
     },
     {
-      "symbol": "IGIL",
+      "symbol": "HEROMOTOCO",
       "tier": "BROADER",
       "pattern": "hammer",
       "pattern_name": "Hammer",
       "direction": "bullish",
-      "close": 325.95,
-      "change_pct": -0.38,
-      "volume_ratio": 0.99,
+      "close": 5300.0,
+      "change_pct": -0.16,
+      "volume_ratio": 0.88,
       "volume_confirmed": false,
-      "turnover_cr": 14.55,
-      "rsi14": 35.5,
-      "atr14": 10.95,
+      "turnover_cr": 278.82,
+      "rsi14": 39.4,
+      "atr14": 130.67,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "28 Aug",
-          "o": 341.15,
-          "h": 346.8,
-          "l": 337.45,
-          "c": 338.95
-        },
-        {
           "d": "31 Aug",
-          "o": 339.95,
-          "h": 347.4,
-          "l": 333.05,
-          "c": 340.95
+          "o": 5614.0,
+          "h": 5614.0,
+          "l": 5450.0,
+          "c": 5450.0
         },
         {
           "d": "01 Sep",
-          "o": 346.0,
-          "h": 346.0,
-          "l": 337.05,
-          "c": 339.75
+          "o": 5610.0,
+          "h": 5659.0,
+          "l": 5495.5,
+          "c": 5555.0
         },
         {
           "d": "02 Sep",
-          "o": 339.05,
-          "h": 339.05,
-          "l": 325.85,
-          "c": 327.2
+          "o": 5477.0,
+          "h": 5485.0,
+          "l": 5167.0,
+          "c": 5300.0
         },
         {
           "d": "03 Sep",
-          "o": 329.4,
-          "h": 330.0,
-          "l": 321.2,
-          "c": 325.95
+          "o": 5315.0,
+          "h": 5315.0,
+          "l": 5271.0,
+          "c": 5308.5
+        },
+        {
+          "d": "04 Sep",
+          "o": 5319.0,
+          "h": 5322.5,
+          "l": 5260.0,
+          "c": 5300.0
+        }
+      ]
+    },
+    {
+      "symbol": "CONCOR",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 508.0,
+      "change_pct": -0.17,
+      "volume_ratio": 0.7,
+      "volume_confirmed": false,
+      "turnover_cr": 60.23,
+      "rsi14": 48.8,
+      "atr14": 12.36,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "31 Aug",
+          "o": 512.3,
+          "h": 518.0,
+          "l": 507.5,
+          "c": 511.9
+        },
+        {
+          "d": "01 Sep",
+          "o": 516.9,
+          "h": 518.75,
+          "l": 510.5,
+          "c": 514.0
+        },
+        {
+          "d": "02 Sep",
+          "o": 510.0,
+          "h": 520.75,
+          "l": 508.25,
+          "c": 510.0
+        },
+        {
+          "d": "03 Sep",
+          "o": 511.0,
+          "h": 516.0,
+          "l": 507.25,
+          "c": 508.85
+        },
+        {
+          "d": "04 Sep",
+          "o": 508.8,
+          "h": 509.65,
+          "l": 502.0,
+          "c": 508.0
+        }
+      ]
+    },
+    {
+      "symbol": "MINDACORP",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 702.8,
+      "change_pct": -0.52,
+      "volume_ratio": 0.25,
+      "volume_confirmed": false,
+      "turnover_cr": 27.36,
+      "rsi14": 47.1,
+      "atr14": 22.95,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "31 Aug",
+          "o": 702.8,
+          "h": 720.15,
+          "l": 695.45,
+          "c": 712.55
+        },
+        {
+          "d": "01 Sep",
+          "o": 712.7,
+          "h": 719.85,
+          "l": 703.0,
+          "c": 712.4
+        },
+        {
+          "d": "02 Sep",
+          "o": 707.05,
+          "h": 714.35,
+          "l": 694.3,
+          "c": 707.85
+        },
+        {
+          "d": "03 Sep",
+          "o": 710.05,
+          "h": 713.0,
+          "l": 698.65,
+          "c": 706.5
+        },
+        {
+          "d": "04 Sep",
+          "o": 709.75,
+          "h": 709.8,
+          "l": 695.25,
+          "c": 702.8
+        }
+      ]
+    },
+    {
+      "symbol": "TEGA",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 1548.0,
+      "change_pct": -0.31,
+      "volume_ratio": 0.25,
+      "volume_confirmed": false,
+      "turnover_cr": 20.56,
+      "rsi14": 38.7,
+      "atr14": 54.94,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "31 Aug",
+          "o": 1658.7,
+          "h": 1658.7,
+          "l": 1581.0,
+          "c": 1586.3
+        },
+        {
+          "d": "01 Sep",
+          "o": 1596.4,
+          "h": 1629.7,
+          "l": 1563.0,
+          "c": 1570.5
+        },
+        {
+          "d": "02 Sep",
+          "o": 1560.0,
+          "h": 1566.0,
+          "l": 1534.6,
+          "c": 1539.7
+        },
+        {
+          "d": "03 Sep",
+          "o": 1552.0,
+          "h": 1561.9,
+          "l": 1539.0,
+          "c": 1552.8
+        },
+        {
+          "d": "04 Sep",
+          "o": 1555.8,
+          "h": 1558.0,
+          "l": 1536.0,
+          "c": 1548.0
+        }
+      ]
+    },
+    {
+      "symbol": "DCMSHRIRAM",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 1020.9,
+      "change_pct": 0.17,
+      "volume_ratio": 0.71,
+      "volume_confirmed": false,
+      "turnover_cr": 9.76,
+      "rsi14": 45.5,
+      "atr14": 30.05,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "31 Aug",
+          "o": 1022.3,
+          "h": 1031.5,
+          "l": 1008.5,
+          "c": 1016.7
+        },
+        {
+          "d": "01 Sep",
+          "o": 1017.1,
+          "h": 1042.3,
+          "l": 1009.1,
+          "c": 1030.4
+        },
+        {
+          "d": "02 Sep",
+          "o": 1033.0,
+          "h": 1052.5,
+          "l": 1021.0,
+          "c": 1028.0
+        },
+        {
+          "d": "03 Sep",
+          "o": 1030.0,
+          "h": 1045.9,
+          "l": 1015.0,
+          "c": 1019.2
+        },
+        {
+          "d": "04 Sep",
+          "o": 1024.9,
+          "h": 1026.1,
+          "l": 1014.0,
+          "c": 1020.9
         }
       ]
     }
