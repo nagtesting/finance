@@ -1,69 +1,228 @@
 {
-  "session_date": "2026-09-04",
-  "generated_at": "2026-09-04T22:07:51.505988+05:30",
+  "session_date": "2026-09-07",
+  "generated_at": "2026-09-07T21:24:42.776286+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 170,
+  "total_signals": 149,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
-  "count": 1,
+  "count": 4,
   "truncated": false,
   "signals": [
     {
-      "symbol": "TTML",
-      "tier": "BROADER",
+      "symbol": "MUTHOOTFIN",
+      "tier": "NIFTY 100",
       "pattern": "inverted-hammer",
       "pattern_name": "Inverted Hammer",
       "direction": "bullish",
-      "close": 37.74,
-      "change_pct": -0.71,
-      "volume_ratio": 0.34,
+      "close": 2880.0,
+      "change_pct": -1.16,
+      "volume_ratio": 0.38,
       "volume_confirmed": false,
-      "turnover_cr": 4.47,
-      "rsi14": 43.2,
-      "atr14": 1.14,
+      "turnover_cr": 237.5,
+      "rsi14": 41.4,
+      "atr14": 86.22,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "31 Aug",
-          "o": 39.0,
-          "h": 39.1,
-          "l": 37.82,
-          "c": 38.58
-        },
-        {
           "d": "01 Sep",
-          "o": 39.0,
-          "h": 39.4,
-          "l": 38.21,
-          "c": 38.92
+          "o": 3000.0,
+          "h": 3009.2,
+          "l": 2890.0,
+          "c": 2905.0
         },
         {
           "d": "02 Sep",
-          "o": 38.74,
-          "h": 38.74,
-          "l": 37.81,
-          "c": 38.0
+          "o": 2870.0,
+          "h": 2937.7,
+          "l": 2840.0,
+          "c": 2937.7
         },
         {
           "d": "03 Sep",
-          "o": 38.25,
-          "h": 38.25,
-          "l": 37.82,
-          "c": 38.01
+          "o": 2975.0,
+          "h": 2985.9,
+          "l": 2926.5,
+          "c": 2926.5
         },
         {
           "d": "04 Sep",
-          "o": 38.0,
-          "h": 38.45,
-          "l": 37.65,
-          "c": 37.74
+          "o": 2971.0,
+          "h": 2979.9,
+          "l": 2913.0,
+          "c": 2913.8
+        },
+        {
+          "d": "07 Sep",
+          "o": 2899.0,
+          "h": 2920.0,
+          "l": 2871.2,
+          "c": 2880.0
+        }
+      ]
+    },
+    {
+      "symbol": "TIINDIA",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 2683.0,
+      "change_pct": -0.56,
+      "volume_ratio": 0.27,
+      "volume_confirmed": false,
+      "turnover_cr": 53.89,
+      "rsi14": 36.0,
+      "atr14": 72.76,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "01 Sep",
+          "o": 2794.9,
+          "h": 2794.9,
+          "l": 2743.5,
+          "c": 2763.2
+        },
+        {
+          "d": "02 Sep",
+          "o": 2748.3,
+          "h": 2748.3,
+          "l": 2680.5,
+          "c": 2720.0
+        },
+        {
+          "d": "03 Sep",
+          "o": 2720.0,
+          "h": 2735.4,
+          "l": 2685.4,
+          "c": 2735.4
+        },
+        {
+          "d": "04 Sep",
+          "o": 2727.0,
+          "h": 2727.0,
+          "l": 2685.0,
+          "c": 2698.0
+        },
+        {
+          "d": "07 Sep",
+          "o": 2690.0,
+          "h": 2709.0,
+          "l": 2679.0,
+          "c": 2683.0
+        }
+      ]
+    },
+    {
+      "symbol": "ATUL",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 6312.5,
+      "change_pct": -1.15,
+      "volume_ratio": 0.65,
+      "volume_confirmed": false,
+      "turnover_cr": 18.64,
+      "rsi14": 36.8,
+      "atr14": 149.62,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "01 Sep",
+          "o": 6392.0,
+          "h": 6464.0,
+          "l": 6371.0,
+          "c": 6452.0
+        },
+        {
+          "d": "02 Sep",
+          "o": 6430.0,
+          "h": 6499.0,
+          "l": 6358.0,
+          "c": 6485.5
+        },
+        {
+          "d": "03 Sep",
+          "o": 6486.0,
+          "h": 6642.5,
+          "l": 6446.0,
+          "c": 6469.0
+        },
+        {
+          "d": "04 Sep",
+          "o": 6476.0,
+          "h": 6515.5,
+          "l": 6370.5,
+          "c": 6386.0
+        },
+        {
+          "d": "07 Sep",
+          "o": 6351.5,
+          "h": 6400.0,
+          "l": 6302.5,
+          "c": 6312.5
+        }
+      ]
+    },
+    {
+      "symbol": "FACT",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 793.3,
+      "change_pct": -1.01,
+      "volume_ratio": 0.03,
+      "volume_confirmed": false,
+      "turnover_cr": 10.08,
+      "rsi14": 41.3,
+      "atr14": 24.79,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "01 Sep",
+          "o": 817.05,
+          "h": 829.0,
+          "l": 811.2,
+          "c": 815.25
+        },
+        {
+          "d": "02 Sep",
+          "o": 815.0,
+          "h": 817.45,
+          "l": 800.3,
+          "c": 804.3
+        },
+        {
+          "d": "03 Sep",
+          "o": 804.3,
+          "h": 813.0,
+          "l": 796.95,
+          "c": 800.2
+        },
+        {
+          "d": "04 Sep",
+          "o": 803.05,
+          "h": 812.5,
+          "l": 798.15,
+          "c": 801.4
+        },
+        {
+          "d": "07 Sep",
+          "o": 799.5,
+          "h": 808.95,
+          "l": 791.3,
+          "c": 793.3
         }
       ]
     }

@@ -1,13 +1,13 @@
 {
-  "session_date": "2026-09-04",
-  "generated_at": "2026-09-04T22:07:51.505988+05:30",
+  "session_date": "2026-09-07",
+  "generated_at": "2026-09-07T21:24:42.776286+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 170,
+  "total_signals": 149,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
@@ -15,55 +15,55 @@
   "truncated": false,
   "signals": [
     {
-      "symbol": "CDSL",
+      "symbol": "BSE",
       "tier": "BROADER",
       "pattern": "shooting-star",
       "pattern_name": "Shooting Star",
       "direction": "bearish",
-      "close": 1394.6,
-      "change_pct": 0.04,
-      "volume_ratio": 0.89,
+      "close": 3446.2,
+      "change_pct": 1.07,
+      "volume_ratio": 0.78,
       "volume_confirmed": false,
-      "turnover_cr": 134.07,
-      "rsi14": 55.5,
-      "atr14": 30.64,
-      "above_sma50": true,
+      "turnover_cr": 1612.66,
+      "rsi14": 52.3,
+      "atr14": 109.38,
+      "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "31 Aug",
-          "o": 1413.9,
-          "h": 1413.9,
-          "l": 1382.7,
-          "c": 1402.5
-        },
-        {
           "d": "01 Sep",
-          "o": 1400.0,
-          "h": 1407.4,
-          "l": 1376.0,
-          "c": 1391.0
+          "o": 3300.0,
+          "h": 3305.0,
+          "l": 3220.5,
+          "c": 3242.0
         },
         {
           "d": "02 Sep",
-          "o": 1378.0,
-          "h": 1379.7,
-          "l": 1355.9,
-          "c": 1365.2
+          "o": 3222.6,
+          "h": 3265.0,
+          "l": 3131.5,
+          "c": 3168.0
         },
         {
           "d": "03 Sep",
-          "o": 1370.0,
-          "h": 1397.3,
-          "l": 1367.0,
-          "c": 1394.0
+          "o": 3199.9,
+          "h": 3316.5,
+          "l": 3198.9,
+          "c": 3306.1
         },
         {
           "d": "04 Sep",
-          "o": 1400.0,
-          "h": 1417.9,
-          "l": 1391.6,
-          "c": 1394.6
+          "o": 3400.0,
+          "h": 3474.0,
+          "l": 3391.7,
+          "c": 3409.8
+        },
+        {
+          "d": "07 Sep",
+          "o": 3430.0,
+          "h": 3474.5,
+          "l": 3420.0,
+          "c": 3446.2
         }
       ]
     }

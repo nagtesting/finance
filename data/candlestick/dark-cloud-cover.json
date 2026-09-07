@@ -1,122 +1,69 @@
 {
-  "session_date": "2026-09-04",
-  "generated_at": "2026-09-04T22:07:51.505988+05:30",
+  "session_date": "2026-09-07",
+  "generated_at": "2026-09-07T21:24:42.776286+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 170,
+  "total_signals": 149,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
-  "count": 2,
+  "count": 1,
   "truncated": false,
   "signals": [
     {
-      "symbol": "DELHIVERY",
+      "symbol": "GICRE",
       "tier": "BROADER",
       "pattern": "dark-cloud-cover",
       "pattern_name": "Dark Cloud Cover",
       "direction": "bearish",
-      "close": 457.9,
-      "change_pct": -1.39,
-      "volume_ratio": 0.64,
-      "volume_confirmed": false,
-      "turnover_cr": 67.3,
-      "rsi14": 47.1,
-      "atr14": 11.4,
+      "close": 349.8,
+      "change_pct": -2.41,
+      "volume_ratio": 1.52,
+      "volume_confirmed": true,
+      "turnover_cr": 29.28,
+      "rsi14": 40.5,
+      "atr14": 7.37,
       "above_sma50": false,
-      "strength": "unconfirmed",
+      "strength": "confirmed",
       "bars": [
         {
-          "d": "31 Aug",
-          "o": 471.95,
-          "h": 471.95,
-          "l": 456.2,
-          "c": 456.2
-        },
-        {
           "d": "01 Sep",
-          "o": 462.65,
-          "h": 464.35,
-          "l": 457.2,
-          "c": 460.8
+          "o": 356.5,
+          "h": 359.4,
+          "l": 354.0,
+          "c": 354.75
         },
         {
           "d": "02 Sep",
-          "o": 458.5,
-          "h": 459.7,
-          "l": 452.5,
-          "c": 454.8
+          "o": 354.95,
+          "h": 358.45,
+          "l": 352.25,
+          "c": 355.45
         },
         {
           "d": "03 Sep",
-          "o": 455.0,
-          "h": 464.95,
-          "l": 449.5,
-          "c": 464.35
+          "o": 357.0,
+          "h": 359.8,
+          "l": 353.4,
+          "c": 356.15
         },
         {
           "d": "04 Sep",
-          "o": 465.0,
-          "h": 465.9,
-          "l": 457.9,
-          "c": 457.9
-        }
-      ]
-    },
-    {
-      "symbol": "OBEROIRLTY",
-      "tier": "BROADER",
-      "pattern": "dark-cloud-cover",
-      "pattern_name": "Dark Cloud Cover",
-      "direction": "bearish",
-      "close": 1875.6,
-      "change_pct": -1.39,
-      "volume_ratio": 1.13,
-      "volume_confirmed": false,
-      "turnover_cr": 61.45,
-      "rsi14": 53.1,
-      "atr14": 45.89,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "31 Aug",
-          "o": 1861.0,
-          "h": 1875.3,
-          "l": 1842.1,
-          "c": 1868.0
+          "o": 343.65,
+          "h": 361.3,
+          "l": 341.6,
+          "c": 358.45
         },
         {
-          "d": "01 Sep",
-          "o": 1856.3,
-          "h": 1887.2,
-          "l": 1846.6,
-          "c": 1880.7
-        },
-        {
-          "d": "02 Sep",
-          "o": 1869.0,
-          "h": 1869.0,
-          "l": 1828.9,
-          "c": 1866.0
-        },
-        {
-          "d": "03 Sep",
-          "o": 1866.1,
-          "h": 1912.7,
-          "l": 1866.1,
-          "c": 1902.0
-        },
-        {
-          "d": "04 Sep",
-          "o": 1914.0,
-          "h": 1932.8,
-          "l": 1874.0,
-          "c": 1875.6
+          "d": "07 Sep",
+          "o": 361.9,
+          "h": 362.45,
+          "l": 348.2,
+          "c": 349.8
         }
       ]
     }

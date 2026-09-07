@@ -1,71 +1,17 @@
 {
-  "session_date": "2026-09-04",
-  "generated_at": "2026-09-04T22:07:51.505988+05:30",
+  "session_date": "2026-09-07",
+  "generated_at": "2026-09-07T21:24:42.776286+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 170,
+  "total_signals": 149,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "TATACOMM",
-      "tier": "BROADER",
-      "pattern": "morning-star",
-      "pattern_name": "Morning Star",
-      "direction": "bullish",
-      "close": 1756.1,
-      "change_pct": 3.52,
-      "volume_ratio": 1.07,
-      "volume_confirmed": false,
-      "turnover_cr": 42.19,
-      "rsi14": 54.2,
-      "atr14": 47.5,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "31 Aug",
-          "o": 1695.0,
-          "h": 1733.0,
-          "l": 1690.0,
-          "c": 1723.4
-        },
-        {
-          "d": "01 Sep",
-          "o": 1735.1,
-          "h": 1744.9,
-          "l": 1707.9,
-          "c": 1733.8
-        },
-        {
-          "d": "02 Sep",
-          "o": 1733.0,
-          "h": 1733.0,
-          "l": 1692.2,
-          "c": 1710.0
-        },
-        {
-          "d": "03 Sep",
-          "o": 1707.0,
-          "h": 1722.5,
-          "l": 1685.0,
-          "c": 1696.4
-        },
-        {
-          "d": "04 Sep",
-          "o": 1696.4,
-          "h": 1763.0,
-          "l": 1696.4,
-          "c": 1756.1
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
