@@ -1,17 +1,177 @@
 {
-  "session_date": "2026-09-07",
-  "generated_at": "2026-09-07T23:27:39.582234+05:30",
+  "session_date": "2026-09-08",
+  "generated_at": "2026-09-08T20:07:28.436051+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 149,
+  "total_signals": 182,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 0,
+  "count": 3,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "BHARATFORG",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 2003.7,
+      "change_pct": 2.49,
+      "volume_ratio": 1.61,
+      "volume_confirmed": true,
+      "turnover_cr": 213.46,
+      "rsi14": 43.2,
+      "atr14": 54.94,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "02 Sep",
+          "o": 2046.1,
+          "h": 2046.1,
+          "l": 2006.3,
+          "c": 2031.8
+        },
+        {
+          "d": "03 Sep",
+          "o": 2025.0,
+          "h": 2033.0,
+          "l": 1978.3,
+          "c": 1981.0
+        },
+        {
+          "d": "04 Sep",
+          "o": 1997.6,
+          "h": 1997.6,
+          "l": 1951.0,
+          "c": 1956.0
+        },
+        {
+          "d": "07 Sep",
+          "o": 1953.0,
+          "h": 1955.9,
+          "l": 1927.3,
+          "c": 1955.0
+        },
+        {
+          "d": "08 Sep",
+          "o": 1954.5,
+          "h": 2027.5,
+          "l": 1930.5,
+          "c": 2003.7
+        }
+      ]
+    },
+    {
+      "symbol": "SONACOMS",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 804.0,
+      "change_pct": 2.03,
+      "volume_ratio": 0.65,
+      "volume_confirmed": false,
+      "turnover_cr": 136.14,
+      "rsi14": 55.6,
+      "atr14": 21.68,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "02 Sep",
+          "o": 803.0,
+          "h": 803.0,
+          "l": 773.4,
+          "c": 782.65
+        },
+        {
+          "d": "03 Sep",
+          "o": 785.5,
+          "h": 804.9,
+          "l": 785.05,
+          "c": 800.0
+        },
+        {
+          "d": "04 Sep",
+          "o": 800.0,
+          "h": 805.5,
+          "l": 783.2,
+          "c": 789.0
+        },
+        {
+          "d": "07 Sep",
+          "o": 786.95,
+          "h": 790.85,
+          "l": 778.0,
+          "c": 788.0
+        },
+        {
+          "d": "08 Sep",
+          "o": 785.95,
+          "h": 805.9,
+          "l": 778.2,
+          "c": 804.0
+        }
+      ]
+    },
+    {
+      "symbol": "KAJARIACER",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 1250.2,
+      "change_pct": 2.43,
+      "volume_ratio": 1.03,
+      "volume_confirmed": false,
+      "turnover_cr": 19.67,
+      "rsi14": 56.3,
+      "atr14": 33.26,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "02 Sep",
+          "o": 1205.3,
+          "h": 1269.9,
+          "l": 1205.3,
+          "c": 1261.1
+        },
+        {
+          "d": "03 Sep",
+          "o": 1261.9,
+          "h": 1274.5,
+          "l": 1250.6,
+          "c": 1260.6
+        },
+        {
+          "d": "04 Sep",
+          "o": 1260.6,
+          "h": 1262.0,
+          "l": 1235.0,
+          "c": 1239.6
+        },
+        {
+          "d": "07 Sep",
+          "o": 1235.0,
+          "h": 1239.6,
+          "l": 1215.0,
+          "c": 1220.5
+        },
+        {
+          "d": "08 Sep",
+          "o": 1220.4,
+          "h": 1254.6,
+          "l": 1213.7,
+          "c": 1250.2
+        }
+      ]
+    }
+  ]
 }

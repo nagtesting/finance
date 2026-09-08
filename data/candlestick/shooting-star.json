@@ -1,71 +1,17 @@
 {
-  "session_date": "2026-09-07",
-  "generated_at": "2026-09-07T23:27:39.582234+05:30",
+  "session_date": "2026-09-08",
+  "generated_at": "2026-09-08T20:07:28.436051+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 149,
+  "total_signals": 182,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "BSE",
-      "tier": "BROADER",
-      "pattern": "shooting-star",
-      "pattern_name": "Shooting Star",
-      "direction": "bearish",
-      "close": 3446.2,
-      "change_pct": 1.07,
-      "volume_ratio": 0.78,
-      "volume_confirmed": false,
-      "turnover_cr": 1612.66,
-      "rsi14": 52.3,
-      "atr14": 109.38,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "01 Sep",
-          "o": 3300.0,
-          "h": 3305.0,
-          "l": 3220.5,
-          "c": 3242.0
-        },
-        {
-          "d": "02 Sep",
-          "o": 3222.6,
-          "h": 3265.0,
-          "l": 3131.5,
-          "c": 3168.0
-        },
-        {
-          "d": "03 Sep",
-          "o": 3199.9,
-          "h": 3316.5,
-          "l": 3198.9,
-          "c": 3306.1
-        },
-        {
-          "d": "04 Sep",
-          "o": 3400.0,
-          "h": 3474.0,
-          "l": 3391.7,
-          "c": 3409.8
-        },
-        {
-          "d": "07 Sep",
-          "o": 3430.0,
-          "h": 3474.5,
-          "l": 3420.0,
-          "c": 3446.2
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
