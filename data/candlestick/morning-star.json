@@ -1,175 +1,122 @@
 {
-  "session_date": "2026-09-08",
-  "generated_at": "2026-09-08T22:22:31.798586+05:30",
+  "session_date": "2026-09-09",
+  "generated_at": "2026-09-09T20:09:37.604212+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 182,
+  "total_signals": 140,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 3,
+  "count": 2,
   "truncated": false,
   "signals": [
     {
-      "symbol": "BHARATFORG",
+      "symbol": "CESC",
       "tier": "BROADER",
       "pattern": "morning-star",
       "pattern_name": "Morning Star",
       "direction": "bullish",
-      "close": 2003.7,
-      "change_pct": 2.49,
-      "volume_ratio": 1.61,
+      "close": 149.67,
+      "change_pct": 2.48,
+      "volume_ratio": 3.95,
       "volume_confirmed": true,
-      "turnover_cr": 213.46,
-      "rsi14": 43.2,
-      "atr14": 54.94,
+      "turnover_cr": 24.71,
+      "rsi14": 39.2,
+      "atr14": 3.97,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
         {
           "d": "02 Sep",
-          "o": 2046.1,
-          "h": 2046.1,
-          "l": 2006.3,
-          "c": 2031.8
+          "o": 144.52,
+          "h": 147.94,
+          "l": 143.55,
+          "c": 146.44
         },
         {
           "d": "03 Sep",
-          "o": 2025.0,
-          "h": 2033.0,
-          "l": 1978.3,
-          "c": 1981.0
+          "o": 147.5,
+          "h": 151.11,
+          "l": 147.0,
+          "c": 147.96
         },
         {
           "d": "04 Sep",
-          "o": 1997.6,
-          "h": 1997.6,
-          "l": 1951.0,
-          "c": 1956.0
-        },
-        {
-          "d": "07 Sep",
-          "o": 1953.0,
-          "h": 1955.9,
-          "l": 1927.3,
-          "c": 1955.0
+          "o": 148.29,
+          "h": 149.14,
+          "l": 145.91,
+          "c": 146.5
         },
         {
           "d": "08 Sep",
-          "o": 1954.5,
-          "h": 2027.5,
-          "l": 1930.5,
-          "c": 2003.7
+          "o": 145.47,
+          "h": 146.66,
+          "l": 143.9,
+          "c": 146.05
+        },
+        {
+          "d": "09 Sep",
+          "o": 145.79,
+          "h": 153.42,
+          "l": 145.21,
+          "c": 149.67
         }
       ]
     },
     {
-      "symbol": "SONACOMS",
+      "symbol": "JSWENERGY",
       "tier": "BROADER",
       "pattern": "morning-star",
       "pattern_name": "Morning Star",
       "direction": "bullish",
-      "close": 804.0,
-      "change_pct": 2.03,
-      "volume_ratio": 0.65,
+      "close": 534.8,
+      "change_pct": 1.58,
+      "volume_ratio": 1.07,
       "volume_confirmed": false,
-      "turnover_cr": 136.14,
-      "rsi14": 55.6,
-      "atr14": 21.68,
-      "above_sma50": true,
+      "turnover_cr": 97.94,
+      "rsi14": 45.0,
+      "atr14": 12.6,
+      "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "02 Sep",
-          "o": 803.0,
-          "h": 803.0,
-          "l": 773.4,
-          "c": 782.65
-        },
-        {
           "d": "03 Sep",
-          "o": 785.5,
-          "h": 804.9,
-          "l": 785.05,
-          "c": 800.0
+          "o": 542.05,
+          "h": 545.8,
+          "l": 534.3,
+          "c": 539.5
         },
         {
           "d": "04 Sep",
-          "o": 800.0,
-          "h": 805.5,
-          "l": 783.2,
-          "c": 789.0
+          "o": 537.55,
+          "h": 540.25,
+          "l": 534.25,
+          "c": 539.85
         },
         {
           "d": "07 Sep",
-          "o": 786.95,
-          "h": 790.85,
-          "l": 778.0,
-          "c": 788.0
+          "o": 539.9,
+          "h": 541.25,
+          "l": 528.0,
+          "c": 530.0
         },
         {
           "d": "08 Sep",
-          "o": 785.95,
-          "h": 805.9,
-          "l": 778.2,
-          "c": 804.0
-        }
-      ]
-    },
-    {
-      "symbol": "KAJARIACER",
-      "tier": "BROADER",
-      "pattern": "morning-star",
-      "pattern_name": "Morning Star",
-      "direction": "bullish",
-      "close": 1250.2,
-      "change_pct": 2.43,
-      "volume_ratio": 1.03,
-      "volume_confirmed": false,
-      "turnover_cr": 19.67,
-      "rsi14": 56.3,
-      "atr14": 33.26,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 1205.3,
-          "h": 1269.9,
-          "l": 1205.3,
-          "c": 1261.1
+          "o": 527.05,
+          "h": 528.85,
+          "l": 522.3,
+          "c": 526.5
         },
         {
-          "d": "03 Sep",
-          "o": 1261.9,
-          "h": 1274.5,
-          "l": 1250.6,
-          "c": 1260.6
-        },
-        {
-          "d": "04 Sep",
-          "o": 1260.6,
-          "h": 1262.0,
-          "l": 1235.0,
-          "c": 1239.6
-        },
-        {
-          "d": "07 Sep",
-          "o": 1235.0,
-          "h": 1239.6,
-          "l": 1215.0,
-          "c": 1220.5
-        },
-        {
-          "d": "08 Sep",
-          "o": 1220.4,
-          "h": 1254.6,
-          "l": 1213.7,
-          "c": 1250.2
+          "d": "09 Sep",
+          "o": 526.5,
+          "h": 541.7,
+          "l": 521.5,
+          "c": 534.8
         }
       ]
     }

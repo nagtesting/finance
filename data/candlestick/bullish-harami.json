@@ -1,1129 +1,387 @@
 {
-  "session_date": "2026-09-08",
-  "generated_at": "2026-09-08T22:22:31.798586+05:30",
+  "session_date": "2026-09-09",
+  "generated_at": "2026-09-09T20:09:37.604212+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 182,
+  "total_signals": 140,
   "pattern": "bullish-harami",
   "pattern_name": "Bullish Harami",
   "direction": "bullish",
-  "count": 21,
+  "count": 7,
   "truncated": false,
   "signals": [
     {
-      "symbol": "LINDEINDIA",
+      "symbol": "IDBI",
       "tier": "BROADER",
       "pattern": "bullish-harami",
       "pattern_name": "Bullish Harami",
       "direction": "bullish",
-      "close": 6380.0,
-      "change_pct": 0.54,
-      "volume_ratio": 4.26,
+      "close": 81.56,
+      "change_pct": 0.55,
+      "volume_ratio": 1.41,
       "volume_confirmed": true,
-      "turnover_cr": 13.82,
-      "rsi14": 33.8,
-      "atr14": 148.36,
+      "turnover_cr": 66.87,
+      "rsi14": 38.3,
+      "atr14": 3.5,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "01 Sep",
-          "o": 6380.0,
-          "h": 6446.5,
-          "l": 6332.0,
-          "c": 6373.0
-        },
-        {
-          "d": "02 Sep",
-          "o": 6363.0,
-          "h": 6446.0,
-          "l": 6310.0,
-          "c": 6352.5
-        },
-        {
           "d": "03 Sep",
-          "o": 6357.0,
-          "h": 6418.0,
-          "l": 6316.0,
-          "c": 6373.0
+          "o": 92.25,
+          "h": 93.45,
+          "l": 91.6,
+          "c": 91.97
         },
         {
           "d": "04 Sep",
-          "o": 6409.0,
-          "h": 6411.0,
-          "l": 6330.0,
-          "c": 6346.0
-        },
-        {
-          "d": "08 Sep",
-          "o": 6367.0,
-          "h": 6490.5,
-          "l": 6330.5,
-          "c": 6380.0
-        }
-      ]
-    },
-    {
-      "symbol": "CANBK",
-      "tier": "NIFTY 100",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 124.68,
-      "change_pct": 0.55,
-      "volume_ratio": 0.7,
-      "volume_confirmed": false,
-      "turnover_cr": 149.19,
-      "rsi14": 39.8,
-      "atr14": 2.43,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 125.35,
-          "h": 126.99,
-          "l": 124.38,
-          "c": 126.3
-        },
-        {
-          "d": "03 Sep",
-          "o": 126.78,
-          "h": 128.69,
-          "l": 125.71,
-          "c": 125.8
-        },
-        {
-          "d": "04 Sep",
-          "o": 126.3,
-          "h": 127.3,
-          "l": 125.5,
-          "c": 125.5
+          "o": 92.4,
+          "h": 92.4,
+          "l": 90.42,
+          "c": 90.63
         },
         {
           "d": "07 Sep",
-          "o": 125.8,
-          "h": 126.35,
-          "l": 124.0,
-          "c": 124.0
+          "o": 90.0,
+          "h": 92.65,
+          "l": 89.73,
+          "c": 90.75
         },
         {
           "d": "08 Sep",
-          "o": 124.02,
-          "h": 124.84,
-          "l": 123.85,
-          "c": 124.68
+          "o": 91.3,
+          "h": 92.0,
+          "l": 79.05,
+          "c": 81.11
+        },
+        {
+          "d": "09 Sep",
+          "o": 81.4,
+          "h": 83.47,
+          "l": 80.12,
+          "c": 81.56
         }
       ]
     },
     {
-      "symbol": "GODREJCP",
-      "tier": "NIFTY 100",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 865.0,
-      "change_pct": 0.36,
-      "volume_ratio": 0.48,
-      "volume_confirmed": false,
-      "turnover_cr": 122.52,
-      "rsi14": 23.6,
-      "atr14": 21.5,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 900.55,
-          "h": 905.0,
-          "l": 891.5,
-          "c": 905.0
-        },
-        {
-          "d": "03 Sep",
-          "o": 893.0,
-          "h": 893.0,
-          "l": 859.55,
-          "c": 880.0
-        },
-        {
-          "d": "04 Sep",
-          "o": 878.65,
-          "h": 880.0,
-          "l": 866.1,
-          "c": 878.0
-        },
-        {
-          "d": "07 Sep",
-          "o": 878.5,
-          "h": 879.05,
-          "l": 857.1,
-          "c": 861.9
-        },
-        {
-          "d": "08 Sep",
-          "o": 866.5,
-          "h": 870.95,
-          "l": 855.15,
-          "c": 865.0
-        }
-      ]
-    },
-    {
-      "symbol": "PIDILITIND",
-      "tier": "NIFTY 100",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 1593.0,
-      "change_pct": 1.14,
-      "volume_ratio": 0.93,
-      "volume_confirmed": false,
-      "turnover_cr": 106.9,
-      "rsi14": 41.4,
-      "atr14": 31.87,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 1639.0,
-          "h": 1639.5,
-          "l": 1624.1,
-          "c": 1637.0
-        },
-        {
-          "d": "03 Sep",
-          "o": 1633.0,
-          "h": 1638.3,
-          "l": 1621.2,
-          "c": 1638.3
-        },
-        {
-          "d": "04 Sep",
-          "o": 1635.2,
-          "h": 1638.3,
-          "l": 1625.0,
-          "c": 1629.5
-        },
-        {
-          "d": "07 Sep",
-          "o": 1625.9,
-          "h": 1628.9,
-          "l": 1575.0,
-          "c": 1575.0
-        },
-        {
-          "d": "08 Sep",
-          "o": 1579.8,
-          "h": 1593.0,
-          "l": 1565.0,
-          "c": 1593.0
-        }
-      ]
-    },
-    {
-      "symbol": "BAJAJHLDNG",
-      "tier": "NIFTY 100",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 11046.0,
-      "change_pct": 0.82,
-      "volume_ratio": 0.61,
-      "volume_confirmed": false,
-      "turnover_cr": 37.85,
-      "rsi14": 45.5,
-      "atr14": 247.94,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 11210.0,
-          "h": 11247.0,
-          "l": 11059.0,
-          "c": 11100.0
-        },
-        {
-          "d": "03 Sep",
-          "o": 11070.0,
-          "h": 11260.0,
-          "l": 11028.0,
-          "c": 11165.0
-        },
-        {
-          "d": "04 Sep",
-          "o": 11102.0,
-          "h": 11355.0,
-          "l": 11100.0,
-          "c": 11162.0
-        },
-        {
-          "d": "07 Sep",
-          "o": 11200.0,
-          "h": 11200.0,
-          "l": 10956.0,
-          "c": 10956.0
-        },
-        {
-          "d": "08 Sep",
-          "o": 11094.0,
-          "h": 11124.0,
-          "l": 10970.0,
-          "c": 11046.0
-        }
-      ]
-    },
-    {
-      "symbol": "BHEL",
+      "symbol": "BELRISE",
       "tier": "BROADER",
       "pattern": "bullish-harami",
       "pattern_name": "Bullish Harami",
       "direction": "bullish",
-      "close": 422.15,
-      "change_pct": 0.17,
-      "volume_ratio": 0.52,
+      "close": 228.54,
+      "change_pct": 0.6,
+      "volume_ratio": 0.25,
       "volume_confirmed": false,
-      "turnover_cr": 253.48,
-      "rsi14": 50.8,
-      "atr14": 11.83,
-      "above_sma50": true,
+      "turnover_cr": 82.49,
+      "rsi14": 42.8,
+      "atr14": 6.81,
+      "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "02 Sep",
-          "o": 423.55,
-          "h": 427.5,
-          "l": 417.35,
-          "c": 427.5
-        },
-        {
           "d": "03 Sep",
-          "o": 428.5,
-          "h": 432.7,
-          "l": 424.05,
-          "c": 431.8
+          "o": 236.86,
+          "h": 239.2,
+          "l": 235.37,
+          "c": 238.11
         },
         {
           "d": "04 Sep",
-          "o": 433.0,
-          "h": 439.2,
-          "l": 429.2,
-          "c": 431.1
+          "o": 238.15,
+          "h": 239.25,
+          "l": 233.52,
+          "c": 236.86
         },
         {
           "d": "07 Sep",
-          "o": 432.9,
-          "h": 434.95,
-          "l": 418.55,
-          "c": 421.45
+          "o": 235.0,
+          "h": 238.4,
+          "l": 229.25,
+          "c": 230.29
         },
         {
           "d": "08 Sep",
-          "o": 422.5,
-          "h": 426.7,
-          "l": 419.85,
-          "c": 422.15
+          "o": 230.41,
+          "h": 230.95,
+          "l": 225.0,
+          "c": 227.17
+        },
+        {
+          "d": "09 Sep",
+          "o": 227.5,
+          "h": 231.54,
+          "l": 227.5,
+          "c": 228.54
         }
       ]
     },
     {
-      "symbol": "NATIONALUM",
+      "symbol": "TIINDIA",
       "tier": "BROADER",
       "pattern": "bullish-harami",
       "pattern_name": "Bullish Harami",
       "direction": "bullish",
-      "close": 371.05,
-      "change_pct": 1.41,
-      "volume_ratio": 0.73,
+      "close": 2678.3,
+      "change_pct": 1.5,
+      "volume_ratio": 0.5,
       "volume_confirmed": false,
-      "turnover_cr": 204.56,
-      "rsi14": 45.9,
-      "atr14": 11.41,
-      "above_sma50": true,
+      "turnover_cr": 61.19,
+      "rsi14": 37.9,
+      "atr14": 78.36,
+      "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
           "d": "02 Sep",
-          "o": 371.65,
-          "h": 373.5,
-          "l": 367.5,
-          "c": 370.0
+          "o": 2748.3,
+          "h": 2748.3,
+          "l": 2680.5,
+          "c": 2720.0
         },
         {
           "d": "03 Sep",
-          "o": 374.0,
-          "h": 378.5,
-          "l": 370.55,
-          "c": 374.0
+          "o": 2720.0,
+          "h": 2735.4,
+          "l": 2685.4,
+          "c": 2735.4
         },
         {
           "d": "04 Sep",
-          "o": 376.0,
-          "h": 378.95,
-          "l": 372.75,
-          "c": 374.1
+          "o": 2727.0,
+          "h": 2727.0,
+          "l": 2685.0,
+          "c": 2698.0
+        },
+        {
+          "d": "08 Sep",
+          "o": 2683.4,
+          "h": 2683.4,
+          "l": 2626.2,
+          "c": 2638.7
+        },
+        {
+          "d": "09 Sep",
+          "o": 2649.4,
+          "h": 2708.6,
+          "l": 2596.3,
+          "c": 2678.3
+        }
+      ]
+    },
+    {
+      "symbol": "PHOENIXLTD",
+      "tier": "BROADER",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 1885.3,
+      "change_pct": 0.02,
+      "volume_ratio": 0.79,
+      "volume_confirmed": false,
+      "turnover_cr": 54.45,
+      "rsi14": 42.1,
+      "atr14": 41.51,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "03 Sep",
+          "o": 1923.0,
+          "h": 1971.0,
+          "l": 1920.6,
+          "c": 1960.0
+        },
+        {
+          "d": "04 Sep",
+          "o": 1961.5,
+          "h": 1969.3,
+          "l": 1935.5,
+          "c": 1942.0
         },
         {
           "d": "07 Sep",
-          "o": 376.05,
-          "h": 377.5,
-          "l": 365.9,
-          "c": 365.9
+          "o": 1942.0,
+          "h": 1942.0,
+          "l": 1899.1,
+          "c": 1905.0
         },
         {
           "d": "08 Sep",
-          "o": 370.7,
-          "h": 378.3,
-          "l": 367.8,
-          "c": 371.05
+          "o": 1910.7,
+          "h": 1915.0,
+          "l": 1885.0,
+          "c": 1885.0
+        },
+        {
+          "d": "09 Sep",
+          "o": 1892.0,
+          "h": 1915.9,
+          "l": 1865.2,
+          "c": 1885.3
         }
       ]
     },
     {
-      "symbol": "NMDC",
+      "symbol": "PETRONET",
       "tier": "BROADER",
       "pattern": "bullish-harami",
       "pattern_name": "Bullish Harami",
       "direction": "bullish",
-      "close": 84.71,
-      "change_pct": 1.03,
-      "volume_ratio": 0.66,
-      "volume_confirmed": false,
-      "turnover_cr": 142.57,
-      "rsi14": 47.9,
-      "atr14": 2.0,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 84.9,
-          "h": 85.75,
-          "l": 84.25,
-          "c": 85.75
-        },
-        {
-          "d": "03 Sep",
-          "o": 85.76,
-          "h": 86.87,
-          "l": 84.19,
-          "c": 84.19
-        },
-        {
-          "d": "04 Sep",
-          "o": 84.52,
-          "h": 85.18,
-          "l": 84.26,
-          "c": 84.7
-        },
-        {
-          "d": "07 Sep",
-          "o": 85.29,
-          "h": 85.63,
-          "l": 83.54,
-          "c": 83.85
-        },
-        {
-          "d": "08 Sep",
-          "o": 84.06,
-          "h": 84.78,
-          "l": 83.74,
-          "c": 84.71
-        }
-      ]
-    },
-    {
-      "symbol": "FORTIS",
-      "tier": "BROADER",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 908.0,
-      "change_pct": 0.33,
-      "volume_ratio": 0.56,
-      "volume_confirmed": false,
-      "turnover_cr": 97.55,
-      "rsi14": 44.1,
-      "atr14": 19.59,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "01 Sep",
-          "o": 911.6,
-          "h": 921.45,
-          "l": 893.0,
-          "c": 915.0
-        },
-        {
-          "d": "02 Sep",
-          "o": 907.65,
-          "h": 915.0,
-          "l": 901.35,
-          "c": 915.0
-        },
-        {
-          "d": "03 Sep",
-          "o": 915.0,
-          "h": 920.0,
-          "l": 908.45,
-          "c": 917.5
-        },
-        {
-          "d": "04 Sep",
-          "o": 914.0,
-          "h": 917.45,
-          "l": 903.8,
-          "c": 905.0
-        },
-        {
-          "d": "08 Sep",
-          "o": 908.05,
-          "h": 913.0,
-          "l": 902.35,
-          "c": 908.0
-        }
-      ]
-    },
-    {
-      "symbol": "BIOCON",
-      "tier": "BROADER",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 392.3,
-      "change_pct": 0.23,
-      "volume_ratio": 1.09,
-      "volume_confirmed": false,
-      "turnover_cr": 95.57,
-      "rsi14": 31.2,
-      "atr14": 8.35,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 400.0,
-          "h": 402.4,
-          "l": 397.9,
-          "c": 401.0
-        },
-        {
-          "d": "03 Sep",
-          "o": 402.5,
-          "h": 405.7,
-          "l": 400.6,
-          "c": 402.0
-        },
-        {
-          "d": "04 Sep",
-          "o": 404.0,
-          "h": 404.9,
-          "l": 396.2,
-          "c": 397.4
-        },
-        {
-          "d": "07 Sep",
-          "o": 396.5,
-          "h": 397.35,
-          "l": 388.65,
-          "c": 391.4
-        },
-        {
-          "d": "08 Sep",
-          "o": 392.15,
-          "h": 399.9,
-          "l": 390.9,
-          "c": 392.3
-        }
-      ]
-    },
-    {
-      "symbol": "GMRAIRPORT",
-      "tier": "BROADER",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 97.0,
-      "change_pct": 1.1,
-      "volume_ratio": 0.66,
-      "volume_confirmed": false,
-      "turnover_cr": 90.95,
-      "rsi14": 39.8,
-      "atr14": 2.34,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 93.4,
-          "h": 94.21,
-          "l": 92.6,
-          "c": 93.99
-        },
-        {
-          "d": "03 Sep",
-          "o": 95.0,
-          "h": 96.87,
-          "l": 94.31,
-          "c": 96.87
-        },
-        {
-          "d": "04 Sep",
-          "o": 96.86,
-          "h": 97.98,
-          "l": 96.3,
-          "c": 97.45
-        },
-        {
-          "d": "07 Sep",
-          "o": 98.05,
-          "h": 98.48,
-          "l": 95.65,
-          "c": 95.94
-        },
-        {
-          "d": "08 Sep",
-          "o": 95.94,
-          "h": 97.28,
-          "l": 95.74,
-          "c": 97.0
-        }
-      ]
-    },
-    {
-      "symbol": "PATANJALI",
-      "tier": "BROADER",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 342.0,
-      "change_pct": 0.32,
-      "volume_ratio": 0.51,
-      "volume_confirmed": false,
-      "turnover_cr": 66.21,
-      "rsi14": 33.2,
-      "atr14": 7.11,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 344.9,
-          "h": 345.0,
-          "l": 339.1,
-          "c": 345.0
-        },
-        {
-          "d": "03 Sep",
-          "o": 347.0,
-          "h": 347.15,
-          "l": 340.3,
-          "c": 342.9
-        },
-        {
-          "d": "04 Sep",
-          "o": 345.0,
-          "h": 345.75,
-          "l": 341.2,
-          "c": 342.5
-        },
-        {
-          "d": "07 Sep",
-          "o": 344.0,
-          "h": 344.0,
-          "l": 336.15,
-          "c": 340.9
-        },
-        {
-          "d": "08 Sep",
-          "o": 342.0,
-          "h": 342.8,
-          "l": 339.0,
-          "c": 342.0
-        }
-      ]
-    },
-    {
-      "symbol": "AWL",
-      "tier": "BROADER",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 187.52,
-      "change_pct": 0.12,
-      "volume_ratio": 0.24,
-      "volume_confirmed": false,
-      "turnover_cr": 56.04,
-      "rsi14": 42.0,
-      "atr14": 4.84,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "01 Sep",
-          "o": 192.01,
-          "h": 195.5,
-          "l": 192.01,
-          "c": 194.38
-        },
-        {
-          "d": "02 Sep",
-          "o": 194.01,
-          "h": 194.02,
-          "l": 189.71,
-          "c": 191.25
-        },
-        {
-          "d": "03 Sep",
-          "o": 192.0,
-          "h": 193.19,
-          "l": 190.1,
-          "c": 190.79
-        },
-        {
-          "d": "04 Sep",
-          "o": 191.11,
-          "h": 191.9,
-          "l": 186.2,
-          "c": 187.29
-        },
-        {
-          "d": "08 Sep",
-          "o": 187.95,
-          "h": 188.31,
-          "l": 186.0,
-          "c": 187.52
-        }
-      ]
-    },
-    {
-      "symbol": "COLPAL",
-      "tier": "BROADER",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 1819.9,
-      "change_pct": 0.35,
-      "volume_ratio": 0.57,
-      "volume_confirmed": false,
-      "turnover_cr": 53.1,
-      "rsi14": 33.1,
-      "atr14": 39.27,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 1848.8,
-          "h": 1862.6,
-          "l": 1831.9,
-          "c": 1861.5
-        },
-        {
-          "d": "03 Sep",
-          "o": 1863.0,
-          "h": 1871.9,
-          "l": 1845.0,
-          "c": 1850.0
-        },
-        {
-          "d": "04 Sep",
-          "o": 1860.0,
-          "h": 1863.9,
-          "l": 1829.2,
-          "c": 1829.2
-        },
-        {
-          "d": "07 Sep",
-          "o": 1836.0,
-          "h": 1838.9,
-          "l": 1807.3,
-          "c": 1813.5
-        },
-        {
-          "d": "08 Sep",
-          "o": 1814.0,
-          "h": 1841.3,
-          "l": 1799.1,
-          "c": 1819.9
-        }
-      ]
-    },
-    {
-      "symbol": "KEC",
-      "tier": "BROADER",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 405.7,
-      "change_pct": 1.01,
-      "volume_ratio": 0.42,
-      "volume_confirmed": false,
-      "turnover_cr": 28.93,
-      "rsi14": 30.9,
-      "atr14": 10.39,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 415.0,
-          "h": 416.0,
-          "l": 406.5,
-          "c": 407.8
-        },
-        {
-          "d": "03 Sep",
-          "o": 410.0,
-          "h": 411.95,
-          "l": 399.55,
-          "c": 406.15
-        },
-        {
-          "d": "04 Sep",
-          "o": 406.15,
-          "h": 410.6,
-          "l": 403.3,
-          "c": 408.55
-        },
-        {
-          "d": "07 Sep",
-          "o": 408.55,
-          "h": 409.8,
-          "l": 399.55,
-          "c": 401.65
-        },
-        {
-          "d": "08 Sep",
-          "o": 401.65,
-          "h": 407.25,
-          "l": 401.65,
-          "c": 405.7
-        }
-      ]
-    },
-    {
-      "symbol": "FIVESTAR",
-      "tier": "BROADER",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 524.15,
-      "change_pct": 0.21,
-      "volume_ratio": 0.27,
-      "volume_confirmed": false,
-      "turnover_cr": 18.6,
-      "rsi14": 46.7,
-      "atr14": 17.3,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "01 Sep",
-          "o": 535.65,
-          "h": 539.8,
-          "l": 525.55,
-          "c": 538.1
-        },
-        {
-          "d": "02 Sep",
-          "o": 535.0,
-          "h": 535.0,
-          "l": 518.5,
-          "c": 524.85
-        },
-        {
-          "d": "03 Sep",
-          "o": 525.0,
-          "h": 538.0,
-          "l": 523.8,
-          "c": 534.6
-        },
-        {
-          "d": "04 Sep",
-          "o": 538.0,
-          "h": 538.0,
-          "l": 512.5,
-          "c": 523.05
-        },
-        {
-          "d": "08 Sep",
-          "o": 524.05,
-          "h": 528.75,
-          "l": 518.5,
-          "c": 524.15
-        }
-      ]
-    },
-    {
-      "symbol": "IGIL",
-      "tier": "BROADER",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 318.1,
+      "close": 285.9,
       "change_pct": 0.03,
-      "volume_ratio": 0.65,
+      "volume_ratio": 0.54,
       "volume_confirmed": false,
-      "turnover_cr": 13.31,
-      "rsi14": 31.2,
-      "atr14": 10.52,
-      "above_sma50": false,
+      "turnover_cr": 50.37,
+      "rsi14": 48.7,
+      "atr14": 5.91,
+      "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
           "d": "02 Sep",
-          "o": 339.05,
-          "h": 339.05,
-          "l": 325.85,
-          "c": 327.2
+          "o": 293.25,
+          "h": 294.0,
+          "l": 288.35,
+          "c": 289.2
         },
         {
           "d": "03 Sep",
-          "o": 329.4,
-          "h": 330.0,
-          "l": 321.2,
-          "c": 325.95
+          "o": 289.2,
+          "h": 293.2,
+          "l": 289.2,
+          "c": 289.5
         },
         {
           "d": "04 Sep",
-          "o": 330.0,
-          "h": 330.95,
-          "l": 322.05,
-          "c": 323.5
-        },
-        {
-          "d": "07 Sep",
-          "o": 324.05,
-          "h": 324.05,
-          "l": 312.05,
-          "c": 318.0
+          "o": 290.25,
+          "h": 292.15,
+          "l": 287.8,
+          "c": 288.1
         },
         {
           "d": "08 Sep",
-          "o": 318.0,
-          "h": 320.05,
-          "l": 314.35,
-          "c": 318.1
+          "o": 290.95,
+          "h": 291.0,
+          "l": 285.0,
+          "c": 285.8
+        },
+        {
+          "d": "09 Sep",
+          "o": 285.8,
+          "h": 288.5,
+          "l": 284.15,
+          "c": 285.9
         }
       ]
     },
     {
-      "symbol": "NTPCGREEN",
+      "symbol": "NATCOPHARM",
       "tier": "BROADER",
       "pattern": "bullish-harami",
       "pattern_name": "Bullish Harami",
       "direction": "bullish",
-      "close": 88.44,
-      "change_pct": 0.32,
-      "volume_ratio": 0.8,
+      "close": 826.3,
+      "change_pct": 0.07,
+      "volume_ratio": 1.04,
       "volume_confirmed": false,
-      "turnover_cr": 13.19,
-      "rsi14": 35.2,
-      "atr14": 1.39,
+      "turnover_cr": 32.07,
+      "rsi14": 28.8,
+      "atr14": 22.72,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
           "d": "02 Sep",
-          "o": 89.11,
-          "h": 89.12,
-          "l": 88.0,
-          "c": 88.12
+          "o": 848.0,
+          "h": 857.35,
+          "l": 833.5,
+          "c": 843.25
         },
         {
           "d": "03 Sep",
-          "o": 88.25,
-          "h": 89.59,
-          "l": 87.9,
-          "c": 88.73
+          "o": 843.3,
+          "h": 849.95,
+          "l": 835.8,
+          "c": 838.3
         },
         {
           "d": "04 Sep",
-          "o": 88.74,
-          "h": 89.5,
-          "l": 88.65,
-          "c": 89.36
-        },
-        {
-          "d": "07 Sep",
-          "o": 89.39,
-          "h": 89.5,
-          "l": 88.06,
-          "c": 88.16
+          "o": 839.0,
+          "h": 841.8,
+          "l": 826.5,
+          "c": 828.65
         },
         {
           "d": "08 Sep",
-          "o": 88.16,
-          "h": 88.6,
-          "l": 87.5,
-          "c": 88.44
+          "o": 838.3,
+          "h": 846.85,
+          "l": 823.4,
+          "c": 825.75
+        },
+        {
+          "d": "09 Sep",
+          "o": 827.9,
+          "h": 838.9,
+          "l": 815.2,
+          "c": 826.3
         }
       ]
     },
     {
-      "symbol": "JBMA",
+      "symbol": "LATENTVIEW",
       "tier": "BROADER",
       "pattern": "bullish-harami",
       "pattern_name": "Bullish Harami",
       "direction": "bullish",
-      "close": 615.35,
-      "change_pct": 0.29,
-      "volume_ratio": 0.15,
+      "close": 260.15,
+      "change_pct": 0.81,
+      "volume_ratio": 0.92,
       "volume_confirmed": false,
-      "turnover_cr": 12.69,
-      "rsi14": 39.3,
-      "atr14": 16.31,
+      "turnover_cr": 12.0,
+      "rsi14": 32.3,
+      "atr14": 8.64,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
           "d": "02 Sep",
-          "o": 620.0,
-          "h": 631.55,
-          "l": 611.5,
-          "c": 621.5
+          "o": 270.0,
+          "h": 272.55,
+          "l": 268.45,
+          "c": 271.0
         },
         {
           "d": "03 Sep",
-          "o": 623.95,
-          "h": 643.8,
-          "l": 620.55,
-          "c": 629.1
+          "o": 273.45,
+          "h": 273.45,
+          "l": 265.25,
+          "c": 266.0
         },
         {
           "d": "04 Sep",
-          "o": 629.5,
-          "h": 633.75,
-          "l": 622.05,
-          "c": 625.6
-        },
-        {
-          "d": "07 Sep",
-          "o": 622.8,
-          "h": 625.5,
-          "l": 610.9,
-          "c": 613.6
+          "o": 267.0,
+          "h": 270.8,
+          "l": 265.85,
+          "c": 267.25
         },
         {
           "d": "08 Sep",
-          "o": 615.0,
-          "h": 618.0,
-          "l": 612.95,
-          "c": 615.35
-        }
-      ]
-    },
-    {
-      "symbol": "SOBHA",
-      "tier": "BROADER",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 1255.6,
-      "change_pct": 0.44,
-      "volume_ratio": 0.38,
-      "volume_confirmed": false,
-      "turnover_cr": 8.46,
-      "rsi14": 37.8,
-      "atr14": 33.57,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 1249.0,
-          "h": 1249.9,
-          "l": 1221.0,
-          "c": 1230.1
+          "o": 261.75,
+          "h": 262.05,
+          "l": 256.95,
+          "c": 258.05
         },
         {
-          "d": "03 Sep",
-          "o": 1245.8,
-          "h": 1272.6,
-          "l": 1240.0,
-          "c": 1259.1
-        },
-        {
-          "d": "04 Sep",
-          "o": 1273.3,
-          "h": 1276.6,
-          "l": 1243.1,
-          "c": 1263.8
-        },
-        {
-          "d": "07 Sep",
-          "o": 1276.0,
-          "h": 1276.0,
-          "l": 1243.2,
-          "c": 1250.1
-        },
-        {
-          "d": "08 Sep",
-          "o": 1255.0,
-          "h": 1262.4,
-          "l": 1242.0,
-          "c": 1255.6
-        }
-      ]
-    },
-    {
-      "symbol": "IOB",
-      "tier": "BROADER",
-      "pattern": "bullish-harami",
-      "pattern_name": "Bullish Harami",
-      "direction": "bullish",
-      "close": 33.34,
-      "change_pct": 0.73,
-      "volume_ratio": 0.61,
-      "volume_confirmed": false,
-      "turnover_cr": 6.77,
-      "rsi14": 50.2,
-      "atr14": 0.57,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 32.15,
-          "h": 32.84,
-          "l": 31.83,
-          "c": 32.68
-        },
-        {
-          "d": "03 Sep",
-          "o": 32.75,
-          "h": 33.4,
-          "l": 32.68,
-          "c": 33.23
-        },
-        {
-          "d": "04 Sep",
-          "o": 33.31,
-          "h": 33.64,
-          "l": 33.02,
-          "c": 33.55
-        },
-        {
-          "d": "07 Sep",
-          "o": 33.55,
-          "h": 33.63,
-          "l": 33.02,
-          "c": 33.1
-        },
-        {
-          "d": "08 Sep",
-          "o": 33.1,
-          "h": 33.45,
-          "l": 32.9,
-          "c": 33.34
+          "d": "09 Sep",
+          "o": 258.05,
+          "h": 263.35,
+          "l": 254.5,
+          "c": 260.15
         }
       ]
     }
