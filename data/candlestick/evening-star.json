@@ -1,13 +1,13 @@
 {
-  "session_date": "2026-09-09",
-  "generated_at": "2026-09-09T22:25:38.331430+05:30",
+  "session_date": "2026-09-10",
+  "generated_at": "2026-09-10T20:00:32.623353+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 140,
+  "total_signals": 179,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
@@ -15,55 +15,55 @@
   "truncated": false,
   "signals": [
     {
-      "symbol": "GLENMARK",
+      "symbol": "SAILIFE",
       "tier": "BROADER",
       "pattern": "evening-star",
       "pattern_name": "Evening Star",
       "direction": "bearish",
-      "close": 2435.0,
-      "change_pct": -1.6,
-      "volume_ratio": 0.8,
-      "volume_confirmed": false,
-      "turnover_cr": 117.69,
-      "rsi14": 57.6,
-      "atr14": 58.89,
+      "close": 1591.1,
+      "change_pct": -5.03,
+      "volume_ratio": 1.54,
+      "volume_confirmed": true,
+      "turnover_cr": 68.53,
+      "rsi14": 62.4,
+      "atr14": 55.05,
       "above_sma50": true,
-      "strength": "unconfirmed",
+      "strength": "confirmed",
       "bars": [
         {
-          "d": "03 Sep",
-          "o": 2470.0,
-          "h": 2471.8,
-          "l": 2425.1,
-          "c": 2459.0
-        },
-        {
           "d": "04 Sep",
-          "o": 2454.5,
-          "h": 2456.7,
-          "l": 2422.7,
-          "c": 2437.2
+          "o": 1570.0,
+          "h": 1622.0,
+          "l": 1561.9,
+          "c": 1584.3
         },
         {
           "d": "07 Sep",
-          "o": 2420.2,
-          "h": 2472.0,
-          "l": 2420.2,
-          "c": 2451.9
+          "o": 1590.0,
+          "h": 1599.8,
+          "l": 1567.4,
+          "c": 1579.6
         },
         {
           "d": "08 Sep",
-          "o": 2469.9,
-          "h": 2492.0,
-          "l": 2439.0,
-          "c": 2474.5
+          "o": 1579.6,
+          "h": 1657.2,
+          "l": 1574.0,
+          "c": 1647.1
         },
         {
           "d": "09 Sep",
-          "o": 2486.9,
-          "h": 2486.9,
-          "l": 2400.1,
-          "c": 2435.0
+          "o": 1647.3,
+          "h": 1697.0,
+          "l": 1642.0,
+          "c": 1675.4
+        },
+        {
+          "d": "10 Sep",
+          "o": 1675.4,
+          "h": 1675.4,
+          "l": 1585.0,
+          "c": 1591.1
         }
       ]
     }

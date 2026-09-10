@@ -1,69 +1,122 @@
 {
-  "session_date": "2026-09-09",
-  "generated_at": "2026-09-09T22:25:38.331430+05:30",
+  "session_date": "2026-09-10",
+  "generated_at": "2026-09-10T20:00:32.623353+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 140,
+  "total_signals": 179,
   "pattern": "hanging-man",
   "pattern_name": "Hanging Man",
   "direction": "bearish",
-  "count": 1,
+  "count": 2,
   "truncated": false,
   "signals": [
     {
-      "symbol": "NYKAA",
+      "symbol": "MAXHEALTH",
+      "tier": "NIFTY 50",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 1038.6,
+      "change_pct": 0.11,
+      "volume_ratio": 1.26,
+      "volume_confirmed": true,
+      "turnover_cr": 187.3,
+      "rsi14": 53.8,
+      "atr14": 25.41,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "03 Sep",
+          "o": 997.0,
+          "h": 1000.6,
+          "l": 985.5,
+          "c": 994.9
+        },
+        {
+          "d": "04 Sep",
+          "o": 994.9,
+          "h": 1001.3,
+          "l": 981.1,
+          "c": 984.8
+        },
+        {
+          "d": "08 Sep",
+          "o": 992.5,
+          "h": 996.9,
+          "l": 982.4,
+          "c": 993.0
+        },
+        {
+          "d": "09 Sep",
+          "o": 992.7,
+          "h": 1040.4,
+          "l": 992.2,
+          "c": 1037.5
+        },
+        {
+          "d": "10 Sep",
+          "o": 1040.1,
+          "h": 1040.2,
+          "l": 1029.3,
+          "c": 1038.6
+        }
+      ]
+    },
+    {
+      "symbol": "CGCL",
       "tier": "BROADER",
       "pattern": "hanging-man",
       "pattern_name": "Hanging Man",
       "direction": "bearish",
-      "close": 343.0,
-      "change_pct": 0.59,
-      "volume_ratio": 0.88,
+      "close": 272.25,
+      "change_pct": -0.06,
+      "volume_ratio": 0.86,
       "volume_confirmed": false,
-      "turnover_cr": 120.54,
-      "rsi14": 58.4,
-      "atr14": 7.68,
+      "turnover_cr": 103.73,
+      "rsi14": 64.2,
+      "atr14": 11.16,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "02 Sep",
-          "o": 335.05,
-          "h": 337.4,
-          "l": 329.75,
-          "c": 337.4
-        },
-        {
-          "d": "03 Sep",
-          "o": 337.4,
-          "h": 339.05,
-          "l": 331.7,
-          "c": 334.2
-        },
-        {
           "d": "04 Sep",
-          "o": 332.15,
-          "h": 336.15,
-          "l": 332.0,
-          "c": 332.5
+          "o": 274.0,
+          "h": 284.8,
+          "l": 271.5,
+          "c": 279.9
+        },
+        {
+          "d": "07 Sep",
+          "o": 282.7,
+          "h": 287.45,
+          "l": 273.1,
+          "c": 275.7
         },
         {
           "d": "08 Sep",
-          "o": 333.1,
-          "h": 341.55,
-          "l": 333.1,
-          "c": 341.0
+          "o": 276.8,
+          "h": 278.8,
+          "l": 268.15,
+          "c": 270.75
         },
         {
           "d": "09 Sep",
-          "o": 340.8,
-          "h": 343.0,
-          "l": 338.25,
-          "c": 343.0
+          "o": 270.0,
+          "h": 274.1,
+          "l": 267.9,
+          "c": 272.4
+        },
+        {
+          "d": "10 Sep",
+          "o": 274.5,
+          "h": 275.65,
+          "l": 268.15,
+          "c": 272.25
         }
       ]
     }

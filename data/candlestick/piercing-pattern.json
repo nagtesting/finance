@@ -1,17 +1,71 @@
 {
-  "session_date": "2026-09-09",
-  "generated_at": "2026-09-09T22:25:38.331430+05:30",
+  "session_date": "2026-09-10",
+  "generated_at": "2026-09-10T20:00:32.623353+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 140,
+  "total_signals": 179,
   "pattern": "piercing-pattern",
   "pattern_name": "Piercing Pattern",
   "direction": "bullish",
-  "count": 0,
+  "count": 1,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "NAM-INDIA",
+      "tier": "BROADER",
+      "pattern": "piercing-pattern",
+      "pattern_name": "Piercing Pattern",
+      "direction": "bullish",
+      "close": 1185.0,
+      "change_pct": 1.73,
+      "volume_ratio": 0.76,
+      "volume_confirmed": false,
+      "turnover_cr": 137.37,
+      "rsi14": 49.8,
+      "atr14": 33.11,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "04 Sep",
+          "o": 1160.0,
+          "h": 1184.5,
+          "l": 1151.8,
+          "c": 1159.9
+        },
+        {
+          "d": "07 Sep",
+          "o": 1158.8,
+          "h": 1196.0,
+          "l": 1152.0,
+          "c": 1195.0
+        },
+        {
+          "d": "08 Sep",
+          "o": 1194.0,
+          "h": 1195.0,
+          "l": 1180.0,
+          "c": 1188.9
+        },
+        {
+          "d": "09 Sep",
+          "o": 1188.1,
+          "h": 1190.0,
+          "l": 1158.0,
+          "c": 1164.8
+        },
+        {
+          "d": "10 Sep",
+          "o": 1156.6,
+          "h": 1186.3,
+          "l": 1152.4,
+          "c": 1185.0
+        }
+      ]
+    }
+  ]
 }

@@ -1,122 +1,69 @@
 {
-  "session_date": "2026-09-09",
-  "generated_at": "2026-09-09T22:25:38.331430+05:30",
+  "session_date": "2026-09-10",
+  "generated_at": "2026-09-10T20:00:32.623353+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 140,
+  "total_signals": 179,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 2,
+  "count": 1,
   "truncated": false,
   "signals": [
     {
-      "symbol": "CESC",
+      "symbol": "VOLTAS",
       "tier": "BROADER",
       "pattern": "morning-star",
       "pattern_name": "Morning Star",
       "direction": "bullish",
-      "close": 149.67,
-      "change_pct": 2.48,
-      "volume_ratio": 3.95,
-      "volume_confirmed": true,
-      "turnover_cr": 24.71,
-      "rsi14": 39.2,
-      "atr14": 3.97,
-      "above_sma50": false,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "02 Sep",
-          "o": 144.52,
-          "h": 147.94,
-          "l": 143.55,
-          "c": 146.44
-        },
-        {
-          "d": "03 Sep",
-          "o": 147.5,
-          "h": 151.11,
-          "l": 147.0,
-          "c": 147.96
-        },
-        {
-          "d": "04 Sep",
-          "o": 148.29,
-          "h": 149.14,
-          "l": 145.91,
-          "c": 146.5
-        },
-        {
-          "d": "08 Sep",
-          "o": 145.47,
-          "h": 146.66,
-          "l": 143.9,
-          "c": 146.05
-        },
-        {
-          "d": "09 Sep",
-          "o": 145.79,
-          "h": 153.42,
-          "l": 145.21,
-          "c": 149.67
-        }
-      ]
-    },
-    {
-      "symbol": "JSWENERGY",
-      "tier": "BROADER",
-      "pattern": "morning-star",
-      "pattern_name": "Morning Star",
-      "direction": "bullish",
-      "close": 534.8,
-      "change_pct": 1.58,
-      "volume_ratio": 1.07,
+      "close": 1158.5,
+      "change_pct": 1.29,
+      "volume_ratio": 0.49,
       "volume_confirmed": false,
-      "turnover_cr": 97.94,
-      "rsi14": 45.0,
-      "atr14": 12.6,
+      "turnover_cr": 93.17,
+      "rsi14": 35.1,
+      "atr14": 28.3,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "03 Sep",
-          "o": 542.05,
-          "h": 545.8,
-          "l": 534.3,
-          "c": 539.5
-        },
-        {
           "d": "04 Sep",
-          "o": 537.55,
-          "h": 540.25,
-          "l": 534.25,
-          "c": 539.85
+          "o": 1172.0,
+          "h": 1189.7,
+          "l": 1167.0,
+          "c": 1170.0
         },
         {
           "d": "07 Sep",
-          "o": 539.9,
-          "h": 541.25,
-          "l": 528.0,
-          "c": 530.0
+          "o": 1170.0,
+          "h": 1176.4,
+          "l": 1164.4,
+          "c": 1167.2
         },
         {
           "d": "08 Sep",
-          "o": 527.05,
-          "h": 528.85,
-          "l": 522.3,
-          "c": 526.5
+          "o": 1165.0,
+          "h": 1169.2,
+          "l": 1141.3,
+          "c": 1144.8
         },
         {
           "d": "09 Sep",
-          "o": 526.5,
-          "h": 541.7,
-          "l": 521.5,
-          "c": 534.8
+          "o": 1144.0,
+          "h": 1147.0,
+          "l": 1136.0,
+          "c": 1143.8
+        },
+        {
+          "d": "10 Sep",
+          "o": 1142.5,
+          "h": 1158.9,
+          "l": 1131.4,
+          "c": 1158.5
         }
       ]
     }
