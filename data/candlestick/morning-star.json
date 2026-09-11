@@ -1,69 +1,122 @@
 {
-  "session_date": "2026-09-10",
-  "generated_at": "2026-09-10T22:13:19.586730+05:30",
+  "session_date": "2026-09-11",
+  "generated_at": "2026-09-11T19:59:09.292264+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 179,
+  "total_signals": 215,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 1,
+  "count": 2,
   "truncated": false,
   "signals": [
     {
-      "symbol": "VOLTAS",
+      "symbol": "MANKIND",
       "tier": "BROADER",
       "pattern": "morning-star",
       "pattern_name": "Morning Star",
       "direction": "bullish",
-      "close": 1158.5,
-      "change_pct": 1.29,
-      "volume_ratio": 0.49,
+      "close": 2280.0,
+      "change_pct": 1.86,
+      "volume_ratio": 1.7,
+      "volume_confirmed": true,
+      "turnover_cr": 78.88,
+      "rsi14": 37.5,
+      "atr14": 52.49,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "04 Sep",
+          "o": 2366.5,
+          "h": 2390.0,
+          "l": 2317.0,
+          "c": 2327.9
+        },
+        {
+          "d": "08 Sep",
+          "o": 2318.0,
+          "h": 2330.8,
+          "l": 2301.0,
+          "c": 2309.0
+        },
+        {
+          "d": "09 Sep",
+          "o": 2305.0,
+          "h": 2317.6,
+          "l": 2250.0,
+          "c": 2265.0
+        },
+        {
+          "d": "10 Sep",
+          "o": 2260.0,
+          "h": 2276.5,
+          "l": 2235.1,
+          "c": 2238.4
+        },
+        {
+          "d": "11 Sep",
+          "o": 2237.2,
+          "h": 2280.0,
+          "l": 2222.0,
+          "c": 2280.0
+        }
+      ]
+    },
+    {
+      "symbol": "NIVABUPA",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 79.93,
+      "change_pct": 0.64,
+      "volume_ratio": 0.79,
       "volume_confirmed": false,
-      "turnover_cr": 93.17,
-      "rsi14": 35.1,
-      "atr14": 28.3,
+      "turnover_cr": 3.44,
+      "rsi14": 36.1,
+      "atr14": 1.8,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "04 Sep",
-          "o": 1172.0,
-          "h": 1189.7,
-          "l": 1167.0,
-          "c": 1170.0
-        },
-        {
           "d": "07 Sep",
-          "o": 1170.0,
-          "h": 1176.4,
-          "l": 1164.4,
-          "c": 1167.2
+          "o": 80.1,
+          "h": 81.25,
+          "l": 80.0,
+          "c": 80.67
         },
         {
           "d": "08 Sep",
-          "o": 1165.0,
-          "h": 1169.2,
-          "l": 1141.3,
-          "c": 1144.8
+          "o": 81.09,
+          "h": 81.1,
+          "l": 80.01,
+          "c": 80.55
         },
         {
           "d": "09 Sep",
-          "o": 1144.0,
-          "h": 1147.0,
-          "l": 1136.0,
-          "c": 1143.8
+          "o": 80.48,
+          "h": 80.84,
+          "l": 79.2,
+          "c": 79.59
         },
         {
           "d": "10 Sep",
-          "o": 1142.5,
-          "h": 1158.9,
-          "l": 1131.4,
-          "c": 1158.5
+          "o": 79.2,
+          "h": 79.79,
+          "l": 78.86,
+          "c": 79.42
+        },
+        {
+          "d": "11 Sep",
+          "o": 79.1,
+          "h": 80.36,
+          "l": 78.36,
+          "c": 79.93
         }
       ]
     }

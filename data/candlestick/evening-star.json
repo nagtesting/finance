@@ -1,69 +1,122 @@
 {
-  "session_date": "2026-09-10",
-  "generated_at": "2026-09-10T22:13:19.586730+05:30",
+  "session_date": "2026-09-11",
+  "generated_at": "2026-09-11T19:59:09.292264+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 179,
+  "total_signals": 215,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
-  "count": 1,
+  "count": 2,
   "truncated": false,
   "signals": [
     {
-      "symbol": "SAILIFE",
+      "symbol": "COALINDIA",
+      "tier": "NIFTY 50",
+      "pattern": "evening-star",
+      "pattern_name": "Evening Star",
+      "direction": "bearish",
+      "close": 426.4,
+      "change_pct": -1.3,
+      "volume_ratio": 0.35,
+      "volume_confirmed": false,
+      "turnover_cr": 306.83,
+      "rsi14": 60.8,
+      "atr14": 8.2,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "07 Sep",
+          "o": 416.6,
+          "h": 420.3,
+          "l": 413.3,
+          "c": 418.85
+        },
+        {
+          "d": "08 Sep",
+          "o": 418.1,
+          "h": 423.6,
+          "l": 416.05,
+          "c": 420.25
+        },
+        {
+          "d": "09 Sep",
+          "o": 420.85,
+          "h": 435.35,
+          "l": 419.8,
+          "c": 431.0
+        },
+        {
+          "d": "10 Sep",
+          "o": 433.0,
+          "h": 436.3,
+          "l": 430.0,
+          "c": 432.0
+        },
+        {
+          "d": "11 Sep",
+          "o": 432.0,
+          "h": 434.3,
+          "l": 424.2,
+          "c": 426.4
+        }
+      ]
+    },
+    {
+      "symbol": "SJVN",
       "tier": "BROADER",
       "pattern": "evening-star",
       "pattern_name": "Evening Star",
       "direction": "bearish",
-      "close": 1591.1,
-      "change_pct": -5.03,
-      "volume_ratio": 1.54,
-      "volume_confirmed": true,
-      "turnover_cr": 68.53,
-      "rsi14": 62.4,
-      "atr14": 55.05,
-      "above_sma50": true,
-      "strength": "confirmed",
+      "close": 66.18,
+      "change_pct": -1.52,
+      "volume_ratio": 0.66,
+      "volume_confirmed": false,
+      "turnover_cr": 8.71,
+      "rsi14": 47.6,
+      "atr14": 1.24,
+      "above_sma50": false,
+      "strength": "unconfirmed",
       "bars": [
         {
           "d": "04 Sep",
-          "o": 1570.0,
-          "h": 1622.0,
-          "l": 1561.9,
-          "c": 1584.3
-        },
-        {
-          "d": "07 Sep",
-          "o": 1590.0,
-          "h": 1599.8,
-          "l": 1567.4,
-          "c": 1579.6
+          "o": 65.05,
+          "h": 65.55,
+          "l": 64.75,
+          "c": 65.23
         },
         {
           "d": "08 Sep",
-          "o": 1579.6,
-          "h": 1657.2,
-          "l": 1574.0,
-          "c": 1647.1
+          "o": 65.56,
+          "h": 66.19,
+          "l": 64.75,
+          "c": 65.87
         },
         {
           "d": "09 Sep",
-          "o": 1647.3,
-          "h": 1697.0,
-          "l": 1642.0,
-          "c": 1675.4
+          "o": 65.95,
+          "h": 68.33,
+          "l": 65.59,
+          "c": 66.88
         },
         {
           "d": "10 Sep",
-          "o": 1675.4,
-          "h": 1675.4,
-          "l": 1585.0,
-          "c": 1591.1
+          "o": 66.95,
+          "h": 68.29,
+          "l": 66.37,
+          "c": 67.2
+        },
+        {
+          "d": "11 Sep",
+          "o": 66.8,
+          "h": 66.84,
+          "l": 66.1,
+          "c": 66.18
         }
       ]
     }

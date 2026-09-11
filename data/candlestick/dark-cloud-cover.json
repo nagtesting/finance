@@ -1,71 +1,17 @@
 {
-  "session_date": "2026-09-10",
-  "generated_at": "2026-09-10T22:13:19.586730+05:30",
+  "session_date": "2026-09-11",
+  "generated_at": "2026-09-11T19:59:09.292264+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 179,
+  "total_signals": 215,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "SUNDARMFIN",
-      "tier": "BROADER",
-      "pattern": "dark-cloud-cover",
-      "pattern_name": "Dark Cloud Cover",
-      "direction": "bearish",
-      "close": 4703.0,
-      "change_pct": -0.53,
-      "volume_ratio": 0.39,
-      "volume_confirmed": false,
-      "turnover_cr": 14.53,
-      "rsi14": 59.7,
-      "atr14": 101.05,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "03 Sep",
-          "o": 4551.0,
-          "h": 4622.4,
-          "l": 4533.1,
-          "c": 4578.0
-        },
-        {
-          "d": "04 Sep",
-          "o": 4561.0,
-          "h": 4656.3,
-          "l": 4561.0,
-          "c": 4648.7
-        },
-        {
-          "d": "08 Sep",
-          "o": 4708.3,
-          "h": 4739.9,
-          "l": 4650.1,
-          "c": 4712.7
-        },
-        {
-          "d": "09 Sep",
-          "o": 4689.2,
-          "h": 4740.6,
-          "l": 4645.1,
-          "c": 4728.0
-        },
-        {
-          "d": "10 Sep",
-          "o": 4750.0,
-          "h": 4750.0,
-          "l": 4651.3,
-          "c": 4703.0
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
