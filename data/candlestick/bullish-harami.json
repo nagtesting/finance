@@ -1,69 +1,175 @@
 {
-  "session_date": "2026-09-11",
-  "generated_at": "2026-09-11T22:18:01.377957+05:30",
+  "session_date": "2026-09-15",
+  "generated_at": "2026-09-15T20:34:00.497608+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 215,
+  "total_signals": 144,
   "pattern": "bullish-harami",
   "pattern_name": "Bullish Harami",
   "direction": "bullish",
-  "count": 1,
+  "count": 3,
   "truncated": false,
   "signals": [
     {
-      "symbol": "SONATSOFTW",
-      "tier": "BROADER",
+      "symbol": "ONGC",
+      "tier": "NIFTY 50",
       "pattern": "bullish-harami",
       "pattern_name": "Bullish Harami",
       "direction": "bullish",
-      "close": 265.85,
-      "change_pct": 2.21,
-      "volume_ratio": 1.42,
+      "close": 235.95,
+      "change_pct": 1.48,
+      "volume_ratio": 1.21,
       "volume_confirmed": true,
-      "turnover_cr": 25.84,
-      "rsi14": 33.9,
-      "atr14": 12.02,
+      "turnover_cr": 283.45,
+      "rsi14": 48.6,
+      "atr14": 4.41,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "07 Sep",
-          "o": 285.25,
-          "h": 286.0,
-          "l": 273.45,
-          "c": 283.85
-        },
-        {
           "d": "08 Sep",
-          "o": 284.5,
-          "h": 284.8,
-          "l": 273.0,
-          "c": 274.25
+          "o": 234.8,
+          "h": 238.0,
+          "l": 232.22,
+          "c": 236.0
         },
         {
           "d": "09 Sep",
-          "o": 274.15,
-          "h": 274.15,
-          "l": 265.3,
-          "c": 267.7
+          "o": 237.8,
+          "h": 239.27,
+          "l": 234.02,
+          "c": 234.02
         },
         {
           "d": "10 Sep",
-          "o": 269.9,
-          "h": 270.35,
-          "l": 259.2,
-          "c": 260.1
+          "o": 236.1,
+          "h": 239.8,
+          "l": 235.6,
+          "c": 237.27
         },
         {
           "d": "11 Sep",
-          "o": 260.1,
-          "h": 268.1,
-          "l": 257.8,
-          "c": 265.85
+          "o": 239.9,
+          "h": 243.16,
+          "l": 232.5,
+          "c": 232.5
+        },
+        {
+          "d": "15 Sep",
+          "o": 234.9,
+          "h": 236.3,
+          "l": 233.33,
+          "c": 235.95
+        }
+      ]
+    },
+    {
+      "symbol": "SONACOMS",
+      "tier": "BROADER",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 790.0,
+      "change_pct": 0.25,
+      "volume_ratio": 0.99,
+      "volume_confirmed": false,
+      "turnover_cr": 125.54,
+      "rsi14": 49.9,
+      "atr14": 20.47,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "08 Sep",
+          "o": 785.95,
+          "h": 805.9,
+          "l": 778.2,
+          "c": 804.0
+        },
+        {
+          "d": "09 Sep",
+          "o": 803.05,
+          "h": 806.4,
+          "l": 792.55,
+          "c": 799.5
+        },
+        {
+          "d": "10 Sep",
+          "o": 798.0,
+          "h": 813.15,
+          "l": 792.2,
+          "c": 803.5
+        },
+        {
+          "d": "11 Sep",
+          "o": 798.0,
+          "h": 799.95,
+          "l": 786.9,
+          "c": 788.0
+        },
+        {
+          "d": "15 Sep",
+          "o": 788.0,
+          "h": 793.9,
+          "l": 777.45,
+          "c": 790.0
+        }
+      ]
+    },
+    {
+      "symbol": "NH",
+      "tier": "BROADER",
+      "pattern": "bullish-harami",
+      "pattern_name": "Bullish Harami",
+      "direction": "bullish",
+      "close": 1894.9,
+      "change_pct": 1.37,
+      "volume_ratio": 1.07,
+      "volume_confirmed": false,
+      "turnover_cr": 40.11,
+      "rsi14": 50.2,
+      "atr14": 43.44,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "08 Sep",
+          "o": 1910.0,
+          "h": 1924.0,
+          "l": 1887.0,
+          "c": 1897.4
+        },
+        {
+          "d": "09 Sep",
+          "o": 1899.9,
+          "h": 1920.6,
+          "l": 1872.0,
+          "c": 1890.6
+        },
+        {
+          "d": "10 Sep",
+          "o": 1900.0,
+          "h": 1920.0,
+          "l": 1881.0,
+          "c": 1909.7
+        },
+        {
+          "d": "11 Sep",
+          "o": 1903.0,
+          "h": 1908.3,
+          "l": 1864.6,
+          "c": 1869.2
+        },
+        {
+          "d": "15 Sep",
+          "o": 1899.0,
+          "h": 1914.9,
+          "l": 1878.9,
+          "c": 1894.9
         }
       ]
     }

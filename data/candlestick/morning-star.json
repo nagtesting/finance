@@ -1,122 +1,228 @@
 {
-  "session_date": "2026-09-11",
-  "generated_at": "2026-09-11T22:18:01.377957+05:30",
+  "session_date": "2026-09-15",
+  "generated_at": "2026-09-15T20:34:00.497608+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 215,
+  "total_signals": 144,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 2,
+  "count": 4,
   "truncated": false,
   "signals": [
     {
-      "symbol": "MANKIND",
+      "symbol": "ZENSARTECH",
       "tier": "BROADER",
       "pattern": "morning-star",
       "pattern_name": "Morning Star",
       "direction": "bullish",
-      "close": 2280.0,
-      "change_pct": 1.86,
-      "volume_ratio": 1.7,
+      "close": 440.2,
+      "change_pct": 3.52,
+      "volume_ratio": 57.96,
       "volume_confirmed": true,
-      "turnover_cr": 78.88,
-      "rsi14": 37.5,
-      "atr14": 52.49,
+      "turnover_cr": 29.55,
+      "rsi14": 37.9,
+      "atr14": 17.3,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "04 Sep",
-          "o": 2366.5,
-          "h": 2390.0,
-          "l": 2317.0,
-          "c": 2327.9
-        },
-        {
           "d": "08 Sep",
-          "o": 2318.0,
-          "h": 2330.8,
-          "l": 2301.0,
-          "c": 2309.0
+          "o": 454.05,
+          "h": 454.9,
+          "l": 448.0,
+          "c": 450.55
         },
         {
           "d": "09 Sep",
-          "o": 2305.0,
-          "h": 2317.6,
-          "l": 2250.0,
-          "c": 2265.0
+          "o": 450.55,
+          "h": 450.55,
+          "l": 435.1,
+          "c": 436.95
         },
         {
           "d": "10 Sep",
-          "o": 2260.0,
-          "h": 2276.5,
-          "l": 2235.1,
-          "c": 2238.4
+          "o": 437.0,
+          "h": 439.4,
+          "l": 426.45,
+          "c": 427.4
         },
         {
           "d": "11 Sep",
-          "o": 2237.2,
-          "h": 2280.0,
-          "l": 2222.0,
-          "c": 2280.0
+          "o": 425.7,
+          "h": 432.8,
+          "l": 421.0,
+          "c": 425.25
+        },
+        {
+          "d": "15 Sep",
+          "o": 430.0,
+          "h": 479.9,
+          "l": 430.0,
+          "c": 440.2
         }
       ]
     },
     {
-      "symbol": "NIVABUPA",
+      "symbol": "FSL",
       "tier": "BROADER",
       "pattern": "morning-star",
       "pattern_name": "Morning Star",
       "direction": "bullish",
-      "close": 79.93,
-      "change_pct": 0.64,
-      "volume_ratio": 0.79,
+      "close": 283.35,
+      "change_pct": 14.44,
+      "volume_ratio": 40.73,
+      "volume_confirmed": true,
+      "turnover_cr": 20.19,
+      "rsi14": 59.5,
+      "atr14": 11.15,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "08 Sep",
+          "o": 261.0,
+          "h": 261.0,
+          "l": 256.5,
+          "c": 257.8
+        },
+        {
+          "d": "09 Sep",
+          "o": 258.0,
+          "h": 258.0,
+          "l": 254.15,
+          "c": 254.75
+        },
+        {
+          "d": "10 Sep",
+          "o": 254.95,
+          "h": 257.35,
+          "l": 250.3,
+          "c": 251.35
+        },
+        {
+          "d": "11 Sep",
+          "o": 250.85,
+          "h": 251.0,
+          "l": 246.65,
+          "c": 247.6
+        },
+        {
+          "d": "15 Sep",
+          "o": 250.15,
+          "h": 292.0,
+          "l": 250.15,
+          "c": 283.35
+        }
+      ]
+    },
+    {
+      "symbol": "CANFINHOME",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 784.8,
+      "change_pct": 0.65,
+      "volume_ratio": 0.88,
       "volume_confirmed": false,
-      "turnover_cr": 3.44,
-      "rsi14": 36.1,
-      "atr14": 1.8,
+      "turnover_cr": 16.64,
+      "rsi14": 38.3,
+      "atr14": 17.95,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "07 Sep",
-          "o": 80.1,
-          "h": 81.25,
-          "l": 80.0,
-          "c": 80.67
-        },
-        {
           "d": "08 Sep",
-          "o": 81.09,
-          "h": 81.1,
-          "l": 80.01,
-          "c": 80.55
+          "o": 805.45,
+          "h": 811.85,
+          "l": 795.0,
+          "c": 797.6
         },
         {
           "d": "09 Sep",
-          "o": 80.48,
-          "h": 80.84,
-          "l": 79.2,
-          "c": 79.59
+          "o": 797.6,
+          "h": 804.65,
+          "l": 785.0,
+          "c": 786.9
         },
         {
           "d": "10 Sep",
-          "o": 79.2,
-          "h": 79.79,
-          "l": 78.86,
-          "c": 79.42
+          "o": 788.9,
+          "h": 791.75,
+          "l": 780.3,
+          "c": 782.2
         },
         {
           "d": "11 Sep",
-          "o": 79.1,
-          "h": 80.36,
-          "l": 78.36,
-          "c": 79.93
+          "o": 781.3,
+          "h": 782.4,
+          "l": 768.05,
+          "c": 779.75
+        },
+        {
+          "d": "15 Sep",
+          "o": 776.2,
+          "h": 788.75,
+          "l": 766.85,
+          "c": 784.8
+        }
+      ]
+    },
+    {
+      "symbol": "HEXT",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 517.5,
+      "change_pct": 4.11,
+      "volume_ratio": 1.02,
+      "volume_confirmed": false,
+      "turnover_cr": 10.32,
+      "rsi14": 41.0,
+      "atr14": 18.01,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "08 Sep",
+          "o": 523.8,
+          "h": 524.45,
+          "l": 508.75,
+          "c": 518.85
+        },
+        {
+          "d": "09 Sep",
+          "o": 517.75,
+          "h": 518.45,
+          "l": 506.55,
+          "c": 509.9
+        },
+        {
+          "d": "10 Sep",
+          "o": 512.9,
+          "h": 516.4,
+          "l": 501.0,
+          "c": 502.95
+        },
+        {
+          "d": "11 Sep",
+          "o": 501.3,
+          "h": 502.95,
+          "l": 496.0,
+          "c": 497.05
+        },
+        {
+          "d": "15 Sep",
+          "o": 497.75,
+          "h": 527.2,
+          "l": 497.75,
+          "c": 517.5
         }
       ]
     }

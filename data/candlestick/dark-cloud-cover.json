@@ -1,17 +1,124 @@
 {
-  "session_date": "2026-09-11",
-  "generated_at": "2026-09-11T22:18:01.377957+05:30",
+  "session_date": "2026-09-15",
+  "generated_at": "2026-09-15T20:34:00.497608+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 215,
+  "total_signals": 144,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
-  "count": 0,
+  "count": 2,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "BSE",
+      "tier": "BROADER",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 3310.0,
+      "change_pct": -2.19,
+      "volume_ratio": 0.82,
+      "volume_confirmed": false,
+      "turnover_cr": 1598.87,
+      "rsi14": 45.5,
+      "atr14": 117.09,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "08 Sep",
+          "o": 3440.0,
+          "h": 3442.2,
+          "l": 3362.0,
+          "c": 3394.0
+        },
+        {
+          "d": "09 Sep",
+          "o": 3301.0,
+          "h": 3319.9,
+          "l": 3268.2,
+          "c": 3289.8
+        },
+        {
+          "d": "10 Sep",
+          "o": 3288.0,
+          "h": 3312.0,
+          "l": 3261.0,
+          "c": 3306.0
+        },
+        {
+          "d": "11 Sep",
+          "o": 3280.0,
+          "h": 3394.4,
+          "l": 3193.2,
+          "c": 3384.0
+        },
+        {
+          "d": "15 Sep",
+          "o": 3417.0,
+          "h": 3452.7,
+          "l": 3295.0,
+          "c": 3310.0
+        }
+      ]
+    },
+    {
+      "symbol": "AEGISLOG",
+      "tier": "BROADER",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 1323.5,
+      "change_pct": -2.22,
+      "volume_ratio": 0.78,
+      "volume_confirmed": false,
+      "turnover_cr": 91.31,
+      "rsi14": 52.6,
+      "atr14": 65.35,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "08 Sep",
+          "o": 1253.8,
+          "h": 1273.9,
+          "l": 1232.0,
+          "c": 1268.1
+        },
+        {
+          "d": "09 Sep",
+          "o": 1270.6,
+          "h": 1358.7,
+          "l": 1268.6,
+          "c": 1343.4
+        },
+        {
+          "d": "10 Sep",
+          "o": 1351.2,
+          "h": 1385.0,
+          "l": 1301.0,
+          "c": 1307.6
+        },
+        {
+          "d": "11 Sep",
+          "o": 1311.1,
+          "h": 1364.6,
+          "l": 1287.7,
+          "c": 1353.6
+        },
+        {
+          "d": "15 Sep",
+          "o": 1365.3,
+          "h": 1385.0,
+          "l": 1320.0,
+          "c": 1323.5
+        }
+      ]
+    }
+  ]
 }
