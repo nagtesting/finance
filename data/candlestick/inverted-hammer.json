@@ -1,102 +1,35 @@
 {
-  "session_date": "2026-09-15",
-  "generated_at": "2026-09-15T22:49:42.144346+05:30",
+  "session_date": "2026-09-16",
+  "generated_at": "2026-09-16T20:31:15.681116+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 144,
+  "total_signals": 218,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
-  "count": 3,
+  "count": 1,
   "truncated": false,
   "signals": [
-    {
-      "symbol": "TATACONSUM",
-      "tier": "NIFTY 50",
-      "pattern": "inverted-hammer",
-      "pattern_name": "Inverted Hammer",
-      "direction": "bullish",
-      "close": 986.1,
-      "change_pct": -0.49,
-      "volume_ratio": 1.47,
-      "volume_confirmed": true,
-      "turnover_cr": 103.94,
-      "rsi14": 28.0,
-      "atr14": 17.7,
-      "above_sma50": false,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "08 Sep",
-          "o": 1015.0,
-          "h": 1018.7,
-          "l": 1007.9,
-          "c": 1014.1
-        },
-        {
-          "d": "09 Sep",
-          "o": 1010.8,
-          "h": 1013.7,
-          "l": 1001.0,
-          "c": 1001.0
-        },
-        {
-          "d": "10 Sep",
-          "o": 1004.0,
-          "h": 1005.6,
-          "l": 992.5,
-          "c": 999.6
-        },
-        {
-          "d": "11 Sep",
-          "o": 993.0,
-          "h": 1000.0,
-          "l": 988.0,
-          "c": 991.0
-        },
-        {
-          "d": "15 Sep",
-          "o": 990.1,
-          "h": 1009.3,
-          "l": 986.0,
-          "c": 986.1
-        }
-      ]
-    },
     {
       "symbol": "HEG",
       "tier": "BROADER",
       "pattern": "inverted-hammer",
       "pattern_name": "Inverted Hammer",
       "direction": "bullish",
-      "close": 225.35,
-      "change_pct": -5.0,
-      "volume_ratio": 0.77,
-      "volume_confirmed": false,
-      "turnover_cr": 79.39,
-      "rsi14": 14.3,
-      "atr14": 44.89,
+      "close": 215.05,
+      "change_pct": -4.57,
+      "volume_ratio": 1.95,
+      "volume_confirmed": true,
+      "turnover_cr": 72.16,
+      "rsi14": 13.9,
+      "atr14": 39.57,
       "above_sma50": false,
-      "strength": "unconfirmed",
+      "strength": "confirmed",
       "bars": [
-        {
-          "d": "08 Sep",
-          "o": 265.4,
-          "h": 265.4,
-          "l": 258.6,
-          "c": 258.6
-        },
-        {
-          "d": "09 Sep",
-          "o": 257.0,
-          "h": 271.5,
-          "l": 255.0,
-          "c": 262.75
-        },
         {
           "d": "10 Sep",
           "o": 253.9,
@@ -112,64 +45,25 @@
           "c": 237.2
         },
         {
+          "d": "14 Sep",
+          "o": 237.2,
+          "h": 237.2,
+          "l": 237.2,
+          "c": 237.2
+        },
+        {
           "d": "15 Sep",
           "o": 225.35,
           "h": 229.35,
           "l": 225.35,
           "c": 225.35
-        }
-      ]
-    },
-    {
-      "symbol": "ITCHOTELS",
-      "tier": "BROADER",
-      "pattern": "inverted-hammer",
-      "pattern_name": "Inverted Hammer",
-      "direction": "bullish",
-      "close": 152.22,
-      "change_pct": -0.96,
-      "volume_ratio": 0.87,
-      "volume_confirmed": false,
-      "turnover_cr": 19.86,
-      "rsi14": 30.4,
-      "atr14": 3.34,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "08 Sep",
-          "o": 158.0,
-          "h": 158.98,
-          "l": 156.05,
-          "c": 156.84
         },
         {
-          "d": "09 Sep",
-          "o": 156.65,
-          "h": 157.04,
-          "l": 155.01,
-          "c": 155.31
-        },
-        {
-          "d": "10 Sep",
-          "o": 155.6,
-          "h": 156.68,
-          "l": 153.88,
-          "c": 154.13
-        },
-        {
-          "d": "11 Sep",
-          "o": 153.85,
-          "h": 154.5,
-          "l": 152.61,
-          "c": 153.69
-        },
-        {
-          "d": "15 Sep",
-          "o": 153.6,
-          "h": 155.25,
-          "l": 152.0,
-          "c": 152.22
+          "d": "16 Sep",
+          "o": 214.1,
+          "h": 225.25,
+          "l": 214.1,
+          "c": 215.05
         }
       ]
     }

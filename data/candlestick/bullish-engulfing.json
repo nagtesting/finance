@@ -1,175 +1,599 @@
 {
-  "session_date": "2026-09-15",
-  "generated_at": "2026-09-15T22:49:42.144346+05:30",
+  "session_date": "2026-09-16",
+  "generated_at": "2026-09-16T20:31:15.681116+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 144,
+  "total_signals": 218,
   "pattern": "bullish-engulfing",
   "pattern_name": "Bullish Engulfing",
   "direction": "bullish",
-  "count": 3,
+  "count": 11,
   "truncated": false,
   "signals": [
     {
-      "symbol": "COLPAL",
+      "symbol": "RADICO",
       "tier": "BROADER",
       "pattern": "bullish-engulfing",
       "pattern_name": "Bullish Engulfing",
       "direction": "bullish",
-      "close": 1820.3,
-      "change_pct": 1.27,
-      "volume_ratio": 1.76,
+      "close": 4466.0,
+      "change_pct": 2.43,
+      "volume_ratio": 1.27,
       "volume_confirmed": true,
-      "turnover_cr": 58.15,
-      "rsi14": 37.3,
-      "atr14": 37.61,
+      "turnover_cr": 95.96,
+      "rsi14": 50.6,
+      "atr14": 95.38,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "10 Sep",
+          "o": 4396.2,
+          "h": 4485.0,
+          "l": 4396.2,
+          "c": 4460.0
+        },
+        {
+          "d": "11 Sep",
+          "o": 4422.4,
+          "h": 4437.6,
+          "l": 4362.5,
+          "c": 4368.1
+        },
+        {
+          "d": "14 Sep",
+          "o": 4368.1,
+          "h": 4368.1,
+          "l": 4368.1,
+          "c": 4368.1
+        },
+        {
+          "d": "15 Sep",
+          "o": 4370.1,
+          "h": 4431.0,
+          "l": 4298.8,
+          "c": 4360.0
+        },
+        {
+          "d": "16 Sep",
+          "o": 4338.7,
+          "h": 4466.0,
+          "l": 4321.6,
+          "c": 4466.0
+        }
+      ]
+    },
+    {
+      "symbol": "MFSL",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 1487.6,
+      "change_pct": 4.33,
+      "volume_ratio": 1.99,
+      "volume_confirmed": true,
+      "turnover_cr": 64.89,
+      "rsi14": 44.9,
+      "atr14": 38.9,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "08 Sep",
-          "o": 1814.0,
-          "h": 1841.3,
-          "l": 1799.1,
-          "c": 1819.9
-        },
-        {
-          "d": "09 Sep",
-          "o": 1815.0,
-          "h": 1815.0,
-          "l": 1789.8,
-          "c": 1800.0
-        },
-        {
           "d": "10 Sep",
-          "o": 1804.5,
-          "h": 1810.0,
-          "l": 1796.9,
-          "c": 1808.5
+          "o": 1465.8,
+          "h": 1483.7,
+          "l": 1452.0,
+          "c": 1479.9
         },
         {
           "d": "11 Sep",
-          "o": 1799.0,
-          "h": 1799.9,
-          "l": 1782.1,
-          "c": 1797.4
+          "o": 1468.0,
+          "h": 1488.0,
+          "l": 1453.6,
+          "c": 1477.0
+        },
+        {
+          "d": "14 Sep",
+          "o": 1477.0,
+          "h": 1477.0,
+          "l": 1477.0,
+          "c": 1477.0
         },
         {
           "d": "15 Sep",
-          "o": 1797.4,
-          "h": 1846.6,
-          "l": 1788.8,
-          "c": 1820.3
+          "o": 1478.4,
+          "h": 1482.0,
+          "l": 1425.9,
+          "c": 1425.9
+        },
+        {
+          "d": "16 Sep",
+          "o": 1425.9,
+          "h": 1491.7,
+          "l": 1423.6,
+          "c": 1487.6
         }
       ]
     },
     {
-      "symbol": "CANFINHOME",
-      "tier": "BROADER",
+      "symbol": "CIPLA",
+      "tier": "NIFTY 50",
       "pattern": "bullish-engulfing",
       "pattern_name": "Bullish Engulfing",
       "direction": "bullish",
-      "close": 784.8,
-      "change_pct": 0.65,
-      "volume_ratio": 0.88,
+      "close": 1358.0,
+      "change_pct": 0.52,
+      "volume_ratio": 1.17,
       "volume_confirmed": false,
-      "turnover_cr": 16.64,
-      "rsi14": 38.3,
-      "atr14": 17.95,
+      "turnover_cr": 112.54,
+      "rsi14": 33.9,
+      "atr14": 20.8,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "08 Sep",
-          "o": 805.45,
-          "h": 811.85,
-          "l": 795.0,
-          "c": 797.6
-        },
-        {
-          "d": "09 Sep",
-          "o": 797.6,
-          "h": 804.65,
-          "l": 785.0,
-          "c": 786.9
-        },
-        {
           "d": "10 Sep",
-          "o": 788.9,
-          "h": 791.75,
-          "l": 780.3,
-          "c": 782.2
+          "o": 1366.8,
+          "h": 1380.0,
+          "l": 1363.1,
+          "c": 1373.3
         },
         {
           "d": "11 Sep",
-          "o": 781.3,
-          "h": 782.4,
-          "l": 768.05,
-          "c": 779.75
+          "o": 1373.0,
+          "h": 1373.0,
+          "l": 1347.7,
+          "c": 1366.0
+        },
+        {
+          "d": "14 Sep",
+          "o": 1366.0,
+          "h": 1366.0,
+          "l": 1366.0,
+          "c": 1366.0
         },
         {
           "d": "15 Sep",
-          "o": 776.2,
-          "h": 788.75,
-          "l": 766.85,
-          "c": 784.8
+          "o": 1355.0,
+          "h": 1362.7,
+          "l": 1347.7,
+          "c": 1351.0
+        },
+        {
+          "d": "16 Sep",
+          "o": 1351.0,
+          "h": 1363.7,
+          "l": 1344.3,
+          "c": 1358.0
         }
       ]
     },
     {
-      "symbol": "RAINBOW",
-      "tier": "BROADER",
+      "symbol": "BRITANNIA",
+      "tier": "NIFTY 100",
       "pattern": "bullish-engulfing",
       "pattern_name": "Bullish Engulfing",
       "direction": "bullish",
-      "close": 1453.7,
-      "change_pct": 0.61,
-      "volume_ratio": 0.81,
+      "close": 4999.5,
+      "change_pct": 1.05,
+      "volume_ratio": 0.91,
       "volume_confirmed": false,
-      "turnover_cr": 11.48,
-      "rsi14": 48.7,
-      "atr14": 36.6,
+      "turnover_cr": 131.36,
+      "rsi14": 33.1,
+      "atr14": 97.57,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "08 Sep",
-          "o": 1469.9,
-          "h": 1479.0,
-          "l": 1444.7,
-          "c": 1449.9
-        },
-        {
           "d": "09 Sep",
-          "o": 1445.0,
-          "h": 1474.7,
-          "l": 1440.8,
-          "c": 1451.1
+          "o": 5064.0,
+          "h": 5113.0,
+          "l": 5023.0,
+          "c": 5090.0
         },
         {
           "d": "10 Sep",
-          "o": 1449.0,
-          "h": 1478.9,
-          "l": 1442.5,
-          "c": 1460.1
+          "o": 5108.0,
+          "h": 5108.0,
+          "l": 4997.0,
+          "c": 5009.0
         },
         {
           "d": "11 Sep",
-          "o": 1453.5,
-          "h": 1461.7,
-          "l": 1430.1,
-          "c": 1444.9
+          "o": 4996.0,
+          "h": 5012.5,
+          "l": 4945.0,
+          "c": 4962.0
         },
         {
           "d": "15 Sep",
-          "o": 1443.1,
-          "h": 1460.0,
-          "l": 1424.0,
-          "c": 1453.7
+          "o": 4990.0,
+          "h": 5022.5,
+          "l": 4947.5,
+          "c": 4947.5
+        },
+        {
+          "d": "16 Sep",
+          "o": 4947.5,
+          "h": 5036.5,
+          "l": 4933.0,
+          "c": 4999.5
+        }
+      ]
+    },
+    {
+      "symbol": "DMART",
+      "tier": "NIFTY 100",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 3720.0,
+      "change_pct": 1.09,
+      "volume_ratio": 1.08,
+      "volume_confirmed": false,
+      "turnover_cr": 129.52,
+      "rsi14": 37.7,
+      "atr14": 71.07,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "10 Sep",
+          "o": 3725.1,
+          "h": 3735.0,
+          "l": 3664.0,
+          "c": 3690.0
+        },
+        {
+          "d": "11 Sep",
+          "o": 3677.8,
+          "h": 3706.2,
+          "l": 3650.0,
+          "c": 3688.0
+        },
+        {
+          "d": "14 Sep",
+          "o": 3688.0,
+          "h": 3688.0,
+          "l": 3688.0,
+          "c": 3688.0
+        },
+        {
+          "d": "15 Sep",
+          "o": 3692.9,
+          "h": 3735.9,
+          "l": 3680.0,
+          "c": 3680.0
+        },
+        {
+          "d": "16 Sep",
+          "o": 3679.0,
+          "h": 3730.0,
+          "l": 3670.0,
+          "c": 3720.0
+        }
+      ]
+    },
+    {
+      "symbol": "EXIDEIND",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 415.5,
+      "change_pct": 1.54,
+      "volume_ratio": 1.0,
+      "volume_confirmed": false,
+      "turnover_cr": 88.29,
+      "rsi14": 38.6,
+      "atr14": 12.18,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Sep",
+          "o": 418.1,
+          "h": 420.0,
+          "l": 409.7,
+          "c": 410.75
+        },
+        {
+          "d": "10 Sep",
+          "o": 411.0,
+          "h": 424.0,
+          "l": 411.0,
+          "c": 420.85
+        },
+        {
+          "d": "11 Sep",
+          "o": 418.25,
+          "h": 418.45,
+          "l": 411.45,
+          "c": 412.65
+        },
+        {
+          "d": "15 Sep",
+          "o": 412.65,
+          "h": 417.95,
+          "l": 405.1,
+          "c": 409.2
+        },
+        {
+          "d": "16 Sep",
+          "o": 407.8,
+          "h": 419.65,
+          "l": 407.8,
+          "c": 415.5
+        }
+      ]
+    },
+    {
+      "symbol": "JUBLFOOD",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 471.0,
+      "change_pct": 1.07,
+      "volume_ratio": 0.39,
+      "volume_confirmed": false,
+      "turnover_cr": 46.56,
+      "rsi14": 44.7,
+      "atr14": 12.41,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Sep",
+          "o": 477.1,
+          "h": 479.25,
+          "l": 473.0,
+          "c": 475.95
+        },
+        {
+          "d": "10 Sep",
+          "o": 474.95,
+          "h": 480.9,
+          "l": 467.95,
+          "c": 473.8
+        },
+        {
+          "d": "11 Sep",
+          "o": 470.6,
+          "h": 472.85,
+          "l": 465.65,
+          "c": 470.25
+        },
+        {
+          "d": "15 Sep",
+          "o": 468.95,
+          "h": 472.95,
+          "l": 461.6,
+          "c": 466.0
+        },
+        {
+          "d": "16 Sep",
+          "o": 466.0,
+          "h": 472.0,
+          "l": 461.65,
+          "c": 471.0
+        }
+      ]
+    },
+    {
+      "symbol": "ACE",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 1149.7,
+      "change_pct": 1.55,
+      "volume_ratio": 1.13,
+      "volume_confirmed": false,
+      "turnover_cr": 34.98,
+      "rsi14": 57.5,
+      "atr14": 42.02,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Sep",
+          "o": 1122.0,
+          "h": 1163.0,
+          "l": 1120.0,
+          "c": 1127.0
+        },
+        {
+          "d": "10 Sep",
+          "o": 1132.0,
+          "h": 1137.5,
+          "l": 1112.4,
+          "c": 1121.2
+        },
+        {
+          "d": "11 Sep",
+          "o": 1110.0,
+          "h": 1134.0,
+          "l": 1086.1,
+          "c": 1129.0
+        },
+        {
+          "d": "15 Sep",
+          "o": 1135.0,
+          "h": 1141.5,
+          "l": 1105.0,
+          "c": 1132.1
+        },
+        {
+          "d": "16 Sep",
+          "o": 1130.0,
+          "h": 1158.0,
+          "l": 1102.0,
+          "c": 1149.7
+        }
+      ]
+    },
+    {
+      "symbol": "CREDITACC",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 1416.5,
+      "change_pct": 0.49,
+      "volume_ratio": 0.75,
+      "volume_confirmed": false,
+      "turnover_cr": 32.74,
+      "rsi14": 43.8,
+      "atr14": 43.99,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Sep",
+          "o": 1417.1,
+          "h": 1420.3,
+          "l": 1390.4,
+          "c": 1396.2
+        },
+        {
+          "d": "10 Sep",
+          "o": 1397.1,
+          "h": 1414.6,
+          "l": 1394.0,
+          "c": 1403.2
+        },
+        {
+          "d": "11 Sep",
+          "o": 1382.1,
+          "h": 1438.0,
+          "l": 1370.8,
+          "c": 1424.2
+        },
+        {
+          "d": "15 Sep",
+          "o": 1413.3,
+          "h": 1431.7,
+          "l": 1400.0,
+          "c": 1409.6
+        },
+        {
+          "d": "16 Sep",
+          "o": 1392.3,
+          "h": 1423.8,
+          "l": 1370.0,
+          "c": 1416.5
+        }
+      ]
+    },
+    {
+      "symbol": "HDBFS",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 678.0,
+      "change_pct": 2.0,
+      "volume_ratio": 0.38,
+      "volume_confirmed": false,
+      "turnover_cr": 26.85,
+      "rsi14": 47.1,
+      "atr14": 14.49,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Sep",
+          "o": 680.0,
+          "h": 684.8,
+          "l": 673.1,
+          "c": 675.05
+        },
+        {
+          "d": "10 Sep",
+          "o": 672.1,
+          "h": 680.85,
+          "l": 668.05,
+          "c": 677.7
+        },
+        {
+          "d": "11 Sep",
+          "o": 672.5,
+          "h": 674.5,
+          "l": 666.4,
+          "c": 669.2
+        },
+        {
+          "d": "15 Sep",
+          "o": 670.05,
+          "h": 675.0,
+          "l": 662.4,
+          "c": 664.7
+        },
+        {
+          "d": "16 Sep",
+          "o": 664.7,
+          "h": 678.8,
+          "l": 662.7,
+          "c": 678.0
+        }
+      ]
+    },
+    {
+      "symbol": "NTPCGREEN",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 87.59,
+      "change_pct": 2.01,
+      "volume_ratio": 1.08,
+      "volume_confirmed": false,
+      "turnover_cr": 12.55,
+      "rsi14": 39.2,
+      "atr14": 1.34,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "10 Sep",
+          "o": 88.05,
+          "h": 88.12,
+          "l": 87.55,
+          "c": 87.72
+        },
+        {
+          "d": "11 Sep",
+          "o": 87.7,
+          "h": 87.72,
+          "l": 86.44,
+          "c": 86.94
+        },
+        {
+          "d": "14 Sep",
+          "o": 86.94,
+          "h": 86.94,
+          "l": 86.94,
+          "c": 86.94
+        },
+        {
+          "d": "15 Sep",
+          "o": 86.94,
+          "h": 87.02,
+          "l": 85.75,
+          "c": 85.86
+        },
+        {
+          "d": "16 Sep",
+          "o": 85.8,
+          "h": 87.9,
+          "l": 85.16,
+          "c": 87.59
         }
       ]
     }
