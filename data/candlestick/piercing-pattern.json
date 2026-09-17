@@ -1,228 +1,69 @@
 {
-  "session_date": "2026-09-16",
-  "generated_at": "2026-09-16T22:49:27.925606+05:30",
+  "session_date": "2026-09-17",
+  "generated_at": "2026-09-17T20:34:48.971256+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 218,
+  "total_signals": 170,
   "pattern": "piercing-pattern",
   "pattern_name": "Piercing Pattern",
   "direction": "bullish",
-  "count": 4,
+  "count": 1,
   "truncated": false,
   "signals": [
     {
-      "symbol": "HINDALCO",
-      "tier": "NIFTY 50",
-      "pattern": "piercing-pattern",
-      "pattern_name": "Piercing Pattern",
-      "direction": "bullish",
-      "close": 972.7,
-      "change_pct": 1.46,
-      "volume_ratio": 1.19,
-      "volume_confirmed": false,
-      "turnover_cr": 296.35,
-      "rsi14": 39.2,
-      "atr14": 22.26,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "10 Sep",
-          "o": 1027.5,
-          "h": 1029.5,
-          "l": 1007.8,
-          "c": 1014.0
-        },
-        {
-          "d": "11 Sep",
-          "o": 990.0,
-          "h": 992.8,
-          "l": 973.1,
-          "c": 981.5
-        },
-        {
-          "d": "14 Sep",
-          "o": 981.5,
-          "h": 981.5,
-          "l": 981.5,
-          "c": 981.5
-        },
-        {
-          "d": "15 Sep",
-          "o": 980.1,
-          "h": 981.0,
-          "l": 958.7,
-          "c": 958.7
-        },
-        {
-          "d": "16 Sep",
-          "o": 956.4,
-          "h": 978.5,
-          "l": 956.4,
-          "c": 972.7
-        }
-      ]
-    },
-    {
-      "symbol": "GODREJCP",
-      "tier": "NIFTY 100",
-      "pattern": "piercing-pattern",
-      "pattern_name": "Piercing Pattern",
-      "direction": "bullish",
-      "close": 863.0,
-      "change_pct": 0.7,
-      "volume_ratio": 0.95,
-      "volume_confirmed": false,
-      "turnover_cr": 109.22,
-      "rsi14": 28.0,
-      "atr14": 18.72,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "10 Sep",
-          "o": 863.8,
-          "h": 872.8,
-          "l": 859.0,
-          "c": 869.9
-        },
-        {
-          "d": "11 Sep",
-          "o": 860.0,
-          "h": 872.6,
-          "l": 859.0,
-          "c": 865.0
-        },
-        {
-          "d": "14 Sep",
-          "o": 865.0,
-          "h": 865.0,
-          "l": 865.0,
-          "c": 865.0
-        },
-        {
-          "d": "15 Sep",
-          "o": 867.0,
-          "h": 877.0,
-          "l": 856.6,
-          "c": 857.0
-        },
-        {
-          "d": "16 Sep",
-          "o": 856.0,
-          "h": 876.85,
-          "l": 856.0,
-          "c": 863.0
-        }
-      ]
-    },
-    {
-      "symbol": "UNITDSPR",
-      "tier": "NIFTY 100",
-      "pattern": "piercing-pattern",
-      "pattern_name": "Piercing Pattern",
-      "direction": "bullish",
-      "close": 1389.5,
-      "change_pct": 1.38,
-      "volume_ratio": 0.42,
-      "volume_confirmed": false,
-      "turnover_cr": 71.11,
-      "rsi14": 32.6,
-      "atr14": 28.25,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "10 Sep",
-          "o": 1405.2,
-          "h": 1416.1,
-          "l": 1391.4,
-          "c": 1400.0
-        },
-        {
-          "d": "11 Sep",
-          "o": 1395.1,
-          "h": 1407.2,
-          "l": 1384.3,
-          "c": 1395.0
-        },
-        {
-          "d": "14 Sep",
-          "o": 1395.0,
-          "h": 1395.0,
-          "l": 1395.0,
-          "c": 1395.0
-        },
-        {
-          "d": "15 Sep",
-          "o": 1392.1,
-          "h": 1403.6,
-          "l": 1370.6,
-          "c": 1370.6
-        },
-        {
-          "d": "16 Sep",
-          "o": 1370.0,
-          "h": 1398.2,
-          "l": 1368.1,
-          "c": 1389.5
-        }
-      ]
-    },
-    {
-      "symbol": "TIINDIA",
+      "symbol": "SONACOMS",
       "tier": "BROADER",
       "pattern": "piercing-pattern",
       "pattern_name": "Piercing Pattern",
       "direction": "bullish",
-      "close": 2566.6,
-      "change_pct": 1.65,
-      "volume_ratio": 0.45,
-      "volume_confirmed": false,
-      "turnover_cr": 48.68,
-      "rsi14": 33.5,
-      "atr14": 75.79,
-      "above_sma50": false,
-      "strength": "unconfirmed",
+      "close": 777.9,
+      "change_pct": 1.29,
+      "volume_ratio": 2.04,
+      "volume_confirmed": true,
+      "turnover_cr": 121.31,
+      "rsi14": 46.1,
+      "atr14": 20.6,
+      "above_sma50": true,
+      "strength": "confirmed",
       "bars": [
         {
-          "d": "10 Sep",
-          "o": 2670.0,
-          "h": 2674.5,
-          "l": 2632.5,
-          "c": 2652.0
-        },
-        {
           "d": "11 Sep",
-          "o": 2637.0,
-          "h": 2637.1,
-          "l": 2580.1,
-          "c": 2606.1
+          "o": 798.0,
+          "h": 799.95,
+          "l": 786.9,
+          "c": 788.0
         },
         {
           "d": "14 Sep",
-          "o": 2606.1,
-          "h": 2606.1,
-          "l": 2606.1,
-          "c": 2606.1
+          "o": 788.0,
+          "h": 788.0,
+          "l": 788.0,
+          "c": 788.0
         },
         {
           "d": "15 Sep",
-          "o": 2606.1,
-          "h": 2613.2,
-          "l": 2521.5,
-          "c": 2525.0
+          "o": 788.0,
+          "h": 793.9,
+          "l": 777.45,
+          "c": 790.0
         },
         {
           "d": "16 Sep",
-          "o": 2514.0,
-          "h": 2609.0,
-          "l": 2482.0,
-          "c": 2566.6
+          "o": 780.6,
+          "h": 794.65,
+          "l": 767.0,
+          "c": 768.0
+        },
+        {
+          "d": "17 Sep",
+          "o": 762.0,
+          "h": 791.25,
+          "l": 759.05,
+          "c": 777.9
         }
       ]
     }

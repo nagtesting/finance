@@ -1,17 +1,866 @@
 {
-  "session_date": "2026-09-16",
-  "generated_at": "2026-09-16T22:49:27.925606+05:30",
+  "session_date": "2026-09-17",
+  "generated_at": "2026-09-17T20:34:48.971256+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 218,
+  "total_signals": 170,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 0,
+  "count": 16,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "DRREDDY",
+      "tier": "NIFTY 50",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 1175.0,
+      "change_pct": 3.07,
+      "volume_ratio": 2.07,
+      "volume_confirmed": true,
+      "turnover_cr": 125.35,
+      "rsi14": 52.4,
+      "atr14": 22.12,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 1130.0,
+          "h": 1182.0,
+          "l": 1130.0,
+          "c": 1165.5
+        },
+        {
+          "d": "14 Sep",
+          "o": 1165.5,
+          "h": 1165.5,
+          "l": 1165.5,
+          "c": 1165.5
+        },
+        {
+          "d": "15 Sep",
+          "o": 1163.7,
+          "h": 1168.5,
+          "l": 1141.0,
+          "c": 1145.0
+        },
+        {
+          "d": "16 Sep",
+          "o": 1142.0,
+          "h": 1149.9,
+          "l": 1133.9,
+          "c": 1140.0
+        },
+        {
+          "d": "17 Sep",
+          "o": 1140.0,
+          "h": 1189.8,
+          "l": 1140.0,
+          "c": 1175.0
+        }
+      ]
+    },
+    {
+      "symbol": "TVSMOTOR",
+      "tier": "NIFTY 100",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 4101.7,
+      "change_pct": 1.7,
+      "volume_ratio": 1.23,
+      "volume_confirmed": true,
+      "turnover_cr": 254.64,
+      "rsi14": 43.1,
+      "atr14": 97.37,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 4081.0,
+          "h": 4151.9,
+          "l": 4062.8,
+          "c": 4125.0
+        },
+        {
+          "d": "14 Sep",
+          "o": 4125.0,
+          "h": 4125.0,
+          "l": 4125.0,
+          "c": 4125.0
+        },
+        {
+          "d": "15 Sep",
+          "o": 4150.0,
+          "h": 4155.0,
+          "l": 4022.1,
+          "c": 4050.0
+        },
+        {
+          "d": "16 Sep",
+          "o": 4033.0,
+          "h": 4078.5,
+          "l": 4002.0,
+          "c": 4033.0
+        },
+        {
+          "d": "17 Sep",
+          "o": 4050.0,
+          "h": 4162.2,
+          "l": 4050.0,
+          "c": 4101.7
+        }
+      ]
+    },
+    {
+      "symbol": "KIRLOSENG",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 2120.6,
+      "change_pct": 3.93,
+      "volume_ratio": 1.54,
+      "volume_confirmed": true,
+      "turnover_cr": 89.61,
+      "rsi14": 47.9,
+      "atr14": 99.59,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 2229.9,
+          "h": 2230.0,
+          "l": 2155.7,
+          "c": 2168.6
+        },
+        {
+          "d": "14 Sep",
+          "o": 2168.6,
+          "h": 2168.6,
+          "l": 2168.6,
+          "c": 2168.6
+        },
+        {
+          "d": "15 Sep",
+          "o": 2183.6,
+          "h": 2212.5,
+          "l": 2030.0,
+          "c": 2041.6
+        },
+        {
+          "d": "16 Sep",
+          "o": 2040.5,
+          "h": 2111.2,
+          "l": 1934.0,
+          "c": 2040.5
+        },
+        {
+          "d": "17 Sep",
+          "o": 2036.0,
+          "h": 2159.0,
+          "l": 2025.1,
+          "c": 2120.6
+        }
+      ]
+    },
+    {
+      "symbol": "VIJAYA",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 1506.1,
+      "change_pct": 4.71,
+      "volume_ratio": 1.43,
+      "volume_confirmed": true,
+      "turnover_cr": 15.68,
+      "rsi14": 56.9,
+      "atr14": 54.23,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "10 Sep",
+          "o": 1495.0,
+          "h": 1516.8,
+          "l": 1494.7,
+          "c": 1498.8
+        },
+        {
+          "d": "11 Sep",
+          "o": 1495.0,
+          "h": 1517.4,
+          "l": 1466.1,
+          "c": 1502.0
+        },
+        {
+          "d": "15 Sep",
+          "o": 1503.0,
+          "h": 1515.9,
+          "l": 1431.1,
+          "c": 1443.7
+        },
+        {
+          "d": "16 Sep",
+          "o": 1436.7,
+          "h": 1453.9,
+          "l": 1380.0,
+          "c": 1438.3
+        },
+        {
+          "d": "17 Sep",
+          "o": 1457.0,
+          "h": 1514.9,
+          "l": 1423.3,
+          "c": 1506.1
+        }
+      ]
+    },
+    {
+      "symbol": "TMCV",
+      "tier": "NIFTY 100",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 436.1,
+      "change_pct": 2.79,
+      "volume_ratio": 0.71,
+      "volume_confirmed": false,
+      "turnover_cr": 276.88,
+      "rsi14": 42.6,
+      "atr14": 12.91,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 436.0,
+          "h": 436.95,
+          "l": 425.35,
+          "c": 434.55
+        },
+        {
+          "d": "14 Sep",
+          "o": 434.55,
+          "h": 434.55,
+          "l": 434.55,
+          "c": 434.55
+        },
+        {
+          "d": "15 Sep",
+          "o": 441.2,
+          "h": 446.7,
+          "l": 424.05,
+          "c": 427.15
+        },
+        {
+          "d": "16 Sep",
+          "o": 425.1,
+          "h": 426.4,
+          "l": 416.0,
+          "c": 424.25
+        },
+        {
+          "d": "17 Sep",
+          "o": 424.25,
+          "h": 437.35,
+          "l": 421.8,
+          "c": 436.1
+        }
+      ]
+    },
+    {
+      "symbol": "ENRIN",
+      "tier": "NIFTY 100",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 3109.1,
+      "change_pct": 3.18,
+      "volume_ratio": 0.61,
+      "volume_confirmed": false,
+      "turnover_cr": 92.93,
+      "rsi14": 40.2,
+      "atr14": 100.57,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 3167.0,
+          "h": 3191.0,
+          "l": 3124.0,
+          "c": 3181.3
+        },
+        {
+          "d": "14 Sep",
+          "o": 3181.3,
+          "h": 3181.3,
+          "l": 3181.3,
+          "c": 3181.3
+        },
+        {
+          "d": "15 Sep",
+          "o": 3200.0,
+          "h": 3200.0,
+          "l": 3010.0,
+          "c": 3028.7
+        },
+        {
+          "d": "16 Sep",
+          "o": 3028.0,
+          "h": 3072.0,
+          "l": 2968.0,
+          "c": 3013.4
+        },
+        {
+          "d": "17 Sep",
+          "o": 3016.5,
+          "h": 3120.0,
+          "l": 3001.1,
+          "c": 3109.1
+        }
+      ]
+    },
+    {
+      "symbol": "POWERINDIA",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 31230.0,
+      "change_pct": 3.41,
+      "volume_ratio": 1.12,
+      "volume_confirmed": false,
+      "turnover_cr": 272.0,
+      "rsi14": 42.6,
+      "atr14": 960.23,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 31060.0,
+          "h": 31515.0,
+          "l": 30700.0,
+          "c": 31435.0
+        },
+        {
+          "d": "14 Sep",
+          "o": 31435.0,
+          "h": 31435.0,
+          "l": 31435.0,
+          "c": 31435.0
+        },
+        {
+          "d": "15 Sep",
+          "o": 31260.0,
+          "h": 31295.0,
+          "l": 30000.0,
+          "c": 30790.0
+        },
+        {
+          "d": "16 Sep",
+          "o": 30300.0,
+          "h": 30400.0,
+          "l": 29645.0,
+          "c": 30200.0
+        },
+        {
+          "d": "17 Sep",
+          "o": 30435.0,
+          "h": 31325.0,
+          "l": 30380.0,
+          "c": 31230.0
+        }
+      ]
+    },
+    {
+      "symbol": "LUPIN",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 2098.1,
+      "change_pct": 2.6,
+      "volume_ratio": 0.75,
+      "volume_confirmed": false,
+      "turnover_cr": 140.19,
+      "rsi14": 37.5,
+      "atr14": 39.87,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 2064.0,
+          "h": 2108.5,
+          "l": 2058.0,
+          "c": 2095.0
+        },
+        {
+          "d": "14 Sep",
+          "o": 2095.0,
+          "h": 2095.0,
+          "l": 2095.0,
+          "c": 2095.0
+        },
+        {
+          "d": "15 Sep",
+          "o": 2095.0,
+          "h": 2099.5,
+          "l": 2049.5,
+          "c": 2063.2
+        },
+        {
+          "d": "16 Sep",
+          "o": 2056.4,
+          "h": 2074.1,
+          "l": 2033.5,
+          "c": 2045.0
+        },
+        {
+          "d": "17 Sep",
+          "o": 2052.6,
+          "h": 2098.1,
+          "l": 2046.3,
+          "c": 2098.1
+        }
+      ]
+    },
+    {
+      "symbol": "AUROPHARMA",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 1690.0,
+      "change_pct": 2.86,
+      "volume_ratio": 1.01,
+      "volume_confirmed": false,
+      "turnover_cr": 113.91,
+      "rsi14": 57.5,
+      "atr14": 38.26,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 1666.7,
+          "h": 1681.4,
+          "l": 1655.5,
+          "c": 1679.8
+        },
+        {
+          "d": "14 Sep",
+          "o": 1679.8,
+          "h": 1679.8,
+          "l": 1679.8,
+          "c": 1679.8
+        },
+        {
+          "d": "15 Sep",
+          "o": 1688.0,
+          "h": 1688.0,
+          "l": 1642.1,
+          "c": 1660.0
+        },
+        {
+          "d": "16 Sep",
+          "o": 1657.1,
+          "h": 1657.1,
+          "l": 1623.0,
+          "c": 1643.0
+        },
+        {
+          "d": "17 Sep",
+          "o": 1634.0,
+          "h": 1692.3,
+          "l": 1634.0,
+          "c": 1690.0
+        }
+      ]
+    },
+    {
+      "symbol": "ASTERDM",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 760.65,
+      "change_pct": 2.62,
+      "volume_ratio": 0.11,
+      "volume_confirmed": false,
+      "turnover_cr": 106.29,
+      "rsi14": 44.0,
+      "atr14": 20.48,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 761.0,
+          "h": 770.9,
+          "l": 757.55,
+          "c": 763.05
+        },
+        {
+          "d": "14 Sep",
+          "o": 763.05,
+          "h": 763.05,
+          "l": 763.05,
+          "c": 763.05
+        },
+        {
+          "d": "15 Sep",
+          "o": 762.95,
+          "h": 762.95,
+          "l": 738.0,
+          "c": 741.25
+        },
+        {
+          "d": "16 Sep",
+          "o": 741.0,
+          "h": 746.8,
+          "l": 729.05,
+          "c": 741.2
+        },
+        {
+          "d": "17 Sep",
+          "o": 745.0,
+          "h": 764.4,
+          "l": 738.05,
+          "c": 760.65
+        }
+      ]
+    },
+    {
+      "symbol": "PIRAMALFIN",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 2253.8,
+      "change_pct": 2.39,
+      "volume_ratio": 0.71,
+      "volume_confirmed": false,
+      "turnover_cr": 87.8,
+      "rsi14": 56.1,
+      "atr14": 67.24,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "10 Sep",
+          "o": 2290.7,
+          "h": 2316.0,
+          "l": 2258.0,
+          "c": 2295.6
+        },
+        {
+          "d": "11 Sep",
+          "o": 2267.9,
+          "h": 2287.4,
+          "l": 2249.3,
+          "c": 2255.6
+        },
+        {
+          "d": "15 Sep",
+          "o": 2299.0,
+          "h": 2299.0,
+          "l": 2214.0,
+          "c": 2224.4
+        },
+        {
+          "d": "16 Sep",
+          "o": 2202.4,
+          "h": 2237.2,
+          "l": 2180.2,
+          "c": 2201.1
+        },
+        {
+          "d": "17 Sep",
+          "o": 2166.0,
+          "h": 2270.7,
+          "l": 2166.0,
+          "c": 2253.8
+        }
+      ]
+    },
+    {
+      "symbol": "ANANTRAJ",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 596.9,
+      "change_pct": 2.3,
+      "volume_ratio": 0.67,
+      "volume_confirmed": false,
+      "turnover_cr": 78.88,
+      "rsi14": 45.9,
+      "atr14": 18.68,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 602.0,
+          "h": 604.45,
+          "l": 585.05,
+          "c": 598.35
+        },
+        {
+          "d": "14 Sep",
+          "o": 598.35,
+          "h": 598.35,
+          "l": 598.35,
+          "c": 598.35
+        },
+        {
+          "d": "15 Sep",
+          "o": 601.05,
+          "h": 605.3,
+          "l": 583.05,
+          "c": 585.9
+        },
+        {
+          "d": "16 Sep",
+          "o": 585.0,
+          "h": 594.9,
+          "l": 576.85,
+          "c": 583.5
+        },
+        {
+          "d": "17 Sep",
+          "o": 582.0,
+          "h": 600.2,
+          "l": 579.4,
+          "c": 596.9
+        }
+      ]
+    },
+    {
+      "symbol": "BALKRISIND",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 2170.8,
+      "change_pct": 2.16,
+      "volume_ratio": 0.29,
+      "volume_confirmed": false,
+      "turnover_cr": 65.19,
+      "rsi14": 38.1,
+      "atr14": 62.22,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 2180.2,
+          "h": 2190.1,
+          "l": 2156.4,
+          "c": 2164.6
+        },
+        {
+          "d": "14 Sep",
+          "o": 2164.6,
+          "h": 2164.6,
+          "l": 2164.6,
+          "c": 2164.6
+        },
+        {
+          "d": "15 Sep",
+          "o": 2164.6,
+          "h": 2176.3,
+          "l": 2117.1,
+          "c": 2129.0
+        },
+        {
+          "d": "16 Sep",
+          "o": 2124.5,
+          "h": 2140.0,
+          "l": 2100.1,
+          "c": 2124.9
+        },
+        {
+          "d": "17 Sep",
+          "o": 2124.9,
+          "h": 2180.0,
+          "l": 2120.0,
+          "c": 2170.8
+        }
+      ]
+    },
+    {
+      "symbol": "SHYAMMETL",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 1077.0,
+      "change_pct": 2.77,
+      "volume_ratio": 0.98,
+      "volume_confirmed": false,
+      "turnover_cr": 24.55,
+      "rsi14": 58.0,
+      "atr14": 31.25,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "10 Sep",
+          "o": 1081.0,
+          "h": 1088.7,
+          "l": 1074.2,
+          "c": 1086.1
+        },
+        {
+          "d": "11 Sep",
+          "o": 1096.0,
+          "h": 1096.0,
+          "l": 1065.3,
+          "c": 1074.8
+        },
+        {
+          "d": "15 Sep",
+          "o": 1082.3,
+          "h": 1082.7,
+          "l": 1045.1,
+          "c": 1050.5
+        },
+        {
+          "d": "16 Sep",
+          "o": 1050.0,
+          "h": 1063.3,
+          "l": 1019.0,
+          "c": 1048.0
+        },
+        {
+          "d": "17 Sep",
+          "o": 1050.0,
+          "h": 1093.9,
+          "l": 1045.4,
+          "c": 1077.0
+        }
+      ]
+    },
+    {
+      "symbol": "TRITURBINE",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 556.8,
+      "change_pct": 2.96,
+      "volume_ratio": 0.79,
+      "volume_confirmed": false,
+      "turnover_cr": 21.61,
+      "rsi14": 41.2,
+      "atr14": 19.39,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "10 Sep",
+          "o": 565.1,
+          "h": 574.45,
+          "l": 555.1,
+          "c": 560.85
+        },
+        {
+          "d": "11 Sep",
+          "o": 560.85,
+          "h": 572.8,
+          "l": 552.5,
+          "c": 569.65
+        },
+        {
+          "d": "15 Sep",
+          "o": 567.1,
+          "h": 569.65,
+          "l": 535.65,
+          "c": 546.9
+        },
+        {
+          "d": "16 Sep",
+          "o": 541.8,
+          "h": 548.0,
+          "l": 532.1,
+          "c": 540.8
+        },
+        {
+          "d": "17 Sep",
+          "o": 542.3,
+          "h": 559.0,
+          "l": 540.5,
+          "c": 556.8
+        }
+      ]
+    },
+    {
+      "symbol": "JKTYRE",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 348.55,
+      "change_pct": 1.53,
+      "volume_ratio": 0.81,
+      "volume_confirmed": false,
+      "turnover_cr": 13.09,
+      "rsi14": 30.0,
+      "atr14": 7.62,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 355.65,
+          "h": 355.65,
+          "l": 350.25,
+          "c": 353.95
+        },
+        {
+          "d": "14 Sep",
+          "o": 353.95,
+          "h": 353.95,
+          "l": 353.95,
+          "c": 353.95
+        },
+        {
+          "d": "15 Sep",
+          "o": 353.95,
+          "h": 355.0,
+          "l": 343.1,
+          "c": 345.25
+        },
+        {
+          "d": "16 Sep",
+          "o": 343.1,
+          "h": 350.6,
+          "l": 339.55,
+          "c": 343.3
+        },
+        {
+          "d": "17 Sep",
+          "o": 344.5,
+          "h": 349.5,
+          "l": 343.7,
+          "c": 348.55
+        }
+      ]
+    }
+  ]
 }
