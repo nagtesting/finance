@@ -1,17 +1,124 @@
 {
-  "session_date": "2026-09-17",
-  "generated_at": "2026-09-17T22:48:39.037927+05:30",
+  "session_date": "2026-09-18",
+  "generated_at": "2026-09-18T20:03:26.186430+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 170,
+  "total_signals": 152,
   "pattern": "hammer",
   "pattern_name": "Hammer",
   "direction": "bullish",
-  "count": 0,
+  "count": 2,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "MPHASIS",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 2300.4,
+      "change_pct": -0.7,
+      "volume_ratio": 1.6,
+      "volume_confirmed": true,
+      "turnover_cr": 83.76,
+      "rsi14": 40.6,
+      "atr14": 67.61,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 2275.0,
+          "h": 2309.2,
+          "l": 2273.3,
+          "c": 2295.0
+        },
+        {
+          "d": "14 Sep",
+          "o": 2295.0,
+          "h": 2295.0,
+          "l": 2295.0,
+          "c": 2295.0
+        },
+        {
+          "d": "15 Sep",
+          "o": 2353.0,
+          "h": 2461.1,
+          "l": 2353.0,
+          "c": 2378.0
+        },
+        {
+          "d": "16 Sep",
+          "o": 2379.0,
+          "h": 2393.9,
+          "l": 2316.7,
+          "c": 2316.7
+        },
+        {
+          "d": "18 Sep",
+          "o": 2322.9,
+          "h": 2327.9,
+          "l": 2275.0,
+          "c": 2300.4
+        }
+      ]
+    },
+    {
+      "symbol": "MANAPPURAM",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 319.15,
+      "change_pct": -0.23,
+      "volume_ratio": 0.74,
+      "volume_confirmed": false,
+      "turnover_cr": 134.84,
+      "rsi14": 35.5,
+      "atr14": 10.1,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "11 Sep",
+          "o": 324.75,
+          "h": 329.1,
+          "l": 323.1,
+          "c": 329.0
+        },
+        {
+          "d": "14 Sep",
+          "o": 329.0,
+          "h": 329.0,
+          "l": 329.0,
+          "c": 329.0
+        },
+        {
+          "d": "15 Sep",
+          "o": 327.1,
+          "h": 330.45,
+          "l": 317.7,
+          "c": 318.85
+        },
+        {
+          "d": "16 Sep",
+          "o": 321.25,
+          "h": 324.7,
+          "l": 317.25,
+          "c": 319.9
+        },
+        {
+          "d": "18 Sep",
+          "o": 319.0,
+          "h": 319.9,
+          "l": 310.0,
+          "c": 319.15
+        }
+      ]
+    }
+  ]
 }

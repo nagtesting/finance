@@ -1,71 +1,17 @@
 {
-  "session_date": "2026-09-17",
-  "generated_at": "2026-09-17T22:48:39.037927+05:30",
+  "session_date": "2026-09-18",
+  "generated_at": "2026-09-18T20:03:26.186430+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 170,
+  "total_signals": 152,
   "pattern": "piercing-pattern",
   "pattern_name": "Piercing Pattern",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "SONACOMS",
-      "tier": "BROADER",
-      "pattern": "piercing-pattern",
-      "pattern_name": "Piercing Pattern",
-      "direction": "bullish",
-      "close": 777.9,
-      "change_pct": 1.29,
-      "volume_ratio": 2.04,
-      "volume_confirmed": true,
-      "turnover_cr": 121.31,
-      "rsi14": 46.1,
-      "atr14": 20.6,
-      "above_sma50": true,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "11 Sep",
-          "o": 798.0,
-          "h": 799.95,
-          "l": 786.9,
-          "c": 788.0
-        },
-        {
-          "d": "14 Sep",
-          "o": 788.0,
-          "h": 788.0,
-          "l": 788.0,
-          "c": 788.0
-        },
-        {
-          "d": "15 Sep",
-          "o": 788.0,
-          "h": 793.9,
-          "l": 777.45,
-          "c": 790.0
-        },
-        {
-          "d": "16 Sep",
-          "o": 780.6,
-          "h": 794.65,
-          "l": 767.0,
-          "c": 768.0
-        },
-        {
-          "d": "17 Sep",
-          "o": 762.0,
-          "h": 791.25,
-          "l": 759.05,
-          "c": 777.9
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
