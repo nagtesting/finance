@@ -1,69 +1,334 @@
 {
-  "session_date": "2026-09-18",
-  "generated_at": "2026-09-18T22:15:58.285724+05:30",
+  "session_date": "2026-09-21",
+  "generated_at": "2026-09-21T22:00:03.540965+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 152,
+  "total_signals": 192,
   "pattern": "bearish-engulfing",
   "pattern_name": "Bearish Engulfing",
   "direction": "bearish",
-  "count": 1,
+  "count": 6,
   "truncated": false,
   "signals": [
     {
-      "symbol": "ITC",
-      "tier": "NIFTY 50",
+      "symbol": "GRAPHITE",
+      "tier": "BROADER",
       "pattern": "bearish-engulfing",
       "pattern_name": "Bearish Engulfing",
       "direction": "bearish",
-      "close": 262.3,
-      "change_pct": -1.47,
-      "volume_ratio": 1.14,
+      "close": 812.8,
+      "change_pct": -2.17,
+      "volume_ratio": 0.26,
       "volume_confirmed": false,
-      "turnover_cr": 314.52,
-      "rsi14": 43.4,
-      "atr14": 4.65,
+      "turnover_cr": 79.54,
+      "rsi14": 61.0,
+      "atr14": 33.81,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "15 Sep",
+          "o": 825.5,
+          "h": 830.0,
+          "l": 776.05,
+          "c": 781.5
+        },
+        {
+          "d": "16 Sep",
+          "o": 785.0,
+          "h": 818.7,
+          "l": 774.6,
+          "c": 805.05
+        },
+        {
+          "d": "17 Sep",
+          "o": 818.0,
+          "h": 832.4,
+          "l": 802.05,
+          "c": 814.1
+        },
+        {
+          "d": "18 Sep",
+          "o": 815.0,
+          "h": 838.0,
+          "l": 810.0,
+          "c": 830.85
+        },
+        {
+          "d": "21 Sep",
+          "o": 834.7,
+          "h": 837.95,
+          "l": 811.0,
+          "c": 812.8
+        }
+      ]
+    },
+    {
+      "symbol": "CYIENT",
+      "tier": "BROADER",
+      "pattern": "bearish-engulfing",
+      "pattern_name": "Bearish Engulfing",
+      "direction": "bearish",
+      "close": 1060.8,
+      "change_pct": -1.16,
+      "volume_ratio": 0.1,
+      "volume_confirmed": false,
+      "turnover_cr": 61.59,
+      "rsi14": 56.8,
+      "atr14": 39.07,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "15 Sep",
+          "o": 1076.6,
+          "h": 1107.2,
+          "l": 1065.6,
+          "c": 1078.9
+        },
+        {
+          "d": "16 Sep",
+          "o": 1078.9,
+          "h": 1079.0,
+          "l": 1030.3,
+          "c": 1054.5
+        },
+        {
+          "d": "17 Sep",
+          "o": 1059.6,
+          "h": 1084.0,
+          "l": 1047.1,
+          "c": 1064.0
+        },
+        {
+          "d": "18 Sep",
+          "o": 1064.8,
+          "h": 1079.5,
+          "l": 1047.6,
+          "c": 1073.3
+        },
+        {
+          "d": "21 Sep",
+          "o": 1085.7,
+          "h": 1086.1,
+          "l": 1055.1,
+          "c": 1060.8
+        }
+      ]
+    },
+    {
+      "symbol": "KIMS",
+      "tier": "BROADER",
+      "pattern": "bearish-engulfing",
+      "pattern_name": "Bearish Engulfing",
+      "direction": "bearish",
+      "close": 788.85,
+      "change_pct": -2.59,
+      "volume_ratio": 0.79,
+      "volume_confirmed": false,
+      "turnover_cr": 38.56,
+      "rsi14": 54.3,
+      "atr14": 20.94,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "15 Sep",
+          "o": 770.0,
+          "h": 772.15,
+          "l": 755.0,
+          "c": 766.85
+        },
+        {
+          "d": "16 Sep",
+          "o": 766.85,
+          "h": 775.0,
+          "l": 758.5,
+          "c": 766.65
+        },
+        {
+          "d": "17 Sep",
+          "o": 766.65,
+          "h": 799.05,
+          "l": 763.05,
+          "c": 791.85
+        },
+        {
+          "d": "18 Sep",
+          "o": 793.4,
+          "h": 819.0,
+          "l": 784.0,
+          "c": 809.85
+        },
+        {
+          "d": "21 Sep",
+          "o": 811.8,
+          "h": 818.95,
+          "l": 785.0,
+          "c": 788.85
+        }
+      ]
+    },
+    {
+      "symbol": "SAREGAMA",
+      "tier": "BROADER",
+      "pattern": "bearish-engulfing",
+      "pattern_name": "Bearish Engulfing",
+      "direction": "bearish",
+      "close": 488.2,
+      "change_pct": -2.34,
+      "volume_ratio": 0.44,
+      "volume_confirmed": false,
+      "turnover_cr": 19.69,
+      "rsi14": 45.4,
+      "atr14": 19.33,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "14 Sep",
-          "o": 259.85,
-          "h": 259.85,
-          "l": 259.85,
-          "c": 259.85
-        },
-        {
           "d": "15 Sep",
-          "o": 261.0,
-          "h": 264.2,
-          "l": 258.0,
-          "c": 258.0
+          "o": 505.1,
+          "h": 505.1,
+          "l": 481.15,
+          "c": 485.5
         },
         {
           "d": "16 Sep",
-          "o": 259.4,
-          "h": 264.9,
-          "l": 259.3,
-          "c": 264.15
+          "o": 485.5,
+          "h": 498.0,
+          "l": 475.2,
+          "c": 486.55
         },
         {
           "d": "17 Sep",
-          "o": 264.8,
-          "h": 268.5,
-          "l": 264.1,
-          "c": 266.2
+          "o": 483.5,
+          "h": 501.9,
+          "l": 483.0,
+          "c": 489.25
         },
         {
           "d": "18 Sep",
-          "o": 266.6,
-          "h": 266.6,
-          "l": 262.3,
-          "c": 262.3
+          "o": 489.25,
+          "h": 506.6,
+          "l": 489.25,
+          "c": 499.9
+        },
+        {
+          "d": "21 Sep",
+          "o": 500.0,
+          "h": 502.5,
+          "l": 484.5,
+          "c": 488.2
+        }
+      ]
+    },
+    {
+      "symbol": "CEATLTD",
+      "tier": "BROADER",
+      "pattern": "bearish-engulfing",
+      "pattern_name": "Bearish Engulfing",
+      "direction": "bearish",
+      "close": 3392.7,
+      "change_pct": -2.2,
+      "volume_ratio": 0.84,
+      "volume_confirmed": false,
+      "turnover_cr": 15.99,
+      "rsi14": 47.4,
+      "atr14": 79.58,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "15 Sep",
+          "o": 3285.9,
+          "h": 3322.0,
+          "l": 3252.0,
+          "c": 3282.5
+        },
+        {
+          "d": "16 Sep",
+          "o": 3286.0,
+          "h": 3324.0,
+          "l": 3241.3,
+          "c": 3305.6
+        },
+        {
+          "d": "17 Sep",
+          "o": 3320.0,
+          "h": 3442.0,
+          "l": 3290.0,
+          "c": 3431.1
+        },
+        {
+          "d": "18 Sep",
+          "o": 3430.0,
+          "h": 3529.0,
+          "l": 3418.1,
+          "c": 3468.9
+        },
+        {
+          "d": "21 Sep",
+          "o": 3471.2,
+          "h": 3485.0,
+          "l": 3375.5,
+          "c": 3392.7
+        }
+      ]
+    },
+    {
+      "symbol": "ERIS",
+      "tier": "BROADER",
+      "pattern": "bearish-engulfing",
+      "pattern_name": "Bearish Engulfing",
+      "direction": "bearish",
+      "close": 1295.3,
+      "change_pct": -1.97,
+      "volume_ratio": 1.04,
+      "volume_confirmed": false,
+      "turnover_cr": 6.56,
+      "rsi14": 39.0,
+      "atr14": 36.1,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "15 Sep",
+          "o": 1355.5,
+          "h": 1359.9,
+          "l": 1300.6,
+          "c": 1310.1
+        },
+        {
+          "d": "16 Sep",
+          "o": 1296.2,
+          "h": 1324.7,
+          "l": 1282.8,
+          "c": 1303.2
+        },
+        {
+          "d": "17 Sep",
+          "o": 1296.0,
+          "h": 1350.0,
+          "l": 1290.6,
+          "c": 1310.7
+        },
+        {
+          "d": "18 Sep",
+          "o": 1315.1,
+          "h": 1355.1,
+          "l": 1303.1,
+          "c": 1321.3
+        },
+        {
+          "d": "21 Sep",
+          "o": 1321.3,
+          "h": 1330.9,
+          "l": 1291.0,
+          "c": 1295.3
         }
       ]
     }

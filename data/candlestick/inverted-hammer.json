@@ -1,17 +1,230 @@
 {
-  "session_date": "2026-09-18",
-  "generated_at": "2026-09-18T22:15:58.285724+05:30",
+  "session_date": "2026-09-21",
+  "generated_at": "2026-09-21T22:00:03.540965+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 152,
+  "total_signals": 192,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
-  "count": 0,
+  "count": 4,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "RPOWER",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 21.0,
+      "change_pct": -0.62,
+      "volume_ratio": 1.27,
+      "volume_confirmed": true,
+      "turnover_cr": 30.83,
+      "rsi14": 33.2,
+      "atr14": 0.63,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "15 Sep",
+          "o": 21.6,
+          "h": 21.74,
+          "l": 20.9,
+          "c": 21.03
+        },
+        {
+          "d": "16 Sep",
+          "o": 21.03,
+          "h": 21.18,
+          "l": 20.51,
+          "c": 20.78
+        },
+        {
+          "d": "17 Sep",
+          "o": 20.88,
+          "h": 21.4,
+          "l": 20.78,
+          "c": 21.05
+        },
+        {
+          "d": "18 Sep",
+          "o": 21.05,
+          "h": 21.32,
+          "l": 20.9,
+          "c": 21.13
+        },
+        {
+          "d": "21 Sep",
+          "o": 21.0,
+          "h": 21.82,
+          "l": 20.95,
+          "c": 21.0
+        }
+      ]
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "tier": "NIFTY 50",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 2440.3,
+      "change_pct": -0.45,
+      "volume_ratio": 0.49,
+      "volume_confirmed": false,
+      "turnover_cr": 126.23,
+      "rsi14": 32.7,
+      "atr14": 43.08,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "15 Sep",
+          "o": 2472.5,
+          "h": 2473.0,
+          "l": 2402.8,
+          "c": 2402.8
+        },
+        {
+          "d": "16 Sep",
+          "o": 2405.1,
+          "h": 2444.5,
+          "l": 2397.4,
+          "c": 2416.6
+        },
+        {
+          "d": "17 Sep",
+          "o": 2424.0,
+          "h": 2454.0,
+          "l": 2421.0,
+          "c": 2454.0
+        },
+        {
+          "d": "18 Sep",
+          "o": 2455.7,
+          "h": 2474.0,
+          "l": 2438.0,
+          "c": 2451.3
+        },
+        {
+          "d": "21 Sep",
+          "o": 2450.0,
+          "h": 2463.8,
+          "l": 2440.3,
+          "c": 2440.3
+        }
+      ]
+    },
+    {
+      "symbol": "LATENTVIEW",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 252.45,
+      "change_pct": -1.14,
+      "volume_ratio": 0.6,
+      "volume_confirmed": false,
+      "turnover_cr": 9.33,
+      "rsi14": 31.0,
+      "atr14": 7.27,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "15 Sep",
+          "o": 254.05,
+          "h": 264.8,
+          "l": 251.7,
+          "c": 252.9
+        },
+        {
+          "d": "16 Sep",
+          "o": 254.8,
+          "h": 262.5,
+          "l": 251.05,
+          "c": 252.15
+        },
+        {
+          "d": "17 Sep",
+          "o": 253.45,
+          "h": 255.9,
+          "l": 251.9,
+          "c": 255.0
+        },
+        {
+          "d": "18 Sep",
+          "o": 256.05,
+          "h": 256.5,
+          "l": 253.6,
+          "c": 255.35
+        },
+        {
+          "d": "21 Sep",
+          "o": 254.2,
+          "h": 257.0,
+          "l": 252.0,
+          "c": 252.45
+        }
+      ]
+    },
+    {
+      "symbol": "GODREJIND",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 1101.7,
+      "change_pct": -0.51,
+      "volume_ratio": 0.27,
+      "volume_confirmed": false,
+      "turnover_cr": 7.37,
+      "rsi14": 35.3,
+      "atr14": 36.55,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "15 Sep",
+          "o": 1126.7,
+          "h": 1137.8,
+          "l": 1100.1,
+          "c": 1104.0
+        },
+        {
+          "d": "16 Sep",
+          "o": 1107.0,
+          "h": 1172.0,
+          "l": 1078.0,
+          "c": 1136.5
+        },
+        {
+          "d": "17 Sep",
+          "o": 1124.0,
+          "h": 1147.0,
+          "l": 1124.0,
+          "c": 1127.3
+        },
+        {
+          "d": "18 Sep",
+          "o": 1127.3,
+          "h": 1132.4,
+          "l": 1095.1,
+          "c": 1107.4
+        },
+        {
+          "d": "21 Sep",
+          "o": 1098.9,
+          "h": 1115.9,
+          "l": 1098.9,
+          "c": 1101.7
+        }
+      ]
+    }
+  ]
 }
