@@ -1,71 +1,17 @@
 {
-  "session_date": "2026-09-21",
-  "generated_at": "2026-09-21T23:50:48.579184+05:30",
+  "session_date": "2026-09-22",
+  "generated_at": "2026-09-22T20:30:13.027236+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 192,
+  "total_signals": 153,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "ECLERX",
-      "tier": "BROADER",
-      "pattern": "morning-star",
-      "pattern_name": "Morning Star",
-      "direction": "bullish",
-      "close": 1951.2,
-      "change_pct": 1.86,
-      "volume_ratio": 0.51,
-      "volume_confirmed": false,
-      "turnover_cr": 35.49,
-      "rsi14": 56.6,
-      "atr14": 72.58,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "15 Sep",
-          "o": 1890.8,
-          "h": 1968.8,
-          "l": 1885.0,
-          "c": 1894.8
-        },
-        {
-          "d": "16 Sep",
-          "o": 1890.5,
-          "h": 1968.0,
-          "l": 1848.2,
-          "c": 1961.2
-        },
-        {
-          "d": "17 Sep",
-          "o": 1971.0,
-          "h": 2017.0,
-          "l": 1914.0,
-          "c": 1923.0
-        },
-        {
-          "d": "18 Sep",
-          "o": 1919.4,
-          "h": 1938.8,
-          "l": 1898.7,
-          "c": 1915.6
-        },
-        {
-          "d": "21 Sep",
-          "o": 1915.0,
-          "h": 1962.8,
-          "l": 1902.5,
-          "c": 1951.2
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

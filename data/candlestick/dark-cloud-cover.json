@@ -1,17 +1,71 @@
 {
-  "session_date": "2026-09-21",
-  "generated_at": "2026-09-21T23:50:48.579184+05:30",
+  "session_date": "2026-09-22",
+  "generated_at": "2026-09-22T20:30:13.027236+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 192,
+  "total_signals": 153,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
-  "count": 0,
+  "count": 1,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "ECLERX",
+      "tier": "BROADER",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 1924.1,
+      "change_pct": -1.39,
+      "volume_ratio": 0.9,
+      "volume_confirmed": false,
+      "turnover_cr": 35.49,
+      "rsi14": 52.8,
+      "atr14": 73.87,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "16 Sep",
+          "o": 1890.5,
+          "h": 1968.0,
+          "l": 1848.2,
+          "c": 1961.2
+        },
+        {
+          "d": "17 Sep",
+          "o": 1971.0,
+          "h": 2017.0,
+          "l": 1914.0,
+          "c": 1923.0
+        },
+        {
+          "d": "18 Sep",
+          "o": 1919.4,
+          "h": 1938.8,
+          "l": 1898.7,
+          "c": 1915.6
+        },
+        {
+          "d": "21 Sep",
+          "o": 1915.0,
+          "h": 1962.8,
+          "l": 1902.5,
+          "c": 1951.2
+        },
+        {
+          "d": "22 Sep",
+          "o": 1965.0,
+          "h": 1998.9,
+          "l": 1908.3,
+          "c": 1924.1
+        }
+      ]
+    }
+  ]
 }

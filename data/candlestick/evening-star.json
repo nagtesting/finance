@@ -1,13 +1,13 @@
 {
-  "session_date": "2026-09-21",
-  "generated_at": "2026-09-21T23:50:48.579184+05:30",
+  "session_date": "2026-09-22",
+  "generated_at": "2026-09-22T20:30:13.027236+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 192,
+  "total_signals": 153,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
@@ -15,108 +15,108 @@
   "truncated": false,
   "signals": [
     {
-      "symbol": "ANTHEM",
+      "symbol": "HOMEFIRST",
       "tier": "BROADER",
       "pattern": "evening-star",
       "pattern_name": "Evening Star",
       "direction": "bearish",
-      "close": 917.45,
-      "change_pct": -1.19,
-      "volume_ratio": 0.33,
-      "volume_confirmed": false,
-      "turnover_cr": 80.57,
-      "rsi14": 52.6,
-      "atr14": 29.03,
+      "close": 1212.5,
+      "change_pct": -3.59,
+      "volume_ratio": 1.36,
+      "volume_confirmed": true,
+      "turnover_cr": 17.86,
+      "rsi14": 52.7,
+      "atr14": 39.8,
       "above_sma50": true,
-      "strength": "unconfirmed",
+      "strength": "confirmed",
       "bars": [
         {
-          "d": "15 Sep",
-          "o": 944.95,
-          "h": 962.0,
-          "l": 938.2,
-          "c": 942.85
-        },
-        {
           "d": "16 Sep",
-          "o": 939.95,
-          "h": 953.75,
-          "l": 903.0,
-          "c": 908.45
+          "o": 1175.3,
+          "h": 1187.0,
+          "l": 1155.8,
+          "c": 1175.9
         },
         {
           "d": "17 Sep",
-          "o": 914.1,
-          "h": 932.55,
-          "l": 910.0,
-          "c": 927.4
+          "o": 1166.0,
+          "h": 1177.0,
+          "l": 1163.4,
+          "c": 1173.3
         },
         {
           "d": "18 Sep",
-          "o": 934.0,
-          "h": 952.9,
-          "l": 916.55,
-          "c": 928.5
+          "o": 1165.0,
+          "h": 1265.0,
+          "l": 1158.2,
+          "c": 1241.3
         },
         {
           "d": "21 Sep",
-          "o": 939.7,
-          "h": 947.0,
-          "l": 914.5,
-          "c": 917.45
+          "o": 1250.0,
+          "h": 1273.9,
+          "l": 1226.1,
+          "c": 1257.7
+        },
+        {
+          "d": "22 Sep",
+          "o": 1255.0,
+          "h": 1255.0,
+          "l": 1190.0,
+          "c": 1212.5
         }
       ]
     },
     {
-      "symbol": "ERIS",
+      "symbol": "ICICIAMC",
       "tier": "BROADER",
       "pattern": "evening-star",
       "pattern_name": "Evening Star",
       "direction": "bearish",
-      "close": 1295.3,
-      "change_pct": -1.97,
-      "volume_ratio": 1.04,
+      "close": 3151.2,
+      "change_pct": -1.76,
+      "volume_ratio": 0.48,
       "volume_confirmed": false,
-      "turnover_cr": 6.56,
-      "rsi14": 39.0,
-      "atr14": 36.1,
-      "above_sma50": false,
+      "turnover_cr": 104.99,
+      "rsi14": 55.1,
+      "atr14": 84.23,
+      "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "15 Sep",
-          "o": 1355.5,
-          "h": 1359.9,
-          "l": 1300.6,
-          "c": 1310.1
-        },
-        {
           "d": "16 Sep",
-          "o": 1296.2,
-          "h": 1324.7,
-          "l": 1282.8,
-          "c": 1303.2
+          "o": 3065.0,
+          "h": 3105.0,
+          "l": 3028.0,
+          "c": 3086.3
         },
         {
           "d": "17 Sep",
-          "o": 1296.0,
-          "h": 1350.0,
-          "l": 1290.6,
-          "c": 1310.7
+          "o": 3070.5,
+          "h": 3108.8,
+          "l": 3022.0,
+          "c": 3098.0
         },
         {
           "d": "18 Sep",
-          "o": 1315.1,
-          "h": 1355.1,
-          "l": 1303.1,
-          "c": 1321.3
+          "o": 3085.2,
+          "h": 3286.0,
+          "l": 3073.7,
+          "c": 3206.7
         },
         {
           "d": "21 Sep",
-          "o": 1321.3,
-          "h": 1330.9,
-          "l": 1291.0,
-          "c": 1295.3
+          "o": 3233.0,
+          "h": 3287.0,
+          "l": 3179.1,
+          "c": 3207.8
+        },
+        {
+          "d": "22 Sep",
+          "o": 3207.0,
+          "h": 3216.1,
+          "l": 3141.0,
+          "c": 3151.2
         }
       ]
     }
