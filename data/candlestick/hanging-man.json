@@ -1,122 +1,228 @@
 {
-  "session_date": "2026-09-22",
-  "generated_at": "2026-09-22T22:51:40.289000+05:30",
+  "session_date": "2026-09-23",
+  "generated_at": "2026-09-23T20:34:55.910764+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 153,
+  "total_signals": 207,
   "pattern": "hanging-man",
   "pattern_name": "Hanging Man",
   "direction": "bearish",
-  "count": 2,
+  "count": 4,
   "truncated": false,
   "signals": [
     {
-      "symbol": "ONGC",
+      "symbol": "ETERNAL",
       "tier": "NIFTY 50",
       "pattern": "hanging-man",
       "pattern_name": "Hanging Man",
       "direction": "bearish",
-      "close": 236.13,
-      "change_pct": 0.21,
-      "volume_ratio": 0.8,
+      "close": 342.65,
+      "change_pct": 0.19,
+      "volume_ratio": 0.57,
       "volume_confirmed": false,
-      "turnover_cr": 232.14,
-      "rsi14": 50.5,
-      "atr14": 3.93,
-      "above_sma50": false,
+      "turnover_cr": 643.95,
+      "rsi14": 72.1,
+      "atr14": 7.32,
+      "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "16 Sep",
-          "o": 236.45,
-          "h": 236.8,
-          "l": 233.31,
-          "c": 236.8
-        },
-        {
           "d": "17 Sep",
-          "o": 235.1,
-          "h": 235.65,
-          "l": 231.25,
-          "c": 232.43
+          "o": 318.3,
+          "h": 327.8,
+          "l": 318.25,
+          "c": 322.35
         },
         {
           "d": "18 Sep",
-          "o": 232.43,
-          "h": 234.32,
-          "l": 231.75,
-          "c": 232.8
+          "o": 328.5,
+          "h": 329.75,
+          "l": 325.7,
+          "c": 326.85
         },
         {
           "d": "21 Sep",
-          "o": 232.8,
-          "h": 236.0,
-          "l": 232.32,
-          "c": 235.63
+          "o": 326.85,
+          "h": 336.5,
+          "l": 326.85,
+          "c": 335.9
         },
         {
           "d": "22 Sep",
-          "o": 235.51,
-          "h": 236.37,
-          "l": 233.75,
-          "c": 236.13
+          "o": 337.7,
+          "h": 342.0,
+          "l": 334.65,
+          "c": 342.0
+        },
+        {
+          "d": "23 Sep",
+          "o": 344.4,
+          "h": 344.4,
+          "l": 340.55,
+          "c": 342.65
         }
       ]
     },
     {
-      "symbol": "LUPIN",
+      "symbol": "APLAPOLLO",
       "tier": "BROADER",
       "pattern": "hanging-man",
       "pattern_name": "Hanging Man",
       "direction": "bearish",
-      "close": 2135.0,
-      "change_pct": 0.49,
-      "volume_ratio": 0.83,
+      "close": 2195.0,
+      "change_pct": 0.0,
+      "volume_ratio": 0.5,
       "volume_confirmed": false,
-      "turnover_cr": 140.19,
-      "rsi14": 46.6,
-      "atr14": 39.48,
+      "turnover_cr": 150.26,
+      "rsi14": 55.4,
+      "atr14": 58.58,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "17 Sep",
+          "o": 2110.0,
+          "h": 2170.0,
+          "l": 2110.0,
+          "c": 2148.5
+        },
+        {
+          "d": "18 Sep",
+          "o": 2154.9,
+          "h": 2270.1,
+          "l": 2146.3,
+          "c": 2270.1
+        },
+        {
+          "d": "21 Sep",
+          "o": 2224.2,
+          "h": 2229.0,
+          "l": 2178.7,
+          "c": 2181.1
+        },
+        {
+          "d": "22 Sep",
+          "o": 2180.9,
+          "h": 2199.3,
+          "l": 2159.9,
+          "c": 2195.0
+        },
+        {
+          "d": "23 Sep",
+          "o": 2199.0,
+          "h": 2204.0,
+          "l": 2178.0,
+          "c": 2195.0
+        }
+      ]
+    },
+    {
+      "symbol": "MARICO",
+      "tier": "BROADER",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 832.3,
+      "change_pct": 0.28,
+      "volume_ratio": 0.44,
+      "volume_confirmed": false,
+      "turnover_cr": 139.38,
+      "rsi14": 53.2,
+      "atr14": 15.2,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "16 Sep",
-          "o": 2056.4,
-          "h": 2074.1,
-          "l": 2033.5,
-          "c": 2045.0
-        },
-        {
           "d": "17 Sep",
-          "o": 2052.6,
-          "h": 2098.1,
-          "l": 2046.3,
-          "c": 2098.1
+          "o": 810.15,
+          "h": 826.3,
+          "l": 810.15,
+          "c": 817.0
         },
         {
           "d": "18 Sep",
-          "o": 2088.1,
-          "h": 2114.7,
-          "l": 2075.0,
-          "c": 2083.0
+          "o": 820.05,
+          "h": 822.45,
+          "l": 803.9,
+          "c": 803.9
         },
         {
           "d": "21 Sep",
-          "o": 2084.0,
-          "h": 2129.0,
-          "l": 2080.0,
-          "c": 2124.5
+          "o": 807.0,
+          "h": 829.75,
+          "l": 804.25,
+          "c": 824.4
         },
         {
           "d": "22 Sep",
-          "o": 2123.6,
-          "h": 2135.0,
-          "l": 2109.0,
-          "c": 2135.0
+          "o": 824.55,
+          "h": 830.5,
+          "l": 824.55,
+          "c": 830.0
+        },
+        {
+          "d": "23 Sep",
+          "o": 830.5,
+          "h": 833.2,
+          "l": 828.0,
+          "c": 832.3
+        }
+      ]
+    },
+    {
+      "symbol": "PAGEIND",
+      "tier": "BROADER",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 37340.0,
+      "change_pct": 0.51,
+      "volume_ratio": 0.87,
+      "volume_confirmed": false,
+      "turnover_cr": 55.88,
+      "rsi14": 57.9,
+      "atr14": 875.48,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "17 Sep",
+          "o": 34300.0,
+          "h": 35290.0,
+          "l": 34300.0,
+          "c": 35020.0
+        },
+        {
+          "d": "18 Sep",
+          "o": 34990.0,
+          "h": 36400.0,
+          "l": 34900.0,
+          "c": 36400.0
+        },
+        {
+          "d": "21 Sep",
+          "o": 35975.0,
+          "h": 36300.0,
+          "l": 35495.0,
+          "c": 35950.0
+        },
+        {
+          "d": "22 Sep",
+          "o": 36130.0,
+          "h": 37345.0,
+          "l": 36075.0,
+          "c": 37150.0
+        },
+        {
+          "d": "23 Sep",
+          "o": 37480.0,
+          "h": 37545.0,
+          "l": 37055.0,
+          "c": 37340.0
         }
       ]
     }

@@ -1,69 +1,175 @@
 {
-  "session_date": "2026-09-22",
-  "generated_at": "2026-09-22T22:51:40.289000+05:30",
+  "session_date": "2026-09-23",
+  "generated_at": "2026-09-23T20:34:55.910764+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 153,
+  "total_signals": 207,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
-  "count": 1,
+  "count": 3,
   "truncated": false,
   "signals": [
     {
-      "symbol": "ZENSARTECH",
+      "symbol": "M&MFIN",
       "tier": "BROADER",
       "pattern": "inverted-hammer",
       "pattern_name": "Inverted Hammer",
       "direction": "bullish",
-      "close": 432.6,
-      "change_pct": -0.87,
-      "volume_ratio": 0.17,
+      "close": 348.6,
+      "change_pct": -1.08,
+      "volume_ratio": 0.38,
       "volume_confirmed": false,
-      "turnover_cr": 38.97,
-      "rsi14": 37.2,
-      "atr14": 15.22,
+      "turnover_cr": 58.39,
+      "rsi14": 38.4,
+      "atr14": 10.05,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "16 Sep",
-          "o": 446.4,
-          "h": 461.4,
-          "l": 438.0,
-          "c": 450.15
-        },
-        {
           "d": "17 Sep",
-          "o": 450.0,
-          "h": 450.15,
-          "l": 431.6,
-          "c": 441.85
+          "o": 345.15,
+          "h": 352.5,
+          "l": 343.25,
+          "c": 345.7
         },
         {
           "d": "18 Sep",
-          "o": 442.4,
-          "h": 443.85,
-          "l": 433.0,
-          "c": 436.45
+          "o": 349.85,
+          "h": 356.95,
+          "l": 347.1,
+          "c": 353.3
         },
         {
           "d": "21 Sep",
-          "o": 437.0,
-          "h": 437.95,
-          "l": 431.6,
-          "c": 436.4
+          "o": 351.05,
+          "h": 355.65,
+          "l": 348.2,
+          "c": 354.7
         },
         {
           "d": "22 Sep",
-          "o": 432.55,
-          "h": 439.3,
-          "l": 431.7,
-          "c": 432.6
+          "o": 355.65,
+          "h": 356.85,
+          "l": 349.8,
+          "c": 352.4
+        },
+        {
+          "d": "23 Sep",
+          "o": 351.85,
+          "h": 357.0,
+          "l": 347.85,
+          "c": 348.6
+        }
+      ]
+    },
+    {
+      "symbol": "CUB",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 225.34,
+      "change_pct": -0.82,
+      "volume_ratio": 0.58,
+      "volume_confirmed": false,
+      "turnover_cr": 46.77,
+      "rsi14": 48.1,
+      "atr14": 7.91,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "17 Sep",
+          "o": 227.0,
+          "h": 237.0,
+          "l": 227.0,
+          "c": 231.82
+        },
+        {
+          "d": "18 Sep",
+          "o": 231.6,
+          "h": 238.95,
+          "l": 231.6,
+          "c": 235.79
+        },
+        {
+          "d": "21 Sep",
+          "o": 236.0,
+          "h": 237.74,
+          "l": 233.1,
+          "c": 234.94
+        },
+        {
+          "d": "22 Sep",
+          "o": 234.9,
+          "h": 235.78,
+          "l": 226.0,
+          "c": 227.21
+        },
+        {
+          "d": "23 Sep",
+          "o": 227.0,
+          "h": 230.79,
+          "l": 224.71,
+          "c": 225.34
+        }
+      ]
+    },
+    {
+      "symbol": "HDBFS",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 670.8,
+      "change_pct": -0.56,
+      "volume_ratio": 0.33,
+      "volume_confirmed": false,
+      "turnover_cr": 22.5,
+      "rsi14": 44.3,
+      "atr14": 14.5,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "17 Sep",
+          "o": 674.0,
+          "h": 688.7,
+          "l": 672.0,
+          "c": 681.45
+        },
+        {
+          "d": "18 Sep",
+          "o": 678.0,
+          "h": 701.55,
+          "l": 674.15,
+          "c": 698.4
+        },
+        {
+          "d": "21 Sep",
+          "o": 692.65,
+          "h": 699.0,
+          "l": 677.75,
+          "c": 680.95
+        },
+        {
+          "d": "22 Sep",
+          "o": 680.95,
+          "h": 684.1,
+          "l": 672.75,
+          "c": 674.55
+        },
+        {
+          "d": "23 Sep",
+          "o": 674.0,
+          "h": 678.15,
+          "l": 669.8,
+          "c": 670.8
         }
       ]
     }
