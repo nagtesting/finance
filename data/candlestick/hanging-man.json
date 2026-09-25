@@ -1,17 +1,71 @@
 {
-  "session_date": "2026-09-24",
-  "generated_at": "2026-09-24T23:05:31.002810+05:30",
+  "session_date": "2026-09-25",
+  "generated_at": "2026-09-25T20:50:00.128694+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 129,
+  "total_signals": 197,
   "pattern": "hanging-man",
   "pattern_name": "Hanging Man",
   "direction": "bearish",
-  "count": 0,
+  "count": 1,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "COALINDIA",
+      "tier": "NIFTY 50",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 426.1,
+      "change_pct": 0.97,
+      "volume_ratio": 0.44,
+      "volume_confirmed": false,
+      "turnover_cr": 277.3,
+      "rsi14": 56.2,
+      "atr14": 7.65,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "21 Sep",
+          "o": 411.7,
+          "h": 415.4,
+          "l": 410.45,
+          "c": 414.7
+        },
+        {
+          "d": "22 Sep",
+          "o": 424.7,
+          "h": 428.75,
+          "l": 419.65,
+          "c": 428.0
+        },
+        {
+          "d": "23 Sep",
+          "o": 428.25,
+          "h": 429.4,
+          "l": 421.55,
+          "c": 424.55
+        },
+        {
+          "d": "24 Sep",
+          "o": 422.0,
+          "h": 423.85,
+          "l": 418.8,
+          "c": 422.0
+        },
+        {
+          "d": "25 Sep",
+          "o": 424.0,
+          "h": 426.65,
+          "l": 421.35,
+          "c": 426.1
+        }
+      ]
+    }
+  ]
 }
