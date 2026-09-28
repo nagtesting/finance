@@ -1,69 +1,175 @@
 {
-  "session_date": "2026-09-25",
-  "generated_at": "2026-09-25T23:05:33.502852+05:30",
+  "session_date": "2026-09-28",
+  "generated_at": "2026-09-28T23:41:52.186585+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 197,
+  "total_signals": 127,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
-  "count": 1,
+  "count": 3,
   "truncated": false,
   "signals": [
     {
-      "symbol": "AMBUJACEM",
-      "tier": "NIFTY 100",
+      "symbol": "SUNPHARMA",
+      "tier": "NIFTY 50",
       "pattern": "inverted-hammer",
       "pattern_name": "Inverted Hammer",
       "direction": "bullish",
-      "close": 383.8,
-      "change_pct": -0.08,
-      "volume_ratio": 0.97,
+      "close": 1838.0,
+      "change_pct": -0.77,
+      "volume_ratio": 0.63,
       "volume_confirmed": false,
-      "turnover_cr": 42.84,
-      "rsi14": 36.2,
-      "atr14": 7.57,
+      "turnover_cr": 255.63,
+      "rsi14": 41.0,
+      "atr14": 29.61,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "21 Sep",
-          "o": 389.1,
-          "h": 395.95,
-          "l": 389.1,
-          "c": 390.75
-        },
-        {
           "d": "22 Sep",
-          "o": 391.1,
-          "h": 394.0,
-          "l": 385.15,
-          "c": 386.9
+          "o": 1869.0,
+          "h": 1876.4,
+          "l": 1842.3,
+          "c": 1846.4
         },
         {
           "d": "23 Sep",
-          "o": 387.3,
-          "h": 392.85,
-          "l": 387.3,
-          "c": 392.75
+          "o": 1846.4,
+          "h": 1869.6,
+          "l": 1844.0,
+          "c": 1865.0
         },
         {
           "d": "24 Sep",
-          "o": 390.0,
-          "h": 390.9,
-          "l": 382.65,
-          "c": 384.1
+          "o": 1859.0,
+          "h": 1880.0,
+          "l": 1848.4,
+          "c": 1849.9
         },
         {
           "d": "25 Sep",
-          "o": 382.2,
-          "h": 387.2,
-          "l": 381.7,
-          "c": 383.8
+          "o": 1858.7,
+          "h": 1858.7,
+          "l": 1841.6,
+          "c": 1852.2
+        },
+        {
+          "d": "28 Sep",
+          "o": 1844.0,
+          "h": 1856.6,
+          "l": 1838.0,
+          "c": 1838.0
+        }
+      ]
+    },
+    {
+      "symbol": "NESTLEIND",
+      "tier": "NIFTY 50",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 1346.0,
+      "change_pct": -1.22,
+      "volume_ratio": 0.6,
+      "volume_confirmed": false,
+      "turnover_cr": 125.07,
+      "rsi14": 36.4,
+      "atr14": 28.19,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "22 Sep",
+          "o": 1382.2,
+          "h": 1392.9,
+          "l": 1363.9,
+          "c": 1363.9
+        },
+        {
+          "d": "23 Sep",
+          "o": 1370.0,
+          "h": 1387.2,
+          "l": 1361.6,
+          "c": 1387.2
+        },
+        {
+          "d": "24 Sep",
+          "o": 1355.7,
+          "h": 1386.0,
+          "l": 1350.2,
+          "c": 1351.0
+        },
+        {
+          "d": "25 Sep",
+          "o": 1357.0,
+          "h": 1362.6,
+          "l": 1348.3,
+          "c": 1362.6
+        },
+        {
+          "d": "28 Sep",
+          "o": 1350.0,
+          "h": 1356.8,
+          "l": 1343.9,
+          "c": 1346.0
+        }
+      ]
+    },
+    {
+      "symbol": "OLAELEC",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 37.86,
+      "change_pct": -1.61,
+      "volume_ratio": 0.85,
+      "volume_confirmed": false,
+      "turnover_cr": 182.48,
+      "rsi14": 47.5,
+      "atr14": 2.02,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "22 Sep",
+          "o": 37.15,
+          "h": 38.9,
+          "l": 37.14,
+          "c": 37.78
+        },
+        {
+          "d": "23 Sep",
+          "o": 38.25,
+          "h": 42.49,
+          "l": 38.25,
+          "c": 41.87
+        },
+        {
+          "d": "24 Sep",
+          "o": 41.05,
+          "h": 44.55,
+          "l": 40.91,
+          "c": 42.52
+        },
+        {
+          "d": "25 Sep",
+          "o": 42.5,
+          "h": 42.5,
+          "l": 38.01,
+          "c": 38.48
+        },
+        {
+          "d": "28 Sep",
+          "o": 38.21,
+          "h": 38.95,
+          "l": 37.68,
+          "c": 37.86
         }
       ]
     }

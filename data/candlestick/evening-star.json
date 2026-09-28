@@ -1,17 +1,124 @@
 {
-  "session_date": "2026-09-25",
-  "generated_at": "2026-09-25T23:05:33.502852+05:30",
+  "session_date": "2026-09-28",
+  "generated_at": "2026-09-28T23:41:52.186585+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 197,
+  "total_signals": 127,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
-  "count": 0,
+  "count": 2,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "CIPLA",
+      "tier": "NIFTY 50",
+      "pattern": "evening-star",
+      "pattern_name": "Evening Star",
+      "direction": "bearish",
+      "close": 1383.7,
+      "change_pct": -1.14,
+      "volume_ratio": 0.78,
+      "volume_confirmed": false,
+      "turnover_cr": 112.54,
+      "rsi14": 45.8,
+      "atr14": 24.61,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "22 Sep",
+          "o": 1386.3,
+          "h": 1388.7,
+          "l": 1364.5,
+          "c": 1384.1
+        },
+        {
+          "d": "23 Sep",
+          "o": 1382.4,
+          "h": 1387.0,
+          "l": 1371.8,
+          "c": 1383.0
+        },
+        {
+          "d": "24 Sep",
+          "o": 1375.0,
+          "h": 1419.0,
+          "l": 1364.6,
+          "c": 1399.0
+        },
+        {
+          "d": "25 Sep",
+          "o": 1402.9,
+          "h": 1421.0,
+          "l": 1388.4,
+          "c": 1399.7
+        },
+        {
+          "d": "28 Sep",
+          "o": 1399.7,
+          "h": 1405.0,
+          "l": 1380.5,
+          "c": 1383.7
+        }
+      ]
+    },
+    {
+      "symbol": "CIEINDIA",
+      "tier": "BROADER",
+      "pattern": "evening-star",
+      "pattern_name": "Evening Star",
+      "direction": "bearish",
+      "close": 383.35,
+      "change_pct": -1.91,
+      "volume_ratio": 0.68,
+      "volume_confirmed": false,
+      "turnover_cr": 8.26,
+      "rsi14": 42.2,
+      "atr14": 9.3,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "22 Sep",
+          "o": 396.8,
+          "h": 398.1,
+          "l": 389.1,
+          "c": 390.6
+        },
+        {
+          "d": "23 Sep",
+          "o": 392.6,
+          "h": 394.65,
+          "l": 382.55,
+          "c": 384.2
+        },
+        {
+          "d": "24 Sep",
+          "o": 384.35,
+          "h": 391.95,
+          "l": 382.1,
+          "c": 388.95
+        },
+        {
+          "d": "25 Sep",
+          "o": 389.0,
+          "h": 392.0,
+          "l": 384.35,
+          "c": 390.8
+        },
+        {
+          "d": "28 Sep",
+          "o": 392.8,
+          "h": 392.8,
+          "l": 382.0,
+          "c": 383.35
+        }
+      ]
+    }
+  ]
 }
