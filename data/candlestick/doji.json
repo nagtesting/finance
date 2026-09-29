@@ -1,19 +1,19 @@
 {
   "session_date": "2026-09-29",
-  "generated_at": "2026-09-29T22:02:53.983887+05:30",
+  "generated_at": "2026-09-29T23:50:25.539587+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
   "symbols_requested": 500,
   "symbols_missing": [
-    "ASIANPAINT"
+    "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 145,
+  "total_signals": 146,
   "pattern": "doji",
   "pattern_name": "Doji",
   "direction": "neutral",
-  "count": 43,
+  "count": 44,
   "truncated": false,
   "signals": [
     {
@@ -225,6 +225,59 @@
           "h": 1746.0,
           "l": 1711.0,
           "c": 1735.0
+        }
+      ]
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "tier": "NIFTY 50",
+      "pattern": "doji",
+      "pattern_name": "Doji",
+      "direction": "neutral",
+      "close": 2415.0,
+      "change_pct": -0.21,
+      "volume_ratio": 1.77,
+      "volume_confirmed": true,
+      "turnover_cr": 113.5,
+      "rsi14": 36.2,
+      "atr14": 43.3,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "23 Sep",
+          "o": 2469.0,
+          "h": 2471.9,
+          "l": 2448.2,
+          "c": 2455.0
+        },
+        {
+          "d": "24 Sep",
+          "o": 2430.0,
+          "h": 2437.8,
+          "l": 2391.0,
+          "c": 2392.7
+        },
+        {
+          "d": "25 Sep",
+          "o": 2401.9,
+          "h": 2451.0,
+          "l": 2397.0,
+          "c": 2444.0
+        },
+        {
+          "d": "28 Sep",
+          "o": 2437.9,
+          "h": 2441.6,
+          "l": 2412.9,
+          "c": 2420.0
+        },
+        {
+          "d": "29 Sep",
+          "o": 2417.5,
+          "h": 2425.3,
+          "l": 2381.0,
+          "c": 2415.0
         }
       ]
     },

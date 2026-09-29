@@ -1,15 +1,15 @@
 {
   "session_date": "2026-09-29",
-  "generated_at": "2026-09-29T22:02:53.983887+05:30",
+  "generated_at": "2026-09-29T23:50:25.539587+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
   "symbols_requested": 500,
   "symbols_missing": [
-    "ASIANPAINT"
+    "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 145,
+  "total_signals": 146,
   "signals": [
     {
       "symbol": "ICICIBANK",
@@ -280,6 +280,22 @@
       "turnover_cr": 153.19,
       "rsi14": 48.0,
       "atr14": 38.11,
+      "above_sma50": false,
+      "strength": "confirmed"
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "tier": "NIFTY 50",
+      "pattern": "doji",
+      "pattern_name": "Doji",
+      "direction": "neutral",
+      "close": 2415.0,
+      "change_pct": -0.21,
+      "volume_ratio": 1.77,
+      "volume_confirmed": true,
+      "turnover_cr": 113.5,
+      "rsi14": 36.2,
+      "atr14": 43.3,
       "above_sma50": false,
       "strength": "confirmed"
     },
