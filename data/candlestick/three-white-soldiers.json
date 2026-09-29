@@ -1,13 +1,15 @@
 {
-  "session_date": "2026-09-28",
-  "generated_at": "2026-09-28T23:41:52.186585+05:30",
+  "session_date": "2026-09-29",
+  "generated_at": "2026-09-29T22:02:53.983887+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "ASIANPAINT"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 127,
+  "total_signals": 145,
   "pattern": "three-white-soldiers",
   "pattern_name": "Three White Soldiers",
   "direction": "bullish",
