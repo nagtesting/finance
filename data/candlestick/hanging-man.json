@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-09-29",
-  "generated_at": "2026-09-29T23:50:25.539587+05:30",
+  "session_date": "2026-09-30",
+  "generated_at": "2026-09-30T21:56:09.597779+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,65 +9,11 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 146,
+  "total_signals": 201,
   "pattern": "hanging-man",
   "pattern_name": "Hanging Man",
   "direction": "bearish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "DRREDDY",
-      "tier": "NIFTY 50",
-      "pattern": "hanging-man",
-      "pattern_name": "Hanging Man",
-      "direction": "bearish",
-      "close": 1251.9,
-      "change_pct": 2.53,
-      "volume_ratio": 3.82,
-      "volume_confirmed": true,
-      "turnover_cr": 160.18,
-      "rsi14": 70.2,
-      "atr14": 22.82,
-      "above_sma50": true,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "23 Sep",
-          "o": 1210.0,
-          "h": 1220.5,
-          "l": 1205.9,
-          "c": 1211.2
-        },
-        {
-          "d": "24 Sep",
-          "o": 1210.9,
-          "h": 1213.9,
-          "l": 1197.0,
-          "c": 1200.4
-        },
-        {
-          "d": "25 Sep",
-          "o": 1204.5,
-          "h": 1207.8,
-          "l": 1193.4,
-          "c": 1201.0
-        },
-        {
-          "d": "28 Sep",
-          "o": 1211.6,
-          "h": 1229.8,
-          "l": 1204.0,
-          "c": 1221.0
-        },
-        {
-          "d": "29 Sep",
-          "o": 1243.2,
-          "h": 1252.8,
-          "l": 1229.0,
-          "c": 1251.9
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
