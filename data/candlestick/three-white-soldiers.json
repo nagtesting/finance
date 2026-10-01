@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-09-30",
-  "generated_at": "2026-09-30T23:40:20.604586+05:30",
+  "session_date": "2026-10-01",
+  "generated_at": "2026-10-01T22:33:41.376143+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,7 +9,7 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 201,
+  "total_signals": 92,
   "pattern": "three-white-soldiers",
   "pattern_name": "Three White Soldiers",
   "direction": "bullish",
