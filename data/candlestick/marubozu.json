@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-10-01",
-  "generated_at": "2026-10-01T22:33:41.376143+05:30",
+  "session_date": "2026-10-06",
+  "generated_at": "2026-10-06T22:21:19.670759+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,116 +9,752 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 92,
+  "total_signals": 177,
   "pattern": "marubozu",
   "pattern_name": "Marubozu",
   "direction": "neutral",
-  "count": 2,
+  "count": 14,
   "truncated": false,
   "signals": [
     {
-      "symbol": "IOC",
-      "tier": "NIFTY 100",
+      "symbol": "RELIANCE",
+      "tier": "NIFTY 50",
       "pattern": "marubozu",
       "pattern_name": "Marubozu",
       "direction": "neutral",
-      "close": 131.34,
-      "change_pct": -2.66,
-      "volume_ratio": 1.68,
+      "close": 1218.0,
+      "change_pct": 2.66,
+      "volume_ratio": 1.58,
       "volume_confirmed": true,
-      "turnover_cr": 98.03,
-      "rsi14": 39.8,
-      "atr14": 2.63,
+      "turnover_cr": 1582.58,
+      "rsi14": 45.6,
+      "atr14": 20.09,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "25 Sep",
-          "o": 136.5,
-          "h": 137.06,
-          "l": 135.33,
-          "c": 135.7
-        },
-        {
-          "d": "28 Sep",
-          "o": 135.02,
-          "h": 135.58,
-          "l": 133.04,
-          "c": 133.32
-        },
-        {
-          "d": "29 Sep",
-          "o": 133.32,
-          "h": 134.31,
-          "l": 131.02,
-          "c": 131.33
-        },
-        {
           "d": "30 Sep",
-          "o": 133.3,
-          "h": 135.99,
-          "l": 133.14,
-          "c": 134.93
+          "o": 1182.0,
+          "h": 1196.5,
+          "l": 1181.7,
+          "c": 1187.0
         },
         {
           "d": "01 Oct",
-          "o": 134.0,
-          "h": 134.1,
-          "l": 131.2,
-          "c": 131.34
+          "o": 1180.1,
+          "h": 1183.9,
+          "l": 1160.8,
+          "c": 1167.7
+        },
+        {
+          "d": "02 Oct",
+          "o": 1167.7,
+          "h": 1167.7,
+          "l": 1167.7,
+          "c": 1167.7
+        },
+        {
+          "d": "05 Oct",
+          "o": 1171.2,
+          "h": 1193.0,
+          "l": 1171.2,
+          "c": 1186.4
+        },
+        {
+          "d": "06 Oct",
+          "o": 1188.1,
+          "h": 1219.1,
+          "l": 1188.1,
+          "c": 1218.0
         }
       ]
     },
     {
-      "symbol": "HAVELLS",
+      "symbol": "BSE",
       "tier": "BROADER",
       "pattern": "marubozu",
       "pattern_name": "Marubozu",
       "direction": "neutral",
-      "close": 1040.0,
-      "change_pct": 2.36,
-      "volume_ratio": 2.56,
+      "close": 3305.0,
+      "change_pct": 3.94,
+      "volume_ratio": 1.35,
       "volume_confirmed": true,
-      "turnover_cr": 79.47,
-      "rsi14": 30.8,
-      "atr14": 26.12,
+      "turnover_cr": 1363.86,
+      "rsi14": 53.4,
+      "atr14": 103.67,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "25 Sep",
-          "o": 1085.2,
-          "h": 1097.3,
-          "l": 1085.2,
-          "c": 1096.5
-        },
-        {
-          "d": "28 Sep",
-          "o": 1099.9,
-          "h": 1099.9,
-          "l": 1074.5,
-          "c": 1085.0
-        },
-        {
-          "d": "29 Sep",
-          "o": 1080.6,
-          "h": 1081.5,
-          "l": 1043.3,
-          "c": 1043.3
-        },
-        {
           "d": "30 Sep",
-          "o": 1045.0,
-          "h": 1054.4,
-          "l": 1015.1,
-          "c": 1016.0
+          "o": 3138.9,
+          "h": 3149.0,
+          "l": 3075.0,
+          "c": 3092.0
         },
         {
           "d": "01 Oct",
-          "o": 1020.0,
-          "h": 1041.8,
-          "l": 1019.7,
-          "c": 1040.0
+          "o": 3089.9,
+          "h": 3139.0,
+          "l": 3000.0,
+          "c": 3046.0
+        },
+        {
+          "d": "02 Oct",
+          "o": 3046.0,
+          "h": 3046.0,
+          "l": 3046.0,
+          "c": 3046.0
+        },
+        {
+          "d": "05 Oct",
+          "o": 3052.0,
+          "h": 3181.0,
+          "l": 3036.0,
+          "c": 3179.6
+        },
+        {
+          "d": "06 Oct",
+          "o": 3209.0,
+          "h": 3305.0,
+          "l": 3206.5,
+          "c": 3305.0
+        }
+      ]
+    },
+    {
+      "symbol": "KIMS",
+      "tier": "BROADER",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 693.4,
+      "change_pct": -1.71,
+      "volume_ratio": 1.62,
+      "volume_confirmed": true,
+      "turnover_cr": 33.31,
+      "rsi14": 25.8,
+      "atr14": 24.44,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "29 Sep",
+          "o": 766.0,
+          "h": 781.75,
+          "l": 759.35,
+          "c": 769.9
+        },
+        {
+          "d": "30 Sep",
+          "o": 769.95,
+          "h": 777.95,
+          "l": 722.6,
+          "c": 746.4
+        },
+        {
+          "d": "01 Oct",
+          "o": 742.0,
+          "h": 742.0,
+          "l": 722.4,
+          "c": 736.25
+        },
+        {
+          "d": "05 Oct",
+          "o": 739.0,
+          "h": 747.85,
+          "l": 700.05,
+          "c": 705.45
+        },
+        {
+          "d": "06 Oct",
+          "o": 710.15,
+          "h": 711.95,
+          "l": 691.0,
+          "c": 693.4
+        }
+      ]
+    },
+    {
+      "symbol": "INDHOTEL",
+      "tier": "NIFTY 100",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 736.0,
+      "change_pct": 1.52,
+      "volume_ratio": 0.78,
+      "volume_confirmed": false,
+      "turnover_cr": 117.62,
+      "rsi14": 54.9,
+      "atr14": 15.77,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "29 Sep",
+          "o": 709.0,
+          "h": 725.9,
+          "l": 704.6,
+          "c": 714.35
+        },
+        {
+          "d": "30 Sep",
+          "o": 714.35,
+          "h": 736.9,
+          "l": 713.0,
+          "c": 728.65
+        },
+        {
+          "d": "01 Oct",
+          "o": 728.0,
+          "h": 732.95,
+          "l": 712.3,
+          "c": 718.0
+        },
+        {
+          "d": "05 Oct",
+          "o": 713.0,
+          "h": 726.6,
+          "l": 713.0,
+          "c": 725.0
+        },
+        {
+          "d": "06 Oct",
+          "o": 720.3,
+          "h": 736.0,
+          "l": 720.3,
+          "c": 736.0
+        }
+      ]
+    },
+    {
+      "symbol": "SHREECEM",
+      "tier": "NIFTY 100",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 22210.0,
+      "change_pct": 1.0,
+      "volume_ratio": 0.53,
+      "volume_confirmed": false,
+      "turnover_cr": 37.1,
+      "rsi14": 41.8,
+      "atr14": 522.53,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "29 Sep",
+          "o": 22170.0,
+          "h": 22360.0,
+          "l": 21550.0,
+          "c": 21900.0
+        },
+        {
+          "d": "30 Sep",
+          "o": 21900.0,
+          "h": 22400.0,
+          "l": 21900.0,
+          "c": 22345.0
+        },
+        {
+          "d": "01 Oct",
+          "o": 22250.0,
+          "h": 22275.0,
+          "l": 21355.0,
+          "c": 21900.0
+        },
+        {
+          "d": "05 Oct",
+          "o": 21750.0,
+          "h": 22100.0,
+          "l": 21720.0,
+          "c": 21990.0
+        },
+        {
+          "d": "06 Oct",
+          "o": 21800.0,
+          "h": 22210.0,
+          "l": 21800.0,
+          "c": 22210.0
+        }
+      ]
+    },
+    {
+      "symbol": "IDEA",
+      "tier": "BROADER",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 13.21,
+      "change_pct": 3.69,
+      "volume_ratio": 0.89,
+      "volume_confirmed": false,
+      "turnover_cr": 500.88,
+      "rsi14": 41.9,
+      "atr14": 0.46,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "30 Sep",
+          "o": 13.6,
+          "h": 13.61,
+          "l": 12.84,
+          "c": 12.95
+        },
+        {
+          "d": "01 Oct",
+          "o": 12.95,
+          "h": 13.14,
+          "l": 12.5,
+          "c": 12.64
+        },
+        {
+          "d": "02 Oct",
+          "o": 12.64,
+          "h": 12.64,
+          "l": 12.64,
+          "c": 12.64
+        },
+        {
+          "d": "05 Oct",
+          "o": 12.75,
+          "h": 12.9,
+          "l": 12.56,
+          "c": 12.74
+        },
+        {
+          "d": "06 Oct",
+          "o": 12.77,
+          "h": 13.22,
+          "l": 12.76,
+          "c": 13.21
+        }
+      ]
+    },
+    {
+      "symbol": "PINELABS",
+      "tier": "BROADER",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 172.73,
+      "change_pct": 3.33,
+      "volume_ratio": 0.23,
+      "volume_confirmed": false,
+      "turnover_cr": 383.03,
+      "rsi14": 48.4,
+      "atr14": 8.29,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "30 Sep",
+          "o": 172.0,
+          "h": 176.75,
+          "l": 169.14,
+          "c": 171.79
+        },
+        {
+          "d": "01 Oct",
+          "o": 171.7,
+          "h": 174.7,
+          "l": 165.25,
+          "c": 167.59
+        },
+        {
+          "d": "02 Oct",
+          "o": 167.59,
+          "h": 167.59,
+          "l": 167.59,
+          "c": 167.59
+        },
+        {
+          "d": "05 Oct",
+          "o": 169.5,
+          "h": 171.48,
+          "l": 166.27,
+          "c": 167.16
+        },
+        {
+          "d": "06 Oct",
+          "o": 168.5,
+          "h": 173.25,
+          "l": 167.83,
+          "c": 172.73
+        }
+      ]
+    },
+    {
+      "symbol": "WOCKPHARMA",
+      "tier": "BROADER",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 2176.4,
+      "change_pct": 5.47,
+      "volume_ratio": 0.89,
+      "volume_confirmed": false,
+      "turnover_cr": 175.06,
+      "rsi14": 55.1,
+      "atr14": 86.9,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "30 Sep",
+          "o": 2201.1,
+          "h": 2213.6,
+          "l": 2106.2,
+          "c": 2116.3
+        },
+        {
+          "d": "01 Oct",
+          "o": 2110.0,
+          "h": 2124.0,
+          "l": 2035.6,
+          "c": 2083.9
+        },
+        {
+          "d": "02 Oct",
+          "o": 2083.9,
+          "h": 2083.9,
+          "l": 2083.9,
+          "c": 2083.9
+        },
+        {
+          "d": "05 Oct",
+          "o": 2083.9,
+          "h": 2093.9,
+          "l": 2003.0,
+          "c": 2063.5
+        },
+        {
+          "d": "06 Oct",
+          "o": 2067.2,
+          "h": 2184.0,
+          "l": 2062.0,
+          "c": 2176.4
+        }
+      ]
+    },
+    {
+      "symbol": "HINDPETRO",
+      "tier": "BROADER",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 351.0,
+      "change_pct": 2.53,
+      "volume_ratio": 1.14,
+      "volume_confirmed": false,
+      "turnover_cr": 120.38,
+      "rsi14": 46.6,
+      "atr14": 7.98,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "30 Sep",
+          "o": 351.2,
+          "h": 357.4,
+          "l": 350.35,
+          "c": 350.35
+        },
+        {
+          "d": "01 Oct",
+          "o": 351.15,
+          "h": 352.8,
+          "l": 344.0,
+          "c": 345.0
+        },
+        {
+          "d": "02 Oct",
+          "o": 345.0,
+          "h": 345.0,
+          "l": 345.0,
+          "c": 345.0
+        },
+        {
+          "d": "05 Oct",
+          "o": 345.05,
+          "h": 351.25,
+          "l": 340.4,
+          "c": 342.35
+        },
+        {
+          "d": "06 Oct",
+          "o": 344.05,
+          "h": 351.75,
+          "l": 343.45,
+          "c": 351.0
+        }
+      ]
+    },
+    {
+      "symbol": "APLAPOLLO",
+      "tier": "BROADER",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 2152.0,
+      "change_pct": 2.49,
+      "volume_ratio": 0.54,
+      "volume_confirmed": false,
+      "turnover_cr": 115.01,
+      "rsi14": 49.7,
+      "atr14": 61.06,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "29 Sep",
+          "o": 2191.9,
+          "h": 2217.8,
+          "l": 2172.1,
+          "c": 2188.6
+        },
+        {
+          "d": "30 Sep",
+          "o": 2201.9,
+          "h": 2224.5,
+          "l": 2181.6,
+          "c": 2190.1
+        },
+        {
+          "d": "01 Oct",
+          "o": 2187.2,
+          "h": 2196.8,
+          "l": 2059.5,
+          "c": 2115.7
+        },
+        {
+          "d": "05 Oct",
+          "o": 2124.6,
+          "h": 2147.4,
+          "l": 2061.4,
+          "c": 2099.8
+        },
+        {
+          "d": "06 Oct",
+          "o": 2102.0,
+          "h": 2152.0,
+          "l": 2099.6,
+          "c": 2152.0
+        }
+      ]
+    },
+    {
+      "symbol": "CUB",
+      "tier": "BROADER",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 223.75,
+      "change_pct": -1.71,
+      "volume_ratio": 0.62,
+      "volume_confirmed": false,
+      "turnover_cr": 33.46,
+      "rsi14": 48.1,
+      "atr14": 7.93,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "30 Sep",
+          "o": 216.75,
+          "h": 229.0,
+          "l": 214.91,
+          "c": 226.05
+        },
+        {
+          "d": "01 Oct",
+          "o": 223.5,
+          "h": 232.0,
+          "l": 221.67,
+          "c": 230.04
+        },
+        {
+          "d": "02 Oct",
+          "o": 230.04,
+          "h": 230.04,
+          "l": 230.04,
+          "c": 230.04
+        },
+        {
+          "d": "05 Oct",
+          "o": 232.0,
+          "h": 232.65,
+          "l": 225.5,
+          "c": 227.65
+        },
+        {
+          "d": "06 Oct",
+          "o": 229.5,
+          "h": 229.74,
+          "l": 223.05,
+          "c": 223.75
+        }
+      ]
+    },
+    {
+      "symbol": "LINDEINDIA",
+      "tier": "BROADER",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 6152.5,
+      "change_pct": 1.85,
+      "volume_ratio": 0.68,
+      "volume_confirmed": false,
+      "turnover_cr": 11.81,
+      "rsi14": 42.1,
+      "atr14": 167.84,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "29 Sep",
+          "o": 6190.0,
+          "h": 6335.0,
+          "l": 6175.0,
+          "c": 6199.5
+        },
+        {
+          "d": "30 Sep",
+          "o": 6241.0,
+          "h": 6366.0,
+          "l": 6180.5,
+          "c": 6323.0
+        },
+        {
+          "d": "01 Oct",
+          "o": 6380.5,
+          "h": 6466.0,
+          "l": 6187.0,
+          "c": 6247.5
+        },
+        {
+          "d": "05 Oct",
+          "o": 6247.0,
+          "h": 6322.5,
+          "l": 5991.0,
+          "c": 6041.0
+        },
+        {
+          "d": "06 Oct",
+          "o": 6030.0,
+          "h": 6171.0,
+          "l": 6029.5,
+          "c": 6152.5
+        }
+      ]
+    },
+    {
+      "symbol": "CHALET",
+      "tier": "BROADER",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 818.2,
+      "change_pct": -2.76,
+      "volume_ratio": 0.48,
+      "volume_confirmed": false,
+      "turnover_cr": 10.83,
+      "rsi14": 36.9,
+      "atr14": 27.47,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "29 Sep",
+          "o": 861.5,
+          "h": 893.95,
+          "l": 830.2,
+          "c": 840.75
+        },
+        {
+          "d": "30 Sep",
+          "o": 849.9,
+          "h": 861.95,
+          "l": 831.0,
+          "c": 845.2
+        },
+        {
+          "d": "01 Oct",
+          "o": 845.0,
+          "h": 845.6,
+          "l": 818.0,
+          "c": 830.25
+        },
+        {
+          "d": "05 Oct",
+          "o": 836.8,
+          "h": 844.4,
+          "l": 825.25,
+          "c": 841.45
+        },
+        {
+          "d": "06 Oct",
+          "o": 841.5,
+          "h": 844.0,
+          "l": 816.1,
+          "c": 818.2
+        }
+      ]
+    },
+    {
+      "symbol": "MINDACORP",
+      "tier": "BROADER",
+      "pattern": "marubozu",
+      "pattern_name": "Marubozu",
+      "direction": "neutral",
+      "close": 659.6,
+      "change_pct": 1.81,
+      "volume_ratio": 0.82,
+      "volume_confirmed": false,
+      "turnover_cr": 10.2,
+      "rsi14": 40.4,
+      "atr14": 20.26,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "29 Sep",
+          "o": 670.0,
+          "h": 678.25,
+          "l": 661.0,
+          "c": 672.75
+        },
+        {
+          "d": "30 Sep",
+          "o": 672.75,
+          "h": 698.15,
+          "l": 672.75,
+          "c": 692.85
+        },
+        {
+          "d": "01 Oct",
+          "o": 692.0,
+          "h": 694.45,
+          "l": 649.35,
+          "c": 667.35
+        },
+        {
+          "d": "05 Oct",
+          "o": 666.0,
+          "h": 669.85,
+          "l": 637.05,
+          "c": 647.85
+        },
+        {
+          "d": "06 Oct",
+          "o": 648.0,
+          "h": 661.5,
+          "l": 648.0,
+          "c": 659.6
         }
       ]
     }

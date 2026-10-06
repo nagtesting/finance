@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-10-01",
-  "generated_at": "2026-10-01T22:33:41.376143+05:30",
+  "session_date": "2026-10-06",
+  "generated_at": "2026-10-06T22:21:19.670759+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,11 +9,65 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 92,
+  "total_signals": 177,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 0,
+  "count": 1,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "POWERINDIA",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 31640.0,
+      "change_pct": 0.44,
+      "volume_ratio": 0.7,
+      "volume_confirmed": false,
+      "turnover_cr": 275.6,
+      "rsi14": 50.1,
+      "atr14": 913.36,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "29 Sep",
+          "o": 30250.0,
+          "h": 30930.0,
+          "l": 29865.0,
+          "c": 30735.0
+        },
+        {
+          "d": "30 Sep",
+          "o": 30680.0,
+          "h": 31050.0,
+          "l": 30200.0,
+          "c": 30630.0
+        },
+        {
+          "d": "01 Oct",
+          "o": 30690.0,
+          "h": 31615.0,
+          "l": 30520.0,
+          "c": 31290.0
+        },
+        {
+          "d": "05 Oct",
+          "o": 31500.0,
+          "h": 32015.0,
+          "l": 31380.0,
+          "c": 31500.0
+        },
+        {
+          "d": "06 Oct",
+          "o": 31510.0,
+          "h": 31970.0,
+          "l": 31450.0,
+          "c": 31640.0
+        }
+      ]
+    }
+  ]
 }
