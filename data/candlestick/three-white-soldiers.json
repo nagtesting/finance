@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-10-06",
-  "generated_at": "2026-10-06T22:21:19.670759+05:30",
+  "session_date": "2026-10-07",
+  "generated_at": "2026-10-07T22:57:35.266937+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,118 +9,11 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 177,
+  "total_signals": 156,
   "pattern": "three-white-soldiers",
   "pattern_name": "Three White Soldiers",
   "direction": "bullish",
-  "count": 2,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "COLPAL",
-      "tier": "BROADER",
-      "pattern": "three-white-soldiers",
-      "pattern_name": "Three White Soldiers",
-      "direction": "bullish",
-      "close": 1809.4,
-      "change_pct": 1.94,
-      "volume_ratio": 1.43,
-      "volume_confirmed": true,
-      "turnover_cr": 68.06,
-      "rsi14": 45.9,
-      "atr14": 39.51,
-      "above_sma50": false,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "30 Sep",
-          "o": 1790.1,
-          "h": 1808.6,
-          "l": 1763.3,
-          "c": 1763.3
-        },
-        {
-          "d": "01 Oct",
-          "o": 1763.3,
-          "h": 1775.4,
-          "l": 1716.1,
-          "c": 1735.0
-        },
-        {
-          "d": "02 Oct",
-          "o": 1735.0,
-          "h": 1735.0,
-          "l": 1735.0,
-          "c": 1735.0
-        },
-        {
-          "d": "05 Oct",
-          "o": 1741.0,
-          "h": 1775.0,
-          "l": 1737.0,
-          "c": 1775.0
-        },
-        {
-          "d": "06 Oct",
-          "o": 1773.0,
-          "h": 1809.4,
-          "l": 1763.3,
-          "c": 1809.4
-        }
-      ]
-    },
-    {
-      "symbol": "BHARTIARTL",
-      "tier": "NIFTY 50",
-      "pattern": "three-white-soldiers",
-      "pattern_name": "Three White Soldiers",
-      "direction": "bullish",
-      "close": 1810.5,
-      "change_pct": 1.72,
-      "volume_ratio": 0.97,
-      "volume_confirmed": false,
-      "turnover_cr": 836.7,
-      "rsi14": 48.4,
-      "atr14": 29.86,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "30 Sep",
-          "o": 1775.2,
-          "h": 1779.5,
-          "l": 1753.7,
-          "c": 1757.0
-        },
-        {
-          "d": "01 Oct",
-          "o": 1745.0,
-          "h": 1765.8,
-          "l": 1726.3,
-          "c": 1741.1
-        },
-        {
-          "d": "02 Oct",
-          "o": 1741.1,
-          "h": 1741.1,
-          "l": 1741.1,
-          "c": 1741.1
-        },
-        {
-          "d": "05 Oct",
-          "o": 1742.3,
-          "h": 1779.9,
-          "l": 1742.3,
-          "c": 1779.9
-        },
-        {
-          "d": "06 Oct",
-          "o": 1777.0,
-          "h": 1810.5,
-          "l": 1771.4,
-          "c": 1810.5
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

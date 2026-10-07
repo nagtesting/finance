@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-10-06",
-  "generated_at": "2026-10-06T22:21:19.670759+05:30",
+  "session_date": "2026-10-07",
+  "generated_at": "2026-10-07T22:57:35.266937+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,11 +9,65 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 177,
+  "total_signals": 156,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
-  "count": 0,
+  "count": 1,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "AUROPHARMA",
+      "tier": "BROADER",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 1682.0,
+      "change_pct": -0.64,
+      "volume_ratio": 0.58,
+      "volume_confirmed": false,
+      "turnover_cr": 136.93,
+      "rsi14": 51.1,
+      "atr14": 33.21,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "01 Oct",
+          "o": 1677.9,
+          "h": 1700.7,
+          "l": 1654.2,
+          "c": 1676.8
+        },
+        {
+          "d": "02 Oct",
+          "o": 1676.8,
+          "h": 1676.8,
+          "l": 1676.8,
+          "c": 1676.8
+        },
+        {
+          "d": "05 Oct",
+          "o": 1693.7,
+          "h": 1696.0,
+          "l": 1663.1,
+          "c": 1674.9
+        },
+        {
+          "d": "06 Oct",
+          "o": 1676.0,
+          "h": 1694.7,
+          "l": 1670.9,
+          "c": 1692.8
+        },
+        {
+          "d": "07 Oct",
+          "o": 1696.2,
+          "h": 1698.9,
+          "l": 1670.5,
+          "c": 1682.0
+        }
+      ]
+    }
+  ]
 }

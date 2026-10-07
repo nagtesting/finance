@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-10-06",
-  "generated_at": "2026-10-06T22:21:19.670759+05:30",
+  "session_date": "2026-10-07",
+  "generated_at": "2026-10-07T22:57:35.266937+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,7 +9,7 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 177,
+  "total_signals": 156,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
