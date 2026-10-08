@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-10-07",
-  "generated_at": "2026-10-07T22:57:35.266937+05:30",
+  "session_date": "2026-10-08",
+  "generated_at": "2026-10-08T22:56:28.045719+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,118 +9,11 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 156,
+  "total_signals": 141,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 2,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "ALKEM",
-      "tier": "BROADER",
-      "pattern": "shooting-star",
-      "pattern_name": "Shooting Star",
-      "direction": "bearish",
-      "close": 5350.5,
-      "change_pct": 1.11,
-      "volume_ratio": 1.35,
-      "volume_confirmed": true,
-      "turnover_cr": 75.77,
-      "rsi14": 54.0,
-      "atr14": 121.49,
-      "above_sma50": false,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "30 Sep",
-          "o": 5249.5,
-          "h": 5276.5,
-          "l": 5135.0,
-          "c": 5163.5
-        },
-        {
-          "d": "01 Oct",
-          "o": 5150.0,
-          "h": 5220.0,
-          "l": 5110.0,
-          "c": 5220.0
-        },
-        {
-          "d": "05 Oct",
-          "o": 5210.0,
-          "h": 5235.0,
-          "l": 5136.0,
-          "c": 5192.5
-        },
-        {
-          "d": "06 Oct",
-          "o": 5223.5,
-          "h": 5292.0,
-          "l": 5165.0,
-          "c": 5292.0
-        },
-        {
-          "d": "07 Oct",
-          "o": 5297.0,
-          "h": 5404.5,
-          "l": 5292.0,
-          "c": 5350.5
-        }
-      ]
-    },
-    {
-      "symbol": "SUNTV",
-      "tier": "BROADER",
-      "pattern": "shooting-star",
-      "pattern_name": "Shooting Star",
-      "direction": "bearish",
-      "close": 636.5,
-      "change_pct": 0.7,
-      "volume_ratio": 0.34,
-      "volume_confirmed": false,
-      "turnover_cr": 69.74,
-      "rsi14": 84.2,
-      "atr14": 26.51,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "30 Sep",
-          "o": 555.0,
-          "h": 663.9,
-          "l": 554.05,
-          "c": 605.0
-        },
-        {
-          "d": "01 Oct",
-          "o": 588.0,
-          "h": 610.0,
-          "l": 574.15,
-          "c": 599.9
-        },
-        {
-          "d": "05 Oct",
-          "o": 597.0,
-          "h": 635.8,
-          "l": 595.2,
-          "c": 626.85
-        },
-        {
-          "d": "06 Oct",
-          "o": 625.8,
-          "h": 640.95,
-          "l": 620.6,
-          "c": 632.1
-        },
-        {
-          "d": "07 Oct",
-          "o": 633.35,
-          "h": 646.8,
-          "l": 631.1,
-          "c": 636.5
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

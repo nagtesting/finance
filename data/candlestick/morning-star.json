@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-10-07",
-  "generated_at": "2026-10-07T22:57:35.266937+05:30",
+  "session_date": "2026-10-08",
+  "generated_at": "2026-10-08T22:56:28.045719+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,65 +9,11 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 156,
+  "total_signals": 141,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "GVT&D",
-      "tier": "BROADER",
-      "pattern": "morning-star",
-      "pattern_name": "Morning Star",
-      "direction": "bullish",
-      "close": 4316.3,
-      "change_pct": 1.68,
-      "volume_ratio": 1.17,
-      "volume_confirmed": false,
-      "turnover_cr": 255.7,
-      "rsi14": 50.2,
-      "atr14": 127.92,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "01 Oct",
-          "o": 4239.9,
-          "h": 4334.0,
-          "l": 4213.3,
-          "c": 4253.2
-        },
-        {
-          "d": "02 Oct",
-          "o": 4253.2,
-          "h": 4253.2,
-          "l": 4253.2,
-          "c": 4253.2
-        },
-        {
-          "d": "05 Oct",
-          "o": 4325.0,
-          "h": 4337.9,
-          "l": 4185.0,
-          "c": 4247.5
-        },
-        {
-          "d": "06 Oct",
-          "o": 4242.0,
-          "h": 4285.7,
-          "l": 4228.4,
-          "c": 4245.1
-        },
-        {
-          "d": "07 Oct",
-          "o": 4260.0,
-          "h": 4340.2,
-          "l": 4201.2,
-          "c": 4316.3
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
