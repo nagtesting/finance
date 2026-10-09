@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-10-09",
-  "generated_at": "2026-10-09T22:32:12.037947+05:30",
+  "session_date": "2026-10-08",
+  "generated_at": "2026-10-10T00:03:15.833612+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,65 +9,11 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 282,
+  "total_signals": 153,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "CHOLAFIN",
-      "tier": "NIFTY 100",
-      "pattern": "morning-star",
-      "pattern_name": "Morning Star",
-      "direction": "bullish",
-      "close": 1587.6,
-      "change_pct": 2.82,
-      "volume_ratio": 0.99,
-      "volume_confirmed": false,
-      "turnover_cr": 266.08,
-      "rsi14": 33.7,
-      "atr14": 45.5,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "05 Oct",
-          "o": 1590.0,
-          "h": 1610.8,
-          "l": 1580.0,
-          "c": 1605.4
-        },
-        {
-          "d": "06 Oct",
-          "o": 1606.9,
-          "h": 1616.0,
-          "l": 1594.3,
-          "c": 1611.0
-        },
-        {
-          "d": "07 Oct",
-          "o": 1607.1,
-          "h": 1612.4,
-          "l": 1564.7,
-          "c": 1564.7
-        },
-        {
-          "d": "08 Oct",
-          "o": 1550.0,
-          "h": 1571.6,
-          "l": 1543.1,
-          "c": 1544.0
-        },
-        {
-          "d": "09 Oct",
-          "o": 1547.0,
-          "h": 1597.4,
-          "l": 1543.5,
-          "c": 1587.6
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
