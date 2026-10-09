@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-10-08",
-  "generated_at": "2026-10-08T22:56:28.045719+05:30",
+  "session_date": "2026-10-09",
+  "generated_at": "2026-10-09T22:32:12.037947+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,7 +9,7 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 141,
+  "total_signals": 282,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",

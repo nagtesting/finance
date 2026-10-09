@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-10-08",
-  "generated_at": "2026-10-08T22:56:28.045719+05:30",
+  "session_date": "2026-10-09",
+  "generated_at": "2026-10-09T22:32:12.037947+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,11 +9,118 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 141,
+  "total_signals": 282,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 0,
+  "count": 2,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "BANKBARODA",
+      "tier": "NIFTY 100",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 235.8,
+      "change_pct": 0.77,
+      "volume_ratio": 0.51,
+      "volume_confirmed": false,
+      "turnover_cr": 154.1,
+      "rsi14": 50.8,
+      "atr14": 4.77,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "05 Oct",
+          "o": 233.11,
+          "h": 237.32,
+          "l": 231.93,
+          "c": 232.8
+        },
+        {
+          "d": "06 Oct",
+          "o": 233.02,
+          "h": 234.8,
+          "l": 231.8,
+          "c": 232.73
+        },
+        {
+          "d": "07 Oct",
+          "o": 231.8,
+          "h": 236.38,
+          "l": 230.18,
+          "c": 234.55
+        },
+        {
+          "d": "08 Oct",
+          "o": 234.55,
+          "h": 239.4,
+          "l": 233.07,
+          "c": 234.0
+        },
+        {
+          "d": "09 Oct",
+          "o": 234.77,
+          "h": 238.25,
+          "l": 234.55,
+          "c": 235.8
+        }
+      ]
+    },
+    {
+      "symbol": "PNBHOUSING",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 1158.0,
+      "change_pct": 0.7,
+      "volume_ratio": 0.8,
+      "volume_confirmed": false,
+      "turnover_cr": 109.64,
+      "rsi14": 56.9,
+      "atr14": 33.27,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "05 Oct",
+          "o": 1092.0,
+          "h": 1116.0,
+          "l": 1088.3,
+          "c": 1105.8
+        },
+        {
+          "d": "06 Oct",
+          "o": 1103.0,
+          "h": 1112.2,
+          "l": 1087.8,
+          "c": 1102.1
+        },
+        {
+          "d": "07 Oct",
+          "o": 1105.1,
+          "h": 1139.7,
+          "l": 1105.1,
+          "c": 1131.0
+        },
+        {
+          "d": "08 Oct",
+          "o": 1143.0,
+          "h": 1166.9,
+          "l": 1131.2,
+          "c": 1150.0
+        },
+        {
+          "d": "09 Oct",
+          "o": 1155.0,
+          "h": 1174.6,
+          "l": 1152.5,
+          "c": 1158.0
+        }
+      ]
+    }
+  ]
 }
