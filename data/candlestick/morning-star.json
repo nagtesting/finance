@@ -1,6 +1,6 @@
 {
-  "session_date": "2026-10-08",
-  "generated_at": "2026-10-10T00:03:15.833612+05:30",
+  "session_date": "2026-10-13",
+  "generated_at": "2026-10-13T23:08:32.381306+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 499,
@@ -9,11 +9,65 @@
     "HEG"
   ],
   "min_turnover_cr": 2.0,
-  "total_signals": 153,
+  "total_signals": 128,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 0,
+  "count": 1,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "ZFCVINDIA",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 2149.3,
+      "change_pct": 3.22,
+      "volume_ratio": 1.32,
+      "volume_confirmed": true,
+      "turnover_cr": 20.61,
+      "rsi14": 30.9,
+      "atr14": 65.52,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "06 Oct",
+          "o": 2201.3,
+          "h": 2213.2,
+          "l": 2165.0,
+          "c": 2187.4
+        },
+        {
+          "d": "07 Oct",
+          "o": 2190.1,
+          "h": 2208.0,
+          "l": 2134.1,
+          "c": 2172.2
+        },
+        {
+          "d": "08 Oct",
+          "o": 2172.0,
+          "h": 2172.0,
+          "l": 2081.0,
+          "c": 2116.2
+        },
+        {
+          "d": "09 Oct",
+          "o": 2105.9,
+          "h": 2120.8,
+          "l": 2075.0,
+          "c": 2082.2
+        },
+        {
+          "d": "13 Oct",
+          "o": 2113.0,
+          "h": 2155.0,
+          "l": 2092.0,
+          "c": 2149.3
+        }
+      ]
+    }
+  ]
 }
