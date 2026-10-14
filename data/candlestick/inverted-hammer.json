@@ -1,19 +1,336 @@
 {
-  "session_date": "2026-10-13",
-  "generated_at": "2026-10-13T23:08:32.381306+05:30",
+  "session_date": "2026-10-14",
+  "generated_at": "2026-10-14T20:44:44.173886+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 499,
+  "symbols_scanned": 500,
   "symbols_requested": 500,
-  "symbols_missing": [
-    "HEG"
-  ],
+  "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 128,
+  "total_signals": 155,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
-  "count": 0,
+  "count": 6,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "POONAWALLA",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 437.25,
+      "change_pct": -0.72,
+      "volume_ratio": 1.51,
+      "volume_confirmed": true,
+      "turnover_cr": 50.61,
+      "rsi14": 42.6,
+      "atr14": 16.65,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "08 Oct",
+          "o": 448.0,
+          "h": 449.15,
+          "l": 433.25,
+          "c": 437.9
+        },
+        {
+          "d": "09 Oct",
+          "o": 441.9,
+          "h": 450.9,
+          "l": 436.9,
+          "c": 447.3
+        },
+        {
+          "d": "12 Oct",
+          "o": 476.9,
+          "h": 484.0,
+          "l": 442.0,
+          "c": 449.1
+        },
+        {
+          "d": "13 Oct",
+          "o": 450.1,
+          "h": 452.0,
+          "l": 434.0,
+          "c": 440.4
+        },
+        {
+          "d": "14 Oct",
+          "o": 438.2,
+          "h": 445.5,
+          "l": 435.8,
+          "c": 437.25
+        }
+      ]
+    },
+    {
+      "symbol": "AEGISVOPAK",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 282.4,
+      "change_pct": -0.18,
+      "volume_ratio": 0.32,
+      "volume_confirmed": false,
+      "turnover_cr": 35.67,
+      "rsi14": 43.9,
+      "atr14": 12.25,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "08 Oct",
+          "o": 294.95,
+          "h": 295.25,
+          "l": 282.95,
+          "c": 285.2
+        },
+        {
+          "d": "09 Oct",
+          "o": 286.2,
+          "h": 290.0,
+          "l": 273.9,
+          "c": 284.8
+        },
+        {
+          "d": "12 Oct",
+          "o": 284.75,
+          "h": 289.0,
+          "l": 280.0,
+          "c": 286.4
+        },
+        {
+          "d": "13 Oct",
+          "o": 286.35,
+          "h": 286.35,
+          "l": 279.95,
+          "c": 282.9
+        },
+        {
+          "d": "14 Oct",
+          "o": 282.0,
+          "h": 289.3,
+          "l": 281.35,
+          "c": 282.4
+        }
+      ]
+    },
+    {
+      "symbol": "CREDITACC",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 1267.5,
+      "change_pct": -0.85,
+      "volume_ratio": 0.38,
+      "volume_confirmed": false,
+      "turnover_cr": 20.41,
+      "rsi14": 40.7,
+      "atr14": 43.12,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "08 Oct",
+          "o": 1240.9,
+          "h": 1280.0,
+          "l": 1231.9,
+          "c": 1263.4
+        },
+        {
+          "d": "09 Oct",
+          "o": 1263.4,
+          "h": 1293.3,
+          "l": 1250.4,
+          "c": 1267.5
+        },
+        {
+          "d": "12 Oct",
+          "o": 1265.1,
+          "h": 1324.7,
+          "l": 1255.1,
+          "c": 1301.2
+        },
+        {
+          "d": "13 Oct",
+          "o": 1314.8,
+          "h": 1320.0,
+          "l": 1271.7,
+          "c": 1278.4
+        },
+        {
+          "d": "14 Oct",
+          "o": 1272.0,
+          "h": 1289.0,
+          "l": 1265.0,
+          "c": 1267.5
+        }
+      ]
+    },
+    {
+      "symbol": "APOLLOTYRE",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 399.95,
+      "change_pct": -0.35,
+      "volume_ratio": 0.38,
+      "volume_confirmed": false,
+      "turnover_cr": 17.98,
+      "rsi14": 41.3,
+      "atr14": 10.11,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "08 Oct",
+          "o": 406.25,
+          "h": 406.85,
+          "l": 398.65,
+          "c": 401.7
+        },
+        {
+          "d": "09 Oct",
+          "o": 401.7,
+          "h": 403.8,
+          "l": 396.35,
+          "c": 400.05
+        },
+        {
+          "d": "12 Oct",
+          "o": 401.95,
+          "h": 406.6,
+          "l": 400.05,
+          "c": 401.2
+        },
+        {
+          "d": "13 Oct",
+          "o": 402.0,
+          "h": 403.3,
+          "l": 397.3,
+          "c": 401.35
+        },
+        {
+          "d": "14 Oct",
+          "o": 401.0,
+          "h": 404.6,
+          "l": 399.25,
+          "c": 399.95
+        }
+      ]
+    },
+    {
+      "symbol": "ATUL",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 5972.0,
+      "change_pct": -0.43,
+      "volume_ratio": 1.1,
+      "volume_confirmed": false,
+      "turnover_cr": 14.68,
+      "rsi14": 41.9,
+      "atr14": 128.67,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "08 Oct",
+          "o": 6015.5,
+          "h": 6022.0,
+          "l": 5904.0,
+          "c": 5923.0
+        },
+        {
+          "d": "09 Oct",
+          "o": 5923.0,
+          "h": 5980.5,
+          "l": 5860.5,
+          "c": 5882.5
+        },
+        {
+          "d": "12 Oct",
+          "o": 5891.0,
+          "h": 6017.0,
+          "l": 5891.0,
+          "c": 5978.5
+        },
+        {
+          "d": "13 Oct",
+          "o": 5980.0,
+          "h": 6014.0,
+          "l": 5961.5,
+          "c": 5998.0
+        },
+        {
+          "d": "14 Oct",
+          "o": 5954.5,
+          "h": 6074.5,
+          "l": 5950.0,
+          "c": 5972.0
+        }
+      ]
+    },
+    {
+      "symbol": "LINDEINDIA",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 6007.5,
+      "change_pct": -0.02,
+      "volume_ratio": 0.33,
+      "volume_confirmed": false,
+      "turnover_cr": 8.38,
+      "rsi14": 36.8,
+      "atr14": 146.98,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "08 Oct",
+          "o": 6098.5,
+          "h": 6146.5,
+          "l": 5990.0,
+          "c": 6026.0
+        },
+        {
+          "d": "09 Oct",
+          "o": 6033.0,
+          "h": 6075.5,
+          "l": 5952.0,
+          "c": 5996.0
+        },
+        {
+          "d": "12 Oct",
+          "o": 5996.0,
+          "h": 6074.5,
+          "l": 5972.0,
+          "c": 5987.5
+        },
+        {
+          "d": "13 Oct",
+          "o": 6011.0,
+          "h": 6025.0,
+          "l": 5955.0,
+          "c": 6009.0
+        },
+        {
+          "d": "14 Oct",
+          "o": 6004.5,
+          "h": 6090.0,
+          "l": 5999.0,
+          "c": 6007.5
+        }
+      ]
+    }
+  ]
 }
