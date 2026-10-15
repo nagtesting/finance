@@ -1,17 +1,177 @@
 {
-  "session_date": "2026-10-14",
-  "generated_at": "2026-10-14T23:08:53.270650+05:30",
+  "session_date": "2026-10-15",
+  "generated_at": "2026-10-15T20:36:35.747071+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 155,
+  "total_signals": 167,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 0,
+  "count": 3,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "LTM",
+      "tier": "NIFTY 100",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 4235.0,
+      "change_pct": 0.21,
+      "volume_ratio": 1.3,
+      "volume_confirmed": true,
+      "turnover_cr": 153.06,
+      "rsi14": 54.1,
+      "atr14": 135.71,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 3925.0,
+          "h": 4091.8,
+          "l": 3925.0,
+          "c": 4070.0
+        },
+        {
+          "d": "12 Oct",
+          "o": 4050.1,
+          "h": 4104.9,
+          "l": 4002.0,
+          "c": 4018.9
+        },
+        {
+          "d": "13 Oct",
+          "o": 4059.1,
+          "h": 4220.0,
+          "l": 4055.8,
+          "c": 4215.0
+        },
+        {
+          "d": "14 Oct",
+          "o": 4210.0,
+          "h": 4308.0,
+          "l": 4191.1,
+          "c": 4226.1
+        },
+        {
+          "d": "15 Oct",
+          "o": 4265.5,
+          "h": 4358.0,
+          "l": 4235.0,
+          "c": 4235.0
+        }
+      ]
+    },
+    {
+      "symbol": "KPITTECH",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 526.0,
+      "change_pct": 0.42,
+      "volume_ratio": 1.46,
+      "volume_confirmed": true,
+      "turnover_cr": 80.91,
+      "rsi14": 51.3,
+      "atr14": 17.58,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 473.6,
+          "h": 489.5,
+          "l": 473.6,
+          "c": 479.0
+        },
+        {
+          "d": "12 Oct",
+          "o": 480.0,
+          "h": 490.15,
+          "l": 476.9,
+          "c": 481.0
+        },
+        {
+          "d": "13 Oct",
+          "o": 485.95,
+          "h": 515.35,
+          "l": 485.9,
+          "c": 513.75
+        },
+        {
+          "d": "14 Oct",
+          "o": 514.0,
+          "h": 531.5,
+          "l": 514.0,
+          "c": 523.8
+        },
+        {
+          "d": "15 Oct",
+          "o": 529.15,
+          "h": 538.8,
+          "l": 524.4,
+          "c": 526.0
+        }
+      ]
+    },
+    {
+      "symbol": "NEWGEN",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 489.6,
+      "change_pct": 2.77,
+      "volume_ratio": 2.1,
+      "volume_confirmed": true,
+      "turnover_cr": 24.75,
+      "rsi14": 54.1,
+      "atr14": 17.84,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 446.1,
+          "h": 456.7,
+          "l": 444.15,
+          "c": 449.3
+        },
+        {
+          "d": "12 Oct",
+          "o": 449.3,
+          "h": 455.0,
+          "l": 445.5,
+          "c": 446.35
+        },
+        {
+          "d": "13 Oct",
+          "o": 454.0,
+          "h": 475.95,
+          "l": 449.6,
+          "c": 473.6
+        },
+        {
+          "d": "14 Oct",
+          "o": 469.3,
+          "h": 481.8,
+          "l": 469.3,
+          "c": 476.4
+        },
+        {
+          "d": "15 Oct",
+          "o": 482.15,
+          "h": 498.1,
+          "l": 481.65,
+          "c": 489.6
+        }
+      ]
+    }
+  ]
 }

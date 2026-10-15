@@ -1,42 +1,565 @@
 {
-  "session_date": "2026-10-14",
-  "generated_at": "2026-10-14T23:08:53.270650+05:30",
+  "session_date": "2026-10-15",
+  "generated_at": "2026-10-15T20:36:35.747071+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 155,
+  "total_signals": 167,
   "pattern": "hammer",
   "pattern_name": "Hammer",
   "direction": "bullish",
-  "count": 5,
+  "count": 12,
   "truncated": false,
   "signals": [
+    {
+      "symbol": "VEDL",
+      "tier": "NIFTY 100",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 245.9,
+      "change_pct": -1.64,
+      "volume_ratio": 1.23,
+      "volume_confirmed": true,
+      "turnover_cr": 251.41,
+      "rsi14": 38.7,
+      "atr14": 7.87,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 254.6,
+          "h": 264.5,
+          "l": 254.35,
+          "c": 264.0
+        },
+        {
+          "d": "12 Oct",
+          "o": 265.95,
+          "h": 267.5,
+          "l": 260.55,
+          "c": 264.9
+        },
+        {
+          "d": "13 Oct",
+          "o": 263.1,
+          "h": 264.0,
+          "l": 253.6,
+          "c": 256.3
+        },
+        {
+          "d": "14 Oct",
+          "o": 253.75,
+          "h": 253.85,
+          "l": 249.65,
+          "c": 250.0
+        },
+        {
+          "d": "15 Oct",
+          "o": 248.0,
+          "h": 248.0,
+          "l": 243.3,
+          "c": 245.9
+        }
+      ]
+    },
+    {
+      "symbol": "IIFL",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 598.1,
+      "change_pct": 0.55,
+      "volume_ratio": 1.3,
+      "volume_confirmed": true,
+      "turnover_cr": 93.81,
+      "rsi14": 47.4,
+      "atr14": 21.5,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 580.45,
+          "h": 605.5,
+          "l": 580.45,
+          "c": 597.7
+        },
+        {
+          "d": "12 Oct",
+          "o": 606.0,
+          "h": 619.7,
+          "l": 601.45,
+          "c": 606.65
+        },
+        {
+          "d": "13 Oct",
+          "o": 608.9,
+          "h": 616.0,
+          "l": 598.0,
+          "c": 613.7
+        },
+        {
+          "d": "14 Oct",
+          "o": 607.35,
+          "h": 608.4,
+          "l": 592.0,
+          "c": 594.85
+        },
+        {
+          "d": "15 Oct",
+          "o": 594.7,
+          "h": 597.9,
+          "l": 582.5,
+          "c": 598.1
+        }
+      ]
+    },
+    {
+      "symbol": "ADANIENT",
+      "tier": "NIFTY 50",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 2700.0,
+      "change_pct": -0.83,
+      "volume_ratio": 0.54,
+      "volume_confirmed": false,
+      "turnover_cr": 354.99,
+      "rsi14": 40.2,
+      "atr14": 84.4,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 2605.1,
+          "h": 2653.0,
+          "l": 2582.3,
+          "c": 2634.4
+        },
+        {
+          "d": "12 Oct",
+          "o": 2641.0,
+          "h": 2664.2,
+          "l": 2625.2,
+          "c": 2630.0
+        },
+        {
+          "d": "13 Oct",
+          "o": 2638.0,
+          "h": 2695.0,
+          "l": 2610.0,
+          "c": 2695.0
+        },
+        {
+          "d": "14 Oct",
+          "o": 2710.0,
+          "h": 2734.8,
+          "l": 2683.0,
+          "c": 2722.6
+        },
+        {
+          "d": "15 Oct",
+          "o": 2716.4,
+          "h": 2717.5,
+          "l": 2670.0,
+          "c": 2700.0
+        }
+      ]
+    },
+    {
+      "symbol": "TITAN",
+      "tier": "NIFTY 50",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 4455.8,
+      "change_pct": 0.27,
+      "volume_ratio": 0.61,
+      "volume_confirmed": false,
+      "turnover_cr": 321.47,
+      "rsi14": 35.6,
+      "atr14": 93.3,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 4375.1,
+          "h": 4430.7,
+          "l": 4360.2,
+          "c": 4410.0
+        },
+        {
+          "d": "12 Oct",
+          "o": 4415.7,
+          "h": 4428.8,
+          "l": 4361.0,
+          "c": 4400.0
+        },
+        {
+          "d": "13 Oct",
+          "o": 4385.2,
+          "h": 4487.0,
+          "l": 4367.8,
+          "c": 4487.0
+        },
+        {
+          "d": "14 Oct",
+          "o": 4478.1,
+          "h": 4495.8,
+          "l": 4423.0,
+          "c": 4444.0
+        },
+        {
+          "d": "15 Oct",
+          "o": 4440.0,
+          "h": 4465.0,
+          "l": 4413.0,
+          "c": 4455.8
+        }
+      ]
+    },
+    {
+      "symbol": "HINDZINC",
+      "tier": "NIFTY 100",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 531.0,
+      "change_pct": -1.67,
+      "volume_ratio": 1.09,
+      "volume_confirmed": false,
+      "turnover_cr": 174.26,
+      "rsi14": 36.0,
+      "atr14": 14.78,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 537.0,
+          "h": 547.0,
+          "l": 531.1,
+          "c": 543.5
+        },
+        {
+          "d": "12 Oct",
+          "o": 545.95,
+          "h": 557.95,
+          "l": 544.5,
+          "c": 546.9
+        },
+        {
+          "d": "13 Oct",
+          "o": 548.1,
+          "h": 550.35,
+          "l": 542.45,
+          "c": 549.6
+        },
+        {
+          "d": "14 Oct",
+          "o": 545.0,
+          "h": 546.05,
+          "l": 538.95,
+          "c": 540.0
+        },
+        {
+          "d": "15 Oct",
+          "o": 532.75,
+          "h": 534.0,
+          "l": 524.5,
+          "c": 531.0
+        }
+      ]
+    },
+    {
+      "symbol": "MCX",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 3216.4,
+      "change_pct": -1.05,
+      "volume_ratio": 1.0,
+      "volume_confirmed": false,
+      "turnover_cr": 590.6,
+      "rsi14": 47.5,
+      "atr14": 108.95,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 3265.0,
+          "h": 3342.0,
+          "l": 3221.0,
+          "c": 3318.2
+        },
+        {
+          "d": "12 Oct",
+          "o": 3338.0,
+          "h": 3415.0,
+          "l": 3335.5,
+          "c": 3390.0
+        },
+        {
+          "d": "13 Oct",
+          "o": 3380.0,
+          "h": 3383.8,
+          "l": 3282.8,
+          "c": 3308.0
+        },
+        {
+          "d": "14 Oct",
+          "o": 3308.0,
+          "h": 3308.0,
+          "l": 3222.0,
+          "c": 3250.5
+        },
+        {
+          "d": "15 Oct",
+          "o": 3244.0,
+          "h": 3248.0,
+          "l": 3174.0,
+          "c": 3216.4
+        }
+      ]
+    },
+    {
+      "symbol": "SAIL",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 170.29,
+      "change_pct": 0.17,
+      "volume_ratio": 0.3,
+      "volume_confirmed": false,
+      "turnover_cr": 220.31,
+      "rsi14": 41.6,
+      "atr14": 6.25,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 168.0,
+          "h": 175.84,
+          "l": 167.72,
+          "c": 171.55
+        },
+        {
+          "d": "12 Oct",
+          "o": 172.5,
+          "h": 177.25,
+          "l": 167.06,
+          "c": 171.0
+        },
+        {
+          "d": "13 Oct",
+          "o": 170.34,
+          "h": 174.0,
+          "l": 169.78,
+          "c": 172.77
+        },
+        {
+          "d": "14 Oct",
+          "o": 172.77,
+          "h": 173.58,
+          "l": 170.0,
+          "c": 170.0
+        },
+        {
+          "d": "15 Oct",
+          "o": 170.0,
+          "h": 170.64,
+          "l": 168.58,
+          "c": 170.29
+        }
+      ]
+    },
+    {
+      "symbol": "NATIONALUM",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 318.4,
+      "change_pct": -1.47,
+      "volume_ratio": 0.93,
+      "volume_confirmed": false,
+      "turnover_cr": 156.63,
+      "rsi14": 35.1,
+      "atr14": 10.63,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 314.1,
+          "h": 317.95,
+          "l": 309.9,
+          "c": 315.9
+        },
+        {
+          "d": "12 Oct",
+          "o": 316.6,
+          "h": 319.2,
+          "l": 310.8,
+          "c": 310.8
+        },
+        {
+          "d": "13 Oct",
+          "o": 314.0,
+          "h": 321.0,
+          "l": 310.8,
+          "c": 321.0
+        },
+        {
+          "d": "14 Oct",
+          "o": 321.0,
+          "h": 327.0,
+          "l": 319.05,
+          "c": 323.15
+        },
+        {
+          "d": "15 Oct",
+          "o": 315.05,
+          "h": 318.8,
+          "l": 310.45,
+          "c": 318.4
+        }
+      ]
+    },
+    {
+      "symbol": "DELHIVERY",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 410.4,
+      "change_pct": 0.31,
+      "volume_ratio": 0.53,
+      "volume_confirmed": false,
+      "turnover_cr": 101.02,
+      "rsi14": 43.4,
+      "atr14": 11.49,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 400.0,
+          "h": 403.0,
+          "l": 393.9,
+          "c": 400.5
+        },
+        {
+          "d": "12 Oct",
+          "o": 400.95,
+          "h": 424.5,
+          "l": 400.95,
+          "c": 412.15
+        },
+        {
+          "d": "13 Oct",
+          "o": 411.7,
+          "h": 416.4,
+          "l": 405.6,
+          "c": 416.4
+        },
+        {
+          "d": "14 Oct",
+          "o": 414.85,
+          "h": 415.0,
+          "l": 408.7,
+          "c": 409.15
+        },
+        {
+          "d": "15 Oct",
+          "o": 413.0,
+          "h": 413.85,
+          "l": 406.4,
+          "c": 410.4
+        }
+      ]
+    },
+    {
+      "symbol": "PAGEIND",
+      "tier": "BROADER",
+      "pattern": "hammer",
+      "pattern_name": "Hammer",
+      "direction": "bullish",
+      "close": 36500.0,
+      "change_pct": -0.35,
+      "volume_ratio": 0.58,
+      "volume_confirmed": false,
+      "turnover_cr": 60.28,
+      "rsi14": 47.6,
+      "atr14": 804.09,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "09 Oct",
+          "o": 36645.0,
+          "h": 37040.0,
+          "l": 36455.0,
+          "c": 36875.0
+        },
+        {
+          "d": "12 Oct",
+          "o": 36875.0,
+          "h": 36940.0,
+          "l": 36630.0,
+          "c": 36905.0
+        },
+        {
+          "d": "13 Oct",
+          "o": 36970.0,
+          "h": 37100.0,
+          "l": 36330.0,
+          "c": 37100.0
+        },
+        {
+          "d": "14 Oct",
+          "o": 36900.0,
+          "h": 37100.0,
+          "l": 36510.0,
+          "c": 36630.0
+        },
+        {
+          "d": "15 Oct",
+          "o": 36630.0,
+          "h": 36700.0,
+          "l": 36120.0,
+          "c": 36500.0
+        }
+      ]
+    },
     {
       "symbol": "ONESOURCE",
       "tier": "BROADER",
       "pattern": "hammer",
       "pattern_name": "Hammer",
       "direction": "bullish",
-      "close": 1442.4,
-      "change_pct": -1.14,
-      "volume_ratio": 1.2,
-      "volume_confirmed": true,
+      "close": 1433.2,
+      "change_pct": -0.64,
+      "volume_ratio": 0.37,
+      "volume_confirmed": false,
       "turnover_cr": 29.05,
-      "rsi14": 34.3,
-      "atr14": 55.78,
+      "rsi14": 33.2,
+      "atr14": 53.3,
       "above_sma50": false,
-      "strength": "confirmed",
+      "strength": "unconfirmed",
       "bars": [
-        {
-          "d": "08 Oct",
-          "o": 1528.0,
-          "h": 1534.5,
-          "l": 1462.5,
-          "c": 1478.2
-        },
         {
           "d": "09 Oct",
           "o": 1479.0,
@@ -64,218 +587,66 @@
           "h": 1460.0,
           "l": 1423.9,
           "c": 1442.4
+        },
+        {
+          "d": "15 Oct",
+          "o": 1440.0,
+          "h": 1442.0,
+          "l": 1421.3,
+          "c": 1433.2
         }
       ]
     },
     {
-      "symbol": "ANANTRAJ",
+      "symbol": "TECHNOE",
       "tier": "BROADER",
       "pattern": "hammer",
       "pattern_name": "Hammer",
       "direction": "bullish",
-      "close": 558.15,
-      "change_pct": -0.8,
-      "volume_ratio": 0.96,
-      "volume_confirmed": false,
-      "turnover_cr": 83.36,
-      "rsi14": 36.5,
-      "atr14": 20.63,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "08 Oct",
-          "o": 615.0,
-          "h": 616.9,
-          "l": 567.55,
-          "c": 582.5
-        },
-        {
-          "d": "09 Oct",
-          "o": 588.0,
-          "h": 590.65,
-          "l": 568.35,
-          "c": 570.75
-        },
-        {
-          "d": "12 Oct",
-          "o": 576.7,
-          "h": 586.4,
-          "l": 565.95,
-          "c": 569.55
-        },
-        {
-          "d": "13 Oct",
-          "o": 574.0,
-          "h": 574.0,
-          "l": 556.2,
-          "c": 562.65
-        },
-        {
-          "d": "14 Oct",
-          "o": 562.65,
-          "h": 562.8,
-          "l": 551.75,
-          "c": 558.15
-        }
-      ]
-    },
-    {
-      "symbol": "GRAVITA",
-      "tier": "BROADER",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 1494.2,
+      "close": 945.2,
       "change_pct": -0.48,
-      "volume_ratio": 0.37,
+      "volume_ratio": 0.57,
       "volume_confirmed": false,
-      "turnover_cr": 36.96,
-      "rsi14": 39.4,
-      "atr14": 51.91,
+      "turnover_cr": 11.23,
+      "rsi14": 41.2,
+      "atr14": 30.12,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "08 Oct",
-          "o": 1496.0,
-          "h": 1523.6,
-          "l": 1475.1,
-          "c": 1482.3
-        },
-        {
           "d": "09 Oct",
-          "o": 1510.2,
-          "h": 1541.8,
-          "l": 1440.1,
-          "c": 1466.4
+          "o": 945.2,
+          "h": 959.0,
+          "l": 938.6,
+          "c": 954.9
         },
         {
           "d": "12 Oct",
-          "o": 1521.9,
-          "h": 1546.8,
-          "l": 1486.0,
-          "c": 1499.6
+          "o": 953.9,
+          "h": 970.0,
+          "l": 950.0,
+          "c": 955.7
         },
         {
           "d": "13 Oct",
-          "o": 1501.9,
-          "h": 1522.7,
-          "l": 1484.0,
-          "c": 1501.4
+          "o": 951.0,
+          "h": 967.5,
+          "l": 937.1,
+          "c": 943.9
         },
         {
           "d": "14 Oct",
-          "o": 1500.0,
-          "h": 1501.4,
-          "l": 1483.3,
-          "c": 1494.2
-        }
-      ]
-    },
-    {
-      "symbol": "HEG",
-      "tier": "BROADER",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 230.01,
-      "change_pct": -0.55,
-      "volume_ratio": 0.48,
-      "volume_confirmed": false,
-      "turnover_cr": 31.11,
-      "rsi14": 26.1,
-      "atr14": 20.03,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "07 Oct",
-          "o": 252.0,
-          "h": 253.9,
-          "l": 246.0,
-          "c": 246.99
+          "o": 949.0,
+          "h": 959.0,
+          "l": 944.4,
+          "c": 949.8
         },
         {
-          "d": "08 Oct",
-          "o": 248.21,
-          "h": 248.22,
-          "l": 236.1,
-          "c": 237.17
-        },
-        {
-          "d": "09 Oct",
-          "o": 238.1,
-          "h": 239.0,
-          "l": 229.01,
-          "c": 233.56
-        },
-        {
-          "d": "12 Oct",
-          "o": 236.77,
-          "h": 238.48,
-          "l": 229.4,
-          "c": 231.29
-        },
-        {
-          "d": "13 Oct",
-          "o": 232.26,
-          "h": 232.26,
-          "l": 224.8,
-          "c": 230.01
-        }
-      ]
-    },
-    {
-      "symbol": "MEDANTA",
-      "tier": "BROADER",
-      "pattern": "hammer",
-      "pattern_name": "Hammer",
-      "direction": "bullish",
-      "close": 1280.0,
-      "change_pct": -0.02,
-      "volume_ratio": 0.5,
-      "volume_confirmed": false,
-      "turnover_cr": 27.46,
-      "rsi14": 33.4,
-      "atr14": 45.12,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "08 Oct",
-          "o": 1299.0,
-          "h": 1309.3,
-          "l": 1270.9,
-          "c": 1276.5
-        },
-        {
-          "d": "09 Oct",
-          "o": 1290.0,
-          "h": 1322.6,
-          "l": 1288.8,
-          "c": 1312.7
-        },
-        {
-          "d": "12 Oct",
-          "o": 1311.9,
-          "h": 1322.1,
-          "l": 1298.7,
-          "c": 1309.4
-        },
-        {
-          "d": "13 Oct",
-          "o": 1309.4,
-          "h": 1318.1,
-          "l": 1276.0,
-          "c": 1280.2
-        },
-        {
-          "d": "14 Oct",
-          "o": 1286.0,
-          "h": 1287.7,
-          "l": 1257.5,
-          "c": 1280.0
+          "d": "15 Oct",
+          "o": 954.5,
+          "h": 955.0,
+          "l": 935.0,
+          "c": 945.2
         }
       ]
     }
