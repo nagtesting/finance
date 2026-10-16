@@ -1,126 +1,17 @@
 {
-  "session_date": "2026-10-15",
-  "generated_at": "2026-10-15T22:54:55.229161+05:30",
+  "session_date": "2026-10-16",
+  "generated_at": "2026-10-16T20:24:36.126048+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 499,
+  "symbols_scanned": 500,
   "symbols_requested": 500,
-  "symbols_missing": [
-    "NESTLEIND"
-  ],
+  "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 167,
+  "total_signals": 212,
   "pattern": "piercing-pattern",
   "pattern_name": "Piercing Pattern",
   "direction": "bullish",
-  "count": 2,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "HINDALCO",
-      "tier": "NIFTY 50",
-      "pattern": "piercing-pattern",
-      "pattern_name": "Piercing Pattern",
-      "direction": "bullish",
-      "close": 893.85,
-      "change_pct": 1.29,
-      "volume_ratio": 1.41,
-      "volume_confirmed": true,
-      "turnover_cr": 342.19,
-      "rsi14": 35.5,
-      "atr14": 23.0,
-      "above_sma50": false,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "09 Oct",
-          "o": 893.85,
-          "h": 900.6,
-          "l": 886.8,
-          "c": 900.35
-        },
-        {
-          "d": "12 Oct",
-          "o": 900.35,
-          "h": 908.85,
-          "l": 882.5,
-          "c": 882.5
-        },
-        {
-          "d": "13 Oct",
-          "o": 886.0,
-          "h": 902.25,
-          "l": 882.65,
-          "c": 902.25
-        },
-        {
-          "d": "14 Oct",
-          "o": 899.2,
-          "h": 899.9,
-          "l": 882.5,
-          "c": 882.5
-        },
-        {
-          "d": "15 Oct",
-          "o": 869.0,
-          "h": 897.85,
-          "l": 857.15,
-          "c": 893.85
-        }
-      ]
-    },
-    {
-      "symbol": "AUROPHARMA",
-      "tier": "BROADER",
-      "pattern": "piercing-pattern",
-      "pattern_name": "Piercing Pattern",
-      "direction": "bullish",
-      "close": 1677.9,
-      "change_pct": 0.9,
-      "volume_ratio": 0.88,
-      "volume_confirmed": false,
-      "turnover_cr": 152.14,
-      "rsi14": 50.1,
-      "atr14": 38.04,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "09 Oct",
-          "o": 1645.9,
-          "h": 1697.9,
-          "l": 1633.0,
-          "c": 1693.0
-        },
-        {
-          "d": "12 Oct",
-          "o": 1692.5,
-          "h": 1715.0,
-          "l": 1681.0,
-          "c": 1706.9
-        },
-        {
-          "d": "13 Oct",
-          "o": 1706.9,
-          "h": 1706.9,
-          "l": 1665.5,
-          "c": 1684.6
-        },
-        {
-          "d": "14 Oct",
-          "o": 1684.0,
-          "h": 1687.7,
-          "l": 1654.1,
-          "c": 1662.9
-        },
-        {
-          "d": "15 Oct",
-          "o": 1653.2,
-          "h": 1684.3,
-          "l": 1647.1,
-          "c": 1677.9
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

@@ -1,150 +1,35 @@
 {
-  "session_date": "2026-10-15",
-  "generated_at": "2026-10-15T22:54:55.229161+05:30",
+  "session_date": "2026-10-16",
+  "generated_at": "2026-10-16T20:24:36.126048+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 499,
+  "symbols_scanned": 500,
   "symbols_requested": 500,
-  "symbols_missing": [
-    "NESTLEIND"
-  ],
+  "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 167,
+  "total_signals": 212,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 3,
+  "count": 2,
   "truncated": false,
   "signals": [
-    {
-      "symbol": "LTM",
-      "tier": "NIFTY 100",
-      "pattern": "shooting-star",
-      "pattern_name": "Shooting Star",
-      "direction": "bearish",
-      "close": 4235.0,
-      "change_pct": 0.21,
-      "volume_ratio": 1.3,
-      "volume_confirmed": true,
-      "turnover_cr": 153.06,
-      "rsi14": 54.1,
-      "atr14": 135.71,
-      "above_sma50": false,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "09 Oct",
-          "o": 3925.0,
-          "h": 4091.8,
-          "l": 3925.0,
-          "c": 4070.0
-        },
-        {
-          "d": "12 Oct",
-          "o": 4050.1,
-          "h": 4104.9,
-          "l": 4002.0,
-          "c": 4018.9
-        },
-        {
-          "d": "13 Oct",
-          "o": 4059.1,
-          "h": 4220.0,
-          "l": 4055.8,
-          "c": 4215.0
-        },
-        {
-          "d": "14 Oct",
-          "o": 4210.0,
-          "h": 4308.0,
-          "l": 4191.1,
-          "c": 4226.1
-        },
-        {
-          "d": "15 Oct",
-          "o": 4265.5,
-          "h": 4358.0,
-          "l": 4235.0,
-          "c": 4235.0
-        }
-      ]
-    },
-    {
-      "symbol": "KPITTECH",
-      "tier": "BROADER",
-      "pattern": "shooting-star",
-      "pattern_name": "Shooting Star",
-      "direction": "bearish",
-      "close": 526.0,
-      "change_pct": 0.42,
-      "volume_ratio": 1.46,
-      "volume_confirmed": true,
-      "turnover_cr": 80.91,
-      "rsi14": 51.3,
-      "atr14": 17.58,
-      "above_sma50": false,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "09 Oct",
-          "o": 473.6,
-          "h": 489.5,
-          "l": 473.6,
-          "c": 479.0
-        },
-        {
-          "d": "12 Oct",
-          "o": 480.0,
-          "h": 490.15,
-          "l": 476.9,
-          "c": 481.0
-        },
-        {
-          "d": "13 Oct",
-          "o": 485.95,
-          "h": 515.35,
-          "l": 485.9,
-          "c": 513.75
-        },
-        {
-          "d": "14 Oct",
-          "o": 514.0,
-          "h": 531.5,
-          "l": 514.0,
-          "c": 523.8
-        },
-        {
-          "d": "15 Oct",
-          "o": 529.15,
-          "h": 538.8,
-          "l": 524.4,
-          "c": 526.0
-        }
-      ]
-    },
     {
       "symbol": "NEWGEN",
       "tier": "BROADER",
       "pattern": "shooting-star",
       "pattern_name": "Shooting Star",
       "direction": "bearish",
-      "close": 489.6,
-      "change_pct": 2.77,
-      "volume_ratio": 2.1,
+      "close": 493.9,
+      "change_pct": 0.88,
+      "volume_ratio": 1.31,
       "volume_confirmed": true,
-      "turnover_cr": 24.75,
-      "rsi14": 54.1,
-      "atr14": 17.84,
+      "turnover_cr": 29.45,
+      "rsi14": 55.9,
+      "atr14": 17.69,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
-        {
-          "d": "09 Oct",
-          "o": 446.1,
-          "h": 456.7,
-          "l": 444.15,
-          "c": 449.3
-        },
         {
           "d": "12 Oct",
           "o": 449.3,
@@ -172,6 +57,66 @@
           "h": 498.1,
           "l": 481.65,
           "c": 489.6
+        },
+        {
+          "d": "16 Oct",
+          "o": 490.3,
+          "h": 505.4,
+          "l": 490.3,
+          "c": 493.9
+        }
+      ]
+    },
+    {
+      "symbol": "PVRINOX",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 1401.0,
+      "change_pct": 1.38,
+      "volume_ratio": 0.82,
+      "volume_confirmed": false,
+      "turnover_cr": 72.07,
+      "rsi14": 63.9,
+      "atr14": 51.04,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Oct",
+          "o": 1340.5,
+          "h": 1412.0,
+          "l": 1340.5,
+          "c": 1401.3
+        },
+        {
+          "d": "13 Oct",
+          "o": 1401.3,
+          "h": 1425.0,
+          "l": 1363.0,
+          "c": 1404.5
+        },
+        {
+          "d": "14 Oct",
+          "o": 1400.0,
+          "h": 1413.3,
+          "l": 1368.0,
+          "c": 1381.0
+        },
+        {
+          "d": "15 Oct",
+          "o": 1367.1,
+          "h": 1387.6,
+          "l": 1362.8,
+          "c": 1381.9
+        },
+        {
+          "d": "16 Oct",
+          "o": 1385.6,
+          "h": 1426.4,
+          "l": 1385.6,
+          "c": 1401.0
         }
       ]
     }

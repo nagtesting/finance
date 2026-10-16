@@ -1,19 +1,177 @@
 {
-  "session_date": "2026-10-15",
-  "generated_at": "2026-10-15T22:54:55.229161+05:30",
+  "session_date": "2026-10-16",
+  "generated_at": "2026-10-16T20:24:36.126048+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 499,
+  "symbols_scanned": 500,
   "symbols_requested": 500,
-  "symbols_missing": [
-    "NESTLEIND"
-  ],
+  "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 167,
+  "total_signals": 212,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
-  "count": 0,
+  "count": 3,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "BSE",
+      "tier": "BROADER",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 3363.0,
+      "change_pct": -1.9,
+      "volume_ratio": 0.79,
+      "volume_confirmed": false,
+      "turnover_cr": 1503.64,
+      "rsi14": 53.7,
+      "atr14": 110.5,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Oct",
+          "o": 3311.0,
+          "h": 3364.4,
+          "l": 3296.7,
+          "c": 3330.2
+        },
+        {
+          "d": "13 Oct",
+          "o": 3332.0,
+          "h": 3403.2,
+          "l": 3290.2,
+          "c": 3375.4
+        },
+        {
+          "d": "14 Oct",
+          "o": 3375.4,
+          "h": 3408.3,
+          "l": 3320.0,
+          "c": 3338.0
+        },
+        {
+          "d": "15 Oct",
+          "o": 3342.0,
+          "h": 3445.0,
+          "l": 3315.2,
+          "c": 3428.0
+        },
+        {
+          "d": "16 Oct",
+          "o": 3450.0,
+          "h": 3455.0,
+          "l": 3310.6,
+          "c": 3363.0
+        }
+      ]
+    },
+    {
+      "symbol": "CAMS",
+      "tier": "BROADER",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 700.0,
+      "change_pct": -0.69,
+      "volume_ratio": 0.61,
+      "volume_confirmed": false,
+      "turnover_cr": 72.42,
+      "rsi14": 49.0,
+      "atr14": 17.45,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Oct",
+          "o": 676.45,
+          "h": 689.7,
+          "l": 675.85,
+          "c": 679.05
+        },
+        {
+          "d": "13 Oct",
+          "o": 681.55,
+          "h": 704.45,
+          "l": 681.0,
+          "c": 701.0
+        },
+        {
+          "d": "14 Oct",
+          "o": 701.0,
+          "h": 701.9,
+          "l": 691.45,
+          "c": 694.0
+        },
+        {
+          "d": "15 Oct",
+          "o": 696.0,
+          "h": 709.0,
+          "l": 695.55,
+          "c": 704.85
+        },
+        {
+          "d": "16 Oct",
+          "o": 710.0,
+          "h": 710.7,
+          "l": 699.1,
+          "c": 700.0
+        }
+      ]
+    },
+    {
+      "symbol": "JAINREC",
+      "tier": "BROADER",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 289.8,
+      "change_pct": -1.02,
+      "volume_ratio": 0.21,
+      "volume_confirmed": false,
+      "turnover_cr": 21.24,
+      "rsi14": 50.4,
+      "atr14": 10.41,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "12 Oct",
+          "o": 291.1,
+          "h": 293.2,
+          "l": 287.0,
+          "c": 288.2
+        },
+        {
+          "d": "13 Oct",
+          "o": 290.3,
+          "h": 292.45,
+          "l": 286.0,
+          "c": 288.55
+        },
+        {
+          "d": "14 Oct",
+          "o": 291.95,
+          "h": 292.0,
+          "l": 285.6,
+          "c": 287.2
+        },
+        {
+          "d": "15 Oct",
+          "o": 287.2,
+          "h": 293.75,
+          "l": 284.1,
+          "c": 292.8
+        },
+        {
+          "d": "16 Oct",
+          "o": 294.5,
+          "h": 294.5,
+          "l": 288.0,
+          "c": 289.8
+        }
+      ]
+    }
+  ]
 }
