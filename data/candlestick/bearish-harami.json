@@ -1,493 +1,387 @@
 {
-  "session_date": "2026-10-16",
-  "generated_at": "2026-10-16T22:30:50.537262+05:30",
+  "session_date": "2026-10-19",
+  "generated_at": "2026-10-19T22:30:40.459613+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 212,
+  "total_signals": 135,
   "pattern": "bearish-harami",
   "pattern_name": "Bearish Harami",
   "direction": "bearish",
-  "count": 9,
+  "count": 7,
   "truncated": false,
   "signals": [
     {
-      "symbol": "RELIANCE",
+      "symbol": "TCS",
       "tier": "NIFTY 50",
       "pattern": "bearish-harami",
       "pattern_name": "Bearish Harami",
       "direction": "bearish",
-      "close": 1211.2,
-      "change_pct": -0.31,
-      "volume_ratio": 1.24,
+      "close": 2460.9,
+      "change_pct": -0.17,
+      "volume_ratio": 1.62,
       "volume_confirmed": true,
-      "turnover_cr": 1637.08,
-      "rsi14": 48.7,
-      "atr14": 24.06,
+      "turnover_cr": 759.46,
+      "rsi14": 73.0,
+      "atr14": 74.25,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "13 Oct",
+          "o": 2156.9,
+          "h": 2269.3,
+          "l": 2155.0,
+          "c": 2269.3
+        },
+        {
+          "d": "14 Oct",
+          "o": 2274.0,
+          "h": 2335.8,
+          "l": 2265.6,
+          "c": 2304.9
+        },
+        {
+          "d": "15 Oct",
+          "o": 2347.2,
+          "h": 2386.7,
+          "l": 2335.0,
+          "c": 2350.0
+        },
+        {
+          "d": "16 Oct",
+          "o": 2382.0,
+          "h": 2484.7,
+          "l": 2375.7,
+          "c": 2465.0
+        },
+        {
+          "d": "19 Oct",
+          "o": 2458.0,
+          "h": 2497.0,
+          "l": 2432.1,
+          "c": 2460.9
+        }
+      ]
+    },
+    {
+      "symbol": "WAAREEENER",
+      "tier": "BROADER",
+      "pattern": "bearish-harami",
+      "pattern_name": "Bearish Harami",
+      "direction": "bearish",
+      "close": 2515.0,
+      "change_pct": -1.96,
+      "volume_ratio": 1.29,
+      "volume_confirmed": true,
+      "turnover_cr": 142.17,
+      "rsi14": 53.4,
+      "atr14": 71.44,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "12 Oct",
-          "o": 1180.3,
-          "h": 1185.5,
-          "l": 1153.2,
-          "c": 1158.9
-        },
-        {
           "d": "13 Oct",
-          "o": 1158.9,
-          "h": 1168.3,
-          "l": 1152.2,
-          "c": 1166.7
+          "o": 2340.0,
+          "h": 2464.0,
+          "l": 2330.1,
+          "c": 2451.0
         },
         {
           "d": "14 Oct",
-          "o": 1167.0,
-          "h": 1188.0,
-          "l": 1162.7,
-          "c": 1174.6
+          "o": 2451.0,
+          "h": 2539.0,
+          "l": 2429.0,
+          "c": 2516.0
         },
         {
           "d": "15 Oct",
-          "o": 1185.2,
-          "h": 1218.8,
-          "l": 1177.2,
-          "c": 1215.0
+          "o": 2519.9,
+          "h": 2539.0,
+          "l": 2476.4,
+          "c": 2494.0
         },
         {
           "d": "16 Oct",
-          "o": 1215.0,
-          "h": 1215.4,
-          "l": 1193.0,
-          "c": 1211.2
+          "o": 2494.0,
+          "h": 2565.4,
+          "l": 2462.0,
+          "c": 2565.4
+        },
+        {
+          "d": "19 Oct",
+          "o": 2515.0,
+          "h": 2576.3,
+          "l": 2498.0,
+          "c": 2515.0
         }
       ]
     },
     {
-      "symbol": "BAJAJHLDNG",
-      "tier": "NIFTY 100",
+      "symbol": "HBLENGINE",
+      "tier": "BROADER",
       "pattern": "bearish-harami",
       "pattern_name": "Bearish Harami",
       "direction": "bearish",
-      "close": 11198.0,
-      "change_pct": -0.24,
-      "volume_ratio": 0.62,
+      "close": 812.95,
+      "change_pct": -2.42,
+      "volume_ratio": 1.6,
+      "volume_confirmed": true,
+      "turnover_cr": 96.98,
+      "rsi14": 61.6,
+      "atr14": 33.57,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "13 Oct",
+          "o": 722.1,
+          "h": 726.55,
+          "l": 701.0,
+          "c": 712.75
+        },
+        {
+          "d": "14 Oct",
+          "o": 713.1,
+          "h": 726.0,
+          "l": 710.05,
+          "c": 719.2
+        },
+        {
+          "d": "15 Oct",
+          "o": 719.0,
+          "h": 723.95,
+          "l": 708.0,
+          "c": 710.45
+        },
+        {
+          "d": "16 Oct",
+          "o": 711.6,
+          "h": 842.0,
+          "l": 702.0,
+          "c": 833.15
+        },
+        {
+          "d": "19 Oct",
+          "o": 827.4,
+          "h": 832.85,
+          "l": 800.4,
+          "c": 812.95
+        }
+      ]
+    },
+    {
+      "symbol": "TECHM",
+      "tier": "NIFTY 50",
+      "pattern": "bearish-harami",
+      "pattern_name": "Bearish Harami",
+      "direction": "bearish",
+      "close": 1779.1,
+      "change_pct": -0.61,
+      "volume_ratio": 1.13,
       "volume_confirmed": false,
-      "turnover_cr": 42.94,
-      "rsi14": 56.8,
-      "atr14": 269.0,
+      "turnover_cr": 383.85,
+      "rsi14": 73.7,
+      "atr14": 52.37,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "12 Oct",
-          "o": 10820.0,
-          "h": 10969.0,
-          "l": 10714.0,
-          "c": 10750.0
-        },
-        {
           "d": "13 Oct",
-          "o": 10750.0,
-          "h": 10808.0,
-          "l": 10554.0,
-          "c": 10808.0
-        },
-        {
-          "d": "14 Oct",
-          "o": 10760.0,
-          "h": 10918.0,
-          "l": 10752.0,
-          "c": 10774.0
-        },
-        {
-          "d": "15 Oct",
-          "o": 10774.0,
-          "h": 11250.0,
-          "l": 10695.0,
-          "c": 11225.0
-        },
-        {
-          "d": "16 Oct",
-          "o": 11225.0,
-          "h": 11292.0,
-          "l": 11056.0,
-          "c": 11198.0
-        }
-      ]
-    },
-    {
-      "symbol": "HINDPETRO",
-      "tier": "BROADER",
-      "pattern": "bearish-harami",
-      "pattern_name": "Bearish Harami",
-      "direction": "bearish",
-      "close": 346.0,
-      "change_pct": -0.72,
-      "volume_ratio": 0.52,
-      "volume_confirmed": false,
-      "turnover_cr": 140.89,
-      "rsi14": 49.4,
-      "atr14": 9.23,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Oct",
-          "o": 329.05,
-          "h": 334.4,
-          "l": 328.0,
-          "c": 332.25
-        },
-        {
-          "d": "13 Oct",
-          "o": 331.85,
-          "h": 332.15,
-          "l": 324.4,
-          "c": 329.0
-        },
-        {
-          "d": "14 Oct",
-          "o": 327.95,
-          "h": 332.4,
-          "l": 324.95,
-          "c": 331.05
-        },
-        {
-          "d": "15 Oct",
-          "o": 332.0,
-          "h": 348.7,
-          "l": 331.05,
-          "c": 348.5
-        },
-        {
-          "d": "16 Oct",
-          "o": 347.2,
-          "h": 347.75,
-          "l": 343.8,
-          "c": 346.0
-        }
-      ]
-    },
-    {
-      "symbol": "APOLLOTYRE",
-      "tier": "BROADER",
-      "pattern": "bearish-harami",
-      "pattern_name": "Bearish Harami",
-      "direction": "bearish",
-      "close": 408.85,
-      "change_pct": -1.22,
-      "volume_ratio": 0.37,
-      "volume_confirmed": false,
-      "turnover_cr": 17.45,
-      "rsi14": 49.8,
-      "atr14": 11.73,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Oct",
-          "o": 401.95,
-          "h": 406.6,
-          "l": 400.05,
-          "c": 401.2
-        },
-        {
-          "d": "13 Oct",
-          "o": 402.0,
-          "h": 403.3,
-          "l": 397.3,
-          "c": 401.35
-        },
-        {
-          "d": "14 Oct",
-          "o": 401.0,
-          "h": 404.6,
-          "l": 399.25,
-          "c": 399.95
-        },
-        {
-          "d": "15 Oct",
-          "o": 400.1,
-          "h": 438.45,
-          "l": 400.1,
-          "c": 413.9
-        },
-        {
-          "d": "16 Oct",
-          "o": 411.5,
-          "h": 413.2,
-          "l": 407.5,
-          "c": 408.85
-        }
-      ]
-    },
-    {
-      "symbol": "BHARTIHEXA",
-      "tier": "BROADER",
-      "pattern": "bearish-harami",
-      "pattern_name": "Bearish Harami",
-      "direction": "bearish",
-      "close": 1621.9,
-      "change_pct": -1.73,
-      "volume_ratio": 0.41,
-      "volume_confirmed": false,
-      "turnover_cr": 17.2,
-      "rsi14": 63.7,
-      "atr14": 49.93,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Oct",
-          "o": 1531.9,
-          "h": 1541.4,
-          "l": 1505.4,
-          "c": 1521.3
-        },
-        {
-          "d": "13 Oct",
-          "o": 1525.0,
-          "h": 1557.9,
-          "l": 1514.3,
-          "c": 1548.7
+          "o": 1479.5,
+          "h": 1543.5,
+          "l": 1479.5,
+          "c": 1543.5
         },
         {
           "d": "14 Oct",
           "o": 1540.0,
-          "h": 1579.0,
-          "l": 1525.2,
-          "c": 1570.3
+          "h": 1581.7,
+          "l": 1538.2,
+          "c": 1575.2
         },
         {
           "d": "15 Oct",
-          "o": 1571.0,
-          "h": 1665.0,
-          "l": 1571.0,
-          "c": 1650.5
+          "o": 1600.0,
+          "h": 1650.0,
+          "l": 1596.1,
+          "c": 1650.0
         },
         {
           "d": "16 Oct",
-          "o": 1645.7,
-          "h": 1664.8,
-          "l": 1615.0,
-          "c": 1621.9
+          "o": 1712.0,
+          "h": 1797.0,
+          "l": 1690.1,
+          "c": 1790.0
+        },
+        {
+          "d": "19 Oct",
+          "o": 1760.0,
+          "h": 1796.0,
+          "l": 1752.7,
+          "c": 1779.1
         }
       ]
     },
     {
-      "symbol": "ATUL",
-      "tier": "BROADER",
+      "symbol": "WIPRO",
+      "tier": "NIFTY 50",
       "pattern": "bearish-harami",
       "pattern_name": "Bearish Harami",
       "direction": "bearish",
-      "close": 6196.5,
-      "change_pct": -0.01,
-      "volume_ratio": 0.59,
+      "close": 182.14,
+      "change_pct": -1.23,
+      "volume_ratio": 0.62,
       "volume_confirmed": false,
-      "turnover_cr": 14.68,
-      "rsi14": 55.5,
-      "atr14": 141.19,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Oct",
-          "o": 5891.0,
-          "h": 6017.0,
-          "l": 5891.0,
-          "c": 5978.5
-        },
-        {
-          "d": "13 Oct",
-          "o": 5980.0,
-          "h": 6014.0,
-          "l": 5961.5,
-          "c": 5998.0
-        },
-        {
-          "d": "14 Oct",
-          "o": 5954.5,
-          "h": 6074.5,
-          "l": 5950.0,
-          "c": 5972.0
-        },
-        {
-          "d": "15 Oct",
-          "o": 5972.5,
-          "h": 6302.5,
-          "l": 5972.0,
-          "c": 6197.0
-        },
-        {
-          "d": "16 Oct",
-          "o": 6166.0,
-          "h": 6242.0,
-          "l": 6125.5,
-          "c": 6196.5
-        }
-      ]
-    },
-    {
-      "symbol": "BLS",
-      "tier": "BROADER",
-      "pattern": "bearish-harami",
-      "pattern_name": "Bearish Harami",
-      "direction": "bearish",
-      "close": 227.53,
-      "change_pct": -0.05,
-      "volume_ratio": 0.53,
-      "volume_confirmed": false,
-      "turnover_cr": 13.2,
-      "rsi14": 52.0,
-      "atr14": 7.17,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Oct",
-          "o": 216.5,
-          "h": 221.6,
-          "l": 215.25,
-          "c": 216.81
-        },
-        {
-          "d": "13 Oct",
-          "o": 217.7,
-          "h": 219.87,
-          "l": 215.31,
-          "c": 218.84
-        },
-        {
-          "d": "14 Oct",
-          "o": 218.0,
-          "h": 221.9,
-          "l": 218.0,
-          "c": 220.09
-        },
-        {
-          "d": "15 Oct",
-          "o": 221.0,
-          "h": 240.0,
-          "l": 221.0,
-          "c": 227.64
-        },
-        {
-          "d": "16 Oct",
-          "o": 227.0,
-          "h": 229.72,
-          "l": 224.82,
-          "c": 227.53
-        }
-      ]
-    },
-    {
-      "symbol": "RITES",
-      "tier": "BROADER",
-      "pattern": "bearish-harami",
-      "pattern_name": "Bearish Harami",
-      "direction": "bearish",
-      "close": 209.79,
-      "change_pct": -2.09,
-      "volume_ratio": 0.36,
-      "volume_confirmed": false,
-      "turnover_cr": 9.14,
-      "rsi14": 54.6,
-      "atr14": 6.9,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "12 Oct",
-          "o": 200.85,
-          "h": 201.8,
-          "l": 197.37,
-          "c": 198.79
-        },
-        {
-          "d": "13 Oct",
-          "o": 198.77,
-          "h": 200.8,
-          "l": 197.25,
-          "c": 199.95
-        },
-        {
-          "d": "14 Oct",
-          "o": 200.3,
-          "h": 203.2,
-          "l": 199.0,
-          "c": 200.76
-        },
-        {
-          "d": "15 Oct",
-          "o": 200.74,
-          "h": 219.0,
-          "l": 200.69,
-          "c": 214.27
-        },
-        {
-          "d": "16 Oct",
-          "o": 211.7,
-          "h": 212.99,
-          "l": 208.0,
-          "c": 209.79
-        }
-      ]
-    },
-    {
-      "symbol": "GALLANTT",
-      "tier": "BROADER",
-      "pattern": "bearish-harami",
-      "pattern_name": "Bearish Harami",
-      "direction": "bearish",
-      "close": 609.4,
-      "change_pct": -2.98,
-      "volume_ratio": 0.81,
-      "volume_confirmed": false,
-      "turnover_cr": 3.85,
-      "rsi14": 61.4,
-      "atr14": 30.31,
+      "turnover_cr": 248.76,
+      "rsi14": 67.7,
+      "atr14": 4.77,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "12 Oct",
-          "o": 524.95,
-          "h": 604.5,
-          "l": 520.2,
-          "c": 595.6
-        },
-        {
           "d": "13 Oct",
-          "o": 601.0,
-          "h": 613.65,
-          "l": 566.3,
-          "c": 588.05
+          "o": 163.5,
+          "h": 169.0,
+          "l": 162.12,
+          "c": 169.0
         },
         {
           "d": "14 Oct",
-          "o": 580.0,
-          "h": 586.0,
-          "l": 561.0,
-          "c": 567.7
+          "o": 169.82,
+          "h": 172.45,
+          "l": 169.1,
+          "c": 170.92
         },
         {
           "d": "15 Oct",
-          "o": 565.95,
-          "h": 647.7,
-          "l": 561.0,
-          "c": 628.15
+          "o": 173.01,
+          "h": 174.69,
+          "l": 172.71,
+          "c": 174.05
         },
         {
           "d": "16 Oct",
-          "o": 625.4,
-          "h": 626.0,
-          "l": 601.5,
-          "c": 609.4
+          "o": 170.2,
+          "h": 185.69,
+          "l": 170.0,
+          "c": 184.4
+        },
+        {
+          "d": "19 Oct",
+          "o": 184.0,
+          "h": 185.85,
+          "l": 181.48,
+          "c": 182.14
+        }
+      ]
+    },
+    {
+      "symbol": "CASTROLIND",
+      "tier": "BROADER",
+      "pattern": "bearish-harami",
+      "pattern_name": "Bearish Harami",
+      "direction": "bearish",
+      "close": 196.79,
+      "change_pct": -0.48,
+      "volume_ratio": 0.64,
+      "volume_confirmed": false,
+      "turnover_cr": 45.61,
+      "rsi14": 54.5,
+      "atr14": 3.62,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "13 Oct",
+          "o": 193.5,
+          "h": 195.58,
+          "l": 192.8,
+          "c": 193.98
+        },
+        {
+          "d": "14 Oct",
+          "o": 193.5,
+          "h": 197.4,
+          "l": 193.2,
+          "c": 196.96
+        },
+        {
+          "d": "15 Oct",
+          "o": 197.0,
+          "h": 198.93,
+          "l": 195.3,
+          "c": 196.23
+        },
+        {
+          "d": "16 Oct",
+          "o": 196.02,
+          "h": 198.25,
+          "l": 194.82,
+          "c": 197.74
+        },
+        {
+          "d": "19 Oct",
+          "o": 197.69,
+          "h": 199.72,
+          "l": 196.05,
+          "c": 196.79
+        }
+      ]
+    },
+    {
+      "symbol": "BSOFT",
+      "tier": "BROADER",
+      "pattern": "bearish-harami",
+      "pattern_name": "Bearish Harami",
+      "direction": "bearish",
+      "close": 312.6,
+      "change_pct": -1.76,
+      "volume_ratio": 0.48,
+      "volume_confirmed": false,
+      "turnover_cr": 41.07,
+      "rsi14": 63.9,
+      "atr14": 11.52,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "13 Oct",
+          "o": 277.15,
+          "h": 299.0,
+          "l": 277.15,
+          "c": 296.75
+        },
+        {
+          "d": "14 Oct",
+          "o": 295.35,
+          "h": 302.4,
+          "l": 294.4,
+          "c": 298.75
+        },
+        {
+          "d": "15 Oct",
+          "o": 302.0,
+          "h": 318.65,
+          "l": 301.7,
+          "c": 309.5
+        },
+        {
+          "d": "16 Oct",
+          "o": 309.5,
+          "h": 320.95,
+          "l": 308.95,
+          "c": 318.2
+        },
+        {
+          "d": "19 Oct",
+          "o": 317.25,
+          "h": 319.65,
+          "l": 309.1,
+          "c": 312.6
         }
       ]
     }

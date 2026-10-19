@@ -1,13 +1,13 @@
 {
-  "session_date": "2026-10-16",
-  "generated_at": "2026-10-16T22:30:50.537262+05:30",
+  "session_date": "2026-10-19",
+  "generated_at": "2026-10-19T22:30:40.459613+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 212,
+  "total_signals": 135,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
@@ -15,108 +15,108 @@
   "truncated": false,
   "signals": [
     {
-      "symbol": "NEWGEN",
-      "tier": "BROADER",
+      "symbol": "EICHERMOT",
+      "tier": "NIFTY 50",
       "pattern": "shooting-star",
       "pattern_name": "Shooting Star",
       "direction": "bearish",
-      "close": 493.9,
-      "change_pct": 0.88,
-      "volume_ratio": 1.31,
+      "close": 7349.0,
+      "change_pct": 0.89,
+      "volume_ratio": 1.27,
       "volume_confirmed": true,
-      "turnover_cr": 29.45,
-      "rsi14": 55.9,
-      "atr14": 17.69,
+      "turnover_cr": 268.23,
+      "rsi14": 52.5,
+      "atr14": 149.03,
       "above_sma50": false,
       "strength": "confirmed",
       "bars": [
         {
-          "d": "12 Oct",
-          "o": 449.3,
-          "h": 455.0,
-          "l": 445.5,
-          "c": 446.35
-        },
-        {
           "d": "13 Oct",
-          "o": 454.0,
-          "h": 475.95,
-          "l": 449.6,
-          "c": 473.6
+          "o": 7098.0,
+          "h": 7170.5,
+          "l": 7031.0,
+          "c": 7163.0
         },
         {
           "d": "14 Oct",
-          "o": 469.3,
-          "h": 481.8,
-          "l": 469.3,
-          "c": 476.4
+          "o": 7135.0,
+          "h": 7154.5,
+          "l": 7040.0,
+          "c": 7082.5
         },
         {
           "d": "15 Oct",
-          "o": 482.15,
-          "h": 498.1,
-          "l": 481.65,
-          "c": 489.6
+          "o": 7082.5,
+          "h": 7270.5,
+          "l": 7050.0,
+          "c": 7225.0
         },
         {
           "d": "16 Oct",
-          "o": 490.3,
-          "h": 505.4,
-          "l": 490.3,
-          "c": 493.9
+          "o": 7225.5,
+          "h": 7286.0,
+          "l": 7185.5,
+          "c": 7284.5
+        },
+        {
+          "d": "19 Oct",
+          "o": 7320.0,
+          "h": 7438.5,
+          "l": 7308.0,
+          "c": 7349.0
         }
       ]
     },
     {
-      "symbol": "PVRINOX",
+      "symbol": "INDIANB",
       "tier": "BROADER",
       "pattern": "shooting-star",
       "pattern_name": "Shooting Star",
       "direction": "bearish",
-      "close": 1401.0,
-      "change_pct": 1.38,
-      "volume_ratio": 0.82,
+      "close": 856.85,
+      "change_pct": 0.32,
+      "volume_ratio": 0.84,
       "volume_confirmed": false,
-      "turnover_cr": 72.07,
-      "rsi14": 63.9,
-      "atr14": 51.04,
+      "turnover_cr": 86.14,
+      "rsi14": 56.6,
+      "atr14": 22.77,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "12 Oct",
-          "o": 1340.5,
-          "h": 1412.0,
-          "l": 1340.5,
-          "c": 1401.3
-        },
-        {
           "d": "13 Oct",
-          "o": 1401.3,
-          "h": 1425.0,
-          "l": 1363.0,
-          "c": 1404.5
+          "o": 817.0,
+          "h": 841.55,
+          "l": 817.0,
+          "c": 841.55
         },
         {
           "d": "14 Oct",
-          "o": 1400.0,
-          "h": 1413.3,
-          "l": 1368.0,
-          "c": 1381.0
+          "o": 839.8,
+          "h": 850.4,
+          "l": 828.35,
+          "c": 849.45
         },
         {
           "d": "15 Oct",
-          "o": 1367.1,
-          "h": 1387.6,
-          "l": 1362.8,
-          "c": 1381.9
+          "o": 851.5,
+          "h": 856.1,
+          "l": 816.8,
+          "c": 835.0
         },
         {
           "d": "16 Oct",
-          "o": 1385.6,
-          "h": 1426.4,
-          "l": 1385.6,
-          "c": 1401.0
+          "o": 838.0,
+          "h": 866.65,
+          "l": 833.4,
+          "c": 854.1
+        },
+        {
+          "d": "19 Oct",
+          "o": 855.15,
+          "h": 874.65,
+          "l": 855.15,
+          "c": 856.85
         }
       ]
     }
