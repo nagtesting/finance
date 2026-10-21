@@ -1,124 +1,17 @@
 {
-  "session_date": "2026-10-19",
-  "generated_at": "2026-10-19T22:30:40.459613+05:30",
+  "session_date": "2026-10-21",
+  "generated_at": "2026-10-21T20:50:20.042289+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 135,
+  "total_signals": 100,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
-  "count": 2,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "BHARTIARTL",
-      "tier": "NIFTY 50",
-      "pattern": "dark-cloud-cover",
-      "pattern_name": "Dark Cloud Cover",
-      "direction": "bearish",
-      "close": 1875.2,
-      "change_pct": -1.56,
-      "volume_ratio": 1.08,
-      "volume_confirmed": false,
-      "turnover_cr": 1025.14,
-      "rsi14": 56.8,
-      "atr14": 41.74,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Oct",
-          "o": 1756.2,
-          "h": 1806.5,
-          "l": 1756.2,
-          "c": 1806.5
-        },
-        {
-          "d": "14 Oct",
-          "o": 1804.5,
-          "h": 1824.0,
-          "l": 1794.0,
-          "c": 1794.6
-        },
-        {
-          "d": "15 Oct",
-          "o": 1795.1,
-          "h": 1871.1,
-          "l": 1795.1,
-          "c": 1854.0
-        },
-        {
-          "d": "16 Oct",
-          "o": 1866.0,
-          "h": 1909.7,
-          "l": 1857.7,
-          "c": 1905.0
-        },
-        {
-          "d": "19 Oct",
-          "o": 1913.8,
-          "h": 1929.6,
-          "l": 1863.9,
-          "c": 1875.2
-        }
-      ]
-    },
-    {
-      "symbol": "KPITTECH",
-      "tier": "BROADER",
-      "pattern": "dark-cloud-cover",
-      "pattern_name": "Dark Cloud Cover",
-      "direction": "bearish",
-      "close": 536.95,
-      "change_pct": -3.25,
-      "volume_ratio": 0.67,
-      "volume_confirmed": false,
-      "turnover_cr": 82.45,
-      "rsi14": 53.8,
-      "atr14": 18.81,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Oct",
-          "o": 485.95,
-          "h": 515.35,
-          "l": 485.9,
-          "c": 513.75
-        },
-        {
-          "d": "14 Oct",
-          "o": 514.0,
-          "h": 531.5,
-          "l": 514.0,
-          "c": 523.8
-        },
-        {
-          "d": "15 Oct",
-          "o": 529.15,
-          "h": 538.8,
-          "l": 524.4,
-          "c": 526.0
-        },
-        {
-          "d": "16 Oct",
-          "o": 526.0,
-          "h": 555.0,
-          "l": 526.0,
-          "c": 555.0
-        },
-        {
-          "d": "19 Oct",
-          "o": 557.0,
-          "h": 558.7,
-          "l": 534.5,
-          "c": 536.95
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

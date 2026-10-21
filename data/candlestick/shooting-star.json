@@ -1,124 +1,17 @@
 {
-  "session_date": "2026-10-19",
-  "generated_at": "2026-10-19T22:30:40.459613+05:30",
+  "session_date": "2026-10-21",
+  "generated_at": "2026-10-21T20:50:20.042289+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 135,
+  "total_signals": 100,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 2,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "EICHERMOT",
-      "tier": "NIFTY 50",
-      "pattern": "shooting-star",
-      "pattern_name": "Shooting Star",
-      "direction": "bearish",
-      "close": 7349.0,
-      "change_pct": 0.89,
-      "volume_ratio": 1.27,
-      "volume_confirmed": true,
-      "turnover_cr": 268.23,
-      "rsi14": 52.5,
-      "atr14": 149.03,
-      "above_sma50": false,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "13 Oct",
-          "o": 7098.0,
-          "h": 7170.5,
-          "l": 7031.0,
-          "c": 7163.0
-        },
-        {
-          "d": "14 Oct",
-          "o": 7135.0,
-          "h": 7154.5,
-          "l": 7040.0,
-          "c": 7082.5
-        },
-        {
-          "d": "15 Oct",
-          "o": 7082.5,
-          "h": 7270.5,
-          "l": 7050.0,
-          "c": 7225.0
-        },
-        {
-          "d": "16 Oct",
-          "o": 7225.5,
-          "h": 7286.0,
-          "l": 7185.5,
-          "c": 7284.5
-        },
-        {
-          "d": "19 Oct",
-          "o": 7320.0,
-          "h": 7438.5,
-          "l": 7308.0,
-          "c": 7349.0
-        }
-      ]
-    },
-    {
-      "symbol": "INDIANB",
-      "tier": "BROADER",
-      "pattern": "shooting-star",
-      "pattern_name": "Shooting Star",
-      "direction": "bearish",
-      "close": 856.85,
-      "change_pct": 0.32,
-      "volume_ratio": 0.84,
-      "volume_confirmed": false,
-      "turnover_cr": 86.14,
-      "rsi14": 56.6,
-      "atr14": 22.77,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "13 Oct",
-          "o": 817.0,
-          "h": 841.55,
-          "l": 817.0,
-          "c": 841.55
-        },
-        {
-          "d": "14 Oct",
-          "o": 839.8,
-          "h": 850.4,
-          "l": 828.35,
-          "c": 849.45
-        },
-        {
-          "d": "15 Oct",
-          "o": 851.5,
-          "h": 856.1,
-          "l": 816.8,
-          "c": 835.0
-        },
-        {
-          "d": "16 Oct",
-          "o": 838.0,
-          "h": 866.65,
-          "l": 833.4,
-          "c": 854.1
-        },
-        {
-          "d": "19 Oct",
-          "o": 855.15,
-          "h": 874.65,
-          "l": 855.15,
-          "c": 856.85
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

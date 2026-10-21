@@ -1,122 +1,69 @@
 {
-  "session_date": "2026-10-19",
-  "generated_at": "2026-10-19T22:30:40.459613+05:30",
+  "session_date": "2026-10-21",
+  "generated_at": "2026-10-21T20:50:20.042289+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 135,
+  "total_signals": 100,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
-  "count": 2,
+  "count": 1,
   "truncated": false,
   "signals": [
     {
-      "symbol": "AXISBANK",
-      "tier": "NIFTY 50",
+      "symbol": "ACUTAAS",
+      "tier": "BROADER",
       "pattern": "evening-star",
       "pattern_name": "Evening Star",
       "direction": "bearish",
-      "close": 1236.0,
-      "change_pct": -4.19,
-      "volume_ratio": 1.89,
-      "volume_confirmed": true,
-      "turnover_cr": 866.31,
-      "rsi14": 46.7,
-      "atr14": 28.66,
-      "above_sma50": false,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "13 Oct",
-          "o": 1247.0,
-          "h": 1275.3,
-          "l": 1242.2,
-          "c": 1268.4
-        },
-        {
-          "d": "14 Oct",
-          "o": 1265.1,
-          "h": 1276.1,
-          "l": 1252.2,
-          "c": 1264.6
-        },
-        {
-          "d": "15 Oct",
-          "o": 1267.0,
-          "h": 1293.8,
-          "l": 1265.7,
-          "c": 1288.0
-        },
-        {
-          "d": "16 Oct",
-          "o": 1290.0,
-          "h": 1293.4,
-          "l": 1270.6,
-          "c": 1290.0
-        },
-        {
-          "d": "19 Oct",
-          "o": 1264.9,
-          "h": 1264.9,
-          "l": 1225.3,
-          "c": 1236.0
-        }
-      ]
-    },
-    {
-      "symbol": "HDFCBANK",
-      "tier": "NIFTY 50",
-      "pattern": "evening-star",
-      "pattern_name": "Evening Star",
-      "direction": "bearish",
-      "close": 712.0,
-      "change_pct": -2.31,
-      "volume_ratio": 1.08,
+      "close": 3152.4,
+      "change_pct": -3.1,
+      "volume_ratio": 0.85,
       "volume_confirmed": false,
-      "turnover_cr": 2106.69,
-      "rsi14": 47.9,
-      "atr14": 15.1,
+      "turnover_cr": 107.68,
+      "rsi14": 46.4,
+      "atr14": 121.12,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "13 Oct",
-          "o": 707.0,
-          "h": 716.5,
-          "l": 705.1,
-          "c": 714.0
-        },
-        {
           "d": "14 Oct",
-          "o": 712.3,
-          "h": 718.55,
-          "l": 707.95,
-          "c": 710.7
+          "o": 3176.9,
+          "h": 3203.5,
+          "l": 3115.1,
+          "c": 3160.5
         },
         {
           "d": "15 Oct",
-          "o": 715.0,
-          "h": 728.0,
-          "l": 710.7,
-          "c": 726.85
+          "o": 3179.0,
+          "h": 3192.0,
+          "l": 3125.1,
+          "c": 3132.5
         },
         {
           "d": "16 Oct",
-          "o": 727.9,
-          "h": 734.9,
-          "l": 724.3,
-          "c": 728.85
+          "o": 3132.5,
+          "h": 3219.0,
+          "l": 3116.6,
+          "c": 3206.0
         },
         {
           "d": "19 Oct",
-          "o": 733.4,
-          "h": 733.4,
-          "l": 707.15,
-          "c": 712.0
+          "o": 3275.0,
+          "h": 3354.4,
+          "l": 3234.1,
+          "c": 3253.4
+        },
+        {
+          "d": "21 Oct",
+          "o": 3262.9,
+          "h": 3269.8,
+          "l": 3100.0,
+          "c": 3152.4
         }
       ]
     }
