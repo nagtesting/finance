@@ -1,71 +1,19 @@
 {
-  "session_date": "2026-10-21",
-  "generated_at": "2026-10-21T23:12:41.307105+05:30",
+  "session_date": "2026-10-22",
+  "generated_at": "2026-10-22T20:50:48.764563+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "ANTHEM"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 100,
+  "total_signals": 179,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "NHPC",
-      "tier": "BROADER",
-      "pattern": "morning-star",
-      "pattern_name": "Morning Star",
-      "direction": "bullish",
-      "close": 72.65,
-      "change_pct": 2.76,
-      "volume_ratio": 2.74,
-      "volume_confirmed": true,
-      "turnover_cr": 55.38,
-      "rsi14": 44.8,
-      "atr14": 1.48,
-      "above_sma50": false,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "14 Oct",
-          "o": 73.32,
-          "h": 73.72,
-          "l": 72.75,
-          "c": 73.72
-        },
-        {
-          "d": "15 Oct",
-          "o": 73.5,
-          "h": 73.72,
-          "l": 72.18,
-          "c": 72.7
-        },
-        {
-          "d": "16 Oct",
-          "o": 72.45,
-          "h": 72.9,
-          "l": 71.44,
-          "c": 71.44
-        },
-        {
-          "d": "19 Oct",
-          "o": 71.39,
-          "h": 71.93,
-          "l": 70.56,
-          "c": 70.7
-        },
-        {
-          "d": "21 Oct",
-          "o": 71.33,
-          "h": 72.69,
-          "l": 71.0,
-          "c": 72.65
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

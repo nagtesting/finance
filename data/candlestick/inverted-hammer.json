@@ -1,17 +1,126 @@
 {
-  "session_date": "2026-10-21",
-  "generated_at": "2026-10-21T23:12:41.307105+05:30",
+  "session_date": "2026-10-22",
+  "generated_at": "2026-10-22T20:50:48.764563+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "ANTHEM"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 100,
+  "total_signals": 179,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
-  "count": 0,
+  "count": 2,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "ATHERENERG",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 1425.3,
+      "change_pct": -1.51,
+      "volume_ratio": 0.45,
+      "volume_confirmed": false,
+      "turnover_cr": 441.8,
+      "rsi14": 42.5,
+      "atr14": 57.64,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "15 Oct",
+          "o": 1470.7,
+          "h": 1477.7,
+          "l": 1446.1,
+          "c": 1470.0
+        },
+        {
+          "d": "16 Oct",
+          "o": 1474.4,
+          "h": 1489.4,
+          "l": 1461.2,
+          "c": 1470.0
+        },
+        {
+          "d": "19 Oct",
+          "o": 1470.0,
+          "h": 1501.0,
+          "l": 1455.3,
+          "c": 1459.0
+        },
+        {
+          "d": "21 Oct",
+          "o": 1467.2,
+          "h": 1498.4,
+          "l": 1426.2,
+          "c": 1447.2
+        },
+        {
+          "d": "22 Oct",
+          "o": 1438.0,
+          "h": 1454.8,
+          "l": 1420.2,
+          "c": 1425.3
+        }
+      ]
+    },
+    {
+      "symbol": "BRIGADE",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 557.1,
+      "change_pct": -2.3,
+      "volume_ratio": 0.28,
+      "volume_confirmed": false,
+      "turnover_cr": 10.91,
+      "rsi14": 37.8,
+      "atr14": 22.98,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "15 Oct",
+          "o": 581.0,
+          "h": 636.05,
+          "l": 577.75,
+          "c": 581.45
+        },
+        {
+          "d": "16 Oct",
+          "o": 584.0,
+          "h": 586.0,
+          "l": 571.75,
+          "c": 575.15
+        },
+        {
+          "d": "19 Oct",
+          "o": 575.0,
+          "h": 584.3,
+          "l": 566.35,
+          "c": 571.15
+        },
+        {
+          "d": "21 Oct",
+          "o": 565.95,
+          "h": 572.2,
+          "l": 549.4,
+          "c": 570.2
+        },
+        {
+          "d": "22 Oct",
+          "o": 563.0,
+          "h": 570.4,
+          "l": 555.0,
+          "c": 557.1
+        }
+      ]
+    }
+  ]
 }
