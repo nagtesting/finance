@@ -1,124 +1,17 @@
 {
-  "session_date": "2026-10-23",
-  "generated_at": "2026-10-23T23:01:28.154378+05:30",
+  "session_date": "2026-10-26",
+  "generated_at": "2026-10-26T22:19:30.706978+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 82,
+  "total_signals": 208,
   "pattern": "hanging-man",
   "pattern_name": "Hanging Man",
   "direction": "bearish",
-  "count": 2,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "ICICIBANK",
-      "tier": "NIFTY 50",
-      "pattern": "hanging-man",
-      "pattern_name": "Hanging Man",
-      "direction": "bearish",
-      "close": 1394.2,
-      "change_pct": -0.31,
-      "volume_ratio": 0.95,
-      "volume_confirmed": false,
-      "turnover_cr": 1681.81,
-      "rsi14": 57.4,
-      "atr14": 25.58,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "16 Oct",
-          "o": 1395.0,
-          "h": 1398.8,
-          "l": 1380.0,
-          "c": 1397.0
-        },
-        {
-          "d": "19 Oct",
-          "o": 1405.0,
-          "h": 1411.8,
-          "l": 1377.9,
-          "c": 1381.0
-        },
-        {
-          "d": "21 Oct",
-          "o": 1406.0,
-          "h": 1409.7,
-          "l": 1383.0,
-          "c": 1385.0
-        },
-        {
-          "d": "22 Oct",
-          "o": 1379.0,
-          "h": 1400.0,
-          "l": 1375.1,
-          "c": 1398.5
-        },
-        {
-          "d": "23 Oct",
-          "o": 1404.5,
-          "h": 1404.5,
-          "l": 1377.9,
-          "c": 1394.2
-        }
-      ]
-    },
-    {
-      "symbol": "ULTRACEMCO",
-      "tier": "NIFTY 50",
-      "pattern": "hanging-man",
-      "pattern_name": "Hanging Man",
-      "direction": "bearish",
-      "close": 11050.0,
-      "change_pct": 0.84,
-      "volume_ratio": 1.0,
-      "volume_confirmed": false,
-      "turnover_cr": 315.71,
-      "rsi14": 53.9,
-      "atr14": 260.13,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "16 Oct",
-          "o": 10920.0,
-          "h": 10985.0,
-          "l": 10774.0,
-          "c": 10907.0
-        },
-        {
-          "d": "19 Oct",
-          "o": 10925.0,
-          "h": 11219.0,
-          "l": 10551.0,
-          "c": 10650.0
-        },
-        {
-          "d": "21 Oct",
-          "o": 10822.0,
-          "h": 10959.0,
-          "l": 10717.0,
-          "c": 10849.0
-        },
-        {
-          "d": "22 Oct",
-          "o": 10815.0,
-          "h": 10976.0,
-          "l": 10651.0,
-          "c": 10958.0
-        },
-        {
-          "d": "23 Oct",
-          "o": 10958.0,
-          "h": 11050.0,
-          "l": 10802.0,
-          "c": 11050.0
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

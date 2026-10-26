@@ -1,17 +1,283 @@
 {
-  "session_date": "2026-10-23",
-  "generated_at": "2026-10-23T23:01:28.154378+05:30",
+  "session_date": "2026-10-26",
+  "generated_at": "2026-10-26T22:19:30.706978+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 82,
+  "total_signals": 208,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
-  "count": 0,
+  "count": 5,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "PTCIL",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 23190.0,
+      "change_pct": -1.13,
+      "volume_ratio": 0.58,
+      "volume_confirmed": false,
+      "turnover_cr": 52.15,
+      "rsi14": 46.3,
+      "atr14": 925.47,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "19 Oct",
+          "o": 24680.0,
+          "h": 25400.0,
+          "l": 24130.0,
+          "c": 25045.0
+        },
+        {
+          "d": "21 Oct",
+          "o": 25050.0,
+          "h": 25770.0,
+          "l": 24705.0,
+          "c": 25115.0
+        },
+        {
+          "d": "22 Oct",
+          "o": 25060.0,
+          "h": 25220.0,
+          "l": 24345.0,
+          "c": 24745.0
+        },
+        {
+          "d": "23 Oct",
+          "o": 25005.0,
+          "h": 25005.0,
+          "l": 23260.0,
+          "c": 23455.0
+        },
+        {
+          "d": "26 Oct",
+          "o": 23375.0,
+          "h": 23595.0,
+          "l": 23095.0,
+          "c": 23190.0
+        }
+      ]
+    },
+    {
+      "symbol": "SWANCORP",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 235.7,
+      "change_pct": -1.73,
+      "volume_ratio": 0.77,
+      "volume_confirmed": false,
+      "turnover_cr": 20.62,
+      "rsi14": 26.2,
+      "atr14": 10.59,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "19 Oct",
+          "o": 264.25,
+          "h": 264.6,
+          "l": 254.1,
+          "c": 256.25
+        },
+        {
+          "d": "21 Oct",
+          "o": 255.7,
+          "h": 257.45,
+          "l": 244.2,
+          "c": 247.75
+        },
+        {
+          "d": "22 Oct",
+          "o": 245.25,
+          "h": 249.35,
+          "l": 241.0,
+          "c": 244.35
+        },
+        {
+          "d": "23 Oct",
+          "o": 243.0,
+          "h": 245.0,
+          "l": 230.1,
+          "c": 239.85
+        },
+        {
+          "d": "26 Oct",
+          "o": 238.0,
+          "h": 241.3,
+          "l": 234.95,
+          "c": 235.7
+        }
+      ]
+    },
+    {
+      "symbol": "GALLANTT",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 538.35,
+      "change_pct": -0.65,
+      "volume_ratio": 0.12,
+      "volume_confirmed": false,
+      "turnover_cr": 15.8,
+      "rsi14": 45.1,
+      "atr14": 34.85,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "19 Oct",
+          "o": 610.65,
+          "h": 678.85,
+          "l": 584.65,
+          "c": 626.2
+        },
+        {
+          "d": "21 Oct",
+          "o": 599.0,
+          "h": 614.0,
+          "l": 570.1,
+          "c": 583.1
+        },
+        {
+          "d": "22 Oct",
+          "o": 573.9,
+          "h": 574.0,
+          "l": 544.15,
+          "c": 550.7
+        },
+        {
+          "d": "23 Oct",
+          "o": 541.65,
+          "h": 547.8,
+          "l": 523.85,
+          "c": 541.85
+        },
+        {
+          "d": "26 Oct",
+          "o": 530.0,
+          "h": 551.5,
+          "l": 530.0,
+          "c": 538.35
+        }
+      ]
+    },
+    {
+      "symbol": "CANHLIFE",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 121.9,
+      "change_pct": -2.28,
+      "volume_ratio": 0.31,
+      "volume_confirmed": false,
+      "turnover_cr": 9.08,
+      "rsi14": 16.6,
+      "atr14": 5.49,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "19 Oct",
+          "o": 129.55,
+          "h": 131.15,
+          "l": 125.9,
+          "c": 128.12
+        },
+        {
+          "d": "21 Oct",
+          "o": 128.01,
+          "h": 128.5,
+          "l": 125.29,
+          "c": 127.87
+        },
+        {
+          "d": "22 Oct",
+          "o": 127.85,
+          "h": 127.85,
+          "l": 124.31,
+          "c": 125.77
+        },
+        {
+          "d": "23 Oct",
+          "o": 124.75,
+          "h": 126.0,
+          "l": 120.76,
+          "c": 124.75
+        },
+        {
+          "d": "26 Oct",
+          "o": 123.5,
+          "h": 125.58,
+          "l": 121.49,
+          "c": 121.9
+        }
+      ]
+    },
+    {
+      "symbol": "BAYERCROP",
+      "tier": "BROADER",
+      "pattern": "inverted-hammer",
+      "pattern_name": "Inverted Hammer",
+      "direction": "bullish",
+      "close": 3342.8,
+      "change_pct": -1.2,
+      "volume_ratio": 0.88,
+      "volume_confirmed": false,
+      "turnover_cr": 8.21,
+      "rsi14": 29.1,
+      "atr14": 94.52,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "19 Oct",
+          "o": 3638.4,
+          "h": 3638.5,
+          "l": 3532.0,
+          "c": 3548.2
+        },
+        {
+          "d": "21 Oct",
+          "o": 3566.3,
+          "h": 3585.3,
+          "l": 3428.2,
+          "c": 3437.3
+        },
+        {
+          "d": "22 Oct",
+          "o": 3429.0,
+          "h": 3508.5,
+          "l": 3413.1,
+          "c": 3449.6
+        },
+        {
+          "d": "23 Oct",
+          "o": 3425.2,
+          "h": 3449.1,
+          "l": 3312.0,
+          "c": 3383.5
+        },
+        {
+          "d": "26 Oct",
+          "o": 3296.5,
+          "h": 3390.0,
+          "l": 3296.5,
+          "c": 3342.8
+        }
+      ]
+    }
+  ]
 }

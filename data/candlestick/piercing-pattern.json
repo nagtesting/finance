@@ -1,17 +1,124 @@
 {
-  "session_date": "2026-10-23",
-  "generated_at": "2026-10-23T23:01:28.154378+05:30",
+  "session_date": "2026-10-26",
+  "generated_at": "2026-10-26T22:19:30.706978+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 82,
+  "total_signals": 208,
   "pattern": "piercing-pattern",
   "pattern_name": "Piercing Pattern",
   "direction": "bullish",
-  "count": 0,
+  "count": 2,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "IEX",
+      "tier": "BROADER",
+      "pattern": "piercing-pattern",
+      "pattern_name": "Piercing Pattern",
+      "direction": "bullish",
+      "close": 103.5,
+      "change_pct": 2.27,
+      "volume_ratio": 1.48,
+      "volume_confirmed": true,
+      "turnover_cr": 35.44,
+      "rsi14": 38.2,
+      "atr14": 2.8,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "19 Oct",
+          "o": 107.55,
+          "h": 107.72,
+          "l": 104.52,
+          "c": 104.8
+        },
+        {
+          "d": "21 Oct",
+          "o": 105.0,
+          "h": 105.74,
+          "l": 102.74,
+          "c": 103.28
+        },
+        {
+          "d": "22 Oct",
+          "o": 103.2,
+          "h": 104.98,
+          "l": 102.03,
+          "c": 104.0
+        },
+        {
+          "d": "23 Oct",
+          "o": 104.0,
+          "h": 104.01,
+          "l": 100.35,
+          "c": 101.2
+        },
+        {
+          "d": "26 Oct",
+          "o": 100.0,
+          "h": 104.8,
+          "l": 99.5,
+          "c": 103.5
+        }
+      ]
+    },
+    {
+      "symbol": "AEGISLOG",
+      "tier": "BROADER",
+      "pattern": "piercing-pattern",
+      "pattern_name": "Piercing Pattern",
+      "direction": "bullish",
+      "close": 1291.1,
+      "change_pct": 3.52,
+      "volume_ratio": 1.04,
+      "volume_confirmed": false,
+      "turnover_cr": 111.92,
+      "rsi14": 44.5,
+      "atr14": 74.82,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "19 Oct",
+          "o": 1360.0,
+          "h": 1370.0,
+          "l": 1312.0,
+          "c": 1331.8
+        },
+        {
+          "d": "21 Oct",
+          "o": 1338.5,
+          "h": 1362.3,
+          "l": 1303.0,
+          "c": 1323.0
+        },
+        {
+          "d": "22 Oct",
+          "o": 1320.0,
+          "h": 1322.8,
+          "l": 1274.0,
+          "c": 1304.1
+        },
+        {
+          "d": "23 Oct",
+          "o": 1308.0,
+          "h": 1311.8,
+          "l": 1238.1,
+          "c": 1247.2
+        },
+        {
+          "d": "26 Oct",
+          "o": 1225.0,
+          "h": 1306.7,
+          "l": 1207.9,
+          "c": 1291.1
+        }
+      ]
+    }
+  ]
 }
