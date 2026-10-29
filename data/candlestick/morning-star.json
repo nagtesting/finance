@@ -1,17 +1,177 @@
 {
-  "session_date": "2026-10-28",
-  "generated_at": "2026-10-28T22:12:35.935138+05:30",
+  "session_date": "2026-10-29",
+  "generated_at": "2026-10-29T22:28:01.443800+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 184,
+  "total_signals": 185,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 0,
+  "count": 3,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "WAAREEENER",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 2318.0,
+      "change_pct": 3.57,
+      "volume_ratio": 1.18,
+      "volume_confirmed": false,
+      "turnover_cr": 176.43,
+      "rsi14": 41.6,
+      "atr14": 82.16,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "23 Oct",
+          "o": 2367.0,
+          "h": 2367.0,
+          "l": 2295.0,
+          "c": 2354.9
+        },
+        {
+          "d": "26 Oct",
+          "o": 2347.4,
+          "h": 2372.0,
+          "l": 2305.0,
+          "c": 2319.0
+        },
+        {
+          "d": "27 Oct",
+          "o": 2330.6,
+          "h": 2353.4,
+          "l": 2259.0,
+          "c": 2275.0
+        },
+        {
+          "d": "28 Oct",
+          "o": 2225.0,
+          "h": 2306.9,
+          "l": 2161.5,
+          "c": 2238.0
+        },
+        {
+          "d": "29 Oct",
+          "o": 2249.8,
+          "h": 2329.0,
+          "l": 2240.9,
+          "c": 2318.0
+        }
+      ]
+    },
+    {
+      "symbol": "SBICARD",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 540.0,
+      "change_pct": 2.36,
+      "volume_ratio": 0.72,
+      "volume_confirmed": false,
+      "turnover_cr": 51.72,
+      "rsi14": 36.8,
+      "atr14": 17.5,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "23 Oct",
+          "o": 568.0,
+          "h": 569.45,
+          "l": 525.0,
+          "c": 545.55
+        },
+        {
+          "d": "26 Oct",
+          "o": 536.5,
+          "h": 549.5,
+          "l": 533.05,
+          "c": 538.3
+        },
+        {
+          "d": "27 Oct",
+          "o": 538.3,
+          "h": 540.4,
+          "l": 526.75,
+          "c": 528.05
+        },
+        {
+          "d": "28 Oct",
+          "o": 528.0,
+          "h": 528.35,
+          "l": 519.05,
+          "c": 527.55
+        },
+        {
+          "d": "29 Oct",
+          "o": 527.55,
+          "h": 540.75,
+          "l": 524.2,
+          "c": 540.0
+        }
+      ]
+    },
+    {
+      "symbol": "BERGEPAINT",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 466.55,
+      "change_pct": 1.04,
+      "volume_ratio": 0.36,
+      "volume_confirmed": false,
+      "turnover_cr": 9.12,
+      "rsi14": 48.0,
+      "atr14": 10.37,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "23 Oct",
+          "o": 466.5,
+          "h": 468.35,
+          "l": 459.3,
+          "c": 466.35
+        },
+        {
+          "d": "26 Oct",
+          "o": 461.5,
+          "h": 467.0,
+          "l": 459.05,
+          "c": 465.8
+        },
+        {
+          "d": "27 Oct",
+          "o": 467.1,
+          "h": 467.55,
+          "l": 460.5,
+          "c": 463.4
+        },
+        {
+          "d": "28 Oct",
+          "o": 462.65,
+          "h": 463.65,
+          "l": 458.0,
+          "c": 461.75
+        },
+        {
+          "d": "29 Oct",
+          "o": 461.3,
+          "h": 469.8,
+          "l": 458.15,
+          "c": 466.55
+        }
+      ]
+    }
+  ]
 }

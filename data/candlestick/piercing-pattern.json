@@ -1,122 +1,69 @@
 {
-  "session_date": "2026-10-28",
-  "generated_at": "2026-10-28T22:12:35.935138+05:30",
+  "session_date": "2026-10-29",
+  "generated_at": "2026-10-29T22:28:01.443800+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 184,
+  "total_signals": 185,
   "pattern": "piercing-pattern",
   "pattern_name": "Piercing Pattern",
   "direction": "bullish",
-  "count": 2,
+  "count": 1,
   "truncated": false,
   "signals": [
     {
-      "symbol": "HDFCBANK",
-      "tier": "NIFTY 50",
+      "symbol": "PETRONET",
+      "tier": "BROADER",
       "pattern": "piercing-pattern",
       "pattern_name": "Piercing Pattern",
       "direction": "bullish",
-      "close": 685.3,
-      "change_pct": 0.75,
-      "volume_ratio": 0.89,
+      "close": 289.15,
+      "change_pct": 1.49,
+      "volume_ratio": 0.8,
       "volume_confirmed": false,
-      "turnover_cr": 2029.82,
-      "rsi14": 39.4,
-      "atr14": 14.69,
+      "turnover_cr": 63.64,
+      "rsi14": 49.1,
+      "atr14": 7.07,
       "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "22 Oct",
-          "o": 701.45,
-          "h": 703.35,
-          "l": 689.1,
-          "c": 694.05
-        },
-        {
           "d": "23 Oct",
-          "o": 692.55,
-          "h": 696.8,
-          "l": 686.85,
-          "c": 692.8
+          "o": 290.4,
+          "h": 292.0,
+          "l": 279.35,
+          "c": 286.3
         },
         {
           "d": "26 Oct",
-          "o": 692.1,
-          "h": 693.8,
-          "l": 684.0,
-          "c": 688.05
+          "o": 282.8,
+          "h": 292.75,
+          "l": 282.05,
+          "c": 291.75
         },
         {
           "d": "27 Oct",
-          "o": 689.7,
-          "h": 690.25,
-          "l": 678.65,
-          "c": 680.2
+          "o": 291.1,
+          "h": 296.0,
+          "l": 288.1,
+          "c": 296.0
         },
         {
           "d": "28 Oct",
-          "o": 674.15,
-          "h": 687.1,
-          "l": 669.2,
-          "c": 685.3
-        }
-      ]
-    },
-    {
-      "symbol": "SBIN",
-      "tier": "NIFTY 50",
-      "pattern": "piercing-pattern",
-      "pattern_name": "Piercing Pattern",
-      "direction": "bullish",
-      "close": 956.8,
-      "change_pct": 1.24,
-      "volume_ratio": 1.12,
-      "volume_confirmed": false,
-      "turnover_cr": 806.48,
-      "rsi14": 45.0,
-      "atr14": 18.16,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "22 Oct",
-          "o": 959.55,
-          "h": 970.9,
-          "l": 950.05,
-          "c": 970.0
+          "o": 292.5,
+          "h": 292.5,
+          "l": 283.85,
+          "c": 284.9
         },
         {
-          "d": "23 Oct",
-          "o": 970.0,
-          "h": 971.4,
-          "l": 949.95,
-          "c": 958.6
-        },
-        {
-          "d": "26 Oct",
-          "o": 956.5,
-          "h": 961.55,
-          "l": 943.4,
-          "c": 960.8
-        },
-        {
-          "d": "27 Oct",
-          "o": 958.85,
-          "h": 965.65,
-          "l": 945.1,
-          "c": 945.1
-        },
-        {
-          "d": "28 Oct",
-          "o": 945.0,
-          "h": 959.55,
-          "l": 944.0,
-          "c": 956.8
+          "d": "29 Oct",
+          "o": 283.45,
+          "h": 289.15,
+          "l": 283.25,
+          "c": 289.15
         }
       ]
     }
