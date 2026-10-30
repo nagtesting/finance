@@ -1,71 +1,17 @@
 {
-  "session_date": "2026-10-29",
-  "generated_at": "2026-10-29T22:28:01.443800+05:30",
+  "session_date": "2026-10-30",
+  "generated_at": "2026-10-30T22:13:56.356870+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 185,
+  "total_signals": 175,
   "pattern": "piercing-pattern",
   "pattern_name": "Piercing Pattern",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "PETRONET",
-      "tier": "BROADER",
-      "pattern": "piercing-pattern",
-      "pattern_name": "Piercing Pattern",
-      "direction": "bullish",
-      "close": 289.15,
-      "change_pct": 1.49,
-      "volume_ratio": 0.8,
-      "volume_confirmed": false,
-      "turnover_cr": 63.64,
-      "rsi14": 49.1,
-      "atr14": 7.07,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "23 Oct",
-          "o": 290.4,
-          "h": 292.0,
-          "l": 279.35,
-          "c": 286.3
-        },
-        {
-          "d": "26 Oct",
-          "o": 282.8,
-          "h": 292.75,
-          "l": 282.05,
-          "c": 291.75
-        },
-        {
-          "d": "27 Oct",
-          "o": 291.1,
-          "h": 296.0,
-          "l": 288.1,
-          "c": 296.0
-        },
-        {
-          "d": "28 Oct",
-          "o": 292.5,
-          "h": 292.5,
-          "l": 283.85,
-          "c": 284.9
-        },
-        {
-          "d": "29 Oct",
-          "o": 283.45,
-          "h": 289.15,
-          "l": 283.25,
-          "c": 289.15
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

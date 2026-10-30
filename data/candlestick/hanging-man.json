@@ -1,69 +1,122 @@
 {
-  "session_date": "2026-10-29",
-  "generated_at": "2026-10-29T22:28:01.443800+05:30",
+  "session_date": "2026-10-30",
+  "generated_at": "2026-10-30T22:13:56.356870+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 185,
+  "total_signals": 175,
   "pattern": "hanging-man",
   "pattern_name": "Hanging Man",
   "direction": "bearish",
-  "count": 3,
+  "count": 5,
   "truncated": false,
   "signals": [
     {
-      "symbol": "BOSCHLTD",
-      "tier": "NIFTY 100",
+      "symbol": "BHARTIARTL",
+      "tier": "NIFTY 50",
       "pattern": "hanging-man",
       "pattern_name": "Hanging Man",
       "direction": "bearish",
-      "close": 47565.0,
-      "change_pct": -0.13,
-      "volume_ratio": 1.29,
-      "volume_confirmed": true,
-      "turnover_cr": 93.51,
-      "rsi14": 61.0,
-      "atr14": 1135.11,
+      "close": 1973.7,
+      "change_pct": 0.08,
+      "volume_ratio": 0.8,
+      "volume_confirmed": false,
+      "turnover_cr": 1388.98,
+      "rsi14": 65.4,
+      "atr14": 43.51,
       "above_sma50": true,
-      "strength": "confirmed",
+      "strength": "unconfirmed",
       "bars": [
         {
-          "d": "23 Oct",
-          "o": 44295.0,
-          "h": 44725.0,
-          "l": 43650.0,
-          "c": 44085.0
-        },
-        {
           "d": "26 Oct",
-          "o": 43820.0,
-          "h": 44900.0,
-          "l": 43650.0,
-          "c": 44900.0
+          "o": 1886.0,
+          "h": 1917.5,
+          "l": 1874.5,
+          "c": 1917.5
         },
         {
           "d": "27 Oct",
-          "o": 44795.0,
-          "h": 45600.0,
-          "l": 44750.0,
-          "c": 45600.0
+          "o": 1916.4,
+          "h": 1978.8,
+          "l": 1910.6,
+          "c": 1978.8
         },
         {
           "d": "28 Oct",
-          "o": 45490.0,
-          "h": 47625.0,
-          "l": 45485.0,
-          "c": 47625.0
+          "o": 1970.1,
+          "h": 1970.8,
+          "l": 1926.6,
+          "c": 1948.1
         },
         {
           "d": "29 Oct",
-          "o": 47625.0,
-          "h": 47625.0,
-          "l": 46905.0,
-          "c": 47565.0
+          "o": 1972.0,
+          "h": 1977.4,
+          "l": 1943.2,
+          "c": 1972.1
+        },
+        {
+          "d": "30 Oct",
+          "o": 1981.0,
+          "h": 1985.0,
+          "l": 1958.0,
+          "c": 1973.7
+        }
+      ]
+    },
+    {
+      "symbol": "TATACONSUM",
+      "tier": "NIFTY 50",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 1025.9,
+      "change_pct": 0.48,
+      "volume_ratio": 0.75,
+      "volume_confirmed": false,
+      "turnover_cr": 144.53,
+      "rsi14": 61.3,
+      "atr14": 25.98,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "26 Oct",
+          "o": 960.0,
+          "h": 960.0,
+          "l": 916.0,
+          "c": 936.5
+        },
+        {
+          "d": "27 Oct",
+          "o": 969.0,
+          "h": 1000.0,
+          "l": 957.45,
+          "c": 1000.0
+        },
+        {
+          "d": "28 Oct",
+          "o": 996.95,
+          "h": 1005.0,
+          "l": 962.1,
+          "c": 1000.2
+        },
+        {
+          "d": "29 Oct",
+          "o": 991.1,
+          "h": 1022.0,
+          "l": 989.15,
+          "c": 1021.0
+        },
+        {
+          "d": "30 Oct",
+          "o": 1028.45,
+          "h": 1028.9,
+          "l": 1002.35,
+          "c": 1025.9
         }
       ]
     },
@@ -73,23 +126,16 @@
       "pattern": "hanging-man",
       "pattern_name": "Hanging Man",
       "direction": "bearish",
-      "close": 4869.9,
-      "change_pct": 0.41,
-      "volume_ratio": 0.68,
+      "close": 4853.7,
+      "change_pct": -0.33,
+      "volume_ratio": 0.97,
       "volume_confirmed": false,
-      "turnover_cr": 316.6,
-      "rsi14": 53.1,
-      "atr14": 120.79,
+      "turnover_cr": 316.27,
+      "rsi14": 52.1,
+      "atr14": 117.52,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
-        {
-          "d": "23 Oct",
-          "o": 4874.4,
-          "h": 4894.7,
-          "l": 4716.3,
-          "c": 4725.0
-        },
         {
           "d": "26 Oct",
           "o": 4716.0,
@@ -117,59 +163,119 @@
           "h": 4869.9,
           "l": 4777.1,
           "c": 4869.9
+        },
+        {
+          "d": "30 Oct",
+          "o": 4868.8,
+          "h": 4868.8,
+          "l": 4795.0,
+          "c": 4853.7
         }
       ]
     },
     {
-      "symbol": "COFORGE",
+      "symbol": "JINDALSTEL",
+      "tier": "NIFTY 100",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 1061.2,
+      "change_pct": 0.11,
+      "volume_ratio": 0.53,
+      "volume_confirmed": false,
+      "turnover_cr": 96.72,
+      "rsi14": 48.8,
+      "atr14": 28.66,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "26 Oct",
+          "o": 1010.0,
+          "h": 1041.1,
+          "l": 1004.9,
+          "c": 1039.9
+        },
+        {
+          "d": "27 Oct",
+          "o": 1039.0,
+          "h": 1060.0,
+          "l": 1033.6,
+          "c": 1060.0
+        },
+        {
+          "d": "28 Oct",
+          "o": 1060.0,
+          "h": 1063.5,
+          "l": 1045.8,
+          "c": 1048.1
+        },
+        {
+          "d": "29 Oct",
+          "o": 1051.0,
+          "h": 1062.9,
+          "l": 1042.3,
+          "c": 1060.0
+        },
+        {
+          "d": "30 Oct",
+          "o": 1064.0,
+          "h": 1065.5,
+          "l": 1047.7,
+          "c": 1061.2
+        }
+      ]
+    },
+    {
+      "symbol": "OIL",
       "tier": "BROADER",
       "pattern": "hanging-man",
       "pattern_name": "Hanging Man",
       "direction": "bearish",
-      "close": 1962.0,
-      "change_pct": 0.01,
-      "volume_ratio": 0.59,
+      "close": 454.0,
+      "change_pct": -0.11,
+      "volume_ratio": 0.66,
       "volume_confirmed": false,
-      "turnover_cr": 469.08,
-      "rsi14": 59.1,
-      "atr14": 69.88,
-      "above_sma50": true,
+      "turnover_cr": 45.05,
+      "rsi14": 48.6,
+      "atr14": 9.84,
+      "above_sma50": false,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "23 Oct",
-          "o": 1925.0,
-          "h": 1992.4,
-          "l": 1890.0,
-          "c": 1900.5
-        },
-        {
           "d": "26 Oct",
-          "o": 1844.2,
-          "h": 1997.6,
-          "l": 1812.2,
-          "c": 1993.0
+          "o": 445.8,
+          "h": 456.0,
+          "l": 441.45,
+          "c": 454.9
         },
         {
           "d": "27 Oct",
-          "o": 1979.0,
-          "h": 2008.8,
-          "l": 1953.0,
-          "c": 1997.0
+          "o": 453.1,
+          "h": 457.7,
+          "l": 449.4,
+          "c": 457.35
         },
         {
           "d": "28 Oct",
-          "o": 1939.0,
-          "h": 1977.8,
-          "l": 1903.8,
-          "c": 1961.9
+          "o": 455.5,
+          "h": 455.5,
+          "l": 445.2,
+          "c": 447.5
         },
         {
           "d": "29 Oct",
-          "o": 1975.0,
-          "h": 1978.5,
-          "l": 1939.0,
-          "c": 1962.0
+          "o": 447.0,
+          "h": 454.5,
+          "l": 445.7,
+          "c": 454.5
+        },
+        {
+          "d": "30 Oct",
+          "o": 454.4,
+          "h": 454.4,
+          "l": 445.35,
+          "c": 454.0
         }
       ]
     }
