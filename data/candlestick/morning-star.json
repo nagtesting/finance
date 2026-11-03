@@ -1,17 +1,124 @@
 {
-  "session_date": "2026-10-30",
-  "generated_at": "2026-10-30T23:46:57.867225+05:30",
+  "session_date": "2026-11-03",
+  "generated_at": "2026-11-03T23:24:19.802624+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 175,
+  "total_signals": 158,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 0,
+  "count": 2,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "COLPAL",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 1631.7,
+      "change_pct": 3.6,
+      "volume_ratio": 1.56,
+      "volume_confirmed": true,
+      "turnover_cr": 85.12,
+      "rsi14": 40.0,
+      "atr14": 50.69,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "28 Oct",
+          "o": 1600.0,
+          "h": 1618.9,
+          "l": 1576.8,
+          "c": 1601.6
+        },
+        {
+          "d": "29 Oct",
+          "o": 1611.0,
+          "h": 1640.7,
+          "l": 1588.6,
+          "c": 1629.8
+        },
+        {
+          "d": "30 Oct",
+          "o": 1628.0,
+          "h": 1628.0,
+          "l": 1581.1,
+          "c": 1596.5
+        },
+        {
+          "d": "02 Nov",
+          "o": 1584.9,
+          "h": 1600.2,
+          "l": 1563.9,
+          "c": 1575.0
+        },
+        {
+          "d": "03 Nov",
+          "o": 1585.0,
+          "h": 1631.7,
+          "l": 1584.0,
+          "c": 1631.7
+        }
+      ]
+    },
+    {
+      "symbol": "GILLETTE",
+      "tier": "BROADER",
+      "pattern": "morning-star",
+      "pattern_name": "Morning Star",
+      "direction": "bullish",
+      "close": 7236.0,
+      "change_pct": 2.8,
+      "volume_ratio": 2.7,
+      "volume_confirmed": true,
+      "turnover_cr": 9.88,
+      "rsi14": 53.0,
+      "atr14": 170.5,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "28 Oct",
+          "o": 7300.0,
+          "h": 7389.0,
+          "l": 7222.0,
+          "c": 7268.0
+        },
+        {
+          "d": "29 Oct",
+          "o": 7231.0,
+          "h": 7250.0,
+          "l": 7150.5,
+          "c": 7174.0
+        },
+        {
+          "d": "30 Oct",
+          "o": 7170.0,
+          "h": 7174.0,
+          "l": 7025.0,
+          "c": 7077.0
+        },
+        {
+          "d": "02 Nov",
+          "o": 7026.0,
+          "h": 7124.0,
+          "l": 7017.5,
+          "c": 7039.0
+        },
+        {
+          "d": "03 Nov",
+          "o": 7050.0,
+          "h": 7441.5,
+          "l": 7050.0,
+          "c": 7236.0
+        }
+      ]
+    }
+  ]
 }
