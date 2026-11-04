@@ -1,124 +1,17 @@
 {
-  "session_date": "2026-11-03",
-  "generated_at": "2026-11-03T23:24:19.802624+05:30",
+  "session_date": "2026-11-04",
+  "generated_at": "2026-11-04T23:32:25.031453+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 158,
+  "total_signals": 172,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
-  "count": 2,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "POWERGRID",
-      "tier": "NIFTY 50",
-      "pattern": "evening-star",
-      "pattern_name": "Evening Star",
-      "direction": "bearish",
-      "close": 259.55,
-      "change_pct": -3.04,
-      "volume_ratio": 1.15,
-      "volume_confirmed": false,
-      "turnover_cr": 279.47,
-      "rsi14": 53.3,
-      "atr14": 6.45,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "28 Oct",
-          "o": 254.1,
-          "h": 254.1,
-          "l": 248.8,
-          "c": 251.4
-        },
-        {
-          "d": "29 Oct",
-          "o": 250.8,
-          "h": 262.5,
-          "l": 250.8,
-          "c": 260.0
-        },
-        {
-          "d": "30 Oct",
-          "o": 260.05,
-          "h": 267.3,
-          "l": 259.25,
-          "c": 265.0
-        },
-        {
-          "d": "02 Nov",
-          "o": 266.5,
-          "h": 270.2,
-          "l": 264.5,
-          "c": 267.7
-        },
-        {
-          "d": "03 Nov",
-          "o": 264.65,
-          "h": 265.8,
-          "l": 257.3,
-          "c": 259.55
-        }
-      ]
-    },
-    {
-      "symbol": "PPLPHARMA",
-      "tier": "BROADER",
-      "pattern": "evening-star",
-      "pattern_name": "Evening Star",
-      "direction": "bearish",
-      "close": 233.69,
-      "change_pct": -2.6,
-      "volume_ratio": 0.7,
-      "volume_confirmed": false,
-      "turnover_cr": 46.88,
-      "rsi14": 67.2,
-      "atr14": 9.83,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "28 Oct",
-          "o": 214.1,
-          "h": 235.64,
-          "l": 209.04,
-          "c": 232.8
-        },
-        {
-          "d": "29 Oct",
-          "o": 231.73,
-          "h": 239.54,
-          "l": 225.64,
-          "c": 230.78
-        },
-        {
-          "d": "30 Oct",
-          "o": 229.95,
-          "h": 240.0,
-          "l": 225.82,
-          "c": 238.91
-        },
-        {
-          "d": "02 Nov",
-          "o": 239.01,
-          "h": 243.2,
-          "l": 234.36,
-          "c": 239.92
-        },
-        {
-          "d": "03 Nov",
-          "o": 240.0,
-          "h": 242.17,
-          "l": 232.25,
-          "c": 233.69
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
