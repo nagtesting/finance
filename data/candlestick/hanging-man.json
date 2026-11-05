@@ -1,148 +1,37 @@
 {
-  "session_date": "2026-11-04",
-  "generated_at": "2026-11-04T23:32:25.031453+05:30",
+  "session_date": "2026-11-05",
+  "generated_at": "2026-11-05T23:35:09.186796+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "ABSLAMC"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 172,
+  "total_signals": 127,
   "pattern": "hanging-man",
   "pattern_name": "Hanging Man",
   "direction": "bearish",
-  "count": 5,
+  "count": 8,
   "truncated": false,
   "signals": [
-    {
-      "symbol": "EICHERMOT",
-      "tier": "NIFTY 50",
-      "pattern": "hanging-man",
-      "pattern_name": "Hanging Man",
-      "direction": "bearish",
-      "close": 7420.0,
-      "change_pct": -0.27,
-      "volume_ratio": 1.45,
-      "volume_confirmed": true,
-      "turnover_cr": 271.97,
-      "rsi14": 57.3,
-      "atr14": 163.47,
-      "above_sma50": true,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "29 Oct",
-          "o": 7280.0,
-          "h": 7303.5,
-          "l": 7210.0,
-          "c": 7238.0
-        },
-        {
-          "d": "30 Oct",
-          "o": 7239.0,
-          "h": 7343.0,
-          "l": 7198.0,
-          "c": 7220.0
-        },
-        {
-          "d": "02 Nov",
-          "o": 7220.0,
-          "h": 7290.0,
-          "l": 7131.0,
-          "c": 7213.0
-        },
-        {
-          "d": "03 Nov",
-          "o": 7245.0,
-          "h": 7440.0,
-          "l": 7150.0,
-          "c": 7440.0
-        },
-        {
-          "d": "04 Nov",
-          "o": 7434.0,
-          "h": 7449.5,
-          "l": 7332.0,
-          "c": 7420.0
-        }
-      ]
-    },
-    {
-      "symbol": "NYKAA",
-      "tier": "BROADER",
-      "pattern": "hanging-man",
-      "pattern_name": "Hanging Man",
-      "direction": "bearish",
-      "close": 355.5,
-      "change_pct": 0.45,
-      "volume_ratio": 1.46,
-      "volume_confirmed": true,
-      "turnover_cr": 150.84,
-      "rsi14": 61.7,
-      "atr14": 10.31,
-      "above_sma50": true,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "29 Oct",
-          "o": 342.5,
-          "h": 352.9,
-          "l": 342.0,
-          "c": 352.9
-        },
-        {
-          "d": "30 Oct",
-          "o": 354.5,
-          "h": 354.5,
-          "l": 347.7,
-          "c": 349.35
-        },
-        {
-          "d": "02 Nov",
-          "o": 351.9,
-          "h": 356.5,
-          "l": 348.2,
-          "c": 353.65
-        },
-        {
-          "d": "03 Nov",
-          "o": 354.4,
-          "h": 355.0,
-          "l": 348.3,
-          "c": 353.9
-        },
-        {
-          "d": "04 Nov",
-          "o": 355.0,
-          "h": 355.6,
-          "l": 342.05,
-          "c": 355.5
-        }
-      ]
-    },
     {
       "symbol": "BAJAJ-AUTO",
       "tier": "NIFTY 50",
       "pattern": "hanging-man",
       "pattern_name": "Hanging Man",
       "direction": "bearish",
-      "close": 10608.0,
-      "change_pct": 0.65,
-      "volume_ratio": 1.01,
-      "volume_confirmed": false,
+      "close": 10758.0,
+      "change_pct": 1.41,
+      "volume_ratio": 1.51,
+      "volume_confirmed": true,
       "turnover_cr": 269.48,
-      "rsi14": 53.6,
-      "atr14": 261.33,
+      "rsi14": 57.5,
+      "atr14": 257.88,
       "above_sma50": false,
-      "strength": "unconfirmed",
+      "strength": "confirmed",
       "bars": [
-        {
-          "d": "29 Oct",
-          "o": 10485.0,
-          "h": 10542.0,
-          "l": 10255.0,
-          "c": 10383.0
-        },
         {
           "d": "30 Oct",
           "o": 10383.0,
@@ -170,6 +59,13 @@
           "h": 10627.0,
           "l": 10504.0,
           "c": 10608.0
+        },
+        {
+          "d": "05 Nov",
+          "o": 10789.0,
+          "h": 10789.0,
+          "l": 10576.0,
+          "c": 10758.0
         }
       ]
     },
@@ -179,23 +75,16 @@
       "pattern": "hanging-man",
       "pattern_name": "Hanging Man",
       "direction": "bearish",
-      "close": 10037.5,
-      "change_pct": -0.26,
-      "volume_ratio": 0.84,
-      "volume_confirmed": false,
-      "turnover_cr": 568.89,
-      "rsi14": 68.6,
-      "atr14": 232.24,
+      "close": 10140.5,
+      "change_pct": 1.03,
+      "volume_ratio": 1.3,
+      "volume_confirmed": true,
+      "turnover_cr": 598.95,
+      "rsi14": 70.5,
+      "atr14": 235.01,
       "above_sma50": true,
-      "strength": "unconfirmed",
+      "strength": "confirmed",
       "bars": [
-        {
-          "d": "29 Oct",
-          "o": 9563.0,
-          "h": 9685.5,
-          "l": 9534.0,
-          "c": 9664.0
-        },
         {
           "d": "30 Oct",
           "o": 9680.0,
@@ -223,59 +112,331 @@
           "h": 10067.0,
           "l": 9946.0,
           "c": 10037.5
+        },
+        {
+          "d": "05 Nov",
+          "o": 10100.0,
+          "h": 10159.0,
+          "l": 9888.0,
+          "c": 10140.5
         }
       ]
     },
     {
-      "symbol": "HEROMOTOCO",
+      "symbol": "PETRONET",
       "tier": "BROADER",
       "pattern": "hanging-man",
       "pattern_name": "Hanging Man",
       "direction": "bearish",
-      "close": 5399.5,
-      "change_pct": 1.88,
-      "volume_ratio": 1.1,
+      "close": 317.0,
+      "change_pct": 1.93,
+      "volume_ratio": 1.52,
+      "volume_confirmed": true,
+      "turnover_cr": 63.64,
+      "rsi14": 69.4,
+      "atr14": 7.8,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "30 Oct",
+          "o": 287.0,
+          "h": 289.5,
+          "l": 284.65,
+          "c": 289.5
+        },
+        {
+          "d": "02 Nov",
+          "o": 289.8,
+          "h": 301.4,
+          "l": 289.8,
+          "c": 300.95
+        },
+        {
+          "d": "03 Nov",
+          "o": 303.9,
+          "h": 306.4,
+          "l": 294.3,
+          "c": 303.0
+        },
+        {
+          "d": "04 Nov",
+          "o": 308.9,
+          "h": 312.0,
+          "l": 304.1,
+          "c": 311.0
+        },
+        {
+          "d": "05 Nov",
+          "o": 319.95,
+          "h": 319.95,
+          "l": 311.4,
+          "c": 317.0
+        }
+      ]
+    },
+    {
+      "symbol": "CIPLA",
+      "tier": "NIFTY 50",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 1404.1,
+      "change_pct": 0.15,
+      "volume_ratio": 1.0,
       "volume_confirmed": false,
-      "turnover_cr": 251.51,
-      "rsi14": 59.5,
-      "atr14": 150.71,
+      "turnover_cr": 167.49,
+      "rsi14": 65.5,
+      "atr14": 26.77,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "29 Oct",
-          "o": 5331.0,
-          "h": 5412.0,
-          "l": 5095.0,
-          "c": 5105.0
-        },
-        {
           "d": "30 Oct",
-          "o": 5090.0,
-          "h": 5196.0,
-          "l": 5051.5,
-          "c": 5167.0
+          "o": 1362.0,
+          "h": 1381.7,
+          "l": 1357.0,
+          "c": 1378.9
         },
         {
           "d": "02 Nov",
-          "o": 5188.0,
-          "h": 5217.5,
-          "l": 5108.5,
-          "c": 5193.0
+          "o": 1383.0,
+          "h": 1391.0,
+          "l": 1364.6,
+          "c": 1387.0
         },
         {
           "d": "03 Nov",
-          "o": 5222.0,
-          "h": 5323.5,
-          "l": 5202.5,
-          "c": 5300.0
+          "o": 1382.2,
+          "h": 1396.9,
+          "l": 1370.5,
+          "c": 1396.9
         },
         {
           "d": "04 Nov",
-          "o": 5350.0,
-          "h": 5399.5,
-          "l": 5286.0,
-          "c": 5399.5
+          "o": 1391.7,
+          "h": 1402.0,
+          "l": 1386.0,
+          "c": 1402.0
+        },
+        {
+          "d": "05 Nov",
+          "o": 1405.0,
+          "h": 1408.0,
+          "l": 1390.2,
+          "c": 1404.1
+        }
+      ]
+    },
+    {
+      "symbol": "LAURUSLABS",
+      "tier": "BROADER",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 2346.0,
+      "change_pct": 0.96,
+      "volume_ratio": 0.65,
+      "volume_confirmed": false,
+      "turnover_cr": 335.44,
+      "rsi14": 70.2,
+      "atr14": 73.05,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "30 Oct",
+          "o": 2246.6,
+          "h": 2405.5,
+          "l": 2206.1,
+          "c": 2405.5
+        },
+        {
+          "d": "02 Nov",
+          "o": 2406.0,
+          "h": 2441.9,
+          "l": 2347.0,
+          "c": 2348.0
+        },
+        {
+          "d": "03 Nov",
+          "o": 2350.1,
+          "h": 2354.9,
+          "l": 2252.4,
+          "c": 2323.0
+        },
+        {
+          "d": "04 Nov",
+          "o": 2291.0,
+          "h": 2343.9,
+          "l": 2285.6,
+          "c": 2323.8
+        },
+        {
+          "d": "05 Nov",
+          "o": 2328.3,
+          "h": 2346.0,
+          "l": 2288.2,
+          "c": 2346.0
+        }
+      ]
+    },
+    {
+      "symbol": "PHOENIXLTD",
+      "tier": "BROADER",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 2126.0,
+      "change_pct": 2.24,
+      "volume_ratio": 0.87,
+      "volume_confirmed": false,
+      "turnover_cr": 94.11,
+      "rsi14": 72.3,
+      "atr14": 59.1,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "30 Oct",
+          "o": 1975.0,
+          "h": 1995.0,
+          "l": 1931.3,
+          "c": 1957.2
+        },
+        {
+          "d": "02 Nov",
+          "o": 1899.8,
+          "h": 2038.3,
+          "l": 1899.7,
+          "c": 2016.6
+        },
+        {
+          "d": "03 Nov",
+          "o": 2027.0,
+          "h": 2060.0,
+          "l": 2015.0,
+          "c": 2048.7
+        },
+        {
+          "d": "04 Nov",
+          "o": 2048.0,
+          "h": 2091.0,
+          "l": 2032.4,
+          "c": 2079.5
+        },
+        {
+          "d": "05 Nov",
+          "o": 2118.0,
+          "h": 2128.0,
+          "l": 2071.3,
+          "c": 2126.0
+        }
+      ]
+    },
+    {
+      "symbol": "AMBER",
+      "tier": "BROADER",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 6585.0,
+      "change_pct": 1.93,
+      "volume_ratio": 0.79,
+      "volume_confirmed": false,
+      "turnover_cr": 89.7,
+      "rsi14": 53.0,
+      "atr14": 221.52,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "30 Oct",
+          "o": 6233.0,
+          "h": 6233.0,
+          "l": 5855.5,
+          "c": 5865.0
+        },
+        {
+          "d": "02 Nov",
+          "o": 5874.0,
+          "h": 6265.5,
+          "l": 5874.0,
+          "c": 6223.0
+        },
+        {
+          "d": "03 Nov",
+          "o": 6240.0,
+          "h": 6325.0,
+          "l": 6210.0,
+          "c": 6260.5
+        },
+        {
+          "d": "04 Nov",
+          "o": 6245.0,
+          "h": 6464.0,
+          "l": 6202.0,
+          "c": 6460.0
+        },
+        {
+          "d": "05 Nov",
+          "o": 6590.0,
+          "h": 6611.0,
+          "l": 6494.0,
+          "c": 6585.0
+        }
+      ]
+    },
+    {
+      "symbol": "PPLPHARMA",
+      "tier": "BROADER",
+      "pattern": "hanging-man",
+      "pattern_name": "Hanging Man",
+      "direction": "bearish",
+      "close": 238.63,
+      "change_pct": 0.37,
+      "volume_ratio": 0.35,
+      "volume_confirmed": false,
+      "turnover_cr": 56.2,
+      "rsi14": 69.5,
+      "atr14": 9.33,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "30 Oct",
+          "o": 229.95,
+          "h": 240.0,
+          "l": 225.82,
+          "c": 238.91
+        },
+        {
+          "d": "02 Nov",
+          "o": 239.01,
+          "h": 243.2,
+          "l": 234.36,
+          "c": 239.92
+        },
+        {
+          "d": "03 Nov",
+          "o": 240.0,
+          "h": 242.17,
+          "l": 232.25,
+          "c": 233.69
+        },
+        {
+          "d": "04 Nov",
+          "o": 235.0,
+          "h": 239.0,
+          "l": 231.33,
+          "c": 237.76
+        },
+        {
+          "d": "05 Nov",
+          "o": 240.8,
+          "h": 241.27,
+          "l": 236.45,
+          "c": 238.63
         }
       ]
     }

@@ -1,71 +1,19 @@
 {
-  "session_date": "2026-11-04",
-  "generated_at": "2026-11-04T23:32:25.031453+05:30",
+  "session_date": "2026-11-05",
+  "generated_at": "2026-11-05T23:35:09.186796+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "ABSLAMC"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 172,
+  "total_signals": 127,
   "pattern": "inverted-hammer",
   "pattern_name": "Inverted Hammer",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "PWL",
-      "tier": "BROADER",
-      "pattern": "inverted-hammer",
-      "pattern_name": "Inverted Hammer",
-      "direction": "bullish",
-      "close": 127.41,
-      "change_pct": -0.96,
-      "volume_ratio": 0.6,
-      "volume_confirmed": false,
-      "turnover_cr": 60.89,
-      "rsi14": 46.3,
-      "atr14": 5.78,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "29 Oct",
-          "o": 131.4,
-          "h": 133.0,
-          "l": 127.38,
-          "c": 132.51
-        },
-        {
-          "d": "30 Oct",
-          "o": 132.0,
-          "h": 133.3,
-          "l": 128.0,
-          "c": 128.99
-        },
-        {
-          "d": "02 Nov",
-          "o": 130.59,
-          "h": 132.2,
-          "l": 129.0,
-          "c": 129.38
-        },
-        {
-          "d": "03 Nov",
-          "o": 129.8,
-          "h": 131.4,
-          "l": 128.0,
-          "c": 128.64
-        },
-        {
-          "d": "04 Nov",
-          "o": 128.6,
-          "h": 130.95,
-          "l": 127.0,
-          "c": 127.41
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
