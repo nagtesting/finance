@@ -1,71 +1,17 @@
 {
-  "session_date": "2026-11-05",
-  "generated_at": "2026-11-07T01:14:21.217570+05:30",
+  "session_date": "2026-11-11",
+  "generated_at": "2026-11-11T23:25:54.816769+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 126,
+  "total_signals": 164,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "CANFINHOME",
-      "tier": "BROADER",
-      "pattern": "morning-star",
-      "pattern_name": "Morning Star",
-      "direction": "bullish",
-      "close": 743.6,
-      "change_pct": 2.48,
-      "volume_ratio": 0.92,
-      "volume_confirmed": false,
-      "turnover_cr": 10.8,
-      "rsi14": 52.9,
-      "atr14": 20.8,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "30 Oct",
-          "o": 735.0,
-          "h": 735.75,
-          "l": 712.75,
-          "c": 719.6
-        },
-        {
-          "d": "02 Nov",
-          "o": 720.05,
-          "h": 750.0,
-          "l": 719.35,
-          "c": 744.25
-        },
-        {
-          "d": "03 Nov",
-          "o": 747.85,
-          "h": 747.85,
-          "l": 730.55,
-          "c": 736.35
-        },
-        {
-          "d": "04 Nov",
-          "o": 732.7,
-          "h": 737.1,
-          "l": 719.0,
-          "c": 725.6
-        },
-        {
-          "d": "05 Nov",
-          "o": 732.9,
-          "h": 754.7,
-          "l": 730.05,
-          "c": 743.6
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
