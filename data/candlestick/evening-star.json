@@ -1,69 +1,281 @@
 {
-  "session_date": "2026-11-11",
-  "generated_at": "2026-11-11T23:25:54.816769+05:30",
+  "session_date": "2026-11-12",
+  "generated_at": "2026-11-12T23:52:59.049358+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 164,
+  "total_signals": 180,
   "pattern": "evening-star",
   "pattern_name": "Evening Star",
   "direction": "bearish",
-  "count": 1,
+  "count": 5,
   "truncated": false,
   "signals": [
     {
-      "symbol": "ADANIPORTS",
+      "symbol": "PAGEIND",
+      "tier": "BROADER",
+      "pattern": "evening-star",
+      "pattern_name": "Evening Star",
+      "direction": "bearish",
+      "close": 31850.0,
+      "change_pct": -12.91,
+      "volume_ratio": 16.04,
+      "volume_confirmed": true,
+      "turnover_cr": 51.29,
+      "rsi14": 31.4,
+      "atr14": 1239.14,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "05 Nov",
+          "o": 35925.0,
+          "h": 36200.0,
+          "l": 35500.0,
+          "c": 35520.0
+        },
+        {
+          "d": "06 Nov",
+          "o": 35550.0,
+          "h": 35930.0,
+          "l": 34715.0,
+          "c": 35930.0
+        },
+        {
+          "d": "09 Nov",
+          "o": 35760.0,
+          "h": 36710.0,
+          "l": 35260.0,
+          "c": 36380.0
+        },
+        {
+          "d": "11 Nov",
+          "o": 36500.0,
+          "h": 36870.0,
+          "l": 36030.0,
+          "c": 36570.0
+        },
+        {
+          "d": "12 Nov",
+          "o": 36505.0,
+          "h": 37185.0,
+          "l": 31750.0,
+          "c": 31850.0
+        }
+      ]
+    },
+    {
+      "symbol": "ALKEM",
+      "tier": "BROADER",
+      "pattern": "evening-star",
+      "pattern_name": "Evening Star",
+      "direction": "bearish",
+      "close": 5302.0,
+      "change_pct": -2.68,
+      "volume_ratio": 9.44,
+      "volume_confirmed": true,
+      "turnover_cr": 47.92,
+      "rsi14": 55.6,
+      "atr14": 140.35,
+      "above_sma50": true,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "05 Nov",
+          "o": 5234.5,
+          "h": 5234.5,
+          "l": 5151.5,
+          "c": 5190.0
+        },
+        {
+          "d": "06 Nov",
+          "o": 5186.5,
+          "h": 5297.0,
+          "l": 5141.0,
+          "c": 5297.0
+        },
+        {
+          "d": "09 Nov",
+          "o": 5319.0,
+          "h": 5475.0,
+          "l": 5312.5,
+          "c": 5398.5
+        },
+        {
+          "d": "11 Nov",
+          "o": 5400.0,
+          "h": 5448.0,
+          "l": 5277.0,
+          "c": 5448.0
+        },
+        {
+          "d": "12 Nov",
+          "o": 5422.0,
+          "h": 5422.0,
+          "l": 5173.0,
+          "c": 5302.0
+        }
+      ]
+    },
+    {
+      "symbol": "CAPLIPOINT",
+      "tier": "BROADER",
+      "pattern": "evening-star",
+      "pattern_name": "Evening Star",
+      "direction": "bearish",
+      "close": 2386.3,
+      "change_pct": -5.32,
+      "volume_ratio": 5.4,
+      "volume_confirmed": true,
+      "turnover_cr": 16.86,
+      "rsi14": 46.5,
+      "atr14": 94.58,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "05 Nov",
+          "o": 2433.0,
+          "h": 2448.9,
+          "l": 2410.2,
+          "c": 2421.4
+        },
+        {
+          "d": "06 Nov",
+          "o": 2409.0,
+          "h": 2410.0,
+          "l": 2360.2,
+          "c": 2382.5
+        },
+        {
+          "d": "09 Nov",
+          "o": 2458.0,
+          "h": 2597.5,
+          "l": 2457.0,
+          "c": 2502.5
+        },
+        {
+          "d": "11 Nov",
+          "o": 2520.0,
+          "h": 2542.0,
+          "l": 2492.7,
+          "c": 2520.3
+        },
+        {
+          "d": "12 Nov",
+          "o": 2541.0,
+          "h": 2564.0,
+          "l": 2370.7,
+          "c": 2386.3
+        }
+      ]
+    },
+    {
+      "symbol": "LT",
       "tier": "NIFTY 50",
       "pattern": "evening-star",
       "pattern_name": "Evening Star",
       "direction": "bearish",
-      "close": 1907.0,
-      "change_pct": -1.84,
+      "close": 4159.2,
+      "change_pct": -1.25,
       "volume_ratio": 0.99,
       "volume_confirmed": false,
-      "turnover_cr": 442.47,
-      "rsi14": 61.8,
-      "atr14": 53.36,
+      "turnover_cr": 851.85,
+      "rsi14": 72.1,
+      "atr14": 83.32,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "04 Nov",
-          "o": 1865.0,
-          "h": 1921.3,
-          "l": 1857.3,
-          "c": 1910.0
-        },
-        {
           "d": "05 Nov",
-          "o": 1947.2,
-          "h": 1948.9,
-          "l": 1884.0,
-          "c": 1884.6
+          "o": 4010.0,
+          "h": 4071.6,
+          "l": 4005.1,
+          "c": 4050.0
         },
         {
           "d": "06 Nov",
-          "o": 1895.3,
-          "h": 1941.6,
-          "l": 1877.7,
-          "c": 1936.6
+          "o": 4024.0,
+          "h": 4117.7,
+          "l": 3996.1,
+          "c": 4117.7
         },
         {
           "d": "09 Nov",
-          "o": 1942.0,
-          "h": 1959.2,
-          "l": 1921.0,
-          "c": 1942.7
+          "o": 4145.0,
+          "h": 4194.1,
+          "l": 4097.4,
+          "c": 4185.0
         },
         {
           "d": "11 Nov",
-          "o": 1979.0,
-          "h": 1979.0,
-          "l": 1896.8,
-          "c": 1907.0
+          "o": 4229.0,
+          "h": 4259.0,
+          "l": 4187.4,
+          "c": 4212.0
+        },
+        {
+          "d": "12 Nov",
+          "o": 4210.0,
+          "h": 4213.7,
+          "l": 4158.0,
+          "c": 4159.2
+        }
+      ]
+    },
+    {
+      "symbol": "GLAXO",
+      "tier": "BROADER",
+      "pattern": "evening-star",
+      "pattern_name": "Evening Star",
+      "direction": "bearish",
+      "close": 2655.6,
+      "change_pct": -2.64,
+      "volume_ratio": 0.63,
+      "volume_confirmed": false,
+      "turnover_cr": 14.94,
+      "rsi14": 55.1,
+      "atr14": 86.16,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "05 Nov",
+          "o": 2549.8,
+          "h": 2573.4,
+          "l": 2494.0,
+          "c": 2500.2
+        },
+        {
+          "d": "06 Nov",
+          "o": 2502.0,
+          "h": 2544.8,
+          "l": 2489.3,
+          "c": 2524.8
+        },
+        {
+          "d": "09 Nov",
+          "o": 2560.0,
+          "h": 2755.0,
+          "l": 2547.8,
+          "c": 2710.0
+        },
+        {
+          "d": "11 Nov",
+          "o": 2751.0,
+          "h": 2770.0,
+          "l": 2675.0,
+          "c": 2727.7
+        },
+        {
+          "d": "12 Nov",
+          "o": 2722.5,
+          "h": 2727.9,
+          "l": 2652.1,
+          "c": 2655.6
         }
       ]
     }
