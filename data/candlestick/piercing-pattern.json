@@ -1,73 +1,17 @@
 {
-  "session_date": "2026-11-13",
-  "generated_at": "2026-11-13T23:19:38.068490+05:30",
+  "session_date": "2026-11-12",
+  "generated_at": "2026-11-14T01:36:32.566868+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 499,
+  "symbols_scanned": 500,
   "symbols_requested": 500,
-  "symbols_missing": [
-    "APARINDS"
-  ],
+  "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 179,
+  "total_signals": 180,
   "pattern": "piercing-pattern",
   "pattern_name": "Piercing Pattern",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "CYIENT",
-      "tier": "BROADER",
-      "pattern": "piercing-pattern",
-      "pattern_name": "Piercing Pattern",
-      "direction": "bullish",
-      "close": 1104.9,
-      "change_pct": 1.42,
-      "volume_ratio": 0.23,
-      "volume_confirmed": false,
-      "turnover_cr": 48.39,
-      "rsi14": 45.8,
-      "atr14": 46.47,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "06 Nov",
-          "o": 1128.9,
-          "h": 1143.0,
-          "l": 1099.1,
-          "c": 1108.3
-        },
-        {
-          "d": "09 Nov",
-          "o": 1125.0,
-          "h": 1125.0,
-          "l": 1085.0,
-          "c": 1092.6
-        },
-        {
-          "d": "11 Nov",
-          "o": 1096.0,
-          "h": 1125.2,
-          "l": 1085.3,
-          "c": 1100.0
-        },
-        {
-          "d": "12 Nov",
-          "o": 1105.0,
-          "h": 1107.9,
-          "l": 1087.2,
-          "c": 1089.4
-        },
-        {
-          "d": "13 Nov",
-          "o": 1084.0,
-          "h": 1113.4,
-          "l": 1072.0,
-          "c": 1104.9
-        }
-      ]
-    }
-  ]
+  "signals": []
 }
