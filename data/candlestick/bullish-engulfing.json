@@ -1,69 +1,336 @@
 {
-  "session_date": "2026-11-12",
-  "generated_at": "2026-11-12T23:52:59.049358+05:30",
+  "session_date": "2026-11-13",
+  "generated_at": "2026-11-13T23:19:38.068490+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "APARINDS"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 180,
+  "total_signals": 179,
   "pattern": "bullish-engulfing",
   "pattern_name": "Bullish Engulfing",
   "direction": "bullish",
-  "count": 1,
+  "count": 6,
   "truncated": false,
   "signals": [
     {
-      "symbol": "BLUESTARCO",
+      "symbol": "AMBER",
       "tier": "BROADER",
       "pattern": "bullish-engulfing",
       "pattern_name": "Bullish Engulfing",
       "direction": "bullish",
-      "close": 1582.5,
-      "change_pct": 1.2,
-      "volume_ratio": 0.9,
-      "volume_confirmed": false,
-      "turnover_cr": 58.53,
-      "rsi14": 52.4,
-      "atr14": 54.66,
+      "close": 6772.0,
+      "change_pct": 9.07,
+      "volume_ratio": 13.88,
+      "volume_confirmed": true,
+      "turnover_cr": 132.23,
+      "rsi14": 57.8,
+      "atr14": 285.18,
       "above_sma50": true,
-      "strength": "unconfirmed",
+      "strength": "confirmed",
       "bars": [
         {
-          "d": "05 Nov",
-          "o": 1582.0,
-          "h": 1596.4,
-          "l": 1562.2,
-          "c": 1572.0
-        },
-        {
           "d": "06 Nov",
-          "o": 1570.0,
-          "h": 1580.0,
-          "l": 1530.0,
-          "c": 1575.0
+          "o": 6537.0,
+          "h": 6537.0,
+          "l": 6348.0,
+          "c": 6403.0
         },
         {
           "d": "09 Nov",
-          "o": 1572.0,
-          "h": 1582.0,
-          "l": 1546.4,
-          "c": 1577.5
+          "o": 6340.0,
+          "h": 6340.0,
+          "l": 6094.0,
+          "c": 6230.0
         },
         {
           "d": "11 Nov",
-          "o": 1579.6,
-          "h": 1597.0,
-          "l": 1559.0,
-          "c": 1563.8
+          "o": 6284.0,
+          "h": 6473.0,
+          "l": 6169.0,
+          "c": 6195.0
         },
         {
           "d": "12 Nov",
-          "o": 1563.8,
-          "h": 1603.5,
-          "l": 1558.0,
-          "c": 1582.5
+          "o": 6240.0,
+          "h": 6380.0,
+          "l": 6180.0,
+          "c": 6209.0
+        },
+        {
+          "d": "13 Nov",
+          "o": 6056.0,
+          "h": 6980.0,
+          "l": 6000.0,
+          "c": 6772.0
+        }
+      ]
+    },
+    {
+      "symbol": "CLEAN",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 724.0,
+      "change_pct": 2.94,
+      "volume_ratio": 1.32,
+      "volume_confirmed": true,
+      "turnover_cr": 15.66,
+      "rsi14": 48.1,
+      "atr14": 27.05,
+      "above_sma50": false,
+      "strength": "confirmed",
+      "bars": [
+        {
+          "d": "06 Nov",
+          "o": 666.65,
+          "h": 672.55,
+          "l": 661.65,
+          "c": 668.95
+        },
+        {
+          "d": "09 Nov",
+          "o": 683.9,
+          "h": 699.8,
+          "l": 679.0,
+          "c": 695.95
+        },
+        {
+          "d": "11 Nov",
+          "o": 696.05,
+          "h": 713.7,
+          "l": 696.05,
+          "c": 705.7
+        },
+        {
+          "d": "12 Nov",
+          "o": 706.55,
+          "h": 717.15,
+          "l": 700.0,
+          "c": 703.3
+        },
+        {
+          "d": "13 Nov",
+          "o": 702.05,
+          "h": 729.45,
+          "l": 688.45,
+          "c": 724.0
+        }
+      ]
+    },
+    {
+      "symbol": "NETWEB",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 4196.2,
+      "change_pct": 1.07,
+      "volume_ratio": 1.01,
+      "volume_confirmed": false,
+      "turnover_cr": 601.56,
+      "rsi14": 44.4,
+      "atr14": 212.52,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "06 Nov",
+          "o": 3850.0,
+          "h": 3850.0,
+          "l": 3716.1,
+          "c": 3771.4
+        },
+        {
+          "d": "09 Nov",
+          "o": 3925.5,
+          "h": 3934.6,
+          "l": 3825.5,
+          "c": 3839.0
+        },
+        {
+          "d": "11 Nov",
+          "o": 3882.0,
+          "h": 4210.0,
+          "l": 3870.7,
+          "c": 4154.5
+        },
+        {
+          "d": "12 Nov",
+          "o": 4175.0,
+          "h": 4285.0,
+          "l": 4115.7,
+          "c": 4151.9
+        },
+        {
+          "d": "13 Nov",
+          "o": 4151.9,
+          "h": 4272.0,
+          "l": 4074.1,
+          "c": 4196.2
+        }
+      ]
+    },
+    {
+      "symbol": "WELCORP",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 2230.4,
+      "change_pct": 3.46,
+      "volume_ratio": 0.99,
+      "volume_confirmed": false,
+      "turnover_cr": 278.29,
+      "rsi14": 40.9,
+      "atr14": 139.71,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "06 Nov",
+          "o": 2335.6,
+          "h": 2343.8,
+          "l": 2158.1,
+          "c": 2204.9
+        },
+        {
+          "d": "09 Nov",
+          "o": 2245.8,
+          "h": 2250.7,
+          "l": 2153.5,
+          "c": 2202.1
+        },
+        {
+          "d": "11 Nov",
+          "o": 2231.1,
+          "h": 2305.2,
+          "l": 2189.0,
+          "c": 2212.4
+        },
+        {
+          "d": "12 Nov",
+          "o": 2218.8,
+          "h": 2266.1,
+          "l": 2132.3,
+          "c": 2155.9
+        },
+        {
+          "d": "13 Nov",
+          "o": 2147.9,
+          "h": 2250.0,
+          "l": 2138.0,
+          "c": 2230.4
+        }
+      ]
+    },
+    {
+      "symbol": "BALRAMCHIN",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 654.8,
+      "change_pct": 0.62,
+      "volume_ratio": 0.57,
+      "volume_confirmed": false,
+      "turnover_cr": 45.56,
+      "rsi14": 48.6,
+      "atr14": 26.88,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "06 Nov",
+          "o": 671.0,
+          "h": 685.75,
+          "l": 665.25,
+          "c": 670.3
+        },
+        {
+          "d": "09 Nov",
+          "o": 670.0,
+          "h": 670.0,
+          "l": 653.9,
+          "c": 658.4
+        },
+        {
+          "d": "11 Nov",
+          "o": 659.0,
+          "h": 664.8,
+          "l": 645.0,
+          "c": 648.2
+        },
+        {
+          "d": "12 Nov",
+          "o": 654.7,
+          "h": 657.95,
+          "l": 648.45,
+          "c": 650.75
+        },
+        {
+          "d": "13 Nov",
+          "o": 650.0,
+          "h": 672.0,
+          "l": 647.6,
+          "c": 654.8
+        }
+      ]
+    },
+    {
+      "symbol": "SCHAEFFLER",
+      "tier": "BROADER",
+      "pattern": "bullish-engulfing",
+      "pattern_name": "Bullish Engulfing",
+      "direction": "bullish",
+      "close": 3585.6,
+      "change_pct": 1.03,
+      "volume_ratio": 0.76,
+      "volume_confirmed": false,
+      "turnover_cr": 23.9,
+      "rsi14": 45.6,
+      "atr14": 96.22,
+      "above_sma50": false,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "06 Nov",
+          "o": 3550.0,
+          "h": 3550.6,
+          "l": 3466.8,
+          "c": 3519.7
+        },
+        {
+          "d": "09 Nov",
+          "o": 3610.3,
+          "h": 3625.0,
+          "l": 3519.9,
+          "c": 3541.6
+        },
+        {
+          "d": "11 Nov",
+          "o": 3561.0,
+          "h": 3594.3,
+          "l": 3526.5,
+          "c": 3548.5
+        },
+        {
+          "d": "12 Nov",
+          "o": 3555.9,
+          "h": 3600.0,
+          "l": 3526.0,
+          "c": 3548.9
+        },
+        {
+          "d": "13 Nov",
+          "o": 3548.9,
+          "h": 3594.5,
+          "l": 3525.0,
+          "c": 3585.6
         }
       ]
     }

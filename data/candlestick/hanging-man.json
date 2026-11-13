@@ -1,334 +1,71 @@
 {
-  "session_date": "2026-11-12",
-  "generated_at": "2026-11-12T23:52:59.049358+05:30",
+  "session_date": "2026-11-13",
+  "generated_at": "2026-11-13T23:19:38.068490+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "APARINDS"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 180,
+  "total_signals": 179,
   "pattern": "hanging-man",
   "pattern_name": "Hanging Man",
   "direction": "bearish",
-  "count": 6,
+  "count": 1,
   "truncated": false,
   "signals": [
     {
-      "symbol": "BANKBARODA",
-      "tier": "NIFTY 100",
-      "pattern": "hanging-man",
-      "pattern_name": "Hanging Man",
-      "direction": "bearish",
-      "close": 276.15,
-      "change_pct": 0.42,
-      "volume_ratio": 1.5,
-      "volume_confirmed": true,
-      "turnover_cr": 213.78,
-      "rsi14": 79.4,
-      "atr14": 6.61,
-      "above_sma50": true,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "05 Nov",
-          "o": 249.0,
-          "h": 251.34,
-          "l": 246.2,
-          "c": 249.67
-        },
-        {
-          "d": "06 Nov",
-          "o": 246.15,
-          "h": 250.31,
-          "l": 244.86,
-          "c": 250.31
-        },
-        {
-          "d": "09 Nov",
-          "o": 248.9,
-          "h": 260.01,
-          "l": 248.25,
-          "c": 260.01
-        },
-        {
-          "d": "11 Nov",
-          "o": 264.4,
-          "h": 275.67,
-          "l": 262.33,
-          "c": 275.0
-        },
-        {
-          "d": "12 Nov",
-          "o": 275.0,
-          "h": 276.85,
-          "l": 272.87,
-          "c": 276.15
-        }
-      ]
-    },
-    {
-      "symbol": "UNIONBANK",
-      "tier": "NIFTY 100",
-      "pattern": "hanging-man",
-      "pattern_name": "Hanging Man",
-      "direction": "bearish",
-      "close": 204.4,
-      "change_pct": 1.09,
-      "volume_ratio": 0.88,
-      "volume_confirmed": false,
-      "turnover_cr": 324.38,
-      "rsi14": 75.9,
-      "atr14": 5.07,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "05 Nov",
-          "o": 186.0,
-          "h": 188.9,
-          "l": 184.25,
-          "c": 188.0
-        },
-        {
-          "d": "06 Nov",
-          "o": 187.0,
-          "h": 187.78,
-          "l": 184.45,
-          "c": 187.0
-        },
-        {
-          "d": "09 Nov",
-          "o": 187.0,
-          "h": 197.05,
-          "l": 186.8,
-          "c": 197.0
-        },
-        {
-          "d": "11 Nov",
-          "o": 200.44,
-          "h": 202.19,
-          "l": 197.1,
-          "c": 202.19
-        },
-        {
-          "d": "12 Nov",
-          "o": 202.2,
-          "h": 204.4,
-          "l": 199.46,
-          "c": 204.4
-        }
-      ]
-    },
-    {
-      "symbol": "CANBK",
-      "tier": "NIFTY 100",
-      "pattern": "hanging-man",
-      "pattern_name": "Hanging Man",
-      "direction": "bearish",
-      "close": 133.0,
-      "change_pct": 0.53,
-      "volume_ratio": 0.88,
-      "volume_confirmed": false,
-      "turnover_cr": 306.27,
-      "rsi14": 69.6,
-      "atr14": 3.29,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "05 Nov",
-          "o": 120.9,
-          "h": 123.05,
-          "l": 119.88,
-          "c": 122.9
-        },
-        {
-          "d": "06 Nov",
-          "o": 122.03,
-          "h": 123.21,
-          "l": 120.56,
-          "c": 122.93
-        },
-        {
-          "d": "09 Nov",
-          "o": 123.5,
-          "h": 128.2,
-          "l": 123.07,
-          "c": 128.1
-        },
-        {
-          "d": "11 Nov",
-          "o": 129.9,
-          "h": 133.3,
-          "l": 128.61,
-          "c": 132.3
-        },
-        {
-          "d": "12 Nov",
-          "o": 132.8,
-          "h": 133.25,
-          "l": 131.12,
-          "c": 133.0
-        }
-      ]
-    },
-    {
-      "symbol": "HAVELLS",
+      "symbol": "GICRE",
       "tier": "BROADER",
       "pattern": "hanging-man",
       "pattern_name": "Hanging Man",
       "direction": "bearish",
-      "close": 1173.2,
-      "change_pct": -0.08,
-      "volume_ratio": 0.88,
-      "volume_confirmed": false,
-      "turnover_cr": 91.96,
-      "rsi14": 68.1,
-      "atr14": 31.48,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "05 Nov",
-          "o": 1092.9,
-          "h": 1092.9,
-          "l": 1065.4,
-          "c": 1068.1
-        },
-        {
-          "d": "06 Nov",
-          "o": 1068.7,
-          "h": 1129.8,
-          "l": 1048.2,
-          "c": 1128.0
-        },
-        {
-          "d": "09 Nov",
-          "o": 1128.0,
-          "h": 1161.2,
-          "l": 1120.6,
-          "c": 1159.5
-        },
-        {
-          "d": "11 Nov",
-          "o": 1167.0,
-          "h": 1174.8,
-          "l": 1155.1,
-          "c": 1174.1
-        },
-        {
-          "d": "12 Nov",
-          "o": 1181.0,
-          "h": 1181.3,
-          "l": 1162.6,
-          "c": 1173.2
-        }
-      ]
-    },
-    {
-      "symbol": "ANANDRATHI",
-      "tier": "BROADER",
-      "pattern": "hanging-man",
-      "pattern_name": "Hanging Man",
-      "direction": "bearish",
-      "close": 2385.0,
-      "change_pct": 0.0,
+      "close": 338.25,
+      "change_pct": -0.24,
       "volume_ratio": 0.54,
       "volume_confirmed": false,
-      "turnover_cr": 64.52,
-      "rsi14": 76.9,
-      "atr14": 40.57,
+      "turnover_cr": 20.67,
+      "rsi14": 57.4,
+      "atr14": 9.2,
       "above_sma50": true,
       "strength": "unconfirmed",
       "bars": [
         {
-          "d": "05 Nov",
-          "o": 2320.0,
-          "h": 2388.0,
-          "l": 2311.5,
-          "c": 2370.0
-        },
-        {
           "d": "06 Nov",
-          "o": 2370.0,
-          "h": 2390.0,
-          "l": 2360.3,
-          "c": 2373.5
+          "o": 335.0,
+          "h": 343.0,
+          "l": 330.1,
+          "c": 342.3
         },
         {
           "d": "09 Nov",
-          "o": 2386.3,
-          "h": 2386.3,
-          "l": 2355.0,
-          "c": 2370.0
+          "o": 338.6,
+          "h": 343.05,
+          "l": 332.1,
+          "c": 334.65
         },
         {
           "d": "11 Nov",
-          "o": 2385.6,
-          "h": 2390.4,
-          "l": 2370.8,
-          "c": 2385.0
+          "o": 337.35,
+          "h": 340.45,
+          "l": 333.4,
+          "c": 334.95
         },
         {
           "d": "12 Nov",
-          "o": 2395.0,
-          "h": 2395.0,
-          "l": 2372.5,
-          "c": 2385.0
-        }
-      ]
-    },
-    {
-      "symbol": "SYNGENE",
-      "tier": "BROADER",
-      "pattern": "hanging-man",
-      "pattern_name": "Hanging Man",
-      "direction": "bearish",
-      "close": 447.8,
-      "change_pct": 1.12,
-      "volume_ratio": 0.21,
-      "volume_confirmed": false,
-      "turnover_cr": 35.68,
-      "rsi14": 70.0,
-      "atr14": 15.96,
-      "above_sma50": true,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "05 Nov",
-          "o": 422.0,
-          "h": 426.7,
-          "l": 412.15,
-          "c": 414.1
+          "o": 337.8,
+          "h": 340.2,
+          "l": 335.05,
+          "c": 339.05
         },
         {
-          "d": "06 Nov",
-          "o": 412.15,
-          "h": 418.35,
-          "l": 408.15,
-          "c": 417.3
-        },
-        {
-          "d": "09 Nov",
-          "o": 433.65,
-          "h": 444.0,
-          "l": 423.9,
-          "c": 436.9
-        },
-        {
-          "d": "11 Nov",
-          "o": 438.5,
-          "h": 447.95,
-          "l": 432.1,
-          "c": 442.85
-        },
-        {
-          "d": "12 Nov",
-          "o": 447.0,
-          "h": 449.5,
-          "l": 441.0,
-          "c": 447.8
+          "d": "13 Nov",
+          "o": 340.4,
+          "h": 340.4,
+          "l": 334.9,
+          "c": 338.25
         }
       ]
     }
