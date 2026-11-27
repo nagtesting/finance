@@ -1,71 +1,17 @@
 {
-  "session_date": "2026-11-19",
-  "generated_at": "2026-11-21T02:17:48.187535+05:30",
+  "session_date": "2026-11-26",
+  "generated_at": "2026-11-28T01:00:33.113825+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 165,
+  "total_signals": 206,
   "pattern": "morning-star",
   "pattern_name": "Morning Star",
   "direction": "bullish",
-  "count": 1,
+  "count": 0,
   "truncated": false,
-  "signals": [
-    {
-      "symbol": "WHIRLPOOL",
-      "tier": "BROADER",
-      "pattern": "morning-star",
-      "pattern_name": "Morning Star",
-      "direction": "bullish",
-      "close": 830.3,
-      "change_pct": 1.67,
-      "volume_ratio": 1.35,
-      "volume_confirmed": true,
-      "turnover_cr": 18.87,
-      "rsi14": 51.5,
-      "atr14": 30.53,
-      "above_sma50": true,
-      "strength": "confirmed",
-      "bars": [
-        {
-          "d": "13 Nov",
-          "o": 835.0,
-          "h": 840.9,
-          "l": 825.0,
-          "c": 829.0
-        },
-        {
-          "d": "16 Nov",
-          "o": 830.0,
-          "h": 839.3,
-          "l": 823.35,
-          "c": 835.5
-        },
-        {
-          "d": "17 Nov",
-          "o": 839.0,
-          "h": 843.0,
-          "l": 825.0,
-          "c": 826.45
-        },
-        {
-          "d": "18 Nov",
-          "o": 820.0,
-          "h": 828.6,
-          "l": 813.55,
-          "c": 816.65
-        },
-        {
-          "d": "19 Nov",
-          "o": 816.65,
-          "h": 843.0,
-          "l": 812.35,
-          "c": 830.3
-        }
-      ]
-    }
-  ]
+  "signals": []
 }

@@ -1,17 +1,71 @@
 {
-  "session_date": "2026-11-19",
-  "generated_at": "2026-11-21T02:17:48.187535+05:30",
+  "session_date": "2026-11-26",
+  "generated_at": "2026-11-28T01:00:33.113825+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 165,
+  "total_signals": 206,
   "pattern": "shooting-star",
   "pattern_name": "Shooting Star",
   "direction": "bearish",
-  "count": 0,
+  "count": 1,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "BANKINDIA",
+      "tier": "BROADER",
+      "pattern": "shooting-star",
+      "pattern_name": "Shooting Star",
+      "direction": "bearish",
+      "close": 160.29,
+      "change_pct": 0.25,
+      "volume_ratio": 0.9,
+      "volume_confirmed": false,
+      "turnover_cr": 170.68,
+      "rsi14": 67.5,
+      "atr14": 5.0,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "19 Nov",
+          "o": 157.7,
+          "h": 162.9,
+          "l": 157.7,
+          "c": 161.9
+        },
+        {
+          "d": "20 Nov",
+          "o": 160.5,
+          "h": 165.68,
+          "l": 159.37,
+          "c": 164.7
+        },
+        {
+          "d": "23 Nov",
+          "o": 164.7,
+          "h": 166.85,
+          "l": 158.25,
+          "c": 159.01
+        },
+        {
+          "d": "25 Nov",
+          "o": 160.2,
+          "h": 164.5,
+          "l": 158.36,
+          "c": 159.89
+        },
+        {
+          "d": "26 Nov",
+          "o": 160.5,
+          "h": 164.45,
+          "l": 159.95,
+          "c": 160.29
+        }
+      ]
+    }
+  ]
 }

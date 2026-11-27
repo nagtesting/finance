@@ -1,17 +1,124 @@
 {
-  "session_date": "2026-11-19",
-  "generated_at": "2026-11-21T02:17:48.187535+05:30",
+  "session_date": "2026-11-26",
+  "generated_at": "2026-11-28T01:00:33.113825+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
   "symbols_scanned": 500,
   "symbols_requested": 500,
   "symbols_missing": [],
   "min_turnover_cr": 2.0,
-  "total_signals": 165,
+  "total_signals": 206,
   "pattern": "dark-cloud-cover",
   "pattern_name": "Dark Cloud Cover",
   "direction": "bearish",
-  "count": 0,
+  "count": 2,
   "truncated": false,
-  "signals": []
+  "signals": [
+    {
+      "symbol": "NESTLEIND",
+      "tier": "NIFTY 50",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 1320.3,
+      "change_pct": -2.81,
+      "volume_ratio": 1.17,
+      "volume_confirmed": false,
+      "turnover_cr": 201.23,
+      "rsi14": 55.6,
+      "atr14": 34.41,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "19 Nov",
+          "o": 1278.4,
+          "h": 1312.0,
+          "l": 1278.4,
+          "c": 1303.4
+        },
+        {
+          "d": "20 Nov",
+          "o": 1295.0,
+          "h": 1325.0,
+          "l": 1295.0,
+          "c": 1325.0
+        },
+        {
+          "d": "23 Nov",
+          "o": 1328.0,
+          "h": 1330.0,
+          "l": 1305.0,
+          "c": 1305.9
+        },
+        {
+          "d": "25 Nov",
+          "o": 1311.8,
+          "h": 1358.5,
+          "l": 1307.3,
+          "c": 1358.5
+        },
+        {
+          "d": "26 Nov",
+          "o": 1365.0,
+          "h": 1365.0,
+          "l": 1320.0,
+          "c": 1320.3
+        }
+      ]
+    },
+    {
+      "symbol": "DMART",
+      "tier": "NIFTY 100",
+      "pattern": "dark-cloud-cover",
+      "pattern_name": "Dark Cloud Cover",
+      "direction": "bearish",
+      "close": 3533.0,
+      "change_pct": -1.64,
+      "volume_ratio": 0.62,
+      "volume_confirmed": false,
+      "turnover_cr": 103.81,
+      "rsi14": 56.7,
+      "atr14": 77.19,
+      "above_sma50": true,
+      "strength": "unconfirmed",
+      "bars": [
+        {
+          "d": "19 Nov",
+          "o": 3442.0,
+          "h": 3518.8,
+          "l": 3440.9,
+          "c": 3500.0
+        },
+        {
+          "d": "20 Nov",
+          "o": 3490.0,
+          "h": 3527.1,
+          "l": 3471.2,
+          "c": 3490.0
+        },
+        {
+          "d": "23 Nov",
+          "o": 3490.0,
+          "h": 3519.0,
+          "l": 3400.0,
+          "c": 3405.4
+        },
+        {
+          "d": "25 Nov",
+          "o": 3500.0,
+          "h": 3592.0,
+          "l": 3426.0,
+          "c": 3592.0
+        },
+        {
+          "d": "26 Nov",
+          "o": 3601.0,
+          "h": 3604.1,
+          "l": 3512.1,
+          "c": 3533.0
+        }
+      ]
+    }
+  ]
 }
