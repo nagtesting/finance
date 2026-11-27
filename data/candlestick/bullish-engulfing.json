@@ -1,17 +1,19 @@
 {
   "session_date": "2026-11-26",
-  "generated_at": "2026-11-28T01:00:33.113825+05:30",
+  "generated_at": "2026-11-28T03:11:30.084344+05:30",
   "universe": "NIFTY500",
   "universe_source": "repo:data/universe/nifty500.csv (0d old)",
-  "symbols_scanned": 500,
+  "symbols_scanned": 499,
   "symbols_requested": 500,
-  "symbols_missing": [],
+  "symbols_missing": [
+    "AAVAS"
+  ],
   "min_turnover_cr": 2.0,
-  "total_signals": 206,
+  "total_signals": 205,
   "pattern": "bullish-engulfing",
   "pattern_name": "Bullish Engulfing",
   "direction": "bullish",
-  "count": 10,
+  "count": 9,
   "truncated": false,
   "signals": [
     {
@@ -329,59 +331,6 @@
           "h": 425.0,
           "l": 413.15,
           "c": 418.45
-        }
-      ]
-    },
-    {
-      "symbol": "AAVAS",
-      "tier": "BROADER",
-      "pattern": "bullish-engulfing",
-      "pattern_name": "Bullish Engulfing",
-      "direction": "bullish",
-      "close": 1099.5,
-      "change_pct": 1.69,
-      "volume_ratio": 0.4,
-      "volume_confirmed": false,
-      "turnover_cr": 22.98,
-      "rsi14": 40.5,
-      "atr14": 35.6,
-      "above_sma50": false,
-      "strength": "unconfirmed",
-      "bars": [
-        {
-          "d": "19 Nov",
-          "o": 1121.9,
-          "h": 1123.8,
-          "l": 1104.8,
-          "c": 1119.7
-        },
-        {
-          "d": "20 Nov",
-          "o": 1118.5,
-          "h": 1134.0,
-          "l": 1098.1,
-          "c": 1107.1
-        },
-        {
-          "d": "23 Nov",
-          "o": 1110.0,
-          "h": 1118.6,
-          "l": 1086.6,
-          "c": 1091.2
-        },
-        {
-          "d": "25 Nov",
-          "o": 1093.9,
-          "h": 1099.3,
-          "l": 1063.2,
-          "c": 1081.2
-        },
-        {
-          "d": "26 Nov",
-          "o": 1080.0,
-          "h": 1116.0,
-          "l": 1075.7,
-          "c": 1099.5
         }
       ]
     },
